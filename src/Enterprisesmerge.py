@@ -82,7 +82,7 @@ else:
 # =========================================================
 # Fetch market caps (disabilitato, processo molto lento, utilizzare solo se necessario)
 # =========================================================
-if True:
+if False:
     market_caps = {}
     errors = []
     for ticker in tqdm(df_unique['Ticker'], desc="Downloading market caps"):
@@ -139,7 +139,7 @@ top_200 = df_unique.head(200)
 
 # Fetch sectors (anche questo processo è lento, utilizzare solo se necessario)
 
-if True:
+if False:
     
     sectors = {}
     for ticker in tqdm(top_200['Ticker'], desc="Fetching sectors"):
