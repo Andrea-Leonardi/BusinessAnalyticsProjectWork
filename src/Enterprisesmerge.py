@@ -82,7 +82,7 @@ else:
 # =========================================================
 # Fetch market caps (disabilitato, processo molto lento, utilizzare solo se necessario)
 # =========================================================
-if False:
+if True:
     market_caps = {}
     errors = []
     for ticker in tqdm(df_unique['Ticker'], desc="Downloading market caps"):
@@ -109,7 +109,7 @@ if False:
 
     ticker_aliases = {
         'GOOG': 'GOOGL',
-        'BRK.B': 'BRK.A',
+        'BRK.A': 'BRK.B',
     }
 
     df_unique['Standard_Ticker'] = df_unique['Ticker'].replace(ticker_aliases)
@@ -132,12 +132,14 @@ if False:
 
 df_unique = pd.read_csv(OUTPUT_PATH)
 df_unique.sort_values(by="Market_Cap", ascending=False, inplace=True)
+df_unique.drop(columns=['Ticker.1'], inplace=True)
 df_unique.reset_index(drop=True, inplace=True)
 top_200 = df_unique.head(200)
 
+
 # Fetch sectors (anche questo processo è lento, utilizzare solo se necessario)
 
-if False:
+if True:
     
     sectors = {}
     for ticker in tqdm(top_200['Ticker'], desc="Fetching sectors"):
@@ -153,6 +155,5 @@ if False:
     print(f"Salvato top 200 in: {TOP_200_PATH}")
 else:
     top_200 = pd.read_csv(TOP_200_PATH)
-# %%
-top_200.drop(columns=['Ticker.1'], inplace=True)
+
 # %%
