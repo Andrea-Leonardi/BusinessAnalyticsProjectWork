@@ -1,3 +1,4 @@
+# %%
 import pandas as pd
 from pathlib import Path
 import yfinance as yf
@@ -8,7 +9,7 @@ import time
 # Project paths
 # =========================================================
 
-ROOT = Path.cwd()
+ROOT = Path.cwd().parent
 FOLDER_PATH = ROOT / "data" / "possible_enterprises" / "raw"
 OUTPUT_PATH = ROOT / "data" / "possible_enterprises" / "merged_enterprises.csv"
 TOP_200_PATH = ROOT / "data" / "possible_enterprises" / "top_200_enterprises.csv"
@@ -152,4 +153,6 @@ if False:
     print(f"Salvato top 200 in: {TOP_200_PATH}")
 else:
     top_200 = pd.read_csv(TOP_200_PATH)
-
+# %%
+top_200.drop(columns=['Ticker.1'], inplace=True)
+# %%
