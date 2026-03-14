@@ -157,3 +157,17 @@ else:
     top_200 = pd.read_csv(TOP_200_PATH)
 
 # %%
+
+#fai un grafico a barre dei settori più rappresentati tra le top 200 aziende
+import matplotlib.pyplot as plt
+sector_counts = top_200['Sector'].value_counts()
+plt.figure(figsize=(12, 6))
+sector_counts.plot(kind='bar')
+plt.title('Settori più rappresentati tra le top 200 aziende')
+plt.xlabel('Settore')
+plt.ylabel('Numero di aziende')
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+
+# %%
