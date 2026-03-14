@@ -72,6 +72,88 @@ df_merged = (
 
 print(f"\nDataFrame finale con {len(df_merged)} righe univoche")
 
+# =========================================================
+# drop all companies with symbol = "-"
+# =========================================================
+
+df_merged = df_merged[df_merged["symbol"] != "-"]
+df_merged = df_merged.dropna(subset=["symbol", "company", "identifier"], how="all")
+df_merged.rename(columns={"symbol": "Ticker", "company": "Company_name", "identifier": "CUSIP"}, inplace=True)
+df_merged.reset_index(drop=True, inplace=True)
+
+# =========================================================
+# Check for duplicate tickers
+# =========================================================
+
+duplicates = df_merged[df_merged.duplicated('Ticker', keep=False)]
+if not duplicates.empty:
+    print(f"Ci sono {len(duplicates)} righe con ticker duplicati:")
+    print(duplicates[['Ticker', 'Company_name', 'CUSIP', 'source']].head(10))
+    # Per gestire, puoi scegliere di tenere solo la prima occorrenza per ticker
+    df_unique = df_merged.drop_duplicates('Ticker')
+    print(f"\nDopo aver rimosso duplicati, rimangono {len(df_unique)} ticker unici.")
+else:
+    df_unique = df_merged
+    print("Tutti i ticker sono unici.")
+
+
+
+
 # %%
-df_merged.head()
+df_unique.head()
+# %%
+import yfinance as yf
+from tqdm import tqdm
+import time
+
+# =========================================================
+# Fetch market caps for unique tickers with progress bar and error handling
+# =========================================================
+
+market_caps = {}
+errors = []
+
+for ticker in tqdm(df_unique['Ticker'], desc="Downloading market caps"):
+    try:
+        info = yf.Ticker(ticker).info
+        market_caps[ticker] = info.get('marketCap')
+        # Aggiungi un piccolo delay per evitare rate limiting
+        time.sleep(0.01)
+    except Exception as e:
+        market_caps[ticker] = None
+        errors.append((ticker, str(e)))
+
+# =========================================================
+# Add market caps to df_unique
+# =========================================================
+
+df_unique['Market_Cap'] = df_unique['Ticker'].map(market_caps)
+
+# =========================================================
+# Report errors
+# =========================================================
+
+if errors:
+    print(f"\nErrori per {len(errors)} ticker:")
+    for ticker, error in errors[:10]:  # Mostra solo i primi 10
+        print(f"{ticker}: {error}")
+    if len(errors) > 10:
+        print(f"... e altri {len(errors) - 10}")
+
+print(f"\nMarket cap recuperati per {len(df_unique) - len(errors)} su {len(df_unique)} ticker")
+
+# %%
+df_unique = df_unique.dropna(subset=['Market_Cap'])
+#salva il DataFrame finale in un nuovo CSV
+output_path = ROOT / "data" / "possible_enterprises" / "merged_enterprises.csv"
+df_unique.to_csv(output_path, index=False)
+# %%
+df_unique = pd.read_csv(output_path)
+df_unique.sort_values(by="Market_Cap", ascending=False, inplace=True)
+df_unique.reset_index(drop=True, inplace=True)
+# %%
+#tengo le prime 200 aziende per market cap
+top_200 = df_unique.head(200)   
+print(yf.ticker("aapl").info)
+
 # %%
