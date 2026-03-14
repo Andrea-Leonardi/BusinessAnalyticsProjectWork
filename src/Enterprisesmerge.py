@@ -134,19 +134,22 @@ df_unique.sort_values(by="Market_Cap", ascending=False, inplace=True)
 df_unique.reset_index(drop=True, inplace=True)
 top_200 = df_unique.head(200)
 
-# Fetch sectors
-sectors = {}
-for ticker in tqdm(top_200['Ticker'], desc="Fetching sectors"):
-    try:
-        info = yf.Ticker(ticker).info
-        sectors[ticker] = info.get('sector')
-        time.sleep(0.01)
-    except Exception as e:
-        sectors[ticker] = None
+# Fetch sectors (anche questo processo è lento, utilizzare solo se necessario)
 
-top_200['Sector'] = top_200['Ticker'].map(sectors)
-top_200.to_csv(TOP_200_PATH, index=False)
-print(f"Salvato top 200 in: {TOP_200_PATH}")
+if False:
+    
+    sectors = {}
+    for ticker in tqdm(top_200['Ticker'], desc="Fetching sectors"):
+        try:
+            info = yf.Ticker(ticker).info
+            sectors[ticker] = info.get('sector')
+            time.sleep(0.01)
+        except Exception as e:
+            sectors[ticker] = None
 
-
+    top_200['Sector'] = top_200['Ticker'].map(sectors)
+    top_200.to_csv(TOP_200_PATH, index=False)
+    print(f"Salvato top 200 in: {TOP_200_PATH}")
+else:
+    top_200 = pd.read_csv(TOP_200_PATH)
 
