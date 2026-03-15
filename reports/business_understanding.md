@@ -92,3 +92,5 @@ ticker.balance_sheet.loc["Current Liabilities"]
 ticker.info["marketCap"]
 ticker.info["sharesOutstanding"]
 ```
+
+!! YF has data only since 2023
