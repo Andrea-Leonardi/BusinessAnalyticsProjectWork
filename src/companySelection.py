@@ -4,15 +4,15 @@ from pathlib import Path
 import yfinance as yf
 from tqdm import tqdm
 import time
-
+import config as cfg
 # =========================================================
 # Project paths
 # =========================================================
 
-ROOT = Path.cwd().parent
-FOLDER_PATH = ROOT / "data" / "possible_enterprises" / "raw"
-OUTPUT_PATH = ROOT / "data" / "possible_enterprises" / "merged_enterprises.csv"
-TOP_200_PATH = ROOT / "data" / "possible_enterprises" / "top_200_enterprises.csv"
+
+FOLDER_PATH = cfg.DATA / "possible_enterprises" / "raw"
+OUTPUT_PATH = cfg.DATA / "possible_enterprises" / "merged_enterprises.csv"
+TOP_200_PATH = cfg.DATA / "possible_enterprises" / "top_200_enterprises.csv"
 
 # =========================================================
 # Check folder exists
