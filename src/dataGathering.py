@@ -8,17 +8,17 @@ import config as cfg
 #lets take a small subset of the companies to test the code
 # Adjust path if needed (since config uses .parent for Jupyter)
 try:
-    df = pd.read_csv(cfg.TOP200).head(10).drop(columns=["source"])
+    df = pd.read_csv(cfg.ENT).head(10)
 except FileNotFoundError:
     # Fallback: assume script is in src/, so project root is ../
     try:
         project_root = Path(__file__).parent.parent
-        top200_path = project_root / "data" / "possible_enterprises" / "top_200_enterprises.csv"
-        df = pd.read_csv(top200_path).head(10).drop(columns=["source"])
+        ent_path = project_root / "data" / "possible_enterprises" / "enterprises.csv"
+        df = pd.read_csv(ent_path).head(10).drop(columns=["source"])
     except NameError:
         # If __file__ not defined (e.g., in Jupyter), assume cwd is project root
-        top200_path = Path.cwd() / "data" / "possible_enterprises" / "top_200_enterprises.csv"
-        df = pd.read_csv(top200_path).head(10).drop(columns=["source"]) 
+        ent_path = Path.cwd() / "data" / "possible_enterprises" / "enterprises.csv"
+        df = pd.read_csv(ent_path).head(10).drop(columns=["source"]) 
 
 
 
@@ -92,7 +92,7 @@ for ticker in df["Ticker"]:
     print(f"Data for {ticker}: {len(company_df)} months, {len(company_df.columns)} attributes")
 
 # Now company_dfs contains a DataFrame for each ticker with the adjusted close prices
-# Example access AAPL data
+# Example access data
 
 # %%
 example = company_dfs['AVGO']
