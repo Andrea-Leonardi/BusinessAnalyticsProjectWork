@@ -1,14 +1,15 @@
 # %%
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path.cwd() / "src"))
+
 import yfinance as yf
 from datetime import datetime, timedelta
 import pandas as pd
-from pathlib import Path
 import config as cfg
 import requests
-import re
-import json
-from lxml import html # needed for pd.read_html
-
+from lxml import html
 #lets take a small subset of the companies to test the code
 # Adjust path if needed (since config uses .parent for Jupyter)
 try:
@@ -18,80 +19,19 @@ except FileNotFoundError:
     try:
         project_root = Path(__file__).parent.parent
         ent_path = project_root / "data" / "possible_enterprises" / "enterprises.csv"
-        df = pd.read_csv(ent_path).head(10)
+        df = pd.read_csv(ent_path).head(10).drop(columns=["source"])
     except NameError:
         # If __file__ not defined (e.g., in Jupyter), assume cwd is project root
         ent_path = Path.cwd() / "data" / "possible_enterprises" / "enterprises.csv"
-        df = pd.read_csv(ent_path).head(10)
+        df = pd.read_csv(ent_path).head(10).drop(columns=["source"]) 
 
-
-def get_revenue_from_macrotrends(ticker, company_name):
-    """
-    Scrapes revenue data from macrotrends.net for a given ticker and company name.
-    It first tries to use pd.read_html to find the data table.
-    If that fails, it falls back to a regex search on the script content.
-    """
-    # Improved slug generation
-    name_for_slug = company_name.split(' ')[0]
-    company_name_slug = name_for_slug.lower().replace('.', '')
-    
-    url = f"https://www.macrotrends.net/stocks/charts/{ticker}/{company_name_slug}/revenue"
-    
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
-    
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching page for {ticker}: {e}")
-        return None
-
-    # Try parsing with pd.read_html first
-    try:
-        dfs = pd.read_html(response.text)
-        revenue_df = None
-        for df_table in dfs:
-            if 'Year' in df_table.columns and any('Revenue' in str(col) for col in df_table.columns):
-                revenue_col = [col for col in df_table.columns if 'Revenue' in str(col)][0]
-                revenue_df = df_table[['Year', revenue_col]].copy()
-                revenue_df.rename(columns={revenue_col: 'Revenue'}, inplace=True)
-                break
-        
-        if revenue_df is not None:
-            print(f"Successfully scraped revenue for {ticker} using pd.read_html.")
-            revenue_df['Year'] = pd.to_datetime(revenue_df['Year'], format='%Y')
-            revenue_df['Revenue'] = revenue_df['Revenue'].astype(str).str.replace(r'[\$,]', '', regex=True).astype(float)
-            return revenue_df.dropna()
-
-    except Exception as e:
-        print(f"pd.read_html failed for {ticker}: {e}. Falling back to regex.")
-
-    # Fallback to regex method if table not found or parsed
-    match = re.search(r'var originalData = (.*?);', response.text)
-
-    if not match:
-        print(f"Could not find revenue data for {ticker} with regex fallback.")
-        return None
-
-    try:
-        print(f"Trying regex fallback for {ticker}.")
-        json_data = json.loads(match.group(1))
-        if not json_data:
-            return None
-            
-        revenue_df = pd.DataFrame(json_data)
-        revenue_df['date'] = pd.to_datetime(revenue_df['date'])
-        revenue_df.rename(columns={'date': 'Year', 'revenue': 'Revenue'}, inplace=True)
-        revenue_df['Revenue'] = pd.to_numeric(revenue_df['Revenue'].astype(str).str.replace(',', ''), errors='coerce')
-        return revenue_df
-        
-    except (json.JSONDecodeError, TypeError) as e:
-        print(f"Error parsing data for {ticker} with regex fallback: {e}")
-        return None
 
 # %%
+#==========================================================
+# Download historical price data for each company using yfinance
+#==========================================================
+
+
 # Define the period for which to download data (last 5 years)
 end_date = datetime.now()
 start_date = pd.Timestamp(end_date - timedelta(days=365*5))
@@ -99,15 +39,7 @@ start_date = pd.Timestamp(end_date - timedelta(days=365*5))
 # create a dictionary to store the dataframes for each company
 company_dfs = {}
 
-for index, row in df.iterrows():
-    ticker = row['Ticker']
-    # Check if 'Company_name' column exists, otherwise use a placeholder
-    if 'Company_name' in row:
-        company_name = row['Company_name']
-    else:
-        # Fallback if 'Company_name' is not in the dataframe
-        company_name = ticker
-
+for ticker in df["Ticker"]:
     print(f"download data for {ticker}...")
     stock = yf.Ticker(ticker)
 
@@ -120,54 +52,149 @@ for index, row in df.iterrows():
     company_df = pd.DataFrame({'Adj Close': hist_data['Close']})
     company_df.index = company_df.index.tz_localize(None)
     company_df.index.name = 'Date'
-    
-    # 2. Scrape revenue data
-    revenue_df = get_revenue_from_macrotrends(ticker, company_name)
-    
-    if revenue_df is not None:
-        print(f"Successfully scraped revenue for {ticker}")
-        revenue_df.set_index('Year', inplace=True)
-        # resample to monthly and ffill
-        revenue_df_monthly = revenue_df.resample('M').ffill()
-        
-        # Merge with company_df
-        company_df = company_df.merge(revenue_df_monthly, left_index=True, right_index=True, how='left')
-        
+
     company_dfs[ticker] = company_df
     print(f"Data for {ticker}: {len(company_df)} months, {len(company_df.columns)} attributes")
-
 
 # Now company_dfs contains a DataFrame for each ticker with the adjusted close prices
 # Example access data
 
 # %%
-if 'AVGO' in company_dfs:
-    example = company_dfs['AVGO']
-    
+example = company_dfs['AVGO']
+print(df[["Ticker","Company_name"]])
 # %%
-#plot the data for each company different colors for each company standardize the data to make it comparable (divide by the first value) and plot the adjusted close prices over time
-import matplotlib.pyplot as plt
-plt.figure(figsize=(12, 6))
-for ticker, df_plot in company_dfs.items():
-    if 'Adj Close' in df_plot.columns and not df_plot['Adj Close'].empty:
-        standardized_prices = df_plot['Adj Close'] / df_plot['Adj Close'].iloc[0]  # Standardize by the first value
-        plt.plot(standardized_prices.index, standardized_prices.values, label=ticker)   
-plt.title('Standardized Adjusted Close Prices Over Time')
-plt.xlabel('Date')
-plt.ylabel('Standardized Price')
-plt.legend()
-plt.grid()
-plt.show()
+#==========================================================
+# Web scraping for revenue data from macrotrends.net without using Selenium
+#==========================================================
+
+
+
+# URL and XPath provided by the user
+url = "https://www.macrotrends.net/stocks/charts/AAPL/apple/revenue"
+
+# Set headers to mimic a browser
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+}
+
+
+# Fetch the page content
+print(f"Fetching content from: {url}")
+response = requests.get(url, headers=headers)
+response.raise_for_status()  # Raise an exception for bad status codes
+
+# Parse the HTML content
+tree = html.fromstring(response.content)
+
+for i in range(1, 11):
+    for j in range(1, 3):
+        xpath = f"//*[@id='main_content']/div[9]/div/div[1]/table/tbody/tr[{i}]/td[{j}]"
+        elements = tree.xpath(xpath)
+        if j == 1:
+            year = elements[0].text_content()
+        elif j == 2:
+            revenue = elements[0].text_content()
+            print(f"Year: {year}, Revenue: {revenue}")
+
+
+
 
 # %%
-# plot revenue for companies that have it
-plt.figure(figsize=(12, 6))
-for ticker, df_plot in company_dfs.items():
-    if 'Revenue' in df_plot.columns and not df_plot['Revenue'].dropna().empty:
-        plt.plot(df_plot.index, df_plot['Revenue'].values, label=f"{ticker} Revenue")   
-plt.title('Revenue Over Time')
-plt.xlabel('Date')
-plt.ylabel('Revenue (Millions of US $)')
-plt.legend()
-plt.grid()
-plt.show()
+
+#devo scaricare i nomi delle aziende usate da macrotrends 
+import time
+import pandas as pd
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+url = "https://www.macrotrends.net/stocks/stock-screener"
+
+service = Service(ChromeDriverManager().install())
+
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+options.add_argument("--disable-gpu")
+options.add_argument("--window-size=1920x1080")
+
+driver = webdriver.Chrome(service=service, options=options)
+wait = WebDriverWait(driver, 15)
+
+driver.get(url)
+
+all_data = []
+
+n_pages = 20   # cambia questo numero come vuoi
+
+for page in range(1, n_pages + 1):
+    print(f"Sto leggendo pagina {page}...")
+
+    data = []
+    
+    for i in range(0, 20):   # meglio partire da 0
+        try:
+            ticker_xpath = f"//*[@id='row{i}jqxGrid']/div[2]/div"
+            link_xpath = f"//*[@id='row{i}jqxGrid']/div[1]/div/div/a"
+
+            ticker_element = wait.until(
+                EC.presence_of_element_located((By.XPATH, ticker_xpath))
+            )
+            link_element = wait.until(
+                EC.presence_of_element_located((By.XPATH, link_xpath))
+            )
+
+            ticker = ticker_element.text.strip()
+            company = link_element.text.strip()
+            link = link_element.get_attribute("href")
+
+            data.append({
+                "Ticker": ticker,
+                "Company": company,
+                "Link": link
+            })
+
+        except Exception as e:
+            print(f"Could not extract row {i} on page {page}: {e}")
+
+    all_data.extend(data)
+
+    # se non siamo all'ultima pagina richiesta, vai avanti
+    if page < n_pages:
+        try:
+            old_first_row = driver.find_element(By.ID, "row0jqxGrid").text
+
+            next_button = wait.until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "div[title='next']"))
+            )
+            driver.execute_script("arguments[0].click();", next_button)
+
+            wait.until(
+                lambda d: d.find_element(By.ID, "row0jqxGrid").text != old_first_row
+            )
+
+            time.sleep(1)
+
+        except Exception as e:
+            print(f"Non riesco a cambiare pagina: {e}")
+            break
+
+dfNames = pd.DataFrame(all_data).drop_duplicates()
+print(dfNames)
+
+driver.quit()
+
+#salvo i dati in un csv
+dfNames.to_csv(cfg.COMPANY_NAMES_CSV, index=False)
+
+# %%
+# Pulisco i link rimuovendo la parte "/stock-price-history" che non serve
+dfNames["Link"] = dfNames["Link"].str.replace("/stock-price-history", "", regex=False)
+
+# %%
+#inserisco i link in df
+df_merged = pd.merge(df, dfNames[["Ticker", "Link" ]], left_on="Ticker", right_on="Ticker", how="left")
+# %%
