@@ -11,7 +11,7 @@ import config as cfg
 
 
 FOLDER_PATH = cfg.DATA / "possible_enterprises" / "raw"
-OUTPUT_PATH = cfg.DATA / "possible_enterprises" / "merged_enterprises.csv"
+OUTPUT_PATH = cfg.DATA / "possible_enterprises" / "merged_all_enterprises.csv"
 ENT_PATH = cfg.ENT
 # =========================================================
 # Check folder exists
