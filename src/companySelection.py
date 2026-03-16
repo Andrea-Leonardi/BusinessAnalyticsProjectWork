@@ -138,16 +138,13 @@ df_unique.drop(columns=['Ticker.1'], inplace=True)
 df_unique.reset_index(drop=True, inplace=True)
 
 #%%
-#stampa valori unici di sector
-print("Settori unici:")
-print(df_unique['Sector'].dropna().unique())
-#dividi le aziende per settore e mettile in un dizionario
-sector_dict = {}
-sectors = df_unique['Sector'].dropna().unique()
-for sector in sectors:
-    sector_dict[sector] = df_unique[df_unique['Sector'] == sector][['Company_name', 'Ticker', 'Market_Cap']]  
+# Prendo le prime 10 aziende per ogni settore
+# df_unique è già ordinato per Market_Cap in ordine decrescente
+top_per_sector = df_unique.groupby('Sector').head(10).reset_index(drop=True)
 
-sector_dict['Technology']
+# Salvo il risultato in un nuovo file CSV
+top_per_sector.to_csv(cfg.ENT, index=False)
+print(f"Salvato il file con le top 10 aziende per settore in: {cfg.ENT}")
 
 
 # %%
