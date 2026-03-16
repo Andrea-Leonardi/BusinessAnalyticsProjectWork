@@ -1,5 +1,44 @@
 # Define Business Case
+# MarketPulse: Multi-Modal Stock Movement Predictor
 
+## 1. Background & Problem Statement
+For decades, quantitative analysts and financial institutions have attempted to predict the future behavior of financial markets. Traditional theoretical frameworks, such as the Capital Asset Pricing Model (CAPM) and the Efficient Market Hypothesis (EMH), often operate under the assumption that market participants are entirely rational and that asset prices fully reflect all available fundamental information. 
+
+However, as demonstrated by the principles of **Behavioral Finance**, purely quantitative models fail to capture a critical driver of short-term market volatility: **Investor Sentiment**. Real-world market anomalies—such as retail-driven short squeezes or panic sell-offs triggered by breaking news—prove that collective emotions significantly influence stock fluctuations. A prominent example is the **2021 GameStop (GME) short squeeze**, where retail investors on social media—driven entirely by collective sentiment and herd behavior rather than underlying fundamental valuation—pushed the stock price to unprecedented highs, completely defying traditional pricing models.
+
+Therefore, our project addresses a fundamental gap: **Pure quantitative analysis is insufficient to fully explain short-term financial market behavior.** We propose a multi-modal approach that integrates traditional financial metrics with an NLP-driven sentiment coefficient to capture the "market mood."
+
+## 2. Business Objectives
+The primary business objective is to build a **Decision Support System (DSS)** for swing traders and active portfolio managers. 
+
+Instead of building a high-frequency algorithmic trading bot, this tool is designed to assist investors in weekly portfolio rebalancing. By digesting a company's historical price momentum, its fundamental financial health, and the public sentiment surrounding it over the past week, the model provides a data-driven recommendation (Up/Down) for the stock's movement in the upcoming week ($T+1$).
+
+## 3. Project Scope & Sample Selection
+To ensure statistical rigor, computational feasibility, and high-quality data, we established strict boundaries for our dataset:
+
+* **Target Population (110 Companies):** Instead of analyzing a single sector (which risks severe multicollinearity as stocks tend to move together) or the entire S&P 500 (which is computationally expensive for NLP tasks), we applied **Stratified Sampling**. We selected **10 top companies from each of the 11 GICS Sectors** (totaling 110 companies). This guarantees cross-sector diversity and robust statistical variance.
+* **Time Horizon (5 Years: 2021 - 2026):** We deliberately restricted our observation window to the last 5 years. This strategic decision serves two main purposes:
+  1. **Excluding the "Black Swan":** It avoids the extreme, unrepeatable market volatility and anomalous patterns caused by the COVID-19 crash in early 2020.
+  2. **Data Availability:** It aligns perfectly with the practical limitations of free fundamental financial APIs (e.g., `yfinance`), which reliably provide Income Statements and Balance Sheets for recent years.
+
+## 4. Methodology: The Tri-Factor Approach
+Our predictive model integrates three distinct dimensions of data:
+
+1. **Fundamental Analysis (Intrinsic Value):** Quarterly Income Statements and Balance Sheets to evaluate the underlying financial health and leverage of the companies.
+2. **Technical Analysis (Market Momentum):** Historical daily stock prices and volume to capture market trends and mean-reversion effects.
+3. **Sentiment Analysis (Market Psychology):** A proxy variable for investor emotion derived from financial news. We leverage **FinBERT**, a state-of-the-art pre-trained NLP model specifically fine-tuned on financial text, to calculate daily positive/negative sentiment scores for each company.
+
+## 5. Risks & Feasibility
+* **Data Frequency Mismatch:** A core technical challenge is the integration of quarterly fundamental data with daily/weekly price and news data. We address this by treating fundamentals as "static baseline features" for a given quarter, while treating price and sentiment as "dynamic drivers."
+* **Market Friction:** While the model predicts directional movement, real-world profitability is subject to transaction costs, bid-ask spreads, and latency. The model is positioned strictly as an analytical proxy rather than a fully automated execution system.
+
+## 6. Future Work: Production Deployment & MLOps
+While this academic project trains on a static 5-year historical dataset to validate the predictive power of the tri-factor model, a real-world deployment for our DSS would require a dynamic **Automated Data Pipeline**. 
+
+To transition from a static analytical model to a live production tool, future iterations would implement the following MLOps architecture:
+* **Live API Integration:** Replacing static CSV files with dynamic API calls (e.g., `yfinance` for latest weekly prices and News APIs for real-time text fetching).
+* **Automated Pipeline (Cron Jobs/Airflow):** Scheduling automated scripts to run every Friday after market close. These scripts would fetch the latest week's data and run the text through our pre-trained FinBERT pipeline to generate the current sentiment proxy.
+* **Dynamic Model Inference:** Feeding this live data vector into the serialized, pre-trained classification model to instantly generate the $T+1$ week prediction for the end-user dashboard.
 ...
 
 # Define Data Characteristics
