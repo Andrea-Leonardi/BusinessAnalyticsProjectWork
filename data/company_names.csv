@@ -1,0 +1,401 @@
+Ticker,Company,Link
+NVDA,NVIDIA,https://www.macrotrends.net/stocks/charts/NVDA/nvidia
+AAPL,Apple,https://www.macrotrends.net/stocks/charts/AAPL/apple
+GOOG,Alphabet,https://www.macrotrends.net/stocks/charts/GOOG/alphabet
+GOOGL,Alphabet,https://www.macrotrends.net/stocks/charts/GOOGL/alphabet
+MSFT,Microsoft,https://www.macrotrends.net/stocks/charts/MSFT/microsoft
+AMZN,Amazon,https://www.macrotrends.net/stocks/charts/AMZN/amazon
+TSM,Taiwan Semiconductor Manufacturing,https://www.macrotrends.net/stocks/charts/TSM/taiwan-semiconductor-manufacturing
+META,Meta Platforms,https://www.macrotrends.net/stocks/charts/META/meta-platforms
+TSLA,Tesla,https://www.macrotrends.net/stocks/charts/TSLA/tesla
+AVGO,Broadcom,https://www.macrotrends.net/stocks/charts/AVGO/broadcom
+BRK.A,Berkshire Hathaway,https://www.macrotrends.net/stocks/charts/BRK.A/berkshire-hathaway
+BRK.B,Berkshire Hathaway,https://www.macrotrends.net/stocks/charts/BRK.B/berkshire-hathaway
+WMT,Walmart,https://www.macrotrends.net/stocks/charts/WMT/walmart
+LLY,Eli Lilly,https://www.macrotrends.net/stocks/charts/LLY/eli-lilly
+JPM,JPMorgan Chase,https://www.macrotrends.net/stocks/charts/JPM/jpmorgan-chase
+XOM,Exxon,https://www.macrotrends.net/stocks/charts/XOM/exxon
+JNJ,Johnson & Johnson,https://www.macrotrends.net/stocks/charts/JNJ/johnson-johnson
+V,Visa,https://www.macrotrends.net/stocks/charts/V/visa
+ASML,ASML Holding,https://www.macrotrends.net/stocks/charts/ASML/asml-holding
+MA,Mastercard,https://www.macrotrends.net/stocks/charts/MA/mastercard
+MU,Micron Technology,https://www.macrotrends.net/stocks/charts/MU/micron-technology
+ORCL,Oracle,https://www.macrotrends.net/stocks/charts/ORCL/oracle
+COST,Costco,https://www.macrotrends.net/stocks/charts/COST/costco
+ABBV,AbbVie,https://www.macrotrends.net/stocks/charts/ABBV/abbvie
+HD,Home Depot,https://www.macrotrends.net/stocks/charts/HD/home-depot
+BAC,Bank Of America,https://www.macrotrends.net/stocks/charts/BAC/bank-of-america
+PG,Procter & Gamble,https://www.macrotrends.net/stocks/charts/PG/procter-gamble
+BABA,Alibaba,https://www.macrotrends.net/stocks/charts/BABA/alibaba
+CVX,Chevron,https://www.macrotrends.net/stocks/charts/CVX/chevron
+CAT,Caterpillar,https://www.macrotrends.net/stocks/charts/CAT/caterpillar
+NVS,Novartis AG,https://www.macrotrends.net/stocks/charts/NVS/novartis-ag
+KO,CocaCola,https://www.macrotrends.net/stocks/charts/KO/cocacola
+AMD,AMD,https://www.macrotrends.net/stocks/charts/AMD/amd
+TM,Toyota,https://www.macrotrends.net/stocks/charts/TM/toyota
+GE,GE Aerospace,https://www.macrotrends.net/stocks/charts/GE/ge-aerospace
+NFLX,Netflix,https://www.macrotrends.net/stocks/charts/NFLX/netflix
+AZN,AstraZeneca,https://www.macrotrends.net/stocks/charts/AZN/astrazeneca
+PLTR,Palantir Technologies,https://www.macrotrends.net/stocks/charts/PLTR/palantir-technologies
+CSCO,Cisco,https://www.macrotrends.net/stocks/charts/CSCO/cisco
+MRK,Merck,https://www.macrotrends.net/stocks/charts/MRK/merck
+LRCX,Lam Research,https://www.macrotrends.net/stocks/charts/LRCX/lam-research
+HSBC,HSBC,https://www.macrotrends.net/stocks/charts/HSBC/hsbc
+PM,Philip Morris,https://www.macrotrends.net/stocks/charts/PM/philip-morris
+AMAT,Applied Materials,https://www.macrotrends.net/stocks/charts/AMAT/applied-materials
+WFC,Wells Fargo,https://www.macrotrends.net/stocks/charts/WFC/wells-fargo
+MS,Morgan Stanley,https://www.macrotrends.net/stocks/charts/MS/morgan-stanley
+GS,Goldman Sachs,https://www.macrotrends.net/stocks/charts/GS/goldman-sachs
+RTX,RTX,https://www.macrotrends.net/stocks/charts/RTX/rtx
+UNH,UnitedHealth Group,https://www.macrotrends.net/stocks/charts/UNH/unitedhealth-group
+SAP,SAP SE,https://www.macrotrends.net/stocks/charts/SAP/sap-se
+IBM,IBM,https://www.macrotrends.net/stocks/charts/IBM/ibm
+TMUS,T-Mobile US,https://www.macrotrends.net/stocks/charts/TMUS/t-mobile-us
+RY,Royal Bank Of Canada,https://www.macrotrends.net/stocks/charts/RY/royal-bank-of-canada
+MUFG,Mitsubishi UFJ Financial,https://www.macrotrends.net/stocks/charts/MUFG/mitsubishi-ufj-financial
+INTC,Intel,https://www.macrotrends.net/stocks/charts/INTC/intel
+MCD,McDonald's,https://www.macrotrends.net/stocks/charts/MCD/mcdonalds
+AXP,American Express,https://www.macrotrends.net/stocks/charts/AXP/american-express
+PEP,PepsiCo,https://www.macrotrends.net/stocks/charts/PEP/pepsico
+LIN,Linde,https://www.macrotrends.net/stocks/charts/LIN/linde
+SHEL,Shell,https://www.macrotrends.net/stocks/charts/SHEL/shell
+NVO,Novo Nordisk,https://www.macrotrends.net/stocks/charts/NVO/novo-nordisk
+GEV,GE Vernova,https://www.macrotrends.net/stocks/charts/GEV/ge-vernova
+VZ,Verizon,https://www.macrotrends.net/stocks/charts/VZ/verizon
+TXN,Texas Instruments,https://www.macrotrends.net/stocks/charts/TXN/texas-instruments
+T,AT&T,https://www.macrotrends.net/stocks/charts/T/at-t
+AMGN,Amgen,https://www.macrotrends.net/stocks/charts/AMGN/amgen
+C,Citigroup,https://www.macrotrends.net/stocks/charts/C/citigroup
+ABT,Abbott Laboratories,https://www.macrotrends.net/stocks/charts/ABT/abbott-laboratories
+NEE,NextEra Energy,https://www.macrotrends.net/stocks/charts/NEE/nextera-energy
+GILD,Gilead Sciences,https://www.macrotrends.net/stocks/charts/GILD/gilead-sciences
+KLAC,KLA,https://www.macrotrends.net/stocks/charts/KLAC/kla
+BA,Boeing,https://www.macrotrends.net/stocks/charts/BA/boeing
+TMO,Thermo Fisher Scientific,https://www.macrotrends.net/stocks/charts/TMO/thermo-fisher-scientific
+DIS,Disney,https://www.macrotrends.net/stocks/charts/DIS/disney
+BHP,BHP Group,https://www.macrotrends.net/stocks/charts/BHP/bhp-group
+TTE,TotalEnergies SE,https://www.macrotrends.net/stocks/charts/TTE/totalenergies-se
+APH,Amphenol,https://www.macrotrends.net/stocks/charts/APH/amphenol
+ANET,Arista Networks,https://www.macrotrends.net/stocks/charts/ANET/arista-networks
+CRM,Salesforce,https://www.macrotrends.net/stocks/charts/CRM/salesforce
+SAN,"Banco Santander, S.A","https://www.macrotrends.net/stocks/charts/SAN/banco-santander,-sa"
+ISRG,Intuitive Surgical,https://www.macrotrends.net/stocks/charts/ISRG/intuitive-surgical
+TJX,TJX,https://www.macrotrends.net/stocks/charts/TJX/tjx
+SCHW,Charles Schwab,https://www.macrotrends.net/stocks/charts/SCHW/charles-schwab
+BLK,BlackRock,https://www.macrotrends.net/stocks/charts/BLK/blackrock
+HDB,HDFC Bank,https://www.macrotrends.net/stocks/charts/HDB/hdfc-bank
+ADI,Analog Devices,https://www.macrotrends.net/stocks/charts/ADI/analog-devices
+DE,Deere,https://www.macrotrends.net/stocks/charts/DE/deere
+UL,Unilever,https://www.macrotrends.net/stocks/charts/UL/unilever
+LOW,Lowe's,https://www.macrotrends.net/stocks/charts/LOW/lowes
+SCCO,Southern Copper,https://www.macrotrends.net/stocks/charts/SCCO/southern-copper
+TD,Toronto Dominion Bank,https://www.macrotrends.net/stocks/charts/TD/toronto-dominion-bank
+BUD,Anheuser-Busch,https://www.macrotrends.net/stocks/charts/BUD/anheuser-busch
+PFE,Pfizer,https://www.macrotrends.net/stocks/charts/PFE/pfizer
+UNP,Union Pacific,https://www.macrotrends.net/stocks/charts/UNP/union-pacific
+HON,Honeywell,https://www.macrotrends.net/stocks/charts/HON/honeywell
+SMFG,Sumitomo Mitsui Financial Group Inc,https://www.macrotrends.net/stocks/charts/SMFG/sumitomo-mitsui-financial-group-inc
+ETN,Eaton,https://www.macrotrends.net/stocks/charts/ETN/eaton
+DHR,Danaher,https://www.macrotrends.net/stocks/charts/DHR/danaher
+LMT,Lockheed Martin,https://www.macrotrends.net/stocks/charts/LMT/lockheed-martin
+QCOM,QUALCOMM,https://www.macrotrends.net/stocks/charts/QCOM/qualcomm
+WELL,Welltower,https://www.macrotrends.net/stocks/charts/WELL/welltower
+SHOP,Shopify,https://www.macrotrends.net/stocks/charts/SHOP/shopify
+UBER,Uber Technologies,https://www.macrotrends.net/stocks/charts/UBER/uber-technologies
+SONY,Sony,https://www.macrotrends.net/stocks/charts/SONY/sony
+SYK,Stryker,https://www.macrotrends.net/stocks/charts/SYK/stryker
+PDD,PDD Holdings,https://www.macrotrends.net/stocks/charts/PDD/pdd-holdings
+ACN,Accenture,https://www.macrotrends.net/stocks/charts/ACN/accenture
+COP,ConocoPhillips,https://www.macrotrends.net/stocks/charts/COP/conocophillips
+NEM,Newmont,https://www.macrotrends.net/stocks/charts/NEM/newmont
+BKNG,Booking Holdings,https://www.macrotrends.net/stocks/charts/BKNG/booking-holdings
+ARM,ARM Holdings,https://www.macrotrends.net/stocks/charts/ARM/arm-holdings
+APP,AppLovin,https://www.macrotrends.net/stocks/charts/APP/applovin
+COF,Capital One Financial,https://www.macrotrends.net/stocks/charts/COF/capital-one-financial
+UBS,UBS Group AG,https://www.macrotrends.net/stocks/charts/UBS/ubs-group-ag
+BBVA,Banco Bilbao Viscaya Argentaria S.A,https://www.macrotrends.net/stocks/charts/BBVA/banco-bilbao-viscaya-argentaria-sa
+PLD,Prologis,https://www.macrotrends.net/stocks/charts/PLD/prologis
+CB,Chubb,https://www.macrotrends.net/stocks/charts/CB/chubb
+MDT,Medtronic,https://www.macrotrends.net/stocks/charts/MDT/medtronic
+IBKR,Interactive Brokers,https://www.macrotrends.net/stocks/charts/IBKR/interactive-brokers
+PH,Parker-Hannifin,https://www.macrotrends.net/stocks/charts/PH/parker-hannifin
+VRTX,Vertex Pharmaceuticals,https://www.macrotrends.net/stocks/charts/VRTX/vertex-pharmaceuticals
+BMY,Bristol Myers Squibb,https://www.macrotrends.net/stocks/charts/BMY/bristol-myers-squibb
+MFG,Mizuho Financial,https://www.macrotrends.net/stocks/charts/MFG/mizuho-financial
+RIO,Rio Tinto,https://www.macrotrends.net/stocks/charts/RIO/rio-tinto
+SPGI,S&P Global,https://www.macrotrends.net/stocks/charts/SPGI/s-p-global
+BTI,British American Tobacco,https://www.macrotrends.net/stocks/charts/BTI/british-american-tobacco
+HCA,HCA Healthcare,https://www.macrotrends.net/stocks/charts/HCA/hca-healthcare
+GSK,GSK,https://www.macrotrends.net/stocks/charts/GSK/gsk
+PGR,Progressive,https://www.macrotrends.net/stocks/charts/PGR/progressive
+BN,Brookfield,https://www.macrotrends.net/stocks/charts/BN/brookfield
+ENB,Enbridge Inc,https://www.macrotrends.net/stocks/charts/ENB/enbridge-inc
+PANW,Palo Alto Networks,https://www.macrotrends.net/stocks/charts/PANW/palo-alto-networks
+GLW,Corning,https://www.macrotrends.net/stocks/charts/GLW/corning
+MCK,McKesson,https://www.macrotrends.net/stocks/charts/MCK/mckesson
+CMCSA,Comcast,https://www.macrotrends.net/stocks/charts/CMCSA/comcast
+MO,Altria,https://www.macrotrends.net/stocks/charts/MO/altria
+SNY,Sanofi,https://www.macrotrends.net/stocks/charts/SNY/sanofi
+NOW,ServiceNow,https://www.macrotrends.net/stocks/charts/NOW/servicenow
+INTU,Intuit,https://www.macrotrends.net/stocks/charts/INTU/intuit
+BSX,Boston Scientific,https://www.macrotrends.net/stocks/charts/BSX/boston-scientific
+IBN,ICICI Bank,https://www.macrotrends.net/stocks/charts/IBN/icici-bank
+CME,CME Group,https://www.macrotrends.net/stocks/charts/CME/cme-group
+AEM,Agnico Eagle Mines,https://www.macrotrends.net/stocks/charts/AEM/agnico-eagle-mines
+ADBE,Adobe,https://www.macrotrends.net/stocks/charts/ADBE/adobe
+CRWD,CrowdStrike,https://www.macrotrends.net/stocks/charts/CRWD/crowdstrike
+SBUX,Starbucks,https://www.macrotrends.net/stocks/charts/SBUX/starbucks
+SO,Southern,https://www.macrotrends.net/stocks/charts/SO/southern
+CEG,Constellation Energy,https://www.macrotrends.net/stocks/charts/CEG/constellation-energy
+TT,Trane Technologies,https://www.macrotrends.net/stocks/charts/TT/trane-technologies
+ITUB,Itau Unibanco Holding S.A,https://www.macrotrends.net/stocks/charts/ITUB/itau-unibanco-holding-sa
+UPS,UPS,https://www.macrotrends.net/stocks/charts/UPS/ups
+MELI,MercadoLibre,https://www.macrotrends.net/stocks/charts/MELI/mercadolibre
+HWM,Howmet Aerospace,https://www.macrotrends.net/stocks/charts/HWM/howmet-aerospace
+CVS,CVS Health,https://www.macrotrends.net/stocks/charts/CVS/cvs-health
+NOC,Northrop Grumman,https://www.macrotrends.net/stocks/charts/NOC/northrop-grumman
+DUK,Duke Energy,https://www.macrotrends.net/stocks/charts/DUK/duke-energy
+BMO,Bank Of Montreal,https://www.macrotrends.net/stocks/charts/BMO/bank-of-montreal
+BP,BP,https://www.macrotrends.net/stocks/charts/BP/bp
+PBR,Petroleo Brasileiro S.A.- Petrobras,https://www.macrotrends.net/stocks/charts/PBR/petroleo-brasileiro-sa--petrobras
+BX,Blackstone,https://www.macrotrends.net/stocks/charts/BX/blackstone
+WDC,Western Digital,https://www.macrotrends.net/stocks/charts/WDC/western-digital
+WM,Waste Management,https://www.macrotrends.net/stocks/charts/WM/waste-management
+SPOT,Spotify Technology,https://www.macrotrends.net/stocks/charts/SPOT/spotify-technology
+GD,General Dynamics,https://www.macrotrends.net/stocks/charts/GD/general-dynamics
+EQIX,Equinix,https://www.macrotrends.net/stocks/charts/EQIX/equinix
+MAR,Marriott,https://www.macrotrends.net/stocks/charts/MAR/marriott
+NKE,NIKE,https://www.macrotrends.net/stocks/charts/NKE/nike
+BNS,Bank Of Nova Scotia,https://www.macrotrends.net/stocks/charts/BNS/bank-of-nova-scotia
+STX,Seagate Technology Holdings,https://www.macrotrends.net/stocks/charts/STX/seagate-technology-holdings
+SNDK,Sandisk,https://www.macrotrends.net/stocks/charts/SNDK/sandisk
+RACE,Ferrari,https://www.macrotrends.net/stocks/charts/RACE/ferrari
+NGG,National Grid Transco,https://www.macrotrends.net/stocks/charts/NGG/national-grid-transco
+SHW,Sherwin-Williams,https://www.macrotrends.net/stocks/charts/SHW/sherwin-williams
+PBR.A,Petroleo Brasileiro S.A.- Petrobras,https://www.macrotrends.net/stocks/charts/PBR.A/petroleo-brasileiro-sa--petrobras
+KKR,KKR,https://www.macrotrends.net/stocks/charts/KKR/kkr
+MMM,3M,https://www.macrotrends.net/stocks/charts/MMM/3m
+FCX,Freeport-McMoRan,https://www.macrotrends.net/stocks/charts/FCX/freeport-mcmoran
+AMT,American Tower,https://www.macrotrends.net/stocks/charts/AMT/american-tower
+PNC,PNC Financial Services,https://www.macrotrends.net/stocks/charts/PNC/pnc-financial-services
+USB,U.S Bancorp,https://www.macrotrends.net/stocks/charts/USB/us-bancorp
+VRT,Vertiv Holdings,https://www.macrotrends.net/stocks/charts/VRT/vertiv-holdings
+MMC,Marsh & McLennan,https://www.macrotrends.net/stocks/charts/MMC/marsh-mclennan
+CM,Canadian Imperial Bank Of Commerce,https://www.macrotrends.net/stocks/charts/CM/canadian-imperial-bank-of-commerce
+WMB,Williams,https://www.macrotrends.net/stocks/charts/WMB/williams
+FDX,FedEx,https://www.macrotrends.net/stocks/charts/FDX/fedex
+BCS,Barclays,https://www.macrotrends.net/stocks/charts/BCS/barclays
+ITW,Illinois Tool Works,https://www.macrotrends.net/stocks/charts/ITW/illinois-tool-works
+ICE,Intercontinental Exchange,https://www.macrotrends.net/stocks/charts/ICE/intercontinental-exchange
+RCL,Royal Caribbean Cruises,https://www.macrotrends.net/stocks/charts/RCL/royal-caribbean-cruises
+BAM,Brookfield Asset Management,https://www.macrotrends.net/stocks/charts/BAM/brookfield-asset-management
+ADP,ADP,https://www.macrotrends.net/stocks/charts/ADP/adp
+JCI,Johnson Controls,https://www.macrotrends.net/stocks/charts/JCI/johnson-controls
+REGN,Regeneron Pharmaceuticals,https://www.macrotrends.net/stocks/charts/REGN/regeneron-pharmaceuticals
+ECL,Ecolab,https://www.macrotrends.net/stocks/charts/ECL/ecolab
+CNQ,Canadian Natural Resources,https://www.macrotrends.net/stocks/charts/CNQ/canadian-natural-resources
+CRH,CRH,https://www.macrotrends.net/stocks/charts/CRH/crh
+MRSH,Marsh,https://www.macrotrends.net/stocks/charts/MRSH/marsh
+SNPS,Synopsys,https://www.macrotrends.net/stocks/charts/SNPS/synopsys
+EMR,Emerson Electric,https://www.macrotrends.net/stocks/charts/EMR/emerson-electric
+CMI,Cummins,https://www.macrotrends.net/stocks/charts/CMI/cummins
+EQNR,Equinor,https://www.macrotrends.net/stocks/charts/EQNR/equinor
+LYG,Lloyds Banking Group,https://www.macrotrends.net/stocks/charts/LYG/lloyds-banking-group
+ING,ING Group,https://www.macrotrends.net/stocks/charts/ING/ing-group
+BK,Bank Of New York Mellon,https://www.macrotrends.net/stocks/charts/BK/bank-of-new-york-mellon
+ORLY,O'Reilly Automotive,https://www.macrotrends.net/stocks/charts/ORLY/oreilly-automotive
+CDNS,Cadence Design Systems,https://www.macrotrends.net/stocks/charts/CDNS/cadence-design-systems
+NU,Nu Holdings,https://www.macrotrends.net/stocks/charts/NU/nu-holdings
+EPD,Enterprise Products Partners,https://www.macrotrends.net/stocks/charts/EPD/enterprise-products-partners
+B,Barrick Mining,https://www.macrotrends.net/stocks/charts/B/barrick-mining
+MDLZ,Mondelez,https://www.macrotrends.net/stocks/charts/MDLZ/mondelez
+MNST,Monster Beverage,https://www.macrotrends.net/stocks/charts/MNST/monster-beverage
+PWR,Quanta Services,https://www.macrotrends.net/stocks/charts/PWR/quanta-services
+CL,Colgate-Palmolive,https://www.macrotrends.net/stocks/charts/CL/colgate-palmolive
+DELL,Dell,https://www.macrotrends.net/stocks/charts/DELL/dell
+CI,Cigna Group,https://www.macrotrends.net/stocks/charts/CI/cigna-group
+CTAS,Cintas,https://www.macrotrends.net/stocks/charts/CTAS/cintas
+ELV,Elevance Health,https://www.macrotrends.net/stocks/charts/ELV/elevance-health
+MSI,Motorola Solutions,https://www.macrotrends.net/stocks/charts/MSI/motorola-solutions
+NTES,NetEase,https://www.macrotrends.net/stocks/charts/NTES/netease
+MCO,Moody's,https://www.macrotrends.net/stocks/charts/MCO/moodys
+CSX,CSX,https://www.macrotrends.net/stocks/charts/CSX/csx
+SLB,SLB,https://www.macrotrends.net/stocks/charts/SLB/slb
+CP,Canadian Pacific Kansas City,https://www.macrotrends.net/stocks/charts/CP/canadian-pacific-kansas-city
+ABNB,Airbnb,https://www.macrotrends.net/stocks/charts/ABNB/airbnb
+CVNA,Carvana,https://www.macrotrends.net/stocks/charts/CVNA/carvana
+GM,General Motors,https://www.macrotrends.net/stocks/charts/GM/general-motors
+TDG,Transdigm Group,https://www.macrotrends.net/stocks/charts/TDG/transdigm-group
+APO,Apollo Global Management,https://www.macrotrends.net/stocks/charts/APO/apollo-global-management
+HLT,Hilton Worldwide Holdings,https://www.macrotrends.net/stocks/charts/HLT/hilton-worldwide-holdings
+KMI,Kinder Morgan,https://www.macrotrends.net/stocks/charts/KMI/kinder-morgan
+AMX,"America Movil, S.A.B De C.V","https://www.macrotrends.net/stocks/charts/AMX/america-movil,-sab-de-cv"
+NSC,Norfolk Southern,https://www.macrotrends.net/stocks/charts/NSC/norfolk-southern
+AEP,American Electric Power,https://www.macrotrends.net/stocks/charts/AEP/american-electric-power
+COR,Cencora,https://www.macrotrends.net/stocks/charts/COR/cencora
+WBD,Warner Bros Discovery,https://www.macrotrends.net/stocks/charts/WBD/warner-bros-discovery
+TEL,TE Connectivity,https://www.macrotrends.net/stocks/charts/TEL/te-connectivity
+AON,Aon,https://www.macrotrends.net/stocks/charts/AON/aon
+DASH,DoorDash,https://www.macrotrends.net/stocks/charts/DASH/doordash
+RSG,Republic Services,https://www.macrotrends.net/stocks/charts/RSG/republic-services
+NET,Cloudflare,https://www.macrotrends.net/stocks/charts/NET/cloudflare
+HOOD,Robinhood Markets,https://www.macrotrends.net/stocks/charts/HOOD/robinhood-markets
+PCAR,PACCAR,https://www.macrotrends.net/stocks/charts/PCAR/paccar
+SU,Suncor Energy,https://www.macrotrends.net/stocks/charts/SU/suncor-energy-
+MRVL,Marvell Technology,https://www.macrotrends.net/stocks/charts/MRVL/marvell-technology
+TFC,Truist Financial,https://www.macrotrends.net/stocks/charts/TFC/truist-financial
+WPM,Wheaton Precious Metals,https://www.macrotrends.net/stocks/charts/WPM/wheaton-precious-metals
+TRP,TC Energy,https://www.macrotrends.net/stocks/charts/TRP/tc-energy
+CNI,Canadian National Railway,https://www.macrotrends.net/stocks/charts/CNI/canadian-national-railway
+EOG,EOG Resources,https://www.macrotrends.net/stocks/charts/EOG/eog-resources
+LHX,L3Harris Technologies Inc,https://www.macrotrends.net/stocks/charts/LHX/l3harris-technologies-inc
+ET,Energy Transfer LP,https://www.macrotrends.net/stocks/charts/ET/energy-transfer-lp
+PSX,Phillips 66,https://www.macrotrends.net/stocks/charts/PSX/phillips-66
+SPG,Simon Property,https://www.macrotrends.net/stocks/charts/SPG/simon-property
+NWG,NatWest Group,https://www.macrotrends.net/stocks/charts/NWG/natwest-group
+AZO,AutoZone,https://www.macrotrends.net/stocks/charts/AZO/autozone
+FTNT,Fortinet,https://www.macrotrends.net/stocks/charts/FTNT/fortinet
+TRV,Travelers,https://www.macrotrends.net/stocks/charts/TRV/travelers
+ROST,Ross Stores,https://www.macrotrends.net/stocks/charts/ROST/ross-stores
+SE,Sea,https://www.macrotrends.net/stocks/charts/SE/sea
+SNOW,Snowflake,https://www.macrotrends.net/stocks/charts/SNOW/snowflake
+APD,Air Products And Chemicals,https://www.macrotrends.net/stocks/charts/APD/air-products-and-chemicals
+DLR,Digital Realty Trust,https://www.macrotrends.net/stocks/charts/DLR/digital-realty-trust
+SRE,Sempra Energy,https://www.macrotrends.net/stocks/charts/SRE/sempra-energy
+MFC,Manulife Financial Corp,https://www.macrotrends.net/stocks/charts/MFC/manulife-financial-corp
+NXPI,NXP Semiconductors,https://www.macrotrends.net/stocks/charts/NXPI/nxp-semiconductors
+MPC,Marathon Petroleum,https://www.macrotrends.net/stocks/charts/MPC/marathon-petroleum
+VLO,Valero Energy,https://www.macrotrends.net/stocks/charts/VLO/valero-energy
+BKR,Baker Hughes,https://www.macrotrends.net/stocks/charts/BKR/baker-hughes
+O,Realty Income,https://www.macrotrends.net/stocks/charts/O/realty-income
+AFL,Aflac,https://www.macrotrends.net/stocks/charts/AFL/aflac
+INFY,American Noble Gas,https://www.macrotrends.net/stocks/charts/INFY/american-noble-gas
+TAK,Takeda Pharmaceutical,https://www.macrotrends.net/stocks/charts/TAK/takeda-pharmaceutical
+MDLN,Medline,https://www.macrotrends.net/stocks/charts/MDLN/medline
+VST,Vistra,https://www.macrotrends.net/stocks/charts/VST/vistra
+MPLX,MPLX LP,https://www.macrotrends.net/stocks/charts/MPLX/mplx-lp
+D,Dominion Energy,https://www.macrotrends.net/stocks/charts/D/dominion-energy
+RELX,RELX,https://www.macrotrends.net/stocks/charts/RELX/relx
+F,Ford Motor,https://www.macrotrends.net/stocks/charts/F/ford-motor
+MPWR,Monolithic Power Systems,https://www.macrotrends.net/stocks/charts/MPWR/monolithic-power-systems
+AU,AngloGold Ashanti,https://www.macrotrends.net/stocks/charts/AU/anglogold-ashanti
+DEO,Diageo,https://www.macrotrends.net/stocks/charts/DEO/diageo
+URI,United Rentals,https://www.macrotrends.net/stocks/charts/URI/united-rentals
+CARR,Carrier Global,https://www.macrotrends.net/stocks/charts/CARR/carrier-global
+ALL,Allstate,https://www.macrotrends.net/stocks/charts/ALL/allstate
+OKE,ONEOK,https://www.macrotrends.net/stocks/charts/OKE/oneok
+GWW,W.W Grainger,https://www.macrotrends.net/stocks/charts/GWW/ww-grainger
+FER,Ferrovial SE,https://www.macrotrends.net/stocks/charts/FER/ferrovial-se
+AJG,Arthur J Gallagher,https://www.macrotrends.net/stocks/charts/AJG/arthur-j-gallagher
+ZTS,Zoetis,https://www.macrotrends.net/stocks/charts/ZTS/zoetis
+FAST,Fastenal,https://www.macrotrends.net/stocks/charts/FAST/fastenal
+AME,AMETEK,https://www.macrotrends.net/stocks/charts/AME/ametek
+PSA,Public Storage,https://www.macrotrends.net/stocks/charts/PSA/public-storage
+TGT,Target,https://www.macrotrends.net/stocks/charts/TGT/target
+CAH,Cardinal Health,https://www.macrotrends.net/stocks/charts/CAH/cardinal-health
+ASX,ASE Technology Holding,https://www.macrotrends.net/stocks/charts/ASX/ase-technology-holding
+FERG,Ferguson,https://www.macrotrends.net/stocks/charts/FERG/ferguson
+MET,MetLife,https://www.macrotrends.net/stocks/charts/MET/metlife
+ARGX,Argenex SE,https://www.macrotrends.net/stocks/charts/ARGX/argenex-se
+CTVA,Corteva,https://www.macrotrends.net/stocks/charts/CTVA/corteva
+IDXX,IDEXX Laboratories,https://www.macrotrends.net/stocks/charts/IDXX/idexx-laboratories
+EA,Electronic Arts,https://www.macrotrends.net/stocks/charts/EA/electronic-arts
+BDX,Becton Dickinson,https://www.macrotrends.net/stocks/charts/BDX/becton-dickinson
+HLN,Haleon,https://www.macrotrends.net/stocks/charts/HLN/haleon
+HMC,Honda,https://www.macrotrends.net/stocks/charts/HMC/honda
+EXC,Exelon,https://www.macrotrends.net/stocks/charts/EXC/exelon
+TER,Teradyne,https://www.macrotrends.net/stocks/charts/TER/teradyne
+CCJ,Cameco,https://www.macrotrends.net/stocks/charts/CCJ/cameco
+ADSK,Autodesk,https://www.macrotrends.net/stocks/charts/ADSK/autodesk
+ABEV,Ambev S.A,https://www.macrotrends.net/stocks/charts/ABEV/ambev-sa
+GFI,Gold Fields,https://www.macrotrends.net/stocks/charts/GFI/gold-fields
+FNV,Franco-Nevada,https://www.macrotrends.net/stocks/charts/FNV/franco-nevada
+DHI,D.R Horton,https://www.macrotrends.net/stocks/charts/DHI/dr-horton
+FANG,Diamondback Energy,https://www.macrotrends.net/stocks/charts/FANG/diamondback-energy
+XEL,Xcel Energy,https://www.macrotrends.net/stocks/charts/XEL/xcel-energy
+TRGP,Targa Resources,https://www.macrotrends.net/stocks/charts/TRGP/targa-resources
+MT,ArcelorMittal,https://www.macrotrends.net/stocks/charts/MT/arcelormittal
+LNG,Cheniere Energy,https://www.macrotrends.net/stocks/charts/LNG/cheniere-energy
+BIDU,Baidu,https://www.macrotrends.net/stocks/charts/BIDU/baidu
+CMG,Chipotle Mexican Grill,https://www.macrotrends.net/stocks/charts/CMG/chipotle-mexican-grill
+FIX,Comfort Systems USA,https://www.macrotrends.net/stocks/charts/FIX/comfort-systems-usa
+ETR,Entergy,https://www.macrotrends.net/stocks/charts/ETR/entergy
+HEI,Heico,https://www.macrotrends.net/stocks/charts/HEI/heico
+CCEP,Coca-Cola Europacific Partners,https://www.macrotrends.net/stocks/charts/CCEP/coca-cola-europacific-partners
+OXY,Occidental Petroleum,https://www.macrotrends.net/stocks/charts/OXY/occidental-petroleum
+NDAQ,Nasdaq,https://www.macrotrends.net/stocks/charts/NDAQ/nasdaq
+HSY,Hershey,https://www.macrotrends.net/stocks/charts/HSY/hershey
+KR,Kroger,https://www.macrotrends.net/stocks/charts/KR/kroger
+DAL,Delta Air Lines,https://www.macrotrends.net/stocks/charts/DAL/delta-air-lines
+YUM,Yum! Brands,https://www.macrotrends.net/stocks/charts/YUM/yum!-brands
+ROK,Rockwell Automation,https://www.macrotrends.net/stocks/charts/ROK/rockwell-automation
+COIN,Coinbase Global,https://www.macrotrends.net/stocks/charts/COIN/coinbase-global
+EW,Edwards Lifesciences,https://www.macrotrends.net/stocks/charts/EW/edwards-lifesciences
+AMP,Ameriprise Financial,https://www.macrotrends.net/stocks/charts/AMP/ameriprise-financial
+DDOG,Datadog,https://www.macrotrends.net/stocks/charts/DDOG/datadog
+WAB,Wabtec,https://www.macrotrends.net/stocks/charts/WAB/wabtec
+ARES,Ares Management,https://www.macrotrends.net/stocks/charts/ARES/ares-management
+UI,Ubiquiti,https://www.macrotrends.net/stocks/charts/UI/ubiquiti
+SYY,Sysco,https://www.macrotrends.net/stocks/charts/SYY/sysco
+VMC,Vulcan Materials,https://www.macrotrends.net/stocks/charts/VMC/vulcan-materials
+PEG,Public Service Enterprise Group,https://www.macrotrends.net/stocks/charts/PEG/public-service-enterprise-group
+CIEN,Ciena,https://www.macrotrends.net/stocks/charts/CIEN/ciena
+MCHP,Microchip Technology,https://www.macrotrends.net/stocks/charts/MCHP/microchip-technology
+KB,KB Financial Group Inc,https://www.macrotrends.net/stocks/charts/KB/kb-financial-group-inc
+CBRE,CBRE,https://www.macrotrends.net/stocks/charts/CBRE/cbre
+AIG,American,https://www.macrotrends.net/stocks/charts/AIG/american
+NUE,Nucor,https://www.macrotrends.net/stocks/charts/NUE/nucor
+RBLX,Roblox,https://www.macrotrends.net/stocks/charts/RBLX/roblox
+ALNY,Alnylam Pharmaceuticals,https://www.macrotrends.net/stocks/charts/ALNY/alnylam-pharmaceuticals
+IX,Orix Corp Ads,https://www.macrotrends.net/stocks/charts/IX/orix-corp-ads
+CVE,Cenovus Energy Inc,https://www.macrotrends.net/stocks/charts/CVE/cenovus-energy-inc
+GRMN,Garmin,https://www.macrotrends.net/stocks/charts/GRMN/garmin
+KGC,Kinross Gold,https://www.macrotrends.net/stocks/charts/KGC/kinross-gold
+ED,Consolidated Edison Inc,https://www.macrotrends.net/stocks/charts/ED/consolidated-edison-inc
+WCN,Waste Connections,https://www.macrotrends.net/stocks/charts/WCN/waste-connections
+MLM,Martin Marietta Materials,https://www.macrotrends.net/stocks/charts/MLM/martin-marietta-materials
+COHR,Coherent,https://www.macrotrends.net/stocks/charts/COHR/coherent
+VTR,Ventas,https://www.macrotrends.net/stocks/charts/VTR/ventas
+ODFL,Old Dominion Freight Line,https://www.macrotrends.net/stocks/charts/ODFL/old-dominion-freight-line
+NOK,Nokia,https://www.macrotrends.net/stocks/charts/NOK/nokia
+KDP,Keurig Dr Pepper,https://www.macrotrends.net/stocks/charts/KDP/keurig-dr-pepper
+TKO,TKOs,https://www.macrotrends.net/stocks/charts/TKO/tkos
+LITE,Lumentum Holdings,https://www.macrotrends.net/stocks/charts/LITE/lumentum-holdings
+KEYS,Keysight Technologies,https://www.macrotrends.net/stocks/charts/KEYS/keysight-technologies
+PCG,Pacific Gas & Electric,https://www.macrotrends.net/stocks/charts/PCG/pacific-gas-electric
+HIG,Hartford Insurance,https://www.macrotrends.net/stocks/charts/HIG/hartford-insurance
+CCI,Crown Castle,https://www.macrotrends.net/stocks/charts/CCI/crown-castle
+RKT,Rocket,https://www.macrotrends.net/stocks/charts/RKT/rocket
+CCL,Carnival,https://www.macrotrends.net/stocks/charts/CCL/carnival
+BE,Bloom Energy,https://www.macrotrends.net/stocks/charts/BE/bloom-energy
+ALC,Alcon,https://www.macrotrends.net/stocks/charts/ALC/alcon
+EL,Estee Lauder,https://www.macrotrends.net/stocks/charts/EL/estee-lauder
+TEVA,Teva Pharmaceutical Industries,https://www.macrotrends.net/stocks/charts/TEVA/teva-pharmaceutical-industries
+IR,Ingersoll Rand,https://www.macrotrends.net/stocks/charts/IR/ingersoll-rand
+JD,JD,https://www.macrotrends.net/stocks/charts/JD/jd
+TRI,Thomson Reuters Corp,https://www.macrotrends.net/stocks/charts/TRI/thomson-reuters-corp
+MSCI,MSCI Inc,https://www.macrotrends.net/stocks/charts/MSCI/msci-inc
+MSTR,Strategy Inc,https://www.macrotrends.net/stocks/charts/MSTR/strategy-inc
+LVS,Las Vegas Sands,https://www.macrotrends.net/stocks/charts/LVS/las-vegas-sands
+SLF,Sun Life Financial,https://www.macrotrends.net/stocks/charts/SLF/sun-life-financial
+WDAY,Workday,https://www.macrotrends.net/stocks/charts/WDAY/workday
+ONC,BeOne Medicines -,https://www.macrotrends.net/stocks/charts/ONC/beone-medicines--
+WEC,WEC Energy,https://www.macrotrends.net/stocks/charts/WEC/wec-energy
+PUK,Prudential Public,https://www.macrotrends.net/stocks/charts/PUK/prudential-public
+ERIC,Ericsson,https://www.macrotrends.net/stocks/charts/ERIC/ericsson
+EBAY,EBay,https://www.macrotrends.net/stocks/charts/EBAY/ebay
+LYV,Live Nation Entertainment,https://www.macrotrends.net/stocks/charts/LYV/live-nation-entertainment
+CRWV,CoreWeave,https://www.macrotrends.net/stocks/charts/CRWV/coreweave
+PYPL,PayPal Holdings,https://www.macrotrends.net/stocks/charts/PYPL/paypal-holdings
+NRG,NRG Energy,https://www.macrotrends.net/stocks/charts/NRG/nrg-energy
+RMD,ResMed,https://www.macrotrends.net/stocks/charts/RMD/resmed
+EQT,EQT,https://www.macrotrends.net/stocks/charts/EQT/eqt
+GEHC,GE HealthCare Technologies,https://www.macrotrends.net/stocks/charts/GEHC/ge-healthcare-technologies
+VOD,Vodafone Group,https://www.macrotrends.net/stocks/charts/VOD/vodafone-group
+PRU,Prudential Financial,https://www.macrotrends.net/stocks/charts/PRU/prudential-financial
+KMB,Kimberly-Clark,https://www.macrotrends.net/stocks/charts/KMB/kimberly-clark
+CPRT,Copart,https://www.macrotrends.net/stocks/charts/CPRT/copart
+RKLB,Rocket Lab,https://www.macrotrends.net/stocks/charts/RKLB/rocket-lab
+TTWO,Take-Two Interactive Software,https://www.macrotrends.net/stocks/charts/TTWO/take-two-interactive-software
+EME,EMCOR,https://www.macrotrends.net/stocks/charts/EME/emcor
+KVUE,Kenvue,https://www.macrotrends.net/stocks/charts/KVUE/kenvue

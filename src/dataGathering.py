@@ -12,18 +12,10 @@ import requests
 from lxml import html
 #lets take a small subset of the companies to test the code
 # Adjust path if needed (since config uses .parent for Jupyter)
-try:
-    df = pd.read_csv(cfg.ENT).head(10)
-except FileNotFoundError:
-    # Fallback: assume script is in src/, so project root is ../
-    try:
-        project_root = Path(__file__).parent.parent
-        ent_path = project_root / "data" / "possible_enterprises" / "enterprises.csv"
-        df = pd.read_csv(ent_path).head(10).drop(columns=["source"])
-    except NameError:
-        # If __file__ not defined (e.g., in Jupyter), assume cwd is project root
-        ent_path = Path.cwd() / "data" / "possible_enterprises" / "enterprises.csv"
-        df = pd.read_csv(ent_path).head(10).drop(columns=["source"]) 
+
+print(cfg.ENT)
+
+df = pd.read_csv(cfg.ENT).head(5)
 
 
 # %%
@@ -60,7 +52,7 @@ for ticker in df["Ticker"]:
 # Example access data
 
 # %%
-example = company_dfs['AVGO']
+example = company_dfs['AAPL']
 print(df[["Ticker","Company_name"]])
 # %%
 #==========================================================
@@ -102,99 +94,141 @@ for i in range(1, 11):
 # %%
 
 #devo scaricare i nomi delle aziende usate da macrotrends 
-import time
-import pandas as pd
-
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-url = "https://www.macrotrends.net/stocks/stock-screener"
-
-service = Service(ChromeDriverManager().install())
-
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")
-options.add_argument("--disable-gpu")
-options.add_argument("--window-size=1920x1080")
-
-driver = webdriver.Chrome(service=service, options=options)
-wait = WebDriverWait(driver, 15)
-
-driver.get(url)
-
-all_data = []
-
-n_pages = 20   # cambia questo numero come vuoi
-
-for page in range(1, n_pages + 1):
-    print(f"Sto leggendo pagina {page}...")
-
-    data = []
+if False:
     
-    for i in range(0, 20):   # meglio partire da 0
-        try:
-            ticker_xpath = f"//*[@id='row{i}jqxGrid']/div[2]/div"
-            link_xpath = f"//*[@id='row{i}jqxGrid']/div[1]/div/div/a"
+    import time
+    import pandas as pd
 
-            ticker_element = wait.until(
-                EC.presence_of_element_located((By.XPATH, ticker_xpath))
-            )
-            link_element = wait.until(
-                EC.presence_of_element_located((By.XPATH, link_xpath))
-            )
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
 
-            ticker = ticker_element.text.strip()
-            company = link_element.text.strip()
-            link = link_element.get_attribute("href")
+    url = "https://www.macrotrends.net/stocks/stock-screener"
 
-            data.append({
-                "Ticker": ticker,
-                "Company": company,
-                "Link": link
-            })
+    service = Service(ChromeDriverManager().install())
 
-        except Exception as e:
-            print(f"Could not extract row {i} on page {page}: {e}")
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920x1080")
 
-    all_data.extend(data)
+    driver = webdriver.Chrome(service=service, options=options)
+    wait = WebDriverWait(driver, 15)
 
-    # se non siamo all'ultima pagina richiesta, vai avanti
-    if page < n_pages:
-        try:
-            old_first_row = driver.find_element(By.ID, "row0jqxGrid").text
+    driver.get(url)
 
-            next_button = wait.until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "div[title='next']"))
-            )
-            driver.execute_script("arguments[0].click();", next_button)
+    all_data = []
 
-            wait.until(
-                lambda d: d.find_element(By.ID, "row0jqxGrid").text != old_first_row
-            )
+    n_pages = 20   # cambia questo numero come vuoi
 
-            time.sleep(1)
+    for page in range(1, n_pages + 1):
+        print(f"Sto leggendo pagina {page}...")
 
-        except Exception as e:
-            print(f"Non riesco a cambiare pagina: {e}")
-            break
+        data = []
+        
+        for i in range(0, 20):   # meglio partire da 0
+            try:
+                ticker_xpath = f"//*[@id='row{i}jqxGrid']/div[2]/div"
+                link_xpath = f"//*[@id='row{i}jqxGrid']/div[1]/div/div/a"
 
-dfNames = pd.DataFrame(all_data).drop_duplicates()
-print(dfNames)
+                ticker_element = wait.until(
+                    EC.presence_of_element_located((By.XPATH, ticker_xpath))
+                )
+                link_element = wait.until(
+                    EC.presence_of_element_located((By.XPATH, link_xpath))
+                )
 
-driver.quit()
+                ticker = ticker_element.text.strip()
+                company = link_element.text.strip()
+                link = link_element.get_attribute("href")
 
-#salvo i dati in un csv
-dfNames.to_csv(cfg.COMPANY_NAMES_CSV, index=False)
+                data.append({
+                    "Ticker": ticker,
+                    "Company": company,
+                    "Link": link
+                })
 
-# %%
-# Pulisco i link rimuovendo la parte "/stock-price-history" che non serve
-dfNames["Link"] = dfNames["Link"].str.replace("/stock-price-history", "", regex=False)
+            except Exception as e:
+                print(f"Could not extract row {i} on page {page}: {e}")
 
-# %%
+        all_data.extend(data)
+
+        # se non siamo all'ultima pagina richiesta, vai avanti
+        if page < n_pages:
+            try:
+                old_first_row = driver.find_element(By.ID, "row0jqxGrid").text
+
+                next_button = wait.until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "div[title='next']"))
+                )
+                driver.execute_script("arguments[0].click();", next_button)
+
+                wait.until(
+                    lambda d: d.find_element(By.ID, "row0jqxGrid").text != old_first_row
+                )
+
+                time.sleep(1)
+
+            except Exception as e:
+                print(f"Non riesco a cambiare pagina: {e}")
+                break
+
+    dfNames = pd.DataFrame(all_data).drop_duplicates()
+    print(dfNames)
+
+    driver.quit()
+
+
+    # Pulisco i link rimuovendo la parte "/stock-price-history" che non serve
+    dfNames["Link"] = dfNames["Link"].str.replace("/stock-price-history", "", regex=False)
+
+    #salvo i dati in un csv
+    dfNames.to_csv(cfg.COMPANY_NAMES_CSV, index=False)
+
+    
+
+
+
+
+else:
+    dfNames = pd.read_csv(cfg.COMPANY_NAMES_CSV)
+
 #inserisco i link in df
-df_merged = pd.merge(df, dfNames[["Ticker", "Link" ]], left_on="Ticker", right_on="Ticker", how="left")
+    df_merged = pd.merge(df, dfNames[["Ticker", "Link" ]], left_on="Ticker", right_on="Ticker", how="left")
+
+# %%
+#adesso posso estrarre i dati di revenue per ogni azienda usando i link e inseririli in company_dfs
+company_revs = {}
+
+for ticker, link in zip(df_merged["Ticker"], df_merged["Link"]):
+    print(f"download data for {ticker}...")
+    url = link + "/revenue" # aggiungo "/revenue" per accedere alla pagina dei ricavi
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()  # Raise an exception for bad status codes
+    tree = html.fromstring(response.content)
+
+
+    revenue_data = []
+    for i in range(1, 11):
+        for j in range(1, 3):
+            xpath = f"//*[@id='main_content']/div[9]/div/div[1]/table/tbody/tr[{i}]/td[{j}]"
+            elements = tree.xpath(xpath)
+            if j == 1:
+                year = elements[0].text_content()
+            elif j == 2:
+                revenue = elements[0].text_content()
+                revenue_data.append((year, revenue))
+                print(f"Year: {year}, Revenue: {revenue}")
+    company_rev = pd.DataFrame(revenue_data, columns=["Year", "Revenue"])
+    company_revs[ticker] = company_rev
+
+
+
+    
+
+# %%
+example = company_revs['AAPL']
 # %%
