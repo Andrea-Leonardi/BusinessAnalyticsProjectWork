@@ -44,12 +44,12 @@ for ticker in df["Ticker"]:
     company_df = pd.DataFrame({'Adj Close': hist_data['Close']})
     company_df.index = company_df.index.tz_localize(None)
     company_df.index.name = 'Date'
-    
+
     company_dfs[ticker] = company_df
     print(f"Data for {ticker}: {len(company_df)} months, {len(company_df.columns)} attributes")
 
 # Now company_dfs contains a DataFrame for each ticker with the adjusted close prices
-# Example access data
+# Example access datacvasD
 
 # %%
 example = company_dfs['AVGO']
