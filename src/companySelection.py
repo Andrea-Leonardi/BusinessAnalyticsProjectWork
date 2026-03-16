@@ -12,8 +12,7 @@ import config as cfg
 
 FOLDER_PATH = cfg.DATA / "possible_enterprises" / "raw"
 OUTPUT_PATH = cfg.DATA / "possible_enterprises" / "merged_enterprises.csv"
-TOP_200_PATH = cfg.DATA / "possible_enterprises" / "top_200_enterprises.csv"
-
+ENT_PATH = cfg.ENT
 # =========================================================
 # Check folder exists
 # =========================================================
@@ -84,24 +83,27 @@ else:
 # =========================================================
 if False:
     market_caps = {}
+    sectors = {}
     errors = []
-    for ticker in tqdm(df_unique['Ticker'], desc="Downloading market caps"):
+    for ticker in tqdm(df_unique['Ticker'], desc="Downloading market caps and sectors"):
         try:
             info = yf.Ticker(ticker).info
             market_caps[ticker] = info.get('marketCap')
-            time.sleep(0.01)
+            sectors[ticker] = info.get('sector')
         except Exception as e:
             market_caps[ticker] = None
+            sectors[ticker] = None
             errors.append((ticker, str(e)))
 
     df_unique['Market_Cap'] = df_unique['Ticker'].map(market_caps)
+    df_unique['Sector'] = df_unique['Ticker'].map(sectors)
 
     if errors:
         print(f"Errori per {len(errors)} ticker")
         for ticker, error in errors[:5]:
             print(f"{ticker}: {error}")
 
-    print(f"Market cap recuperati: {len(df_unique) - len(errors)} / {len(df_unique)}")
+    print(f"Market cap e settori recuperati: {len(df_unique) - len(errors)} / {len(df_unique)}")
 
     # =========================================================
     # Standardize tickers
@@ -127,31 +129,25 @@ if False:
     print(f"Salvato merged in: {OUTPUT_PATH}")
 
 # =========================================================
-# Load, sort, get top 200
+# Load, sort
 # =========================================================
 
 df_unique = pd.read_csv(OUTPUT_PATH)
 df_unique.sort_values(by="Market_Cap", ascending=False, inplace=True)
 df_unique.drop(columns=['Ticker.1'], inplace=True)
 df_unique.reset_index(drop=True, inplace=True)
-top_200 = df_unique.head(200)
+
+#%%
+#stampa valori unici di sector
+print("Settori unici:")
+print(df_unique['Sector'].dropna().unique())
+#dividi le aziende per settore e mettile in un dizionario
+sector_dict = {}
+sectors = df_unique['Sector'].dropna().unique()
+for sector in sectors:
+    sector_dict[sector] = df_unique[df_unique['Sector'] == sector][['Company_name', 'Ticker', 'Market_Cap']]  
+
+sector_dict['Technology']
 
 
-# Fetch sectors (anche questo processo è lento, utilizzare solo se necessario)
-
-if False:
-    
-    sectors = {}
-    for ticker in tqdm(top_200['Ticker'], desc="Fetching sectors"):
-        try:
-            info = yf.Ticker(ticker).info
-            sectors[ticker] = info.get('sector')
-            time.sleep(0.01)
-        except Exception as e:
-            sectors[ticker] = None
-
-    top_200['Sector'] = top_200['Ticker'].map(sectors)
-    top_200.to_csv(TOP_200_PATH, index=False)
-    print(f"Salvato top 200 in: {TOP_200_PATH}")
-else:
-    top_200 = pd.read_csv(TOP_200_PATH)
+# %%
