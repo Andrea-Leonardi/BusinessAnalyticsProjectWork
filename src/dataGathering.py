@@ -49,7 +49,7 @@ for ticker in df["Ticker"]:
     print(f"Data for {ticker}: {len(company_df)} months, {len(company_df.columns)} attributes")
 
 # Now company_dfs contains a DataFrame for each ticker with the adjusted close prices
-# Example access datacvasD
+# Example access data
 
 # %%
 example = company_dfs['AVGO']
