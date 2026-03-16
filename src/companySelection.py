@@ -134,7 +134,7 @@ if False:
 
 df_unique = pd.read_csv(OUTPUT_PATH)
 df_unique.sort_values(by="Market_Cap", ascending=False, inplace=True)
-df_unique.drop(columns=['Ticker.1'], inplace=True)
+df_unique.drop(columns=['Ticker.1', 'source'], inplace=True)
 df_unique.reset_index(drop=True, inplace=True)
 
 #%%
