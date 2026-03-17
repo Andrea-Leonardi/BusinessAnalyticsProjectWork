@@ -2,6 +2,7 @@
 import pandas as pd
 import requests
 import time
+import json
 from datetime import datetime
 from functools import reduce
 import config as cfg
@@ -13,17 +14,13 @@ OUTPUT_METRICS = [
     "Revenue",
     "NetIncome",
     "OperatingIncome",
-    "GrossProfit",
     "Assets",
     "Equity",
-    "CurrentAssets",
-    "CurrentLiabilities",
     "Cash",
     "OperatingCashFlow",
     "EPS",
     "SharesOutstanding",
     "TotalDebt",
-    "EBITDA",
 ]
 
 START_DATE = "2021-01-01"   # ~5 anni
@@ -34,13 +31,14 @@ HEADERS = {
 }
 
 ALLOWED_FORMS = {"10-K", "10-Q", "10-K/A", "10-Q/A", "20-F", "20-F/A", "6-K", "6-K/A"}
-FLOW_METRICS = {"Revenue", "NetIncome", "EBITDA", "OperatingIncome", "GrossProfit", "OperatingCashFlow"}
+FLOW_METRICS = {"Revenue", "NetIncome", "OperatingIncome", "OperatingCashFlow"}
 FISCAL_PERIODS = {"Q1", "Q2", "Q3", "FY"}
 
 METRICS = {
     "Revenue": [
         "RevenueFromContractWithCustomerExcludingAssessedTax",
         "RevenueFromContractWithCustomerIncludingAssessedTax",
+        "Revenue",
         "Revenues",
         "SalesRevenueNet",
         "SalesRevenueGoodsNet",
@@ -51,18 +49,12 @@ METRICS = {
         "ProfitLoss",
         "NetIncomeLossAvailableToCommonStockholdersBasic",
     ],
-    "EBITDA": [
-        "EarningsBeforeInterestTaxesDepreciationAndAmortization",
-        "EBITDA",
-    ],
+
     "OperatingIncome": [
         "OperatingIncomeLoss",
         "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
     ],
-    "GrossProfit": [
-        "GrossProfit",
-        "GrossProfitLoss",
-    ],
+
     "Assets": [
         "Assets",
         "AssetsTotal",
@@ -78,14 +70,6 @@ METRICS = {
         "LongTermDebtNoncurrent",
         "DebtCurrent",
         "ShortTermBorrowings",
-    ],
-    "CurrentAssets": [
-        "AssetsCurrent",
-        "CurrentAssets",
-    ],
-    "CurrentLiabilities": [
-        "LiabilitiesCurrent",
-        "CurrentLiabilities",
     ],
     "Cash": [
         "CashAndCashEquivalentsAtCarryingValue",
@@ -109,12 +93,6 @@ METRICS = {
 }
 
 AUXILIARY_METRICS = {
-    "CostOfRevenue": [
-        "CostOfGoodsSold",
-        "CostOfSales",
-        "CostOfGoodsAndServicesSold",
-        "CostOfRevenue",
-    ],
     "DebtLongTerm": [
         "LongTermDebt",
         "LongTermDebtNoncurrent",
@@ -128,6 +106,7 @@ AUXILIARY_METRICS = {
 }
 
 METRIC_TAGS = {**METRICS, **AUXILIARY_METRICS}
+CACHE_MAX_AGE_DAYS = 7
 
 # -----------------------------
 # LOAD TICKERS
@@ -137,7 +116,15 @@ METRIC_TAGS = {**METRICS, **AUXILIARY_METRICS}
 
 
 companies = pd.read_csv(cfg.ENT)
-tickers = companies["Ticker"].dropna().astype(str).tolist()
+tickers = (
+    companies["Ticker"]
+    .dropna()
+    .astype(str)
+    .str.strip()
+    .str.upper()
+    .drop_duplicates()
+    .tolist()
+)
 ticker_metadata = companies[["Ticker", "Company_name", "Sector"]].drop_duplicates()
 
 # -----------------------------
@@ -147,9 +134,27 @@ ticker_metadata = companies[["Ticker", "Company_name", "Sector"]].drop_duplicate
 print("Downloading SEC ticker mapping...")
 
 ticker_map_url = "https://www.sec.gov/files/company_tickers.json"
-ticker_map_resp = requests.get(ticker_map_url, headers=HEADERS, timeout=30)
-ticker_map_resp.raise_for_status()
-ticker_map = ticker_map_resp.json()
+session = requests.Session()
+session.headers.update(HEADERS)
+
+
+def load_ticker_map() -> dict:
+    cache_path = cfg.SEC_TICKER_MAP_CACHE
+    if cache_path.exists():
+        cache_age = datetime.now().timestamp() - cache_path.stat().st_mtime
+        if cache_age <= CACHE_MAX_AGE_DAYS * 24 * 60 * 60:
+            with cache_path.open("r", encoding="utf-8") as f:
+                return json.load(f)
+
+    ticker_map_resp = session.get(ticker_map_url, timeout=30)
+    ticker_map_resp.raise_for_status()
+    ticker_map = ticker_map_resp.json()
+    with cache_path.open("w", encoding="utf-8") as f:
+        json.dump(ticker_map, f)
+    return ticker_map
+
+
+ticker_map = load_ticker_map()
 
 ticker_to_cik = {}
 for entry in ticker_map.values():
@@ -221,30 +226,40 @@ def select_preferred_period_rows(series: pd.DataFrame, metric_name: str) -> pd.D
     if "fp" not in series.columns:
         return series
 
-    series = series[series["fp"].isin(FISCAL_PERIODS)].copy()
-    if series.empty:
-        return series
-
     if metric_name not in FLOW_METRICS:
-        return series
+        standard_periods = series[series["fp"].isin(FISCAL_PERIODS)].copy()
+        return standard_periods if not standard_periods.empty else series
 
-    preferred_rows = []
+    series = series.copy()
+    series["period_kind"] = pd.NA
+    series.loc[series["duration_days"].between(70, 110, inclusive="both"), "period_kind"] = "Q"
+    series.loc[series["duration_days"].between(150, 220, inclusive="both"), "period_kind"] = "H"
+    series.loc[series["duration_days"].between(300, 380, inclusive="both"), "period_kind"] = "Y"
 
-    for (_, fp), group in series.groupby(["fy", "fp"], dropna=False):
-        group = group.sort_values(["filed", "form"])
+    standard_periods = series[series["fp"].isin(FISCAL_PERIODS)].copy()
+    if not standard_periods.empty:
+        preferred_rows = []
 
-        if fp == "FY":
-            preferred = group[group["duration_days"].between(300, 380, inclusive="both")]
-        else:
-            preferred = group[group["duration_days"].between(70, 110, inclusive="both")]
+        for (_, fp), group in standard_periods.groupby(["fy", "fp"], dropna=False):
+            group = group.sort_values(["filed", "form"])
 
-        chosen = preferred if not preferred.empty else group
-        preferred_rows.append(chosen.tail(1))
+            if fp == "FY":
+                preferred = group[group["period_kind"] == "Y"]
+            else:
+                preferred = group[group["period_kind"] == "Q"]
 
-    if not preferred_rows:
+            chosen = preferred if not preferred.empty else group
+            preferred_rows.append(chosen.tail(1))
+
+        if preferred_rows:
+            return pd.concat(preferred_rows, ignore_index=True)
+
+    fallback_periods = series[series["period_kind"].isin(["Q", "H", "Y"])].copy()
+    if fallback_periods.empty:
         return series.iloc[0:0]
 
-    return pd.concat(preferred_rows, ignore_index=True)
+    fallback_periods = fallback_periods.sort_values(["Date", "filed", "form"])
+    return fallback_periods.drop_duplicates(subset=["Date"], keep="last")
 
 
 def collect_metric_rows(metric_name: str, facts_group: dict) -> pd.DataFrame:
@@ -274,14 +289,14 @@ def collect_metric_rows(metric_name: str, facts_group: dict) -> pd.DataFrame:
 
             metric_rows.append(
                 {
-                    "start": pd.to_datetime(entry.get("start")) if entry.get("start") else pd.NaT,
-                    "Date": pd.to_datetime(end_date),
+                    "start": entry.get("start"),
+                    "Date": end_date,
                     metric_name: val,
                     "form": form,
                     "fy": entry.get("fy"),
                     "fp": entry.get("fp"),
                     "frame": entry.get("frame"),
-                    "filed": pd.to_datetime(entry.get("filed")) if entry.get("filed") else pd.NaT,
+                    "filed": entry.get("filed"),
                     "tag": tag,
                     "unit": unit_name,
                     "tag_priority": tag_priority,
@@ -291,7 +306,11 @@ def collect_metric_rows(metric_name: str, facts_group: dict) -> pd.DataFrame:
     if not metric_rows:
         return pd.DataFrame()
 
-    rows_df = pd.DataFrame(metric_rows).sort_values(["Date", "filed", "tag_priority", "form"])
+    rows_df = pd.DataFrame(metric_rows)
+    rows_df["start"] = pd.to_datetime(rows_df["start"], errors="coerce")
+    rows_df["Date"] = pd.to_datetime(rows_df["Date"], errors="coerce")
+    rows_df["filed"] = pd.to_datetime(rows_df["filed"], errors="coerce")
+    rows_df = rows_df.sort_values(["Date", "filed", "tag_priority", "form"])
     rows_df["duration_days"] = (rows_df["Date"] - rows_df["start"]).dt.days
     rows_df = select_preferred_period_rows(rows_df, metric_name)
     if rows_df.empty:
@@ -323,17 +342,6 @@ def build_metric_series(
 
 def apply_derived_metrics(fin_df: pd.DataFrame) -> pd.DataFrame:
     fin_df = fin_df.copy()
-
-    if {"Revenue", "CostOfRevenue", "GrossProfit"}.issubset(fin_df.columns):
-        gross_profit_missing = (
-            fin_df["GrossProfit"].isna()
-            & fin_df["Revenue"].notna()
-            & fin_df["CostOfRevenue"].notna()
-        )
-        fin_df.loc[gross_profit_missing, "GrossProfit"] = (
-            fin_df.loc[gross_profit_missing, "Revenue"] - fin_df.loc[gross_profit_missing, "CostOfRevenue"]
-        )
-
     debt_components = [col for col in ("DebtLongTerm", "DebtCurrentPart") if col in fin_df.columns]
     if "TotalDebt" in fin_df.columns and debt_components:
         has_any_debt_component = fin_df[debt_components].notna().any(axis=1)
@@ -372,7 +380,7 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
     debug_notes = []
 
     try:
-        r = requests.get(url, headers=HEADERS, timeout=30)
+        r = session.get(url, timeout=30)
         if r.status_code != 200:
             return None, [f"companyfacts status {r.status_code}"]
         data = r.json()
@@ -382,14 +390,21 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
     all_series = []
     facts = data.get("facts", {})
     fact_groups = []
+    preferred_fact_groups = ("us-gaap", "ifrs-full")
 
-    for group_name in ("us-gaap", "ifrs-full"):
+    for group_name in preferred_fact_groups:
         group = facts.get(group_name, {})
         if group:
             fact_groups.append((group_name, group))
 
+    for group_name, group in sorted(facts.items()):
+        if group_name in preferred_fact_groups:
+            continue
+        if group:
+            fact_groups.append((group_name, group))
+
     if not fact_groups:
-        return None, ["missing us-gaap and ifrs-full facts"]
+        return None, ["missing facts in companyfacts payload"]
 
     metric_order = OUTPUT_METRICS + list(AUXILIARY_METRICS)
 
@@ -444,11 +459,6 @@ def build_company_dataset(ticker: str, cik: str) -> pd.DataFrame | None:
         if debug_notes:
             print(f"  -> Details: {'; '.join(debug_notes)}")
         return None
-
-    revenue_note = next((note for note in debug_notes if note.startswith("Revenue:")), None)
-    if revenue_note:
-        print(f"  -> {revenue_note}")
-
     fin_df = fin_df.copy()
     fin_df["Ticker"] = ticker
     fin_df = fin_df.reset_index()
@@ -464,7 +474,7 @@ failed_tickers = []
 
 for i, ticker in enumerate(tickers, start=1):
     ticker = str(ticker).strip().upper()
-    print(f"[{i}/{len(tickers)}] Processing {ticker}...")
+    print(f"[{i}/{len(tickers)}] Processing {ticker}")
 
     cik = None
     for ticker_variant in normalize_ticker(ticker):
@@ -486,7 +496,6 @@ for i, ticker in enumerate(tickers, start=1):
             continue
 
         all_data.append(company_df)
-        print(f"  -> OK, {len(company_df)} rows")
 
     except Exception as e:
         print(f"  -> Error for {ticker}: {e}")
