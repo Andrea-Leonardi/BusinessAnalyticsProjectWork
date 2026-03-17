@@ -1,3 +1,4 @@
+#%%
 import pandas as pd
 import requests
 import time
@@ -22,7 +23,7 @@ HEADERS = {
 
 
 
-companies = pd.read_csv(cfg.ENT)
+companies = pd.read_csv(cfg.ENT).head(10)
 tickers = companies["Ticker"].dropna().astype(str).tolist()
 
 # -----------------------------
@@ -259,3 +260,5 @@ if failed_tickers:
     failed_df = pd.DataFrame(failed_tickers, columns=["Ticker", "Reason"])
     failed_df.to_csv(cfg.SEC_FAILED_TICKERS, index=False)
     print("Failed tickers report saved to: sec_dataset_failed_tickers.csv")
+
+# %%
