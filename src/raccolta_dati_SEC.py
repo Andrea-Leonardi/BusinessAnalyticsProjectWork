@@ -9,7 +9,11 @@ import config as cfg
 # -----------------------------
 # CONFIG
 # -----------------------------
+# Final CSV path for the SEC panel dataset.
 OUTPUT_PATH = cfg.SEC_DATASET
+
+# Metrics exported to the final dataset.
+# These are the "core" variables kept after filtering out low-coverage ones.
 OUTPUT_METRICS = [
     "Revenue",
     "NetIncome",
@@ -26,14 +30,22 @@ OUTPUT_METRICS = [
 START_DATE = "2021-01-01"   # ~5 anni
 END_DATE = datetime.now().strftime("%Y-%m-%d")
 
+# SEC APIs require a meaningful User-Agent.
 HEADERS = {
     "User-Agent": "andrea.leonardi632@edu.unito.it"
 }
 
+# Accepted filing types when scanning SEC companyfacts.
 ALLOWED_FORMS = {"10-K", "10-Q", "10-K/A", "10-Q/A", "20-F", "20-F/A", "6-K", "6-K/A"}
+
+# Flow metrics are reported over a time interval and need duration-based filtering.
 FLOW_METRICS = {"Revenue", "NetIncome", "OperatingIncome", "OperatingCashFlow"}
+
+# Standard fiscal period labels used by many SEC facts.
 FISCAL_PERIODS = {"Q1", "Q2", "Q3", "FY"}
 
+# Candidate XBRL tags for each final metric.
+# The order matters because earlier tags are preferred when multiple tags match.
 METRICS = {
     "Revenue": [
         "RevenueFromContractWithCustomerExcludingAssessedTax",
@@ -65,11 +77,18 @@ METRICS = {
         "StockholdersEquityAttributableToParent",
     ],
     "TotalDebt": [
-        "Debt",
-        "LongTermDebt",
+        "LongTermObligations",
+        "LongTermObligationsNoncurrent",
         "LongTermDebtNoncurrent",
+        "LongTermDebtAndCapitalLeaseObligations",
+        "LongTermDebtAndCapitalLeaseObligationsNoncurrent",
+        "LongTermDebt",
+        "LongTermObligationsCurrent",
+        "LongTermDebtAndCapitalLeaseObligationsCurrent",
         "DebtCurrent",
         "ShortTermBorrowings",
+        "ShortTermDebt",
+        "Debt",
     ],
     "Cash": [
         "CashAndCashEquivalentsAtCarryingValue",
@@ -92,12 +111,19 @@ METRICS = {
     ],
 }
 
+# Extra tags collected only to derive a more complete TotalDebt value.
 AUXILIARY_METRICS = {
     "DebtLongTerm": [
+        "LongTermObligations",
+        "LongTermObligationsNoncurrent",
+        "LongTermDebtAndCapitalLeaseObligations",
+        "LongTermDebtAndCapitalLeaseObligationsNoncurrent",
         "LongTermDebt",
         "LongTermDebtNoncurrent",
     ],
     "DebtCurrentPart": [
+        "LongTermObligationsCurrent",
+        "LongTermDebtAndCapitalLeaseObligationsCurrent",
         "DebtCurrent",
         "ShortTermBorrowings",
         "ShortTermDebt",
@@ -105,7 +131,10 @@ AUXILIARY_METRICS = {
     ],
 }
 
+# Combined lookup used by the generic extraction helpers.
 METRIC_TAGS = {**METRICS, **AUXILIARY_METRICS}
+
+# Ticker/CIK mapping cache validity window.
 CACHE_MAX_AGE_DAYS = 7
 
 # -----------------------------
@@ -115,7 +144,13 @@ CACHE_MAX_AGE_DAYS = 7
 
 
 
+# Load the local company universe.
 companies = pd.read_csv(cfg.ENT)
+
+# Temporary filter used to run the pipeline only on a subset of companies.
+companies = companies[companies["Ticker"].isin(["APD", "AZN", "BABA", "BHP", "CEG", "CRH", "DLR", "GEV", "GS", "MNST", "O", "PLTR", "RY", "SHEL", "TTE", "V", "XEL", "WFC", "MS"])]
+
+# Normalize tickers and keep unique values before querying SEC.
 tickers = (
     companies["Ticker"]
     .dropna()
@@ -125,6 +160,8 @@ tickers = (
     .drop_duplicates()
     .tolist()
 )
+
+# Static metadata reused later in the coverage report.
 ticker_metadata = companies[["Ticker", "Company_name", "Sector"]].drop_duplicates()
 
 # -----------------------------
@@ -134,11 +171,14 @@ ticker_metadata = companies[["Ticker", "Company_name", "Sector"]].drop_duplicate
 print("Downloading SEC ticker mapping...")
 
 ticker_map_url = "https://www.sec.gov/files/company_tickers.json"
+
+# Reuse a single HTTP session to reduce connection overhead across many requests.
 session = requests.Session()
 session.headers.update(HEADERS)
 
 
 def load_ticker_map() -> dict:
+    """Load the SEC ticker-to-CIK map, using a local JSON cache when possible."""
     cache_path = cfg.SEC_TICKER_MAP_CACHE
     if cache_path.exists():
         cache_age = datetime.now().timestamp() - cache_path.stat().st_mtime
@@ -160,6 +200,8 @@ ticker_to_cik = {}
 for entry in ticker_map.values():
     ticker = str(entry["ticker"]).upper()
     cik = str(entry["cik_str"]).zfill(10)
+    # Save multiple ticker variants because some providers use dots,
+    # hyphens, or no separators for the same security class.
     for variant in {
         ticker,
         ticker.replace(".", "-"),
@@ -174,6 +216,7 @@ for entry in ticker_map.values():
 # -----------------------------
 
 def normalize_ticker(ticker: str) -> list[str]:
+    """Generate common ticker variants used when matching local tickers to SEC mapping."""
     base = str(ticker).strip().upper()
     return list(
         dict.fromkeys(
@@ -189,6 +232,7 @@ def normalize_ticker(ticker: str) -> list[str]:
 
 
 def select_best_unit(units_dict: dict, metric_name: str) -> tuple[str | None, list | None]:
+    """Pick the most suitable unit for a metric, preferring the expected standard one."""
     if not units_dict:
         return None, None
 
@@ -220,6 +264,12 @@ def select_best_unit(units_dict: dict, metric_name: str) -> tuple[str | None, li
 
 
 def select_preferred_period_rows(series: pd.DataFrame, metric_name: str) -> pd.DataFrame:
+    """
+    Keep the most meaningful rows for a metric.
+
+    For flow metrics, this function tries to prioritize quarterly facts, while still
+    allowing semiannual or yearly fallback when quarterly data is not available.
+    """
     if series.empty:
         return series
 
@@ -227,8 +277,7 @@ def select_preferred_period_rows(series: pd.DataFrame, metric_name: str) -> pd.D
         return series
 
     if metric_name not in FLOW_METRICS:
-        standard_periods = series[series["fp"].isin(FISCAL_PERIODS)].copy()
-        return standard_periods if not standard_periods.empty else series
+        return series
 
     series = series.copy()
     series["period_kind"] = pd.NA
@@ -263,6 +312,12 @@ def select_preferred_period_rows(series: pd.DataFrame, metric_name: str) -> pd.D
 
 
 def collect_metric_rows(metric_name: str, facts_group: dict) -> pd.DataFrame:
+    """
+    Collect all candidate facts for one metric inside one accounting taxonomy.
+
+    This step does not decide the final series yet; it just gathers valid rows,
+    normalizes dates, removes segmented facts, and keeps tag metadata.
+    """
     metric_rows = []
 
     for tag_priority, tag in enumerate(METRIC_TAGS[metric_name]):
@@ -278,12 +333,15 @@ def collect_metric_rows(metric_name: str, facts_group: dict) -> pd.DataFrame:
             form = entry.get("form")
             val = entry.get("val")
 
+            # Ignore incomplete records.
             if end_date is None or val is None:
                 continue
 
+            # Ignore filing types outside the forms handled by this pipeline.
             if form not in ALLOWED_FORMS:
                 continue
 
+            # Ignore segmented facts and keep only consolidated company-level values.
             if entry.get("segment") is not None:
                 continue
 
@@ -311,6 +369,9 @@ def collect_metric_rows(metric_name: str, facts_group: dict) -> pd.DataFrame:
     rows_df["Date"] = pd.to_datetime(rows_df["Date"], errors="coerce")
     rows_df["filed"] = pd.to_datetime(rows_df["filed"], errors="coerce")
     rows_df = rows_df.sort_values(["Date", "filed", "tag_priority", "form"])
+
+    # Duration is used only for flow metrics to classify facts as quarterly,
+    # semiannual or yearly.
     rows_df["duration_days"] = (rows_df["Date"] - rows_df["start"]).dt.days
     rows_df = select_preferred_period_rows(rows_df, metric_name)
     if rows_df.empty:
@@ -326,6 +387,12 @@ def build_metric_series(
     metric_name: str,
     facts_group: dict,
 ) -> tuple[pd.DataFrame | None, str | None, str | None]:
+    """
+    Build a single clean time series for one metric within one taxonomy.
+
+    If multiple facts land on the same date, the function keeps the most recent
+    and highest-priority candidate.
+    """
     rows_df = collect_metric_rows(metric_name, facts_group)
     if rows_df.empty:
         return None, None, None
@@ -341,6 +408,7 @@ def build_metric_series(
 
 
 def apply_derived_metrics(fin_df: pd.DataFrame) -> pd.DataFrame:
+    """Fill TotalDebt using debt components when the direct tag is missing."""
     fin_df = fin_df.copy()
     debt_components = [col for col in ("DebtLongTerm", "DebtCurrentPart") if col in fin_df.columns]
     if "TotalDebt" in fin_df.columns and debt_components:
@@ -353,6 +421,7 @@ def apply_derived_metrics(fin_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_coverage_report(dataset: pd.DataFrame) -> pd.DataFrame:
+    """Create a per-ticker, per-metric coverage summary for diagnostics."""
     rows = []
 
     for ticker, group in dataset.groupby("Ticker"):
@@ -376,10 +445,17 @@ def build_coverage_report(dataset: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
+    """
+    Download SEC companyfacts for one CIK and assemble the metrics table.
+
+    The function searches standard taxonomies first and then scans any remaining
+    taxonomy present in the payload to support foreign issuers and custom facts.
+    """
     url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
     debug_notes = []
 
     try:
+        # The shared session reduces latency across many sequential API calls.
         r = session.get(url, timeout=30)
         if r.status_code != 200:
             return None, [f"companyfacts status {r.status_code}"]
@@ -392,11 +468,13 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
     fact_groups = []
     preferred_fact_groups = ("us-gaap", "ifrs-full")
 
+    # Standard accounting taxonomies are preferred when available.
     for group_name in preferred_fact_groups:
         group = facts.get(group_name, {})
         if group:
             fact_groups.append((group_name, group))
 
+    # Any remaining taxonomy is kept as fallback for edge cases such as foreign issuers.
     for group_name, group in sorted(facts.items()):
         if group_name in preferred_fact_groups:
             continue
@@ -408,6 +486,7 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
 
     metric_order = OUTPUT_METRICS + list(AUXILIARY_METRICS)
 
+    # Build one series per metric, stopping at the first taxonomy that yields usable data.
     for metric_name in metric_order:
         selected_series = None
         used_group = None
@@ -435,16 +514,21 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
     if not all_series:
         return None, debug_notes
 
+    # Merge all metric series into a single per-company time series.
     fin_df = reduce(
         lambda left, right: pd.merge(left, right, on="Date", how="outer"),
         all_series,
     ).sort_values("Date")
+
+    # Restrict the dataset to the analysis window.
     fin_df = fin_df[(fin_df["Date"] >= START_DATE) & (fin_df["Date"] <= END_DATE)]
 
     if fin_df.empty:
         return None, debug_notes + ["all rows filtered by date range"]
 
     fin_df = fin_df.drop_duplicates(subset=["Date"], keep="last")
+
+    # Derive missing debt values and drop auxiliary columns before returning.
     fin_df = apply_derived_metrics(fin_df)
     output_columns = [column for column in OUTPUT_METRICS if column in fin_df.columns]
     fin_df = fin_df[["Date", *output_columns]]
@@ -454,6 +538,7 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
 
 
 def build_company_dataset(ticker: str, cik: str) -> pd.DataFrame | None:
+    """Attach the ticker label to the company-level financial time series."""
     fin_df, debug_notes = get_sec_financials(cik)
     if fin_df is None or fin_df.empty:
         if debug_notes:
@@ -469,6 +554,7 @@ def build_company_dataset(ticker: str, cik: str) -> pd.DataFrame | None:
 # BUILD DATASET
 # -----------------------------
 
+# Collect successful datasets and keep a log of failed tickers.
 all_data = []
 failed_tickers = []
 
@@ -477,6 +563,7 @@ for i, ticker in enumerate(tickers, start=1):
     print(f"[{i}/{len(tickers)}] Processing {ticker}")
 
     cik = None
+    # Try all normalized ticker variants until a matching CIK is found.
     for ticker_variant in normalize_ticker(ticker):
         cik = ticker_to_cik.get(ticker_variant)
         if cik is not None:
@@ -501,6 +588,7 @@ for i, ticker in enumerate(tickers, start=1):
         print(f"  -> Error for {ticker}: {e}")
         failed_tickers.append((ticker, str(e)))
 
+    # Small delay to stay polite with SEC infrastructure.
     time.sleep(0.2)
 
 # -----------------------------
@@ -508,9 +596,12 @@ for i, ticker in enumerate(tickers, start=1):
 # -----------------------------
 
 if all_data:
+    # Concatenate all companies into the final panel dataset.
     dataset = pd.concat(all_data, ignore_index=True)
     dataset = dataset.sort_values(["Ticker", "Date"])
     dataset.to_csv(OUTPUT_PATH, index=False)
+
+    # Save a separate coverage report to inspect data quality by ticker and metric.
     coverage_report = build_coverage_report(dataset)
     coverage_report.to_csv(cfg.SEC_COVERAGE_REPORT, index=False)
     print(f"\nDataset saved to: {OUTPUT_PATH}")
@@ -520,6 +611,7 @@ else:
     print("\nNo dataset created.")
 
 if failed_tickers:
+    # Persist failed tickers for easier debugging and reruns.
     failed_df = pd.DataFrame(failed_tickers, columns=["Ticker", "Reason"])
     failed_df.to_csv(cfg.SEC_FAILED_TICKERS, index=False)
     print("Failed tickers report saved to: sec_dataset_failed_tickers.csv")
