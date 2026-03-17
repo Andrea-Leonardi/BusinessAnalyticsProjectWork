@@ -2,13 +2,11 @@ import pandas as pd
 import requests
 import time
 from datetime import datetime
-
+import config as cfg
 # -----------------------------
 # CONFIG
 # -----------------------------
-
-TOP200_PATH = "data/possible_enterprises/enterprises.csv"
-OUTPUT_PATH = "sec_dataset.csv"
+OUTPUT_PATH = cfg.SEC_DATASET
 
 START_DATE = "2021-01-01"   # ~5 anni
 END_DATE = datetime.now().strftime("%Y-%m-%d")
@@ -21,7 +19,10 @@ HEADERS = {
 # LOAD TICKERS
 # -----------------------------
 
-companies = pd.read_csv(TOP200_PATH)
+
+
+
+companies = pd.read_csv(cfg.ENT)
 tickers = companies["Ticker"].dropna().astype(str).tolist()
 
 # -----------------------------
@@ -256,5 +257,5 @@ else:
 
 if failed_tickers:
     failed_df = pd.DataFrame(failed_tickers, columns=["Ticker", "Reason"])
-    failed_df.to_csv("sec_dataset_failed_tickers.csv", index=False)
+    failed_df.to_csv(cfg.SEC_FAILED_TICKERS, index=False)
     print("Failed tickers report saved to: sec_dataset_failed_tickers.csv")
