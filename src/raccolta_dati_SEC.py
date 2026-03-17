@@ -73,6 +73,12 @@ def get_sec_financials(cik: str) -> pd.DataFrame | None:
             "ProfitLoss",
             "NetIncomeLossAvailableToCommonStockholdersBasic"
         ],
+
+        "EBITDA": [
+            "EarningsBeforeInterestTaxesDepreciationAndAmortization",
+            "EBITDA"
+        ],
+
         "OperatingIncome": [
             "OperatingIncomeLoss",
             "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest"
@@ -90,6 +96,15 @@ def get_sec_financials(cik: str) -> pd.DataFrame | None:
             "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
             "StockholdersEquityAttributableToParent"
         ],
+
+        "TotalDebt": [
+            "Debt",
+            "LongTermDebt",
+            "LongTermDebtNoncurrent",
+            "DebtCurrent",
+            "ShortTermBorrowings"
+        ],
+        
         "CurrentAssets": [
             "AssetsCurrent",
             "CurrentAssets"
