@@ -3,6 +3,8 @@ import pandas as pd
 import requests
 import time
 import json
+import re
+from html import unescape
 from datetime import datetime
 from functools import reduce
 import config as cfg
@@ -17,11 +19,9 @@ OUTPUT_PATH = cfg.SEC_DATASET
 OUTPUT_METRICS = [
     "Revenue",
     "NetIncome",
-    "OperatingIncome",
     "Assets",
     "Equity",
     "Cash",
-    "OperatingCashFlow",
     "EPS",
     "SharesOutstanding",
     "TotalDebt",
@@ -36,10 +36,21 @@ HEADERS = {
 }
 
 # Accepted filing types when scanning SEC companyfacts.
-ALLOWED_FORMS = {"10-K", "10-Q", "10-K/A", "10-Q/A", "20-F", "20-F/A", "6-K", "6-K/A"}
+ALLOWED_FORMS = {
+    "10-K",
+    "10-Q",
+    "10-K/A",
+    "10-Q/A",
+    "20-F",
+    "20-F/A",
+    "40-F",
+    "40-F/A",
+    "6-K",
+    "6-K/A",
+}
 
 # Flow metrics are reported over a time interval and need duration-based filtering.
-FLOW_METRICS = {"Revenue", "NetIncome", "OperatingIncome", "OperatingCashFlow"}
+FLOW_METRICS = {"Revenue", "NetIncome"}
 
 # Standard fiscal period labels used by many SEC facts.
 FISCAL_PERIODS = {"Q1", "Q2", "Q3", "FY"}
@@ -48,6 +59,18 @@ FISCAL_PERIODS = {"Q1", "Q2", "Q3", "FY"}
 # The order matters because earlier tags are preferred when multiple tags match.
 METRICS = {
     "Revenue": [
+        "RegulatedAndUnregulatedOperatingRevenue",
+        "OperatingRevenues",
+        "ElectricDomesticRegulatedRevenue",
+        "GasDomesticRegulatedRevenue",
+        "OtherSalesRevenueNet",
+        "UnregulatedOperatingRevenue",
+        "RevenueFromContractsWithCustomers",
+        "RevenuesNetOfInterestExpense",
+        "NetRevenues",
+        "TotalNetRevenues",
+        "NoninterestIncome",
+        "TotalNoninterestRevenues",
         "RevenueFromContractWithCustomerExcludingAssessedTax",
         "RevenueFromContractWithCustomerIncludingAssessedTax",
         "Revenue",
@@ -62,32 +85,63 @@ METRICS = {
         "NetIncomeLossAvailableToCommonStockholdersBasic",
     ],
 
-    "OperatingIncome": [
-        "OperatingIncomeLoss",
-        "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
-    ],
 
     "Assets": [
         "Assets",
         "AssetsTotal",
     ],
     "Equity": [
+        "Equity",
+        "TotalEquity",
+        "EquityAttributableToOwnersOfParent",
+        "EquityAttributableToOwnersOfTheParent",
         "StockholdersEquity",
         "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
         "StockholdersEquityAttributableToParent",
     ],
     "TotalDebt": [
+        "LoansAndBorrowings",
+        "Borrowings",
+        "LongtermBorrowings",
+        "CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings",
+        "CurrentPortionOfLongtermBorrowings",
+        "DebtInstrumentCarryingAmount",
+        "DebtInstrumentFaceAmount",
+        "FinanceLeaseLiability",
+        "FinanceLeaseLiabilityNoncurrent",
+        "FinanceLeaseObligation",
+        "FinanceLeaseObligationNoncurrent",
+        "LongTermDebtAndFinanceLeaseObligations",
+        "LongTermDebtAndFinanceLeaseObligationsNoncurrent",
+        "NotesPayable",
+        "NotesPayableNoncurrent",
+        "DebtSecurities",
+        "DebtSecuritiesNoncurrent",
+        "MortgageLoansOnRealEstate",
+        "MortgageLoansOnRealEstateNoncurrent",
+        "RevolvingCreditFacility",
+        "RevolvingCreditFacilityNoncurrent",
+        "LineOfCreditFacility",
+        "LineOfCreditFacilityNoncurrent",
+        "TermLoan",
+        "TermLoanNoncurrent",
+        "TermLoans",
+        "TermLoansNoncurrent",
+        "SeniorNotes",
+        "SeniorNotesNoncurrent",
+        "UnsecuredDebt",
+        "OtherDebt",
+        "OtherDebtNoncurrent",
+        "LongTermLoansFromBank",
+        "ConvertibleDebtNoncurrent",
         "LongTermObligations",
         "LongTermObligationsNoncurrent",
+        "LoansAndBorrowingsNoncurrent",
+        "BorrowingsNoncurrent",
         "LongTermDebtNoncurrent",
         "LongTermDebtAndCapitalLeaseObligations",
         "LongTermDebtAndCapitalLeaseObligationsNoncurrent",
         "LongTermDebt",
-        "LongTermObligationsCurrent",
-        "LongTermDebtAndCapitalLeaseObligationsCurrent",
-        "DebtCurrent",
-        "ShortTermBorrowings",
-        "ShortTermDebt",
         "Debt",
     ],
     "Cash": [
@@ -95,16 +149,31 @@ METRICS = {
         "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
         "Cash",
     ],
-    "OperatingCashFlow": [
-        "NetCashProvidedByUsedInOperatingActivities",
-        "NetCashProvidedByOperatingActivities",
-        "NetCashProvidedByUsedInContinuingOperations",
-    ],
     "EPS": [
+        "BasicEarningsLossPerShareFromContinuingOperations",
+        "DilutedEarningsLossPerShareFromContinuingOperations",
+        "IncomeLossFromContinuingOperationsPerBasicShare",
+        "IncomeLossFromContinuingOperationsPerDilutedShare",
+        "BasicEarningsPerShare",
+        "DilutedEarningsPerShare",
+        "BasicAndDilutedEarningsPerShare",
+        "BasicEarningsLossPerShare",
+        "DilutedEarningsLossPerShare",
         "EarningsPerShareDiluted",
         "EarningsPerShareBasic",
     ],
     "SharesOutstanding": [
+        "OrdinarySharesNumber",
+        "SharesOutstanding",
+        "WeightedAverageShares",
+        "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "WeightedAverageNumberOfSharesOutstandingDiluted",
+        "WeightedAverageNumberOfBasicSharesOutstanding",
+        "WeightedAverageNumberOfShareOutstandingBasicAndDiluted",
+        "IssuedCapitalNumberOfShares",
+        "NumberOfSharesOutstanding",
+        "WeightedAverageNumberOfOrdinarySharesOutstandingBasic",
+        "WeightedAverageNumberOfOrdinarySharesOutstandingDiluted",
         "CommonStockSharesOutstanding",
         "EntityCommonStockSharesOutstanding",
         "WeightedAverageNumberOfSharesOutstandingBasic",
@@ -114,14 +183,67 @@ METRICS = {
 # Extra tags collected only to derive a more complete TotalDebt value.
 AUXILIARY_METRICS = {
     "DebtLongTerm": [
+        "LoansAndBorrowings",
+        "Borrowings",
+        "LongtermBorrowings",
+        "DebtInstrumentCarryingAmount",
+        "DebtInstrumentFaceAmount",
+        "FinanceLeaseLiability",
+        "FinanceLeaseLiabilityNoncurrent",
+        "FinanceLeaseObligation",
+        "FinanceLeaseObligationNoncurrent",
+        "LongTermDebtAndFinanceLeaseObligations",
+        "LongTermDebtAndFinanceLeaseObligationsNoncurrent",
+        "NotesPayable",
+        "NotesPayableNoncurrent",
+        "DebtSecurities",
+        "DebtSecuritiesNoncurrent",
+        "MortgageLoansOnRealEstate",
+        "MortgageLoansOnRealEstateNoncurrent",
+        "RevolvingCreditFacility",
+        "RevolvingCreditFacilityNoncurrent",
+        "LineOfCreditFacility",
+        "LineOfCreditFacilityNoncurrent",
+        "TermLoan",
+        "TermLoanNoncurrent",
+        "TermLoans",
+        "TermLoansNoncurrent",
+        "SeniorNotes",
+        "SeniorNotesNoncurrent",
+        "UnsecuredDebt",
+        "OtherDebt",
+        "OtherDebtNoncurrent",
+        "LeaseLiabilities",
+        "LongTermLoansFromBank",
+        "ConvertibleDebtNoncurrent",
         "LongTermObligations",
         "LongTermObligationsNoncurrent",
+        "LoansAndBorrowingsNoncurrent",
+        "BorrowingsNoncurrent",
+        "LeaseLiabilitiesNoncurrent",
         "LongTermDebtAndCapitalLeaseObligations",
         "LongTermDebtAndCapitalLeaseObligationsNoncurrent",
         "LongTermDebt",
         "LongTermDebtNoncurrent",
     ],
     "DebtCurrentPart": [
+        "LoansAndBorrowingsCurrent",
+        "BorrowingsCurrent",
+        "CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings",
+        "CurrentPortionOfLongtermBorrowings",
+        "FinanceLeaseLiabilityCurrent",
+        "FinanceLeaseObligationCurrent",
+        "LongTermDebtAndFinanceLeaseObligationsCurrent",
+        "NotesPayableCurrent",
+        "DebtSecuritiesCurrent",
+        "MortgageLoansOnRealEstateCurrent",
+        "RevolvingCreditFacilityCurrent",
+        "LineOfCreditFacilityCurrent",
+        "TermLoanCurrent",
+        "TermLoansCurrent",
+        "SeniorNotesCurrent",
+        "OtherDebtCurrent",
+        "LeaseLiabilitiesCurrent",
         "LongTermObligationsCurrent",
         "LongTermDebtAndCapitalLeaseObligationsCurrent",
         "DebtCurrent",
@@ -137,6 +259,48 @@ METRIC_TAGS = {**METRICS, **AUXILIARY_METRICS}
 # Ticker/CIK mapping cache validity window.
 CACHE_MAX_AGE_DAYS = 7
 
+# Metrics below full coverage are included in the candidates diagnostics report.
+MIN_COMPLETE_COVERAGE = 1.0
+
+# Inline XBRL fallback tags used when companyfacts omits EPS or share-count facts.
+INLINE_XBRL_FALLBACK_TAGS = {
+    "EPS": [
+        "us-gaap:EarningsPerShareDiluted",
+        "us-gaap:EarningsPerShareBasic",
+        "us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare",
+        "us-gaap:IncomeLossFromContinuingOperationsPerBasicShare",
+    ],
+    "SharesOutstanding": [
+        "us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding",
+        "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic",
+        "us-gaap:CommonStockSharesOutstanding",
+        "dei:EntityCommonStockSharesOutstanding",
+    ],
+}
+
+# Keywords used to inspect available concepts when a core metric is still missing.
+MISSING_METRIC_KEYWORDS = {
+    "Revenue": ["revenue", "revenues", "interest", "fee", "commission"],
+    "EPS": ["earning", "per", "share"],
+    "SharesOutstanding": ["share", "ordinary", "outstanding", "issued"],
+    "Equity": ["equity", "netasset", "shareholder"],
+    "TotalDebt": ["debt", "borrow", "loan", "obligation", "note", "credit", "facility", "term", "financelease", "leaseliabil"],
+}
+
+TOTAL_DEBT_EXCLUDE_PATTERNS = [
+    "proceeds",
+    "repay",
+    "payment",
+    "provision",
+    "gain",
+    "loss",
+    "expense",
+    "income",
+    "receivable",
+    "allowance",
+    "investment",
+]
+
 # -----------------------------
 # LOAD TICKERS
 # -----------------------------
@@ -148,7 +312,7 @@ CACHE_MAX_AGE_DAYS = 7
 companies = pd.read_csv(cfg.ENT)
 
 # Temporary filter used to run the pipeline only on a subset of companies.
-companies = companies[companies["Ticker"].isin(["APD", "AZN", "BABA", "BHP", "CEG", "CRH", "DLR", "GEV", "GS", "MNST", "O", "PLTR", "RY", "SHEL", "TTE", "V", "XEL", "WFC", "MS"])]
+#companies = companies[companies["Ticker"].isin(["WFC", "MS"])]
 
 # Normalize tickers and keep unique values before querying SEC.
 tickers = (
@@ -286,6 +450,7 @@ def select_preferred_period_rows(series: pd.DataFrame, metric_name: str) -> pd.D
     series.loc[series["duration_days"].between(300, 380, inclusive="both"), "period_kind"] = "Y"
 
     standard_periods = series[series["fp"].isin(FISCAL_PERIODS)].copy()
+    selected_periods = pd.DataFrame()
     if not standard_periods.empty:
         preferred_rows = []
 
@@ -301,14 +466,26 @@ def select_preferred_period_rows(series: pd.DataFrame, metric_name: str) -> pd.D
             preferred_rows.append(chosen.tail(1))
 
         if preferred_rows:
-            return pd.concat(preferred_rows, ignore_index=True)
+            selected_periods = pd.concat(preferred_rows, ignore_index=True)
 
     fallback_periods = series[series["period_kind"].isin(["Q", "H", "Y"])].copy()
     if fallback_periods.empty:
-        return series.iloc[0:0]
+        return selected_periods if not selected_periods.empty else series.iloc[0:0]
 
     fallback_periods = fallback_periods.sort_values(["Date", "filed", "form"])
-    return fallback_periods.drop_duplicates(subset=["Date"], keep="last")
+    fallback_periods = fallback_periods.drop_duplicates(subset=["Date"], keep="last")
+
+    if selected_periods.empty:
+        return fallback_periods
+
+    missing_dates = ~fallback_periods["Date"].isin(selected_periods["Date"])
+    if missing_dates.any():
+        selected_periods = pd.concat(
+            [selected_periods, fallback_periods.loc[missing_dates]],
+            ignore_index=True,
+        )
+
+    return selected_periods.sort_values(["Date", "filed", "form"])
 
 
 def collect_metric_rows(metric_name: str, facts_group: dict) -> pd.DataFrame:
@@ -397,7 +574,10 @@ def build_metric_series(
     if rows_df.empty:
         return None, None, None
 
-    rows_df = rows_df.sort_values(["Date", "filed", "tag_priority", "form"])
+    rows_df = rows_df.sort_values(
+        ["Date", "filed", "tag_priority", "form"],
+        ascending=[True, True, False, True],
+    )
     rows_df = rows_df.drop_duplicates(subset=["Date", "fy", "fp", "frame"], keep="last")
     rows_df = rows_df.drop_duplicates(subset=["Date"], keep="last")
 
@@ -407,17 +587,269 @@ def build_metric_series(
     return series, best_tag, best_unit
 
 
+def parse_inline_xbrl_number(raw_value: str, scale: str | None, sign: str | None) -> float | None:
+    """Convert an inline XBRL numeric fact into a float."""
+    cleaned = re.sub(r"<[^>]+>", "", raw_value or "")
+    cleaned = unescape(cleaned).strip()
+    cleaned = cleaned.replace(",", "")
+
+    if cleaned in {"", "-", "—", "–"}:
+        return None
+
+    if cleaned.startswith("(") and cleaned.endswith(")"):
+        cleaned = f"-{cleaned[1:-1]}"
+
+    try:
+        value = float(cleaned)
+    except ValueError:
+        return None
+
+    if sign == "-":
+        value *= -1
+
+    if scale:
+        try:
+            value *= 10 ** int(scale)
+        except ValueError:
+            pass
+
+    return value
+
+
+def parse_inline_xbrl_contexts(html: str) -> dict:
+    """Extract period metadata for inline XBRL contexts."""
+    contexts = {}
+    context_pattern = re.compile(
+        r"<xbrli:context id=\"([^\"]+)\".*?</xbrli:context>",
+        re.DOTALL | re.IGNORECASE,
+    )
+
+    for match in context_pattern.finditer(html):
+        context_id = match.group(1)
+        context_block = match.group(0)
+        start_match = re.search(r"<xbrli:startDate>([^<]+)</xbrli:startDate>", context_block)
+        end_match = re.search(r"<xbrli:endDate>([^<]+)</xbrli:endDate>", context_block)
+        instant_match = re.search(r"<xbrli:instant>([^<]+)</xbrli:instant>", context_block)
+
+        contexts[context_id] = {
+            "start": start_match.group(1) if start_match else None,
+            "end": end_match.group(1) if end_match else (instant_match.group(1) if instant_match else None),
+            "instant": instant_match.group(1) if instant_match else None,
+            "context_block": context_block,
+        }
+
+    return contexts
+
+
+def extract_inline_xbrl_metric_series(cik: str, metric_name: str) -> pd.DataFrame | None:
+    """Fallback extractor for metrics missing from companyfacts but present in inline XBRL filings."""
+    tag_names = INLINE_XBRL_FALLBACK_TAGS.get(metric_name)
+    if not tag_names:
+        return None
+
+    submissions_url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+    try:
+        submissions_resp = session.get(submissions_url, timeout=30)
+        submissions_resp.raise_for_status()
+        submissions = submissions_resp.json()
+    except Exception:
+        return None
+
+    recent = submissions.get("filings", {}).get("recent", {})
+    if not recent:
+        return None
+
+    recent_forms = recent.get("form", [])
+    accession_numbers = recent.get("accessionNumber", [])
+    primary_documents = recent.get("primaryDocument", [])
+    filing_dates = recent.get("filingDate", [])
+
+    filing_rows = []
+    candidate_forms = {"10-Q", "10-Q/A", "10-K", "10-K/A"}
+
+    for form, accession_number, primary_document, filing_date in zip(
+        recent_forms,
+        accession_numbers,
+        primary_documents,
+        filing_dates,
+    ):
+        if form not in candidate_forms:
+            continue
+
+        accession_compact = accession_number.replace("-", "")
+        filing_url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession_compact}/{primary_document}"
+
+        try:
+            filing_resp = session.get(filing_url, timeout=30)
+            filing_resp.raise_for_status()
+            filing_html = filing_resp.text
+        except Exception:
+            continue
+
+        contexts = parse_inline_xbrl_contexts(filing_html)
+        if not contexts:
+            continue
+
+        for tag_name in tag_names:
+            fact_pattern = re.compile(
+                rf"<ix:nonFraction\b([^>]*)name=\"{re.escape(tag_name)}\"([^>]*)>(.*?)</ix:nonFraction>",
+                re.DOTALL | re.IGNORECASE,
+            )
+
+            for match in fact_pattern.finditer(filing_html):
+                attr_left, attr_right, raw_value = match.groups()
+                attrs = f"{attr_left} {attr_right}"
+                context_match = re.search(r'contextRef=\"([^\"]+)\"', attrs, re.IGNORECASE)
+                scale_match = re.search(r'scale=\"([^\"]+)\"', attrs, re.IGNORECASE)
+                sign_match = re.search(r'sign=\"([^\"]+)\"', attrs, re.IGNORECASE)
+                if context_match is None:
+                    continue
+
+                context_ref = context_match.group(1)
+                scale = scale_match.group(1) if scale_match else None
+                sign = sign_match.group(1) if sign_match else None
+                context_data = contexts.get(context_ref)
+                if not context_data or not context_data.get("end"):
+                    continue
+
+                value = parse_inline_xbrl_number(raw_value, scale, sign)
+                if value is None:
+                    continue
+
+                filing_rows.append(
+                    {
+                        "Date": context_data["end"],
+                        metric_name: value,
+                        "tag": tag_name,
+                        "tag_priority": tag_names.index(tag_name),
+                        "context_ref": context_ref,
+                        "context_block": context_data["context_block"],
+                        "filed": filing_date,
+                    }
+                )
+
+    if not filing_rows:
+        return None
+
+    rows_df = pd.DataFrame(filing_rows)
+    rows_df["Date"] = pd.to_datetime(rows_df["Date"], errors="coerce").dt.normalize()
+    rows_df["filed"] = pd.to_datetime(rows_df["filed"], errors="coerce")
+    rows_df = rows_df.dropna(subset=["Date", metric_name])
+    rows_df = rows_df[(rows_df["Date"] >= START_DATE) & (rows_df["Date"] <= END_DATE)]
+    if rows_df.empty:
+        return None
+
+    # Sum class-based common stock facts when multiple classes are disclosed separately.
+    if metric_name == "SharesOutstanding":
+        rows_df["is_class_member"] = rows_df["context_block"].str.contains("CommonClass", case=False, na=False)
+        class_rows = rows_df[rows_df["is_class_member"]].copy()
+        non_class_rows = rows_df[~rows_df["is_class_member"]].copy()
+
+        if not class_rows.empty:
+            class_rows = (
+                class_rows.groupby("Date", as_index=False)
+                .agg({metric_name: "sum", "filed": "max"})
+                .assign(tag="inline-xbrl-class-sum", tag_priority=-1)
+            )
+            rows_df = pd.concat(
+                [non_class_rows[["Date", metric_name, "tag", "tag_priority", "filed"]], class_rows],
+                ignore_index=True,
+            )
+        else:
+            rows_df = rows_df[["Date", metric_name, "tag", "tag_priority", "filed"]]
+    else:
+        rows_df["class_rank"] = 2
+        rows_df.loc[rows_df["context_block"].str.contains("CommonClassAMember", case=False, na=False), "class_rank"] = 0
+        rows_df.loc[
+            rows_df["context_block"].str.contains("CommonClassBMember|CommonClassCMember", case=False, na=False),
+            "class_rank",
+        ] = 1
+        rows_df = rows_df[["Date", metric_name, "tag", "tag_priority", "filed", "class_rank"]]
+
+    sort_columns = ["Date", "tag_priority", "filed"]
+    ascending = [True, True, False]
+    if "class_rank" in rows_df.columns:
+        sort_columns.insert(1, "class_rank")
+        ascending = [True, True, True, False]
+
+    rows_df = rows_df.sort_values(sort_columns, ascending=ascending)
+    rows_df = rows_df.drop_duplicates(subset=["Date"], keep="first")
+    return rows_df[["Date", metric_name]]
+
+
 def apply_derived_metrics(fin_df: pd.DataFrame) -> pd.DataFrame:
-    """Fill TotalDebt using debt components when the direct tag is missing."""
+    """Fill selected metrics using compatible components when the direct tag is missing."""
     fin_df = fin_df.copy()
+
+    for column in ("TotalDebt", "DebtLongTerm", "DebtCurrentPart", "NetIncome", "EPS", "SharesOutstanding"):
+        if column in fin_df.columns:
+            fin_df[column] = pd.to_numeric(fin_df[column], errors="coerce")
+
     debt_components = [col for col in ("DebtLongTerm", "DebtCurrentPart") if col in fin_df.columns]
     if "TotalDebt" in fin_df.columns and debt_components:
         has_any_debt_component = fin_df[debt_components].notna().any(axis=1)
         debt_sum = fin_df[debt_components].fillna(0).sum(axis=1)
-        total_debt_missing = fin_df["TotalDebt"].isna() & has_any_debt_component
-        fin_df.loc[total_debt_missing, "TotalDebt"] = debt_sum[total_debt_missing]
+        total_debt_needs_update = has_any_debt_component & (
+            fin_df["TotalDebt"].isna() | (debt_sum > fin_df["TotalDebt"].fillna(float("-inf")))
+        )
+        fin_df.loc[total_debt_needs_update, "TotalDebt"] = debt_sum[total_debt_needs_update]
+
+    # Some issuers explicitly report a zero debt balance once and then omit the
+    # repeated zero values in later filings. For point-in-time debt, carry that
+    # zero forward only until another non-missing debt fact appears.
+    if "TotalDebt" in fin_df.columns:
+        total_debt_series = fin_df["TotalDebt"].copy()
+        for index in range(1, len(total_debt_series)):
+            if pd.isna(total_debt_series.iloc[index]) and total_debt_series.iloc[index - 1] == 0:
+                total_debt_series.iloc[index] = 0
+        fin_df["TotalDebt"] = total_debt_series
+
+    if {"NetIncome", "SharesOutstanding"}.issubset(fin_df.columns):
+        valid_shares = fin_df["SharesOutstanding"].notna() & fin_df["SharesOutstanding"].ne(0)
+        if "EPS" not in fin_df.columns:
+            fin_df["EPS"] = pd.Series(index=fin_df.index, dtype="float64")
+        missing_eps = fin_df["EPS"].isna() & fin_df["NetIncome"].notna() & valid_shares
+        fin_df.loc[missing_eps, "EPS"] = (
+            fin_df.loc[missing_eps, "NetIncome"] / fin_df.loc[missing_eps, "SharesOutstanding"]
+        )
+
+    if {"NetIncome", "EPS"}.issubset(fin_df.columns):
+        valid_eps = fin_df["EPS"].notna() & fin_df["EPS"].ne(0)
+        if "SharesOutstanding" not in fin_df.columns:
+            fin_df["SharesOutstanding"] = pd.Series(index=fin_df.index, dtype="float64")
+        missing_shares = fin_df["SharesOutstanding"].isna() & fin_df["NetIncome"].notna() & valid_eps
+        derived_shares = fin_df.loc[missing_shares, "NetIncome"] / fin_df.loc[missing_shares, "EPS"]
+        fin_df.loc[missing_shares, "SharesOutstanding"] = derived_shares.abs()
 
     return fin_df
+
+
+def drop_anomalous_rows(fin_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Drop sparse rows that are likely SEC transition artifacts rather than real observations.
+
+    The rule is intentionally narrow: rows are removed only when SharesOutstanding
+    or Equity is exactly zero and the row contains very few populated core metrics.
+    """
+    fin_df = fin_df.copy()
+    numeric_columns = [column for column in OUTPUT_METRICS if column in fin_df.columns]
+    if not numeric_columns:
+        return fin_df
+
+    populated_metrics = fin_df[numeric_columns].notna().sum(axis=1)
+    zero_shares = (
+        fin_df["SharesOutstanding"].notna() & fin_df["SharesOutstanding"].eq(0)
+        if "SharesOutstanding" in fin_df.columns
+        else pd.Series(False, index=fin_df.index)
+    )
+    zero_equity = (
+        pd.to_numeric(fin_df["Equity"], errors="coerce").notna() & pd.to_numeric(fin_df["Equity"], errors="coerce").eq(0)
+        if "Equity" in fin_df.columns
+        else pd.Series(False, index=fin_df.index)
+    )
+
+    anomalous_mask = (zero_shares | zero_equity) & (populated_metrics <= 3)
+    return fin_df.loc[~anomalous_mask]
 
 
 def build_coverage_report(dataset: pd.DataFrame) -> pd.DataFrame:
@@ -444,7 +876,42 @@ def build_coverage_report(dataset: pd.DataFrame) -> pd.DataFrame:
     return report.sort_values(["CoveragePct", "Ticker", "Metric"], ascending=[True, True, True])
 
 
-def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
+def find_metric_candidates(metric_name: str, facts: dict) -> list[dict]:
+    """Inspect available concepts and return likely candidates for a missing metric."""
+    keywords = MISSING_METRIC_KEYWORDS.get(metric_name, [])
+    if not keywords:
+        return []
+
+    candidates = []
+    for taxonomy, group in facts.items():
+        if not group:
+            continue
+
+        for concept_name, concept_data in group.items():
+            concept_name_lower = concept_name.lower()
+            if not any(keyword in concept_name_lower for keyword in keywords):
+                continue
+
+            if metric_name == "TotalDebt":
+                if any(pattern in concept_name_lower for pattern in TOTAL_DEBT_EXCLUDE_PATTERNS):
+                    continue
+
+            units = concept_data.get("units", {})
+            entry_count = sum(len(entries) for entries in units.values())
+            candidates.append(
+                {
+                    "Taxonomy": taxonomy,
+                    "Concept": concept_name,
+                    "UnitCount": len(units),
+                    "EntryCount": entry_count,
+                }
+            )
+
+    candidates.sort(key=lambda item: (-item["EntryCount"], item["Taxonomy"], item["Concept"]))
+    return candidates[:20]
+
+
+def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str], dict]:
     """
     Download SEC companyfacts for one CIK and assemble the metrics table.
 
@@ -458,10 +925,10 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
         # The shared session reduces latency across many sequential API calls.
         r = session.get(url, timeout=30)
         if r.status_code != 200:
-            return None, [f"companyfacts status {r.status_code}"]
+            return None, [f"companyfacts status {r.status_code}"], {}
         data = r.json()
     except Exception as exc:
-        return None, [f"request error: {exc}"]
+        return None, [f"request error: {exc}"], {}
 
     all_series = []
     facts = data.get("facts", {})
@@ -482,7 +949,7 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
             fact_groups.append((group_name, group))
 
     if not fact_groups:
-        return None, ["missing facts in companyfacts payload"]
+        return None, ["missing facts in companyfacts payload"], facts
 
     metric_order = OUTPUT_METRICS + list(AUXILIARY_METRICS)
 
@@ -512,7 +979,7 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
         )
 
     if not all_series:
-        return None, debug_notes
+        return None, debug_notes, facts
 
     # Merge all metric series into a single per-company time series.
     fin_df = reduce(
@@ -524,31 +991,83 @@ def get_sec_financials(cik: str) -> tuple[pd.DataFrame | None, list[str]]:
     fin_df = fin_df[(fin_df["Date"] >= START_DATE) & (fin_df["Date"] <= END_DATE)]
 
     if fin_df.empty:
-        return None, debug_notes + ["all rows filtered by date range"]
+        return None, debug_notes + ["all rows filtered by date range"], facts
 
     fin_df = fin_df.drop_duplicates(subset=["Date"], keep="last")
 
+    # Fall back to inline XBRL facts for EPS/share counts when companyfacts omits them.
+    for metric_name in ("EPS", "SharesOutstanding"):
+        metric_missing = metric_name not in fin_df.columns or not fin_df[metric_name].notna().any()
+        if not metric_missing:
+            continue
+
+        inline_series = extract_inline_xbrl_metric_series(cik, metric_name)
+        if inline_series is None or inline_series.empty:
+            continue
+
+        existing_metric = metric_name in fin_df.columns
+        fin_df = pd.merge(fin_df, inline_series, on="Date", how="outer", suffixes=("", "_inline"))
+        inline_column = f"{metric_name}_inline"
+
+        if existing_metric and inline_column in fin_df.columns:
+            fin_df[metric_name] = pd.to_numeric(fin_df[metric_name], errors="coerce")
+            fin_df[inline_column] = pd.to_numeric(fin_df[inline_column], errors="coerce")
+            fin_df[metric_name] = fin_df[metric_name].combine_first(fin_df[inline_column])
+            fin_df = fin_df.drop(columns=[inline_column])
+        elif not existing_metric and metric_name in fin_df.columns:
+            fin_df[metric_name] = pd.to_numeric(fin_df[metric_name], errors="coerce")
+        elif inline_column in fin_df.columns:
+            fin_df = fin_df.rename(columns={inline_column: metric_name})
+            fin_df[metric_name] = pd.to_numeric(fin_df[metric_name], errors="coerce")
+
+        debug_notes.append(f"{metric_name}: inline-xbrl fallback rows={len(inline_series)}")
+
+    fin_df = fin_df[(fin_df["Date"] >= START_DATE) & (fin_df["Date"] <= END_DATE)]
+    fin_df = fin_df.sort_values("Date").drop_duplicates(subset=["Date"], keep="last")
+
     # Derive missing debt values and drop auxiliary columns before returning.
     fin_df = apply_derived_metrics(fin_df)
+    fin_df = drop_anomalous_rows(fin_df)
     output_columns = [column for column in OUTPUT_METRICS if column in fin_df.columns]
     fin_df = fin_df[["Date", *output_columns]]
     fin_df = fin_df.set_index("Date")
 
-    return fin_df, debug_notes
+    return fin_df, debug_notes, facts
 
 
-def build_company_dataset(ticker: str, cik: str) -> pd.DataFrame | None:
+def build_company_dataset(ticker: str, cik: str) -> tuple[pd.DataFrame | None, list[dict]]:
     """Attach the ticker label to the company-level financial time series."""
-    fin_df, debug_notes = get_sec_financials(cik)
+    fin_df, debug_notes, facts = get_sec_financials(cik)
     if fin_df is None or fin_df.empty:
         if debug_notes:
             print(f"  -> Details: {'; '.join(debug_notes)}")
-        return None
+        return None, []
+
+    missing_metric_candidates = []
+    for metric_name in OUTPUT_METRICS:
+        if metric_name not in fin_df.columns:
+            metric_coverage = 0.0
+        else:
+            metric_coverage = float(fin_df[metric_name].notna().mean())
+
+        if metric_coverage >= MIN_COMPLETE_COVERAGE:
+            continue
+
+        for candidate in find_metric_candidates(metric_name, facts):
+            missing_metric_candidates.append(
+                {
+                    "Ticker": ticker,
+                    "Metric": metric_name,
+                    "CoveragePct": round(metric_coverage * 100, 2),
+                    **candidate,
+                }
+            )
+
     fin_df = fin_df.copy()
     fin_df["Ticker"] = ticker
     fin_df = fin_df.reset_index()
 
-    return fin_df
+    return fin_df, missing_metric_candidates
 
 # -----------------------------
 # BUILD DATASET
@@ -557,6 +1076,7 @@ def build_company_dataset(ticker: str, cik: str) -> pd.DataFrame | None:
 # Collect successful datasets and keep a log of failed tickers.
 all_data = []
 failed_tickers = []
+missing_metric_candidates = []
 
 for i, ticker in enumerate(tickers, start=1):
     ticker = str(ticker).strip().upper()
@@ -575,7 +1095,7 @@ for i, ticker in enumerate(tickers, start=1):
         continue
 
     try:
-        company_df = build_company_dataset(ticker, cik)
+        company_df, company_missing_candidates = build_company_dataset(ticker, cik)
 
         if company_df is None or company_df.empty:
             print(f"  -> No usable data for {ticker}")
@@ -583,6 +1103,7 @@ for i, ticker in enumerate(tickers, start=1):
             continue
 
         all_data.append(company_df)
+        missing_metric_candidates.extend(company_missing_candidates)
 
     except Exception as e:
         print(f"  -> Error for {ticker}: {e}")
@@ -597,7 +1118,8 @@ for i, ticker in enumerate(tickers, start=1):
 
 if all_data:
     # Concatenate all companies into the final panel dataset.
-    dataset = pd.concat(all_data, ignore_index=True)
+    valid_frames = [frame for frame in all_data if frame is not None and not frame.empty]
+    dataset = pd.concat(valid_frames, ignore_index=True)
     dataset = dataset.sort_values(["Ticker", "Date"])
     dataset.to_csv(OUTPUT_PATH, index=False)
 
@@ -607,6 +1129,11 @@ if all_data:
     print(f"\nDataset saved to: {OUTPUT_PATH}")
     print(f"Total rows: {len(dataset)}")
     print(f"Coverage report saved to: {cfg.SEC_COVERAGE_REPORT}")
+
+    if missing_metric_candidates:
+        candidates_df = pd.DataFrame(missing_metric_candidates).drop_duplicates()
+        candidates_df.to_csv(cfg.SEC_MISSING_TAGS_REPORT, index=False)
+        print(f"Missing metric candidates report saved to: {cfg.SEC_MISSING_TAGS_REPORT}")
 else:
     print("\nNo dataset created.")
 

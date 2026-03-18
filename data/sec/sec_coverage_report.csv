@@ -1,31 +1,881 @@
 Ticker,Rows,Metric,Available,Missing,CoveragePct,Company_name,Sector
-AZN,10,EPS,0,10,0.0,ASTRAZENECA PLC,Healthcare
-AZN,10,Equity,0,10,0.0,ASTRAZENECA PLC,Healthcare
-AZN,10,OperatingCashFlow,0,10,0.0,ASTRAZENECA PLC,Healthcare
-AZN,10,OperatingIncome,0,10,0.0,ASTRAZENECA PLC,Healthcare
-AZN,10,SharesOutstanding,0,10,0.0,ASTRAZENECA PLC,Healthcare
-AZN,10,TotalDebt,0,10,0.0,ASTRAZENECA PLC,Healthcare
-BABA,5,TotalDebt,0,5,0.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
-AZN,10,Cash,5,5,50.0,ASTRAZENECA PLC,Healthcare
-APD,20,OperatingCashFlow,11,9,55.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
+BRK-A,42,TotalDebt,0,42,0.0,BERKSHIRE HATHAWAY INC CL B,Financial Services
+PBR-A,9,Assets,0,9,0.0,PETROLEO BRASIL SP PREF  ADR,Energy
+PBR-A,9,Cash,0,9,0.0,PETROLEO BRASIL SP PREF  ADR,Energy
+PBR-A,9,Equity,0,9,0.0,PETROLEO BRASIL SP PREF  ADR,Energy
+PBR-A,9,NetIncome,0,9,0.0,PETROLEO BRASIL SP PREF  ADR,Energy
+PBR-A,9,Revenue,0,9,0.0,PETROLEO BRASIL SP PREF  ADR,Energy
+PBR-A,9,TotalDebt,0,9,0.0,PETROLEO BRASIL SP PREF  ADR,Energy
+RY,21,Cash,0,21,0.0,ROYAL BANK OF CANADA,Financial Services
+RY,21,TotalDebt,0,21,0.0,ROYAL BANK OF CANADA,Financial Services
+CAT,20,TotalDebt,5,15,25.0,CATERPILLAR INC,Industrials
+TTE,14,Cash,4,10,28.57,TOTALENERGIES SE,Energy
+PBR-A,9,SharesOutstanding,3,6,33.33,PETROLEO BRASIL SP PREF  ADR,Energy
+SHEL,15,Cash,5,10,33.33,SHELL PLC,Energy
+AZN,11,Cash,5,6,45.45,ASTRAZENECA PLC,Healthcare
+BRK-A,42,Assets,20,22,47.62,BERKSHIRE HATHAWAY INC CL B,Financial Services
+BRK-A,42,Cash,20,22,47.62,BERKSHIRE HATHAWAY INC CL B,Financial Services
+BRK-A,42,EPS,20,22,47.62,BERKSHIRE HATHAWAY INC CL B,Financial Services
+BRK-A,42,NetIncome,20,22,47.62,BERKSHIRE HATHAWAY INC CL B,Financial Services
+BRK-A,42,Revenue,20,22,47.62,BERKSHIRE HATHAWAY INC CL B,Financial Services
+V,41,Assets,20,21,48.78,VISA INC CLASS A SHARES,Financial Services
+V,41,Cash,20,21,48.78,VISA INC CLASS A SHARES,Financial Services
+V,41,EPS,20,21,48.78,VISA INC CLASS A SHARES,Financial Services
+V,41,Equity,20,21,48.78,VISA INC CLASS A SHARES,Financial Services
+V,41,NetIncome,20,21,48.78,VISA INC CLASS A SHARES,Financial Services
+V,41,Revenue,20,21,48.78,VISA INC CLASS A SHARES,Financial Services
+V,41,TotalDebt,20,21,48.78,VISA INC CLASS A SHARES,Financial Services
+BRK-A,42,Equity,21,21,50.0,BERKSHIRE HATHAWAY INC CL B,Financial Services
+RIO,10,Cash,5,5,50.0,RIO TINTO PLC,Basic Materials
+GEV,16,Assets,9,7,56.25,GE VERNOVA INC,Industrials
+GEV,16,TotalDebt,9,7,56.25,GE VERNOVA INC,Industrials
+SHEL,15,Assets,10,5,66.67,SHELL PLC,Energy
+SHEL,15,Equity,10,5,66.67,SHELL PLC,Energy
+BHP,7,Cash,5,2,71.43,BHP GROUP LTD,Basic Materials
+GEV,16,EPS,12,4,75.0,GE VERNOVA INC,Industrials
+SHEL,15,TotalDebt,12,3,80.0,SHELL PLC,Energy
+GEV,16,NetIncome,13,3,81.25,GE VERNOVA INC,Industrials
+GEV,16,Revenue,13,3,81.25,GE VERNOVA INC,Industrials
+CEG,20,Assets,17,3,85.0,CONSTELLATION ENERGY,Utilities
+CEG,20,Equity,17,3,85.0,CONSTELLATION ENERGY,Utilities
+CEG,20,TotalDebt,17,3,85.0,CONSTELLATION ENERGY,Utilities
+MNST,20,TotalDebt,17,3,85.0,MONSTER BEVERAGE CORP,Consumer Defensive
+BHP,7,Assets,6,1,85.71,BHP GROUP LTD,Basic Materials
+BHP,7,TotalDebt,6,1,85.71,BHP GROUP LTD,Basic Materials
+GEV,16,Equity,14,2,87.5,GE VERNOVA INC,Industrials
+GEV,16,SharesOutstanding,14,2,87.5,GE VERNOVA INC,Industrials
+PLTR,20,TotalDebt,18,2,90.0,PALANTIR TECHNOLOGIES INC A,Technology
+RIO,10,TotalDebt,9,1,90.0,RIO TINTO PLC,Basic Materials
+AZN,11,Assets,10,1,90.91,ASTRAZENECA PLC,Healthcare
+AZN,11,EPS,10,1,90.91,ASTRAZENECA PLC,Healthcare
+AZN,11,Equity,10,1,90.91,ASTRAZENECA PLC,Healthcare
+AZN,11,NetIncome,10,1,90.91,ASTRAZENECA PLC,Healthcare
+AZN,11,SharesOutstanding,10,1,90.91,ASTRAZENECA PLC,Healthcare
+AZN,11,TotalDebt,10,1,90.91,ASTRAZENECA PLC,Healthcare
+UNH,22,Assets,20,2,90.91,UNITEDHEALTH GROUP INC,Healthcare
+UNH,22,Cash,20,2,90.91,UNITEDHEALTH GROUP INC,Healthcare
+UNH,22,EPS,20,2,90.91,UNITEDHEALTH GROUP INC,Healthcare
+UNH,22,Equity,20,2,90.91,UNITEDHEALTH GROUP INC,Healthcare
+UNH,22,NetIncome,20,2,90.91,UNITEDHEALTH GROUP INC,Healthcare
+UNH,22,Revenue,20,2,90.91,UNITEDHEALTH GROUP INC,Healthcare
+UNH,22,SharesOutstanding,20,2,90.91,UNITEDHEALTH GROUP INC,Healthcare
+ORCL,23,Assets,21,2,91.3,ORACLE CORP,Technology
+ORCL,23,Cash,21,2,91.3,ORACLE CORP,Technology
+ORCL,23,EPS,21,2,91.3,ORACLE CORP,Technology
+ORCL,23,Equity,21,2,91.3,ORACLE CORP,Technology
+ORCL,23,NetIncome,21,2,91.3,ORACLE CORP,Technology
+ORCL,23,Revenue,21,2,91.3,ORACLE CORP,Technology
+ORCL,23,SharesOutstanding,21,2,91.3,ORACLE CORP,Technology
+CRH,14,Assets,13,1,92.86,CRH PLC,Basic Materials
+CRH,14,TotalDebt,13,1,92.86,CRH PLC,Basic Materials
+GEV,16,Cash,15,1,93.75,GE VERNOVA INC,Industrials
+CBRE,21,Assets,20,1,95.24,CBRE GROUP INC   A,Real Estate
+CBRE,21,Cash,20,1,95.24,CBRE GROUP INC   A,Real Estate
+CBRE,21,EPS,20,1,95.24,CBRE GROUP INC   A,Real Estate
+CBRE,21,Equity,20,1,95.24,CBRE GROUP INC   A,Real Estate
+CBRE,21,NetIncome,20,1,95.24,CBRE GROUP INC   A,Real Estate
+CBRE,21,Revenue,20,1,95.24,CBRE GROUP INC   A,Real Estate
+CBRE,21,TotalDebt,20,1,95.24,CBRE GROUP INC   A,Real Estate
+EOG,21,Assets,20,1,95.24,EOG RESOURCES INC,Energy
+EOG,21,Cash,20,1,95.24,EOG RESOURCES INC,Energy
+EOG,21,EPS,20,1,95.24,EOG RESOURCES INC,Energy
+EOG,21,Equity,20,1,95.24,EOG RESOURCES INC,Energy
+EOG,21,NetIncome,20,1,95.24,EOG RESOURCES INC,Energy
+EOG,21,Revenue,20,1,95.24,EOG RESOURCES INC,Energy
+EOG,21,SharesOutstanding,20,1,95.24,EOG RESOURCES INC,Energy
+TSLA,21,Assets,20,1,95.24,TESLA INC,Consumer Cyclical
+TSLA,21,Cash,20,1,95.24,TESLA INC,Consumer Cyclical
+TSLA,21,EPS,20,1,95.24,TESLA INC,Consumer Cyclical
+TSLA,21,Equity,20,1,95.24,TESLA INC,Consumer Cyclical
+TSLA,21,NetIncome,20,1,95.24,TESLA INC,Consumer Cyclical
+TSLA,21,Revenue,20,1,95.24,TESLA INC,Consumer Cyclical
+TSLA,21,TotalDebt,20,1,95.24,TESLA INC,Consumer Cyclical
+JNJ,22,Assets,21,1,95.45,JOHNSON + JOHNSON,Healthcare
+JNJ,22,Cash,21,1,95.45,JOHNSON + JOHNSON,Healthcare
+JNJ,22,EPS,21,1,95.45,JOHNSON + JOHNSON,Healthcare
+JNJ,22,Equity,21,1,95.45,JOHNSON + JOHNSON,Healthcare
+JNJ,22,NetIncome,21,1,95.45,JOHNSON + JOHNSON,Healthcare
+JNJ,22,Revenue,21,1,95.45,JOHNSON + JOHNSON,Healthcare
+JNJ,22,SharesOutstanding,21,1,95.45,JOHNSON + JOHNSON,Healthcare
+BRK-A,42,SharesOutstanding,41,1,97.62,BERKSHIRE HATHAWAY INC CL B,Financial Services
+AAPL,20,Assets,20,0,100.0,APPLE INC,Technology
+AAPL,20,Cash,20,0,100.0,APPLE INC,Technology
+AAPL,20,EPS,20,0,100.0,APPLE INC,Technology
+AAPL,20,Equity,20,0,100.0,APPLE INC,Technology
+AAPL,20,NetIncome,20,0,100.0,APPLE INC,Technology
+AAPL,20,Revenue,20,0,100.0,APPLE INC,Technology
+AAPL,20,SharesOutstanding,20,0,100.0,APPLE INC,Technology
+AAPL,20,TotalDebt,20,0,100.0,APPLE INC,Technology
+ABBV,20,Assets,20,0,100.0,ABBVIE INC,Healthcare
+ABBV,20,Cash,20,0,100.0,ABBVIE INC,Healthcare
+ABBV,20,EPS,20,0,100.0,ABBVIE INC,Healthcare
+ABBV,20,Equity,20,0,100.0,ABBVIE INC,Healthcare
+ABBV,20,NetIncome,20,0,100.0,ABBVIE INC,Healthcare
+ABBV,20,Revenue,20,0,100.0,ABBVIE INC,Healthcare
+ABBV,20,SharesOutstanding,20,0,100.0,ABBVIE INC,Healthcare
+ABBV,20,TotalDebt,20,0,100.0,ABBVIE INC,Healthcare
+ABT,20,Assets,20,0,100.0,ABBOTT LABORATORIES,Healthcare
+ABT,20,Cash,20,0,100.0,ABBOTT LABORATORIES,Healthcare
+ABT,20,EPS,20,0,100.0,ABBOTT LABORATORIES,Healthcare
+ABT,20,Equity,20,0,100.0,ABBOTT LABORATORIES,Healthcare
+ABT,20,NetIncome,20,0,100.0,ABBOTT LABORATORIES,Healthcare
+ABT,20,Revenue,20,0,100.0,ABBOTT LABORATORIES,Healthcare
+ABT,20,SharesOutstanding,20,0,100.0,ABBOTT LABORATORIES,Healthcare
+ABT,20,TotalDebt,20,0,100.0,ABBOTT LABORATORIES,Healthcare
+AEP,20,Assets,20,0,100.0,AMERICAN ELECTRIC POWER,Utilities
+AEP,20,Cash,20,0,100.0,AMERICAN ELECTRIC POWER,Utilities
+AEP,20,EPS,20,0,100.0,AMERICAN ELECTRIC POWER,Utilities
+AEP,20,Equity,20,0,100.0,AMERICAN ELECTRIC POWER,Utilities
+AEP,20,NetIncome,20,0,100.0,AMERICAN ELECTRIC POWER,Utilities
+AEP,20,Revenue,20,0,100.0,AMERICAN ELECTRIC POWER,Utilities
+AEP,20,SharesOutstanding,20,0,100.0,AMERICAN ELECTRIC POWER,Utilities
+AEP,20,TotalDebt,20,0,100.0,AMERICAN ELECTRIC POWER,Utilities
+AMD,20,Assets,20,0,100.0,ADVANCED MICRO DEVICES,Technology
+AMD,20,Cash,20,0,100.0,ADVANCED MICRO DEVICES,Technology
+AMD,20,EPS,20,0,100.0,ADVANCED MICRO DEVICES,Technology
+AMD,20,Equity,20,0,100.0,ADVANCED MICRO DEVICES,Technology
+AMD,20,NetIncome,20,0,100.0,ADVANCED MICRO DEVICES,Technology
+AMD,20,Revenue,20,0,100.0,ADVANCED MICRO DEVICES,Technology
+AMD,20,SharesOutstanding,20,0,100.0,ADVANCED MICRO DEVICES,Technology
+AMD,20,TotalDebt,20,0,100.0,ADVANCED MICRO DEVICES,Technology
+AMGN,20,Assets,20,0,100.0,AMGEN INC,Healthcare
+AMGN,20,Cash,20,0,100.0,AMGEN INC,Healthcare
+AMGN,20,EPS,20,0,100.0,AMGEN INC,Healthcare
+AMGN,20,Equity,20,0,100.0,AMGEN INC,Healthcare
+AMGN,20,NetIncome,20,0,100.0,AMGEN INC,Healthcare
+AMGN,20,Revenue,20,0,100.0,AMGEN INC,Healthcare
+AMGN,20,SharesOutstanding,20,0,100.0,AMGEN INC,Healthcare
+AMGN,20,TotalDebt,20,0,100.0,AMGEN INC,Healthcare
+AMT,20,Assets,20,0,100.0,AMERICAN TOWER CORP,Real Estate
+AMT,20,Cash,20,0,100.0,AMERICAN TOWER CORP,Real Estate
+AMT,20,EPS,20,0,100.0,AMERICAN TOWER CORP,Real Estate
+AMT,20,Equity,20,0,100.0,AMERICAN TOWER CORP,Real Estate
+AMT,20,NetIncome,20,0,100.0,AMERICAN TOWER CORP,Real Estate
+AMT,20,Revenue,20,0,100.0,AMERICAN TOWER CORP,Real Estate
+AMT,20,SharesOutstanding,20,0,100.0,AMERICAN TOWER CORP,Real Estate
+AMT,20,TotalDebt,20,0,100.0,AMERICAN TOWER CORP,Real Estate
+AMZN,20,Assets,20,0,100.0,AMAZON.COM INC,Consumer Cyclical
+AMZN,20,Cash,20,0,100.0,AMAZON.COM INC,Consumer Cyclical
+AMZN,20,EPS,20,0,100.0,AMAZON.COM INC,Consumer Cyclical
+AMZN,20,Equity,20,0,100.0,AMAZON.COM INC,Consumer Cyclical
+AMZN,20,NetIncome,20,0,100.0,AMAZON.COM INC,Consumer Cyclical
+AMZN,20,Revenue,20,0,100.0,AMAZON.COM INC,Consumer Cyclical
+AMZN,20,SharesOutstanding,20,0,100.0,AMAZON.COM INC,Consumer Cyclical
+AMZN,20,TotalDebt,20,0,100.0,AMAZON.COM INC,Consumer Cyclical
 APD,20,Assets,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
 APD,20,Cash,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
 APD,20,EPS,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
 APD,20,Equity,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
 APD,20,NetIncome,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
-APD,20,OperatingIncome,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
 APD,20,Revenue,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
 APD,20,SharesOutstanding,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
 APD,20,TotalDebt,20,0,100.0,AIR PRODUCTS + CHEMICALS INC,Basic Materials
-AZN,10,Assets,10,0,100.0,ASTRAZENECA PLC,Healthcare
-AZN,10,NetIncome,10,0,100.0,ASTRAZENECA PLC,Healthcare
-AZN,10,Revenue,10,0,100.0,ASTRAZENECA PLC,Healthcare
+APP,20,Assets,20,0,100.0,APPLOVIN CORP CLASS A,Communication Services
+APP,20,Cash,20,0,100.0,APPLOVIN CORP CLASS A,Communication Services
+APP,20,EPS,20,0,100.0,APPLOVIN CORP CLASS A,Communication Services
+APP,20,Equity,20,0,100.0,APPLOVIN CORP CLASS A,Communication Services
+APP,20,NetIncome,20,0,100.0,APPLOVIN CORP CLASS A,Communication Services
+APP,20,Revenue,20,0,100.0,APPLOVIN CORP CLASS A,Communication Services
+APP,20,SharesOutstanding,20,0,100.0,APPLOVIN CORP CLASS A,Communication Services
+APP,20,TotalDebt,20,0,100.0,APPLOVIN CORP CLASS A,Communication Services
+ASML,5,Assets,5,0,100.0,ASML HOLDING NV,Technology
+ASML,5,Cash,5,0,100.0,ASML HOLDING NV,Technology
+ASML,5,EPS,5,0,100.0,ASML HOLDING NV,Technology
+ASML,5,Equity,5,0,100.0,ASML HOLDING NV,Technology
+ASML,5,NetIncome,5,0,100.0,ASML HOLDING NV,Technology
+ASML,5,Revenue,5,0,100.0,ASML HOLDING NV,Technology
+ASML,5,SharesOutstanding,5,0,100.0,ASML HOLDING NV,Technology
+ASML,5,TotalDebt,5,0,100.0,ASML HOLDING NV,Technology
+AVGO,21,Assets,21,0,100.0,BROADCOM INC,Technology
+AVGO,21,Cash,21,0,100.0,BROADCOM INC,Technology
+AVGO,21,EPS,21,0,100.0,BROADCOM INC,Technology
+AVGO,21,Equity,21,0,100.0,BROADCOM INC,Technology
+AVGO,21,NetIncome,21,0,100.0,BROADCOM INC,Technology
+AVGO,21,Revenue,21,0,100.0,BROADCOM INC,Technology
+AVGO,21,SharesOutstanding,21,0,100.0,BROADCOM INC,Technology
+AVGO,21,TotalDebt,21,0,100.0,BROADCOM INC,Technology
+AXP,20,Assets,20,0,100.0,AMERICAN EXPRESS CO,Financial Services
+AXP,20,Cash,20,0,100.0,AMERICAN EXPRESS CO,Financial Services
+AXP,20,EPS,20,0,100.0,AMERICAN EXPRESS CO,Financial Services
+AXP,20,Equity,20,0,100.0,AMERICAN EXPRESS CO,Financial Services
+AXP,20,NetIncome,20,0,100.0,AMERICAN EXPRESS CO,Financial Services
+AXP,20,Revenue,20,0,100.0,AMERICAN EXPRESS CO,Financial Services
+AXP,20,SharesOutstanding,20,0,100.0,AMERICAN EXPRESS CO,Financial Services
+AXP,20,TotalDebt,20,0,100.0,AMERICAN EXPRESS CO,Financial Services
+AZN,11,Revenue,11,0,100.0,ASTRAZENECA PLC,Healthcare
+BA,20,Assets,20,0,100.0,BOEING CO/THE,Industrials
+BA,20,Cash,20,0,100.0,BOEING CO/THE,Industrials
+BA,20,EPS,20,0,100.0,BOEING CO/THE,Industrials
+BA,20,Equity,20,0,100.0,BOEING CO/THE,Industrials
+BA,20,NetIncome,20,0,100.0,BOEING CO/THE,Industrials
+BA,20,Revenue,20,0,100.0,BOEING CO/THE,Industrials
+BA,20,SharesOutstanding,20,0,100.0,BOEING CO/THE,Industrials
+BA,20,TotalDebt,20,0,100.0,BOEING CO/THE,Industrials
 BABA,5,Assets,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
 BABA,5,Cash,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
 BABA,5,EPS,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
 BABA,5,Equity,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
 BABA,5,NetIncome,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
-BABA,5,OperatingCashFlow,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
-BABA,5,OperatingIncome,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
 BABA,5,Revenue,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
 BABA,5,SharesOutstanding,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
+BABA,5,TotalDebt,5,0,100.0,ALIBABA GROUP HOLDING SP ADR,Consumer Cyclical
+BAC,20,Assets,20,0,100.0,BANK OF AMERICA CORP,Financial Services
+BAC,20,Cash,20,0,100.0,BANK OF AMERICA CORP,Financial Services
+BAC,20,EPS,20,0,100.0,BANK OF AMERICA CORP,Financial Services
+BAC,20,Equity,20,0,100.0,BANK OF AMERICA CORP,Financial Services
+BAC,20,NetIncome,20,0,100.0,BANK OF AMERICA CORP,Financial Services
+BAC,20,Revenue,20,0,100.0,BANK OF AMERICA CORP,Financial Services
+BAC,20,SharesOutstanding,20,0,100.0,BANK OF AMERICA CORP,Financial Services
+BAC,20,TotalDebt,20,0,100.0,BANK OF AMERICA CORP,Financial Services
+BHP,7,EPS,7,0,100.0,BHP GROUP LTD,Basic Materials
+BHP,7,Equity,7,0,100.0,BHP GROUP LTD,Basic Materials
+BHP,7,NetIncome,7,0,100.0,BHP GROUP LTD,Basic Materials
+BHP,7,Revenue,7,0,100.0,BHP GROUP LTD,Basic Materials
+BHP,7,SharesOutstanding,7,0,100.0,BHP GROUP LTD,Basic Materials
+BKNG,20,Assets,20,0,100.0,BOOKING HOLDINGS INC,Consumer Cyclical
+BKNG,20,Cash,20,0,100.0,BOOKING HOLDINGS INC,Consumer Cyclical
+BKNG,20,EPS,20,0,100.0,BOOKING HOLDINGS INC,Consumer Cyclical
+BKNG,20,Equity,20,0,100.0,BOOKING HOLDINGS INC,Consumer Cyclical
+BKNG,20,NetIncome,20,0,100.0,BOOKING HOLDINGS INC,Consumer Cyclical
+BKNG,20,Revenue,20,0,100.0,BOOKING HOLDINGS INC,Consumer Cyclical
+BKNG,20,SharesOutstanding,20,0,100.0,BOOKING HOLDINGS INC,Consumer Cyclical
+BKNG,20,TotalDebt,20,0,100.0,BOOKING HOLDINGS INC,Consumer Cyclical
+CAT,20,Assets,20,0,100.0,CATERPILLAR INC,Industrials
+CAT,20,Cash,20,0,100.0,CATERPILLAR INC,Industrials
+CAT,20,EPS,20,0,100.0,CATERPILLAR INC,Industrials
+CAT,20,Equity,20,0,100.0,CATERPILLAR INC,Industrials
+CAT,20,NetIncome,20,0,100.0,CATERPILLAR INC,Industrials
+CAT,20,Revenue,20,0,100.0,CATERPILLAR INC,Industrials
+CAT,20,SharesOutstanding,20,0,100.0,CATERPILLAR INC,Industrials
+CBRE,21,SharesOutstanding,21,0,100.0,CBRE GROUP INC   A,Real Estate
+CEG,20,Cash,20,0,100.0,CONSTELLATION ENERGY,Utilities
+CEG,20,EPS,20,0,100.0,CONSTELLATION ENERGY,Utilities
+CEG,20,NetIncome,20,0,100.0,CONSTELLATION ENERGY,Utilities
+CEG,20,Revenue,20,0,100.0,CONSTELLATION ENERGY,Utilities
+CEG,20,SharesOutstanding,20,0,100.0,CONSTELLATION ENERGY,Utilities
+CL,20,Assets,20,0,100.0,COLGATE PALMOLIVE CO,Consumer Defensive
+CL,20,Cash,20,0,100.0,COLGATE PALMOLIVE CO,Consumer Defensive
+CL,20,EPS,20,0,100.0,COLGATE PALMOLIVE CO,Consumer Defensive
+CL,20,Equity,20,0,100.0,COLGATE PALMOLIVE CO,Consumer Defensive
+CL,20,NetIncome,20,0,100.0,COLGATE PALMOLIVE CO,Consumer Defensive
+CL,20,Revenue,20,0,100.0,COLGATE PALMOLIVE CO,Consumer Defensive
+CL,20,SharesOutstanding,20,0,100.0,COLGATE PALMOLIVE CO,Consumer Defensive
+CL,20,TotalDebt,20,0,100.0,COLGATE PALMOLIVE CO,Consumer Defensive
+CMCSA,20,Assets,20,0,100.0,COMCAST CORP CLASS A,Communication Services
+CMCSA,20,Cash,20,0,100.0,COMCAST CORP CLASS A,Communication Services
+CMCSA,20,EPS,20,0,100.0,COMCAST CORP CLASS A,Communication Services
+CMCSA,20,Equity,20,0,100.0,COMCAST CORP CLASS A,Communication Services
+CMCSA,20,NetIncome,20,0,100.0,COMCAST CORP CLASS A,Communication Services
+CMCSA,20,Revenue,20,0,100.0,COMCAST CORP CLASS A,Communication Services
+CMCSA,20,SharesOutstanding,20,0,100.0,COMCAST CORP CLASS A,Communication Services
+CMCSA,20,TotalDebt,20,0,100.0,COMCAST CORP CLASS A,Communication Services
+COP,20,Assets,20,0,100.0,CONOCOPHILLIPS,Energy
+COP,20,Cash,20,0,100.0,CONOCOPHILLIPS,Energy
+COP,20,EPS,20,0,100.0,CONOCOPHILLIPS,Energy
+COP,20,Equity,20,0,100.0,CONOCOPHILLIPS,Energy
+COP,20,NetIncome,20,0,100.0,CONOCOPHILLIPS,Energy
+COP,20,Revenue,20,0,100.0,CONOCOPHILLIPS,Energy
+COP,20,SharesOutstanding,20,0,100.0,CONOCOPHILLIPS,Energy
+COP,20,TotalDebt,20,0,100.0,CONOCOPHILLIPS,Energy
+COST,21,Assets,21,0,100.0,COSTCO WHOLESALE CORP,Consumer Defensive
+COST,21,Cash,21,0,100.0,COSTCO WHOLESALE CORP,Consumer Defensive
+COST,21,EPS,21,0,100.0,COSTCO WHOLESALE CORP,Consumer Defensive
+COST,21,Equity,21,0,100.0,COSTCO WHOLESALE CORP,Consumer Defensive
+COST,21,NetIncome,21,0,100.0,COSTCO WHOLESALE CORP,Consumer Defensive
+COST,21,Revenue,21,0,100.0,COSTCO WHOLESALE CORP,Consumer Defensive
+COST,21,SharesOutstanding,21,0,100.0,COSTCO WHOLESALE CORP,Consumer Defensive
+COST,21,TotalDebt,21,0,100.0,COSTCO WHOLESALE CORP,Consumer Defensive
+CRH,14,Cash,14,0,100.0,CRH PLC,Basic Materials
+CRH,14,EPS,14,0,100.0,CRH PLC,Basic Materials
+CRH,14,Equity,14,0,100.0,CRH PLC,Basic Materials
+CRH,14,NetIncome,14,0,100.0,CRH PLC,Basic Materials
+CRH,14,Revenue,14,0,100.0,CRH PLC,Basic Materials
+CRH,14,SharesOutstanding,14,0,100.0,CRH PLC,Basic Materials
+CTVA,20,Assets,20,0,100.0,CORTEVA INC,Basic Materials
+CTVA,20,Cash,20,0,100.0,CORTEVA INC,Basic Materials
+CTVA,20,EPS,20,0,100.0,CORTEVA INC,Basic Materials
+CTVA,20,Equity,20,0,100.0,CORTEVA INC,Basic Materials
+CTVA,20,NetIncome,20,0,100.0,CORTEVA INC,Basic Materials
+CTVA,20,Revenue,20,0,100.0,CORTEVA INC,Basic Materials
+CTVA,20,SharesOutstanding,20,0,100.0,CORTEVA INC,Basic Materials
+CTVA,20,TotalDebt,20,0,100.0,CORTEVA INC,Basic Materials
+CVX,20,Assets,20,0,100.0,CHEVRON CORP,Energy
+CVX,20,Cash,20,0,100.0,CHEVRON CORP,Energy
+CVX,20,EPS,20,0,100.0,CHEVRON CORP,Energy
+CVX,20,Equity,20,0,100.0,CHEVRON CORP,Energy
+CVX,20,NetIncome,20,0,100.0,CHEVRON CORP,Energy
+CVX,20,Revenue,20,0,100.0,CHEVRON CORP,Energy
+CVX,20,SharesOutstanding,20,0,100.0,CHEVRON CORP,Energy
+CVX,20,TotalDebt,20,0,100.0,CHEVRON CORP,Energy
+D,20,Assets,20,0,100.0,DOMINION ENERGY INC,Utilities
+D,20,Cash,20,0,100.0,DOMINION ENERGY INC,Utilities
+D,20,EPS,20,0,100.0,DOMINION ENERGY INC,Utilities
+D,20,Equity,20,0,100.0,DOMINION ENERGY INC,Utilities
+D,20,NetIncome,20,0,100.0,DOMINION ENERGY INC,Utilities
+D,20,Revenue,20,0,100.0,DOMINION ENERGY INC,Utilities
+D,20,SharesOutstanding,20,0,100.0,DOMINION ENERGY INC,Utilities
+D,20,TotalDebt,20,0,100.0,DOMINION ENERGY INC,Utilities
+DE,21,Assets,21,0,100.0,DEERE + CO,Industrials
+DE,21,Cash,21,0,100.0,DEERE + CO,Industrials
+DE,21,EPS,21,0,100.0,DEERE + CO,Industrials
+DE,21,Equity,21,0,100.0,DEERE + CO,Industrials
+DE,21,NetIncome,21,0,100.0,DEERE + CO,Industrials
+DE,21,Revenue,21,0,100.0,DEERE + CO,Industrials
+DE,21,SharesOutstanding,21,0,100.0,DEERE + CO,Industrials
+DE,21,TotalDebt,21,0,100.0,DEERE + CO,Industrials
+DIS,21,Assets,21,0,100.0,WALT DISNEY CO/THE,Communication Services
+DIS,21,Cash,21,0,100.0,WALT DISNEY CO/THE,Communication Services
+DIS,21,EPS,21,0,100.0,WALT DISNEY CO/THE,Communication Services
+DIS,21,Equity,21,0,100.0,WALT DISNEY CO/THE,Communication Services
+DIS,21,NetIncome,21,0,100.0,WALT DISNEY CO/THE,Communication Services
+DIS,21,Revenue,21,0,100.0,WALT DISNEY CO/THE,Communication Services
+DIS,21,SharesOutstanding,21,0,100.0,WALT DISNEY CO/THE,Communication Services
+DIS,21,TotalDebt,21,0,100.0,WALT DISNEY CO/THE,Communication Services
+DLR,20,Assets,20,0,100.0,DIGITAL REALTY TRUST INC,Real Estate
+DLR,20,Cash,20,0,100.0,DIGITAL REALTY TRUST INC,Real Estate
+DLR,20,EPS,20,0,100.0,DIGITAL REALTY TRUST INC,Real Estate
+DLR,20,Equity,20,0,100.0,DIGITAL REALTY TRUST INC,Real Estate
+DLR,20,NetIncome,20,0,100.0,DIGITAL REALTY TRUST INC,Real Estate
+DLR,20,Revenue,20,0,100.0,DIGITAL REALTY TRUST INC,Real Estate
+DLR,20,SharesOutstanding,20,0,100.0,DIGITAL REALTY TRUST INC,Real Estate
+DLR,20,TotalDebt,20,0,100.0,DIGITAL REALTY TRUST INC,Real Estate
+DUK,20,Assets,20,0,100.0,DUKE ENERGY CORP,Utilities
+DUK,20,Cash,20,0,100.0,DUKE ENERGY CORP,Utilities
+DUK,20,EPS,20,0,100.0,DUKE ENERGY CORP,Utilities
+DUK,20,Equity,20,0,100.0,DUKE ENERGY CORP,Utilities
+DUK,20,NetIncome,20,0,100.0,DUKE ENERGY CORP,Utilities
+DUK,20,Revenue,20,0,100.0,DUKE ENERGY CORP,Utilities
+DUK,20,SharesOutstanding,20,0,100.0,DUKE ENERGY CORP,Utilities
+DUK,20,TotalDebt,20,0,100.0,DUKE ENERGY CORP,Utilities
+ECL,20,Assets,20,0,100.0,ECOLAB INC,Basic Materials
+ECL,20,Cash,20,0,100.0,ECOLAB INC,Basic Materials
+ECL,20,EPS,20,0,100.0,ECOLAB INC,Basic Materials
+ECL,20,Equity,20,0,100.0,ECOLAB INC,Basic Materials
+ECL,20,NetIncome,20,0,100.0,ECOLAB INC,Basic Materials
+ECL,20,Revenue,20,0,100.0,ECOLAB INC,Basic Materials
+ECL,20,SharesOutstanding,20,0,100.0,ECOLAB INC,Basic Materials
+ECL,20,TotalDebt,20,0,100.0,ECOLAB INC,Basic Materials
+EOG,21,TotalDebt,21,0,100.0,EOG RESOURCES INC,Energy
+EQIX,20,Assets,20,0,100.0,EQUINIX INC,Real Estate
+EQIX,20,Cash,20,0,100.0,EQUINIX INC,Real Estate
+EQIX,20,EPS,20,0,100.0,EQUINIX INC,Real Estate
+EQIX,20,Equity,20,0,100.0,EQUINIX INC,Real Estate
+EQIX,20,NetIncome,20,0,100.0,EQUINIX INC,Real Estate
+EQIX,20,Revenue,20,0,100.0,EQUINIX INC,Real Estate
+EQIX,20,SharesOutstanding,20,0,100.0,EQUINIX INC,Real Estate
+EQIX,20,TotalDebt,20,0,100.0,EQUINIX INC,Real Estate
+ETN,20,Assets,20,0,100.0,EATON CORP PLC,Industrials
+ETN,20,Cash,20,0,100.0,EATON CORP PLC,Industrials
+ETN,20,EPS,20,0,100.0,EATON CORP PLC,Industrials
+ETN,20,Equity,20,0,100.0,EATON CORP PLC,Industrials
+ETN,20,NetIncome,20,0,100.0,EATON CORP PLC,Industrials
+ETN,20,Revenue,20,0,100.0,EATON CORP PLC,Industrials
+ETN,20,SharesOutstanding,20,0,100.0,EATON CORP PLC,Industrials
+ETN,20,TotalDebt,20,0,100.0,EATON CORP PLC,Industrials
+EXC,20,Assets,20,0,100.0,EXELON CORP,Utilities
+EXC,20,Cash,20,0,100.0,EXELON CORP,Utilities
+EXC,20,EPS,20,0,100.0,EXELON CORP,Utilities
+EXC,20,Equity,20,0,100.0,EXELON CORP,Utilities
+EXC,20,NetIncome,20,0,100.0,EXELON CORP,Utilities
+EXC,20,Revenue,20,0,100.0,EXELON CORP,Utilities
+EXC,20,SharesOutstanding,20,0,100.0,EXELON CORP,Utilities
+EXC,20,TotalDebt,20,0,100.0,EXELON CORP,Utilities
+FCX,20,Assets,20,0,100.0,FREEPORT MCMORAN INC,Basic Materials
+FCX,20,Cash,20,0,100.0,FREEPORT MCMORAN INC,Basic Materials
+FCX,20,EPS,20,0,100.0,FREEPORT MCMORAN INC,Basic Materials
+FCX,20,Equity,20,0,100.0,FREEPORT MCMORAN INC,Basic Materials
+FCX,20,NetIncome,20,0,100.0,FREEPORT MCMORAN INC,Basic Materials
+FCX,20,Revenue,20,0,100.0,FREEPORT MCMORAN INC,Basic Materials
+FCX,20,SharesOutstanding,20,0,100.0,FREEPORT MCMORAN INC,Basic Materials
+FCX,20,TotalDebt,20,0,100.0,FREEPORT MCMORAN INC,Basic Materials
+GE,20,Assets,20,0,100.0,GENERAL ELECTRIC,Industrials
+GE,20,Cash,20,0,100.0,GENERAL ELECTRIC,Industrials
+GE,20,EPS,20,0,100.0,GENERAL ELECTRIC,Industrials
+GE,20,Equity,20,0,100.0,GENERAL ELECTRIC,Industrials
+GE,20,NetIncome,20,0,100.0,GENERAL ELECTRIC,Industrials
+GE,20,Revenue,20,0,100.0,GENERAL ELECTRIC,Industrials
+GE,20,SharesOutstanding,20,0,100.0,GENERAL ELECTRIC,Industrials
+GE,20,TotalDebt,20,0,100.0,GENERAL ELECTRIC,Industrials
+GILD,20,Assets,20,0,100.0,GILEAD SCIENCES INC,Healthcare
+GILD,20,Cash,20,0,100.0,GILEAD SCIENCES INC,Healthcare
+GILD,20,EPS,20,0,100.0,GILEAD SCIENCES INC,Healthcare
+GILD,20,Equity,20,0,100.0,GILEAD SCIENCES INC,Healthcare
+GILD,20,NetIncome,20,0,100.0,GILEAD SCIENCES INC,Healthcare
+GILD,20,Revenue,20,0,100.0,GILEAD SCIENCES INC,Healthcare
+GILD,20,SharesOutstanding,20,0,100.0,GILEAD SCIENCES INC,Healthcare
+GILD,20,TotalDebt,20,0,100.0,GILEAD SCIENCES INC,Healthcare
+GOOGL,20,Assets,20,0,100.0,ALPHABET INC CL C,Communication Services
+GOOGL,20,Cash,20,0,100.0,ALPHABET INC CL C,Communication Services
+GOOGL,20,EPS,20,0,100.0,ALPHABET INC CL C,Communication Services
+GOOGL,20,Equity,20,0,100.0,ALPHABET INC CL C,Communication Services
+GOOGL,20,NetIncome,20,0,100.0,ALPHABET INC CL C,Communication Services
+GOOGL,20,Revenue,20,0,100.0,ALPHABET INC CL C,Communication Services
+GOOGL,20,SharesOutstanding,20,0,100.0,ALPHABET INC CL C,Communication Services
+GOOGL,20,TotalDebt,20,0,100.0,ALPHABET INC CL C,Communication Services
+GS,20,Assets,20,0,100.0,GOLDMAN SACHS GROUP INC,Financial Services
+GS,20,Cash,20,0,100.0,GOLDMAN SACHS GROUP INC,Financial Services
+GS,20,EPS,20,0,100.0,GOLDMAN SACHS GROUP INC,Financial Services
+GS,20,Equity,20,0,100.0,GOLDMAN SACHS GROUP INC,Financial Services
+GS,20,NetIncome,20,0,100.0,GOLDMAN SACHS GROUP INC,Financial Services
+GS,20,Revenue,20,0,100.0,GOLDMAN SACHS GROUP INC,Financial Services
+GS,20,SharesOutstanding,20,0,100.0,GOLDMAN SACHS GROUP INC,Financial Services
+GS,20,TotalDebt,20,0,100.0,GOLDMAN SACHS GROUP INC,Financial Services
+HD,20,Assets,20,0,100.0,HOME DEPOT INC,Consumer Cyclical
+HD,20,Cash,20,0,100.0,HOME DEPOT INC,Consumer Cyclical
+HD,20,EPS,20,0,100.0,HOME DEPOT INC,Consumer Cyclical
+HD,20,Equity,20,0,100.0,HOME DEPOT INC,Consumer Cyclical
+HD,20,NetIncome,20,0,100.0,HOME DEPOT INC,Consumer Cyclical
+HD,20,Revenue,20,0,100.0,HOME DEPOT INC,Consumer Cyclical
+HD,20,SharesOutstanding,20,0,100.0,HOME DEPOT INC,Consumer Cyclical
+HD,20,TotalDebt,20,0,100.0,HOME DEPOT INC,Consumer Cyclical
+HON,20,Assets,20,0,100.0,HONEYWELL INTERNATIONAL INC,Industrials
+HON,20,Cash,20,0,100.0,HONEYWELL INTERNATIONAL INC,Industrials
+HON,20,EPS,20,0,100.0,HONEYWELL INTERNATIONAL INC,Industrials
+HON,20,Equity,20,0,100.0,HONEYWELL INTERNATIONAL INC,Industrials
+HON,20,NetIncome,20,0,100.0,HONEYWELL INTERNATIONAL INC,Industrials
+HON,20,Revenue,20,0,100.0,HONEYWELL INTERNATIONAL INC,Industrials
+HON,20,SharesOutstanding,20,0,100.0,HONEYWELL INTERNATIONAL INC,Industrials
+HON,20,TotalDebt,20,0,100.0,HONEYWELL INTERNATIONAL INC,Industrials
+JNJ,22,TotalDebt,22,0,100.0,JOHNSON + JOHNSON,Healthcare
+JPM,20,Assets,20,0,100.0,JPMORGAN CHASE + CO,Financial Services
+JPM,20,Cash,20,0,100.0,JPMORGAN CHASE + CO,Financial Services
+JPM,20,EPS,20,0,100.0,JPMORGAN CHASE + CO,Financial Services
+JPM,20,Equity,20,0,100.0,JPMORGAN CHASE + CO,Financial Services
+JPM,20,NetIncome,20,0,100.0,JPMORGAN CHASE + CO,Financial Services
+JPM,20,Revenue,20,0,100.0,JPMORGAN CHASE + CO,Financial Services
+JPM,20,SharesOutstanding,20,0,100.0,JPMORGAN CHASE + CO,Financial Services
+JPM,20,TotalDebt,20,0,100.0,JPMORGAN CHASE + CO,Financial Services
+KMI,20,Assets,20,0,100.0,KINDER MORGAN INC,Energy
+KMI,20,Cash,20,0,100.0,KINDER MORGAN INC,Energy
+KMI,20,EPS,20,0,100.0,KINDER MORGAN INC,Energy
+KMI,20,Equity,20,0,100.0,KINDER MORGAN INC,Energy
+KMI,20,NetIncome,20,0,100.0,KINDER MORGAN INC,Energy
+KMI,20,Revenue,20,0,100.0,KINDER MORGAN INC,Energy
+KMI,20,SharesOutstanding,20,0,100.0,KINDER MORGAN INC,Energy
+KMI,20,TotalDebt,20,0,100.0,KINDER MORGAN INC,Energy
+KO,20,Assets,20,0,100.0,COCA COLA CO/THE,Consumer Defensive
+KO,20,Cash,20,0,100.0,COCA COLA CO/THE,Consumer Defensive
+KO,20,EPS,20,0,100.0,COCA COLA CO/THE,Consumer Defensive
+KO,20,Equity,20,0,100.0,COCA COLA CO/THE,Consumer Defensive
+KO,20,NetIncome,20,0,100.0,COCA COLA CO/THE,Consumer Defensive
+KO,20,Revenue,20,0,100.0,COCA COLA CO/THE,Consumer Defensive
+KO,20,SharesOutstanding,20,0,100.0,COCA COLA CO/THE,Consumer Defensive
+KO,20,TotalDebt,20,0,100.0,COCA COLA CO/THE,Consumer Defensive
+LIN,20,Assets,20,0,100.0,LINDE PLC,Basic Materials
+LIN,20,Cash,20,0,100.0,LINDE PLC,Basic Materials
+LIN,20,EPS,20,0,100.0,LINDE PLC,Basic Materials
+LIN,20,Equity,20,0,100.0,LINDE PLC,Basic Materials
+LIN,20,NetIncome,20,0,100.0,LINDE PLC,Basic Materials
+LIN,20,Revenue,20,0,100.0,LINDE PLC,Basic Materials
+LIN,20,SharesOutstanding,20,0,100.0,LINDE PLC,Basic Materials
+LIN,20,TotalDebt,20,0,100.0,LINDE PLC,Basic Materials
+LLY,20,Assets,20,0,100.0,ELI LILLY + CO,Healthcare
+LLY,20,Cash,20,0,100.0,ELI LILLY + CO,Healthcare
+LLY,20,EPS,20,0,100.0,ELI LILLY + CO,Healthcare
+LLY,20,Equity,20,0,100.0,ELI LILLY + CO,Healthcare
+LLY,20,NetIncome,20,0,100.0,ELI LILLY + CO,Healthcare
+LLY,20,Revenue,20,0,100.0,ELI LILLY + CO,Healthcare
+LLY,20,SharesOutstanding,20,0,100.0,ELI LILLY + CO,Healthcare
+LLY,20,TotalDebt,20,0,100.0,ELI LILLY + CO,Healthcare
+LMT,20,Assets,20,0,100.0,LOCKHEED MARTIN CORP,Industrials
+LMT,20,Cash,20,0,100.0,LOCKHEED MARTIN CORP,Industrials
+LMT,20,EPS,20,0,100.0,LOCKHEED MARTIN CORP,Industrials
+LMT,20,Equity,20,0,100.0,LOCKHEED MARTIN CORP,Industrials
+LMT,20,NetIncome,20,0,100.0,LOCKHEED MARTIN CORP,Industrials
+LMT,20,Revenue,20,0,100.0,LOCKHEED MARTIN CORP,Industrials
+LMT,20,SharesOutstanding,20,0,100.0,LOCKHEED MARTIN CORP,Industrials
+LMT,20,TotalDebt,20,0,100.0,LOCKHEED MARTIN CORP,Industrials
+LOW,20,Assets,20,0,100.0,LOWE S COS INC,Consumer Cyclical
+LOW,20,Cash,20,0,100.0,LOWE S COS INC,Consumer Cyclical
+LOW,20,EPS,20,0,100.0,LOWE S COS INC,Consumer Cyclical
+LOW,20,Equity,20,0,100.0,LOWE S COS INC,Consumer Cyclical
+LOW,20,NetIncome,20,0,100.0,LOWE S COS INC,Consumer Cyclical
+LOW,20,Revenue,20,0,100.0,LOWE S COS INC,Consumer Cyclical
+LOW,20,SharesOutstanding,20,0,100.0,LOWE S COS INC,Consumer Cyclical
+LOW,20,TotalDebt,20,0,100.0,LOWE S COS INC,Consumer Cyclical
+MA,20,Assets,20,0,100.0,MASTERCARD INC   A,Financial Services
+MA,20,Cash,20,0,100.0,MASTERCARD INC   A,Financial Services
+MA,20,EPS,20,0,100.0,MASTERCARD INC   A,Financial Services
+MA,20,Equity,20,0,100.0,MASTERCARD INC   A,Financial Services
+MA,20,NetIncome,20,0,100.0,MASTERCARD INC   A,Financial Services
+MA,20,Revenue,20,0,100.0,MASTERCARD INC   A,Financial Services
+MA,20,SharesOutstanding,20,0,100.0,MASTERCARD INC   A,Financial Services
+MA,20,TotalDebt,20,0,100.0,MASTERCARD INC   A,Financial Services
+MAR,20,Assets,20,0,100.0,MARRIOTT INTERNATIONAL  CL A,Consumer Cyclical
+MAR,20,Cash,20,0,100.0,MARRIOTT INTERNATIONAL  CL A,Consumer Cyclical
+MAR,20,EPS,20,0,100.0,MARRIOTT INTERNATIONAL  CL A,Consumer Cyclical
+MAR,20,Equity,20,0,100.0,MARRIOTT INTERNATIONAL  CL A,Consumer Cyclical
+MAR,20,NetIncome,20,0,100.0,MARRIOTT INTERNATIONAL  CL A,Consumer Cyclical
+MAR,20,Revenue,20,0,100.0,MARRIOTT INTERNATIONAL  CL A,Consumer Cyclical
+MAR,20,SharesOutstanding,20,0,100.0,MARRIOTT INTERNATIONAL  CL A,Consumer Cyclical
+MAR,20,TotalDebt,20,0,100.0,MARRIOTT INTERNATIONAL  CL A,Consumer Cyclical
+MCD,20,Assets,20,0,100.0,MCDONALD S CORP,Consumer Cyclical
+MCD,20,Cash,20,0,100.0,MCDONALD S CORP,Consumer Cyclical
+MCD,20,EPS,20,0,100.0,MCDONALD S CORP,Consumer Cyclical
+MCD,20,Equity,20,0,100.0,MCDONALD S CORP,Consumer Cyclical
+MCD,20,NetIncome,20,0,100.0,MCDONALD S CORP,Consumer Cyclical
+MCD,20,Revenue,20,0,100.0,MCDONALD S CORP,Consumer Cyclical
+MCD,20,SharesOutstanding,20,0,100.0,MCDONALD S CORP,Consumer Cyclical
+MCD,20,TotalDebt,20,0,100.0,MCDONALD S CORP,Consumer Cyclical
+MDLZ,20,Assets,20,0,100.0,MONDELEZ INTERNATIONAL INC A,Consumer Defensive
+MDLZ,20,Cash,20,0,100.0,MONDELEZ INTERNATIONAL INC A,Consumer Defensive
+MDLZ,20,EPS,20,0,100.0,MONDELEZ INTERNATIONAL INC A,Consumer Defensive
+MDLZ,20,Equity,20,0,100.0,MONDELEZ INTERNATIONAL INC A,Consumer Defensive
+MDLZ,20,NetIncome,20,0,100.0,MONDELEZ INTERNATIONAL INC A,Consumer Defensive
+MDLZ,20,Revenue,20,0,100.0,MONDELEZ INTERNATIONAL INC A,Consumer Defensive
+MDLZ,20,SharesOutstanding,20,0,100.0,MONDELEZ INTERNATIONAL INC A,Consumer Defensive
+MDLZ,20,TotalDebt,20,0,100.0,MONDELEZ INTERNATIONAL INC A,Consumer Defensive
+META,20,Assets,20,0,100.0,META PLATFORMS INC CLASS A,Communication Services
+META,20,Cash,20,0,100.0,META PLATFORMS INC CLASS A,Communication Services
+META,20,EPS,20,0,100.0,META PLATFORMS INC CLASS A,Communication Services
+META,20,Equity,20,0,100.0,META PLATFORMS INC CLASS A,Communication Services
+META,20,NetIncome,20,0,100.0,META PLATFORMS INC CLASS A,Communication Services
+META,20,Revenue,20,0,100.0,META PLATFORMS INC CLASS A,Communication Services
+META,20,SharesOutstanding,20,0,100.0,META PLATFORMS INC CLASS A,Communication Services
+META,20,TotalDebt,20,0,100.0,META PLATFORMS INC CLASS A,Communication Services
+MNST,20,Assets,20,0,100.0,MONSTER BEVERAGE CORP,Consumer Defensive
+MNST,20,Cash,20,0,100.0,MONSTER BEVERAGE CORP,Consumer Defensive
+MNST,20,EPS,20,0,100.0,MONSTER BEVERAGE CORP,Consumer Defensive
+MNST,20,Equity,20,0,100.0,MONSTER BEVERAGE CORP,Consumer Defensive
+MNST,20,NetIncome,20,0,100.0,MONSTER BEVERAGE CORP,Consumer Defensive
+MNST,20,Revenue,20,0,100.0,MONSTER BEVERAGE CORP,Consumer Defensive
+MNST,20,SharesOutstanding,20,0,100.0,MONSTER BEVERAGE CORP,Consumer Defensive
+MO,20,Assets,20,0,100.0,ALTRIA GROUP INC,Consumer Defensive
+MO,20,Cash,20,0,100.0,ALTRIA GROUP INC,Consumer Defensive
+MO,20,EPS,20,0,100.0,ALTRIA GROUP INC,Consumer Defensive
+MO,20,Equity,20,0,100.0,ALTRIA GROUP INC,Consumer Defensive
+MO,20,NetIncome,20,0,100.0,ALTRIA GROUP INC,Consumer Defensive
+MO,20,Revenue,20,0,100.0,ALTRIA GROUP INC,Consumer Defensive
+MO,20,SharesOutstanding,20,0,100.0,ALTRIA GROUP INC,Consumer Defensive
+MO,20,TotalDebt,20,0,100.0,ALTRIA GROUP INC,Consumer Defensive
+MRK,20,Assets,20,0,100.0,MERCK + CO. INC.,Healthcare
+MRK,20,Cash,20,0,100.0,MERCK + CO. INC.,Healthcare
+MRK,20,EPS,20,0,100.0,MERCK + CO. INC.,Healthcare
+MRK,20,Equity,20,0,100.0,MERCK + CO. INC.,Healthcare
+MRK,20,NetIncome,20,0,100.0,MERCK + CO. INC.,Healthcare
+MRK,20,Revenue,20,0,100.0,MERCK + CO. INC.,Healthcare
+MRK,20,SharesOutstanding,20,0,100.0,MERCK + CO. INC.,Healthcare
+MRK,20,TotalDebt,20,0,100.0,MERCK + CO. INC.,Healthcare
+MS,20,Assets,20,0,100.0,MORGAN STANLEY,Financial Services
+MS,20,Cash,20,0,100.0,MORGAN STANLEY,Financial Services
+MS,20,EPS,20,0,100.0,MORGAN STANLEY,Financial Services
+MS,20,Equity,20,0,100.0,MORGAN STANLEY,Financial Services
+MS,20,NetIncome,20,0,100.0,MORGAN STANLEY,Financial Services
+MS,20,Revenue,20,0,100.0,MORGAN STANLEY,Financial Services
+MS,20,SharesOutstanding,20,0,100.0,MORGAN STANLEY,Financial Services
+MS,20,TotalDebt,20,0,100.0,MORGAN STANLEY,Financial Services
+MSFT,20,Assets,20,0,100.0,MICROSOFT CORP,Technology
+MSFT,20,Cash,20,0,100.0,MICROSOFT CORP,Technology
+MSFT,20,EPS,20,0,100.0,MICROSOFT CORP,Technology
+MSFT,20,Equity,20,0,100.0,MICROSOFT CORP,Technology
+MSFT,20,NetIncome,20,0,100.0,MICROSOFT CORP,Technology
+MSFT,20,Revenue,20,0,100.0,MICROSOFT CORP,Technology
+MSFT,20,SharesOutstanding,20,0,100.0,MICROSOFT CORP,Technology
+MSFT,20,TotalDebt,20,0,100.0,MICROSOFT CORP,Technology
+MU,20,Assets,20,0,100.0,MICRON TECHNOLOGY INC,Technology
+MU,20,Cash,20,0,100.0,MICRON TECHNOLOGY INC,Technology
+MU,20,EPS,20,0,100.0,MICRON TECHNOLOGY INC,Technology
+MU,20,Equity,20,0,100.0,MICRON TECHNOLOGY INC,Technology
+MU,20,NetIncome,20,0,100.0,MICRON TECHNOLOGY INC,Technology
+MU,20,Revenue,20,0,100.0,MICRON TECHNOLOGY INC,Technology
+MU,20,SharesOutstanding,20,0,100.0,MICRON TECHNOLOGY INC,Technology
+MU,20,TotalDebt,20,0,100.0,MICRON TECHNOLOGY INC,Technology
+NEE,20,Assets,20,0,100.0,NEXTERA ENERGY INC,Utilities
+NEE,20,Cash,20,0,100.0,NEXTERA ENERGY INC,Utilities
+NEE,20,EPS,20,0,100.0,NEXTERA ENERGY INC,Utilities
+NEE,20,Equity,20,0,100.0,NEXTERA ENERGY INC,Utilities
+NEE,20,NetIncome,20,0,100.0,NEXTERA ENERGY INC,Utilities
+NEE,20,Revenue,20,0,100.0,NEXTERA ENERGY INC,Utilities
+NEE,20,SharesOutstanding,20,0,100.0,NEXTERA ENERGY INC,Utilities
+NEE,20,TotalDebt,20,0,100.0,NEXTERA ENERGY INC,Utilities
+NEM,20,Assets,20,0,100.0,NEWMONT CORP,Basic Materials
+NEM,20,Cash,20,0,100.0,NEWMONT CORP,Basic Materials
+NEM,20,EPS,20,0,100.0,NEWMONT CORP,Basic Materials
+NEM,20,Equity,20,0,100.0,NEWMONT CORP,Basic Materials
+NEM,20,NetIncome,20,0,100.0,NEWMONT CORP,Basic Materials
+NEM,20,Revenue,20,0,100.0,NEWMONT CORP,Basic Materials
+NEM,20,SharesOutstanding,20,0,100.0,NEWMONT CORP,Basic Materials
+NEM,20,TotalDebt,20,0,100.0,NEWMONT CORP,Basic Materials
+NFLX,20,Assets,20,0,100.0,NETFLIX INC,Communication Services
+NFLX,20,Cash,20,0,100.0,NETFLIX INC,Communication Services
+NFLX,20,EPS,20,0,100.0,NETFLIX INC,Communication Services
+NFLX,20,Equity,20,0,100.0,NETFLIX INC,Communication Services
+NFLX,20,NetIncome,20,0,100.0,NETFLIX INC,Communication Services
+NFLX,20,Revenue,20,0,100.0,NETFLIX INC,Communication Services
+NFLX,20,SharesOutstanding,20,0,100.0,NETFLIX INC,Communication Services
+NFLX,20,TotalDebt,20,0,100.0,NETFLIX INC,Communication Services
+NVDA,21,Assets,21,0,100.0,NVIDIA CORP,Technology
+NVDA,21,Cash,21,0,100.0,NVIDIA CORP,Technology
+NVDA,21,EPS,21,0,100.0,NVIDIA CORP,Technology
+NVDA,21,Equity,21,0,100.0,NVIDIA CORP,Technology
+NVDA,21,NetIncome,21,0,100.0,NVIDIA CORP,Technology
+NVDA,21,Revenue,21,0,100.0,NVIDIA CORP,Technology
+NVDA,21,SharesOutstanding,21,0,100.0,NVIDIA CORP,Technology
+NVDA,21,TotalDebt,21,0,100.0,NVIDIA CORP,Technology
+O,20,Assets,20,0,100.0,REALTY INCOME CORP,Real Estate
+O,20,Cash,20,0,100.0,REALTY INCOME CORP,Real Estate
+O,20,EPS,20,0,100.0,REALTY INCOME CORP,Real Estate
+O,20,Equity,20,0,100.0,REALTY INCOME CORP,Real Estate
+O,20,NetIncome,20,0,100.0,REALTY INCOME CORP,Real Estate
+O,20,Revenue,20,0,100.0,REALTY INCOME CORP,Real Estate
+O,20,SharesOutstanding,20,0,100.0,REALTY INCOME CORP,Real Estate
+O,20,TotalDebt,20,0,100.0,REALTY INCOME CORP,Real Estate
+ORCL,23,TotalDebt,23,0,100.0,ORACLE CORP,Technology
+PBR-A,9,EPS,9,0,100.0,PETROLEO BRASIL SP PREF  ADR,Energy
+PEP,20,Assets,20,0,100.0,PEPSICO INC,Consumer Defensive
+PEP,20,Cash,20,0,100.0,PEPSICO INC,Consumer Defensive
+PEP,20,EPS,20,0,100.0,PEPSICO INC,Consumer Defensive
+PEP,20,Equity,20,0,100.0,PEPSICO INC,Consumer Defensive
+PEP,20,NetIncome,20,0,100.0,PEPSICO INC,Consumer Defensive
+PEP,20,Revenue,20,0,100.0,PEPSICO INC,Consumer Defensive
+PEP,20,SharesOutstanding,20,0,100.0,PEPSICO INC,Consumer Defensive
+PEP,20,TotalDebt,20,0,100.0,PEPSICO INC,Consumer Defensive
+PG,20,Assets,20,0,100.0,PROCTER + GAMBLE CO/THE,Consumer Defensive
+PG,20,Cash,20,0,100.0,PROCTER + GAMBLE CO/THE,Consumer Defensive
+PG,20,EPS,20,0,100.0,PROCTER + GAMBLE CO/THE,Consumer Defensive
+PG,20,Equity,20,0,100.0,PROCTER + GAMBLE CO/THE,Consumer Defensive
+PG,20,NetIncome,20,0,100.0,PROCTER + GAMBLE CO/THE,Consumer Defensive
+PG,20,Revenue,20,0,100.0,PROCTER + GAMBLE CO/THE,Consumer Defensive
+PG,20,SharesOutstanding,20,0,100.0,PROCTER + GAMBLE CO/THE,Consumer Defensive
+PG,20,TotalDebt,20,0,100.0,PROCTER + GAMBLE CO/THE,Consumer Defensive
+PLD,20,Assets,20,0,100.0,PROLOGIS INC,Real Estate
+PLD,20,Cash,20,0,100.0,PROLOGIS INC,Real Estate
+PLD,20,EPS,20,0,100.0,PROLOGIS INC,Real Estate
+PLD,20,Equity,20,0,100.0,PROLOGIS INC,Real Estate
+PLD,20,NetIncome,20,0,100.0,PROLOGIS INC,Real Estate
+PLD,20,Revenue,20,0,100.0,PROLOGIS INC,Real Estate
+PLD,20,SharesOutstanding,20,0,100.0,PROLOGIS INC,Real Estate
+PLD,20,TotalDebt,20,0,100.0,PROLOGIS INC,Real Estate
+PLTR,20,Assets,20,0,100.0,PALANTIR TECHNOLOGIES INC A,Technology
+PLTR,20,Cash,20,0,100.0,PALANTIR TECHNOLOGIES INC A,Technology
+PLTR,20,EPS,20,0,100.0,PALANTIR TECHNOLOGIES INC A,Technology
+PLTR,20,Equity,20,0,100.0,PALANTIR TECHNOLOGIES INC A,Technology
+PLTR,20,NetIncome,20,0,100.0,PALANTIR TECHNOLOGIES INC A,Technology
+PLTR,20,Revenue,20,0,100.0,PALANTIR TECHNOLOGIES INC A,Technology
+PLTR,20,SharesOutstanding,20,0,100.0,PALANTIR TECHNOLOGIES INC A,Technology
+PM,20,Assets,20,0,100.0,PHILIP MORRIS INTERNATIONAL,Consumer Defensive
+PM,20,Cash,20,0,100.0,PHILIP MORRIS INTERNATIONAL,Consumer Defensive
+PM,20,EPS,20,0,100.0,PHILIP MORRIS INTERNATIONAL,Consumer Defensive
+PM,20,Equity,20,0,100.0,PHILIP MORRIS INTERNATIONAL,Consumer Defensive
+PM,20,NetIncome,20,0,100.0,PHILIP MORRIS INTERNATIONAL,Consumer Defensive
+PM,20,Revenue,20,0,100.0,PHILIP MORRIS INTERNATIONAL,Consumer Defensive
+PM,20,SharesOutstanding,20,0,100.0,PHILIP MORRIS INTERNATIONAL,Consumer Defensive
+PM,20,TotalDebt,20,0,100.0,PHILIP MORRIS INTERNATIONAL,Consumer Defensive
+PSA,20,Assets,20,0,100.0,PUBLIC STORAGE,Real Estate
+PSA,20,Cash,20,0,100.0,PUBLIC STORAGE,Real Estate
+PSA,20,EPS,20,0,100.0,PUBLIC STORAGE,Real Estate
+PSA,20,Equity,20,0,100.0,PUBLIC STORAGE,Real Estate
+PSA,20,NetIncome,20,0,100.0,PUBLIC STORAGE,Real Estate
+PSA,20,Revenue,20,0,100.0,PUBLIC STORAGE,Real Estate
+PSA,20,SharesOutstanding,20,0,100.0,PUBLIC STORAGE,Real Estate
+PSA,20,TotalDebt,20,0,100.0,PUBLIC STORAGE,Real Estate
+RIO,10,Assets,10,0,100.0,RIO TINTO PLC,Basic Materials
+RIO,10,EPS,10,0,100.0,RIO TINTO PLC,Basic Materials
+RIO,10,Equity,10,0,100.0,RIO TINTO PLC,Basic Materials
+RIO,10,NetIncome,10,0,100.0,RIO TINTO PLC,Basic Materials
+RIO,10,Revenue,10,0,100.0,RIO TINTO PLC,Basic Materials
+RIO,10,SharesOutstanding,10,0,100.0,RIO TINTO PLC,Basic Materials
+RTX,20,Assets,20,0,100.0,RTX CORP,Industrials
+RTX,20,Cash,20,0,100.0,RTX CORP,Industrials
+RTX,20,EPS,20,0,100.0,RTX CORP,Industrials
+RTX,20,Equity,20,0,100.0,RTX CORP,Industrials
+RTX,20,NetIncome,20,0,100.0,RTX CORP,Industrials
+RTX,20,Revenue,20,0,100.0,RTX CORP,Industrials
+RTX,20,SharesOutstanding,20,0,100.0,RTX CORP,Industrials
+RTX,20,TotalDebt,20,0,100.0,RTX CORP,Industrials
+RY,21,Assets,21,0,100.0,ROYAL BANK OF CANADA,Financial Services
+RY,21,EPS,21,0,100.0,ROYAL BANK OF CANADA,Financial Services
+RY,21,Equity,21,0,100.0,ROYAL BANK OF CANADA,Financial Services
+RY,21,NetIncome,21,0,100.0,ROYAL BANK OF CANADA,Financial Services
+RY,21,Revenue,21,0,100.0,ROYAL BANK OF CANADA,Financial Services
+RY,21,SharesOutstanding,21,0,100.0,ROYAL BANK OF CANADA,Financial Services
+SBUX,20,Assets,20,0,100.0,STARBUCKS CORP,Consumer Cyclical
+SBUX,20,Cash,20,0,100.0,STARBUCKS CORP,Consumer Cyclical
+SBUX,20,EPS,20,0,100.0,STARBUCKS CORP,Consumer Cyclical
+SBUX,20,Equity,20,0,100.0,STARBUCKS CORP,Consumer Cyclical
+SBUX,20,NetIncome,20,0,100.0,STARBUCKS CORP,Consumer Cyclical
+SBUX,20,Revenue,20,0,100.0,STARBUCKS CORP,Consumer Cyclical
+SBUX,20,SharesOutstanding,20,0,100.0,STARBUCKS CORP,Consumer Cyclical
+SBUX,20,TotalDebt,20,0,100.0,STARBUCKS CORP,Consumer Cyclical
+SHEL,15,EPS,15,0,100.0,SHELL PLC,Energy
+SHEL,15,NetIncome,15,0,100.0,SHELL PLC,Energy
+SHEL,15,Revenue,15,0,100.0,SHELL PLC,Energy
+SHEL,15,SharesOutstanding,15,0,100.0,SHELL PLC,Energy
+SHW,20,Assets,20,0,100.0,SHERWIN WILLIAMS CO/THE,Basic Materials
+SHW,20,Cash,20,0,100.0,SHERWIN WILLIAMS CO/THE,Basic Materials
+SHW,20,EPS,20,0,100.0,SHERWIN WILLIAMS CO/THE,Basic Materials
+SHW,20,Equity,20,0,100.0,SHERWIN WILLIAMS CO/THE,Basic Materials
+SHW,20,NetIncome,20,0,100.0,SHERWIN WILLIAMS CO/THE,Basic Materials
+SHW,20,Revenue,20,0,100.0,SHERWIN WILLIAMS CO/THE,Basic Materials
+SHW,20,SharesOutstanding,20,0,100.0,SHERWIN WILLIAMS CO/THE,Basic Materials
+SHW,20,TotalDebt,20,0,100.0,SHERWIN WILLIAMS CO/THE,Basic Materials
+SO,20,Assets,20,0,100.0,SOUTHERN CO/THE,Utilities
+SO,20,Cash,20,0,100.0,SOUTHERN CO/THE,Utilities
+SO,20,EPS,20,0,100.0,SOUTHERN CO/THE,Utilities
+SO,20,Equity,20,0,100.0,SOUTHERN CO/THE,Utilities
+SO,20,NetIncome,20,0,100.0,SOUTHERN CO/THE,Utilities
+SO,20,Revenue,20,0,100.0,SOUTHERN CO/THE,Utilities
+SO,20,SharesOutstanding,20,0,100.0,SOUTHERN CO/THE,Utilities
+SO,20,TotalDebt,20,0,100.0,SOUTHERN CO/THE,Utilities
+SPG,20,Assets,20,0,100.0,SIMON PROPERTY GROUP INC,Real Estate
+SPG,20,Cash,20,0,100.0,SIMON PROPERTY GROUP INC,Real Estate
+SPG,20,EPS,20,0,100.0,SIMON PROPERTY GROUP INC,Real Estate
+SPG,20,Equity,20,0,100.0,SIMON PROPERTY GROUP INC,Real Estate
+SPG,20,NetIncome,20,0,100.0,SIMON PROPERTY GROUP INC,Real Estate
+SPG,20,Revenue,20,0,100.0,SIMON PROPERTY GROUP INC,Real Estate
+SPG,20,SharesOutstanding,20,0,100.0,SIMON PROPERTY GROUP INC,Real Estate
+SPG,20,TotalDebt,20,0,100.0,SIMON PROPERTY GROUP INC,Real Estate
+SRE,20,Assets,20,0,100.0,SEMPRA,Utilities
+SRE,20,Cash,20,0,100.0,SEMPRA,Utilities
+SRE,20,EPS,20,0,100.0,SEMPRA,Utilities
+SRE,20,Equity,20,0,100.0,SEMPRA,Utilities
+SRE,20,NetIncome,20,0,100.0,SEMPRA,Utilities
+SRE,20,Revenue,20,0,100.0,SEMPRA,Utilities
+SRE,20,SharesOutstanding,20,0,100.0,SEMPRA,Utilities
+SRE,20,TotalDebt,20,0,100.0,SEMPRA,Utilities
+T,20,Assets,20,0,100.0,AT+T INC,Communication Services
+T,20,Cash,20,0,100.0,AT+T INC,Communication Services
+T,20,EPS,20,0,100.0,AT+T INC,Communication Services
+T,20,Equity,20,0,100.0,AT+T INC,Communication Services
+T,20,NetIncome,20,0,100.0,AT+T INC,Communication Services
+T,20,Revenue,20,0,100.0,AT+T INC,Communication Services
+T,20,SharesOutstanding,20,0,100.0,AT+T INC,Communication Services
+T,20,TotalDebt,20,0,100.0,AT+T INC,Communication Services
+TJX,20,Assets,20,0,100.0,TJX COMPANIES INC,Consumer Cyclical
+TJX,20,Cash,20,0,100.0,TJX COMPANIES INC,Consumer Cyclical
+TJX,20,EPS,20,0,100.0,TJX COMPANIES INC,Consumer Cyclical
+TJX,20,Equity,20,0,100.0,TJX COMPANIES INC,Consumer Cyclical
+TJX,20,NetIncome,20,0,100.0,TJX COMPANIES INC,Consumer Cyclical
+TJX,20,Revenue,20,0,100.0,TJX COMPANIES INC,Consumer Cyclical
+TJX,20,SharesOutstanding,20,0,100.0,TJX COMPANIES INC,Consumer Cyclical
+TJX,20,TotalDebt,20,0,100.0,TJX COMPANIES INC,Consumer Cyclical
+TMO,20,Assets,20,0,100.0,THERMO FISHER SCIENTIFIC INC,Healthcare
+TMO,20,Cash,20,0,100.0,THERMO FISHER SCIENTIFIC INC,Healthcare
+TMO,20,EPS,20,0,100.0,THERMO FISHER SCIENTIFIC INC,Healthcare
+TMO,20,Equity,20,0,100.0,THERMO FISHER SCIENTIFIC INC,Healthcare
+TMO,20,NetIncome,20,0,100.0,THERMO FISHER SCIENTIFIC INC,Healthcare
+TMO,20,Revenue,20,0,100.0,THERMO FISHER SCIENTIFIC INC,Healthcare
+TMO,20,SharesOutstanding,20,0,100.0,THERMO FISHER SCIENTIFIC INC,Healthcare
+TMO,20,TotalDebt,20,0,100.0,THERMO FISHER SCIENTIFIC INC,Healthcare
+TMUS,20,Assets,20,0,100.0,T MOBILE US INC,Communication Services
+TMUS,20,Cash,20,0,100.0,T MOBILE US INC,Communication Services
+TMUS,20,EPS,20,0,100.0,T MOBILE US INC,Communication Services
+TMUS,20,Equity,20,0,100.0,T MOBILE US INC,Communication Services
+TMUS,20,NetIncome,20,0,100.0,T MOBILE US INC,Communication Services
+TMUS,20,Revenue,20,0,100.0,T MOBILE US INC,Communication Services
+TMUS,20,SharesOutstanding,20,0,100.0,T MOBILE US INC,Communication Services
+TMUS,20,TotalDebt,20,0,100.0,T MOBILE US INC,Communication Services
+TSLA,21,SharesOutstanding,21,0,100.0,TESLA INC,Consumer Cyclical
+TSM,5,Assets,5,0,100.0,TAIWAN SEMICONDUCTOR SP ADR,Technology
+TSM,5,Cash,5,0,100.0,TAIWAN SEMICONDUCTOR SP ADR,Technology
+TSM,5,EPS,5,0,100.0,TAIWAN SEMICONDUCTOR SP ADR,Technology
+TSM,5,Equity,5,0,100.0,TAIWAN SEMICONDUCTOR SP ADR,Technology
+TSM,5,NetIncome,5,0,100.0,TAIWAN SEMICONDUCTOR SP ADR,Technology
+TSM,5,Revenue,5,0,100.0,TAIWAN SEMICONDUCTOR SP ADR,Technology
+TSM,5,SharesOutstanding,5,0,100.0,TAIWAN SEMICONDUCTOR SP ADR,Technology
+TSM,5,TotalDebt,5,0,100.0,TAIWAN SEMICONDUCTOR SP ADR,Technology
+TTE,14,Assets,14,0,100.0,TOTALENERGIES SE,Energy
+TTE,14,EPS,14,0,100.0,TOTALENERGIES SE,Energy
+TTE,14,Equity,14,0,100.0,TOTALENERGIES SE,Energy
+TTE,14,NetIncome,14,0,100.0,TOTALENERGIES SE,Energy
+TTE,14,Revenue,14,0,100.0,TOTALENERGIES SE,Energy
+TTE,14,SharesOutstanding,14,0,100.0,TOTALENERGIES SE,Energy
+TTE,14,TotalDebt,14,0,100.0,TOTALENERGIES SE,Energy
+UNH,22,TotalDebt,22,0,100.0,UNITEDHEALTH GROUP INC,Healthcare
+UNP,20,Assets,20,0,100.0,UNION PACIFIC CORP,Industrials
+UNP,20,Cash,20,0,100.0,UNION PACIFIC CORP,Industrials
+UNP,20,EPS,20,0,100.0,UNION PACIFIC CORP,Industrials
+UNP,20,Equity,20,0,100.0,UNION PACIFIC CORP,Industrials
+UNP,20,NetIncome,20,0,100.0,UNION PACIFIC CORP,Industrials
+UNP,20,Revenue,20,0,100.0,UNION PACIFIC CORP,Industrials
+UNP,20,SharesOutstanding,20,0,100.0,UNION PACIFIC CORP,Industrials
+UNP,20,TotalDebt,20,0,100.0,UNION PACIFIC CORP,Industrials
+V,41,SharesOutstanding,41,0,100.0,VISA INC CLASS A SHARES,Financial Services
+VLO,20,Assets,20,0,100.0,VALERO ENERGY CORP,Energy
+VLO,20,Cash,20,0,100.0,VALERO ENERGY CORP,Energy
+VLO,20,EPS,20,0,100.0,VALERO ENERGY CORP,Energy
+VLO,20,Equity,20,0,100.0,VALERO ENERGY CORP,Energy
+VLO,20,NetIncome,20,0,100.0,VALERO ENERGY CORP,Energy
+VLO,20,Revenue,20,0,100.0,VALERO ENERGY CORP,Energy
+VLO,20,SharesOutstanding,20,0,100.0,VALERO ENERGY CORP,Energy
+VLO,20,TotalDebt,20,0,100.0,VALERO ENERGY CORP,Energy
+VST,20,Assets,20,0,100.0,VISTRA CORP,Utilities
+VST,20,Cash,20,0,100.0,VISTRA CORP,Utilities
+VST,20,EPS,20,0,100.0,VISTRA CORP,Utilities
+VST,20,Equity,20,0,100.0,VISTRA CORP,Utilities
+VST,20,NetIncome,20,0,100.0,VISTRA CORP,Utilities
+VST,20,Revenue,20,0,100.0,VISTRA CORP,Utilities
+VST,20,SharesOutstanding,20,0,100.0,VISTRA CORP,Utilities
+VST,20,TotalDebt,20,0,100.0,VISTRA CORP,Utilities
+VTR,20,Assets,20,0,100.0,VENTAS INC,Real Estate
+VTR,20,Cash,20,0,100.0,VENTAS INC,Real Estate
+VTR,20,EPS,20,0,100.0,VENTAS INC,Real Estate
+VTR,20,Equity,20,0,100.0,VENTAS INC,Real Estate
+VTR,20,NetIncome,20,0,100.0,VENTAS INC,Real Estate
+VTR,20,Revenue,20,0,100.0,VENTAS INC,Real Estate
+VTR,20,SharesOutstanding,20,0,100.0,VENTAS INC,Real Estate
+VTR,20,TotalDebt,20,0,100.0,VENTAS INC,Real Estate
+VZ,20,Assets,20,0,100.0,VERIZON COMMUNICATIONS INC,Communication Services
+VZ,20,Cash,20,0,100.0,VERIZON COMMUNICATIONS INC,Communication Services
+VZ,20,EPS,20,0,100.0,VERIZON COMMUNICATIONS INC,Communication Services
+VZ,20,Equity,20,0,100.0,VERIZON COMMUNICATIONS INC,Communication Services
+VZ,20,NetIncome,20,0,100.0,VERIZON COMMUNICATIONS INC,Communication Services
+VZ,20,Revenue,20,0,100.0,VERIZON COMMUNICATIONS INC,Communication Services
+VZ,20,SharesOutstanding,20,0,100.0,VERIZON COMMUNICATIONS INC,Communication Services
+VZ,20,TotalDebt,20,0,100.0,VERIZON COMMUNICATIONS INC,Communication Services
+WBD,20,Assets,20,0,100.0,WARNER BROS DISCOVERY INC,Communication Services
+WBD,20,Cash,20,0,100.0,WARNER BROS DISCOVERY INC,Communication Services
+WBD,20,EPS,20,0,100.0,WARNER BROS DISCOVERY INC,Communication Services
+WBD,20,Equity,20,0,100.0,WARNER BROS DISCOVERY INC,Communication Services
+WBD,20,NetIncome,20,0,100.0,WARNER BROS DISCOVERY INC,Communication Services
+WBD,20,Revenue,20,0,100.0,WARNER BROS DISCOVERY INC,Communication Services
+WBD,20,SharesOutstanding,20,0,100.0,WARNER BROS DISCOVERY INC,Communication Services
+WBD,20,TotalDebt,20,0,100.0,WARNER BROS DISCOVERY INC,Communication Services
+WELL,20,Assets,20,0,100.0,WELLTOWER INC,Real Estate
+WELL,20,Cash,20,0,100.0,WELLTOWER INC,Real Estate
+WELL,20,EPS,20,0,100.0,WELLTOWER INC,Real Estate
+WELL,20,Equity,20,0,100.0,WELLTOWER INC,Real Estate
+WELL,20,NetIncome,20,0,100.0,WELLTOWER INC,Real Estate
+WELL,20,Revenue,20,0,100.0,WELLTOWER INC,Real Estate
+WELL,20,SharesOutstanding,20,0,100.0,WELLTOWER INC,Real Estate
+WELL,20,TotalDebt,20,0,100.0,WELLTOWER INC,Real Estate
+WFC,20,Assets,20,0,100.0,WELLS FARGO + CO,Financial Services
+WFC,20,Cash,20,0,100.0,WELLS FARGO + CO,Financial Services
+WFC,20,EPS,20,0,100.0,WELLS FARGO + CO,Financial Services
+WFC,20,Equity,20,0,100.0,WELLS FARGO + CO,Financial Services
+WFC,20,NetIncome,20,0,100.0,WELLS FARGO + CO,Financial Services
+WFC,20,Revenue,20,0,100.0,WELLS FARGO + CO,Financial Services
+WFC,20,SharesOutstanding,20,0,100.0,WELLS FARGO + CO,Financial Services
+WFC,20,TotalDebt,20,0,100.0,WELLS FARGO + CO,Financial Services
+WMB,20,Assets,20,0,100.0,WILLIAMS COS INC,Energy
+WMB,20,Cash,20,0,100.0,WILLIAMS COS INC,Energy
+WMB,20,EPS,20,0,100.0,WILLIAMS COS INC,Energy
+WMB,20,Equity,20,0,100.0,WILLIAMS COS INC,Energy
+WMB,20,NetIncome,20,0,100.0,WILLIAMS COS INC,Energy
+WMB,20,Revenue,20,0,100.0,WILLIAMS COS INC,Energy
+WMB,20,SharesOutstanding,20,0,100.0,WILLIAMS COS INC,Energy
+WMB,20,TotalDebt,20,0,100.0,WILLIAMS COS INC,Energy
+WMT,21,Assets,21,0,100.0,WALMART INC,Consumer Defensive
+WMT,21,Cash,21,0,100.0,WALMART INC,Consumer Defensive
+WMT,21,EPS,21,0,100.0,WALMART INC,Consumer Defensive
+WMT,21,Equity,21,0,100.0,WALMART INC,Consumer Defensive
+WMT,21,NetIncome,21,0,100.0,WALMART INC,Consumer Defensive
+WMT,21,Revenue,21,0,100.0,WALMART INC,Consumer Defensive
+WMT,21,SharesOutstanding,21,0,100.0,WALMART INC,Consumer Defensive
+WMT,21,TotalDebt,21,0,100.0,WALMART INC,Consumer Defensive
+XEL,20,Assets,20,0,100.0,XCEL ENERGY INC,Utilities
+XEL,20,Cash,20,0,100.0,XCEL ENERGY INC,Utilities
+XEL,20,EPS,20,0,100.0,XCEL ENERGY INC,Utilities
+XEL,20,Equity,20,0,100.0,XCEL ENERGY INC,Utilities
+XEL,20,NetIncome,20,0,100.0,XCEL ENERGY INC,Utilities
+XEL,20,Revenue,20,0,100.0,XCEL ENERGY INC,Utilities
+XEL,20,SharesOutstanding,20,0,100.0,XCEL ENERGY INC,Utilities
+XEL,20,TotalDebt,20,0,100.0,XCEL ENERGY INC,Utilities
+XOM,20,Assets,20,0,100.0,EXXON MOBIL CORP,Energy
+XOM,20,Cash,20,0,100.0,EXXON MOBIL CORP,Energy
+XOM,20,EPS,20,0,100.0,EXXON MOBIL CORP,Energy
+XOM,20,Equity,20,0,100.0,EXXON MOBIL CORP,Energy
+XOM,20,NetIncome,20,0,100.0,EXXON MOBIL CORP,Energy
+XOM,20,Revenue,20,0,100.0,EXXON MOBIL CORP,Energy
+XOM,20,SharesOutstanding,20,0,100.0,EXXON MOBIL CORP,Energy
+XOM,20,TotalDebt,20,0,100.0,EXXON MOBIL CORP,Energy
