@@ -1,0 +1,9 @@
+#%%
+from pathlib import Path
+import pandas as pd
+import config as cfg
+
+
+df = pd.read_csv(cfg.FMP_FINANCIALS)
+
+# %%

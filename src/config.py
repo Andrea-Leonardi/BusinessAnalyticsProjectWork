@@ -1,7 +1,9 @@
 
 from pathlib import Path
 
-
-ROOT = Path.cwd().parent
+SRC = Path(__file__).resolve().parent
+ROOT = SRC.parent
 DATA = ROOT / "data"
-ENT = DATA / "possible_enterprises" / "enterprises.csv"
+ENT = DATA / "enterprises.csv"
+FMP_FINANCIALS = DATA / "financialsData.csv"
+PRICE_DATA = DATA / "priceData.csv"
