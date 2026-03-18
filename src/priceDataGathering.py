@@ -2,26 +2,10 @@
 import yfinance as yf
 from datetime import datetime, timedelta
 import pandas as pd
-from pathlib import Path
 import config as cfg
 
 #lets take a small subset of the companies to test the code
-# Adjust path if needed (since config uses .parent for Jupyter)
-try:
-    df = pd.read_csv(cfg.ENT).head(10)
-except FileNotFoundError:
-    # Fallback: assume script is in src/, so project root is ../
-    try:
-        project_root = Path(__file__).parent.parent
-        ent_path = project_root / "data" / "possible_enterprises" / "enterprises.csv"
-        df = pd.read_csv(ent_path).head(10).drop(columns=["source"])
-    except NameError:
-        # If __file__ not defined (e.g., in Jupyter), assume cwd is project root
-        ent_path = Path.cwd() / "data" / "possible_enterprises" / "enterprises.csv"
-        df = pd.read_csv(ent_path).head(10).drop(columns=["source"]) 
-
-
-
+df = pd.read_csv(cfg.ENT).head(10)
 
 # %%
 # Define the period for which to download data (last 5 years)
@@ -44,3 +28,14 @@ for ticker in df["Ticker"]:
     company_df = pd.DataFrame({'Adj Close': hist_data['Close']})
     company_df.index = company_df.index.tz_localize(None)
     company_df.index.name = 'Date'
+    company_df["Ticker"] = ticker
+    company_dfs[ticker] = company_df.reset_index()
+
+if company_dfs:
+    final_df = pd.concat(company_dfs.values(), ignore_index=True)
+    final_df.to_csv(cfg.PRICE_DATA, index=False)
+    print(f"Saved file: {cfg.PRICE_DATA}")
+else:
+    print("No price data was downloaded.")
+
+# %%
