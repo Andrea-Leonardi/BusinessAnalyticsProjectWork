@@ -20,7 +20,7 @@ FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
 
 # If this list is not empty, the script downloads data only for these tickers.
 # If it is empty, the script loads companies from the enterprises CSV file.
-SELECTED_TICKERS: list[str] = ["AAPL"]
+SELECTED_TICKERS: list[str] = ["GS"]
 
 # Financial statement frequency requested from FMP.
 SELECTED_PERIOD = "quarter"
