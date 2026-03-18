@@ -113,23 +113,8 @@ These indicators summarize the most relevant aspects of firm fundamentals while 
 
 ---
 
-### Financial Attributes to Extract from `yfinance`
+### Financial Attributes to Extract from:
+possible sources:
+- Investing.com -> dati gratis annuali fino al 21 o quadrimestrali fino al 25. pagamento 37€/mese
+- 
 
-```python
-ticker.financials.loc["Total Revenue"]
-ticker.financials.loc["Net Income"]
-ticker.financials.loc["Operating Income"]
-ticker.financials.loc["EBITDA"]
-ticker.financials.loc["Gross Profit"]
-
-ticker.balance_sheet.loc["Total Assets"]
-ticker.balance_sheet.loc["Stockholders Equity"]
-ticker.balance_sheet.loc["Total Debt"]
-ticker.balance_sheet.loc["Current Assets"]
-ticker.balance_sheet.loc["Current Liabilities"]
-
-ticker.info["marketCap"]
-ticker.info["sharesOutstanding"]
-```
-
-!! YF has data only since 2023
