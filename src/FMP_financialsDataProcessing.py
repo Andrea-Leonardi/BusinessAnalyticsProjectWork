@@ -3,71 +3,106 @@ import pandas as pd
 import config as cfg
 
 
+# Input/output paths used by the processing step.
 RAW_INPUT_FILE = cfg.FMP_RAW_FINANCIALS
 OUTPUT_FILE = cfg.FMP_FINANCIALS
 SINGLE_COMPANY_OUTPUT_DIR = cfg.SINGLE_COMPANY_FINANCIALS
 
+# Raw columns that must be parsed as dates before alignment.
 DATE_COLUMNS = ["date", "filingDate", "acceptedDate"]
+# Metadata columns that should not appear in the final processed datasets.
+COLUMNS_TO_DROP = [
+    "requested_symbol",
+    "date",
+    "fiscalYear",
+    "period",
+    "filingDate",
+    "acceptedDate",
+    "reportedCurrency",
+    "cik",
+]
 
+# Stop immediately if the raw FMP dataset has not been created yet.
+if not RAW_INPUT_FILE.exists():
+    raise FileNotFoundError(f"Raw financials file not found: {RAW_INPUT_FILE}")
 
-def load_raw_financials(input_file=RAW_INPUT_FILE) -> pd.DataFrame:
-    if not input_file.exists():
-        raise FileNotFoundError(f"Raw financials file not found: {input_file}")
+# Load the raw quarterly financial statements downloaded from FMP.
+raw_df = pd.read_csv(RAW_INPUT_FILE)
+# The raw file must contain the ticker used for grouping company by company.
+if "requested_symbol" not in raw_df.columns:
+    raise KeyError("The raw financials file must contain a 'requested_symbol' column.")
 
-    raw_df = pd.read_csv(input_file)
-    if "requested_symbol" not in raw_df.columns:
-        raise KeyError("The raw financials file must contain a 'requested_symbol' column.")
+# Convert available date columns to pandas datetime.
+for column in DATE_COLUMNS:
+    if column in raw_df.columns:
+        raw_df[column] = pd.to_datetime(raw_df[column], errors="coerce")
 
-    for column in DATE_COLUMNS:
-        if column in raw_df.columns:
-            raw_df[column] = pd.to_datetime(raw_df[column], errors="coerce")
+# Ensure the output folders exist before exporting any processed files.
+OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+SINGLE_COMPANY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    return raw_df
+# Collect all aligned company DataFrames to build the final aggregated dataset.
+combined_frames: list[pd.DataFrame] = []
 
+# Process one ticker at a time.
+for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
+    print(f"Aligning financial statements for {ticker}...")
 
-def load_price_calendar(symbol: str) -> pd.DatetimeIndex:
-    price_file = cfg.SINGLE_COMPANY_PRICES / f"{symbol}Prices.csv"
+    # Load the weekly price calendar already generated for the same ticker.
+    price_file = cfg.SINGLE_COMPANY_PRICES / f"{ticker}Prices.csv"
     if not price_file.exists():
-        raise FileNotFoundError(f"Price file not found for {symbol}: {price_file}")
+        print(f"Price calendar error for {ticker}: file not found: {price_file}")
+        continue
 
+    # The price file provides the canonical WeekEndingFriday index.
     price_df = pd.read_csv(price_file, parse_dates=["WeekEndingFriday"])
     if "WeekEndingFriday" not in price_df.columns:
-        raise KeyError(f"'WeekEndingFriday' column not found in price file: {price_file}")
+        print(
+            f"Price calendar error for {ticker}: "
+            f"'WeekEndingFriday' column not found in {price_file}"
+        )
+        continue
 
+    # Build the weekly index shared with the price dataset.
     price_index = pd.DatetimeIndex(price_df["WeekEndingFriday"]).sort_values().unique()
     price_index.name = "WeekEndingFriday"
-    return price_index
 
-
-def map_to_nearest_friday(date_series: pd.Series) -> pd.Series:
-    parsed_dates = pd.to_datetime(date_series, errors="coerce")
-    nearest_friday = pd.Series(pd.NaT, index=parsed_dates.index, dtype="datetime64[ns]")
-    valid_dates = parsed_dates.notna()
-
-    if not valid_dates.any():
-        return nearest_friday
-
-    valid_parsed_dates = parsed_dates.loc[valid_dates]
-    weekday = valid_parsed_dates.dt.weekday
-    days_since_prev_friday = (weekday - 4) % 7
-    days_until_next_friday = (4 - weekday) % 7
-
-    previous_friday = valid_parsed_dates - pd.to_timedelta(days_since_prev_friday, unit="D")
-    next_friday = valid_parsed_dates + pd.to_timedelta(days_until_next_friday, unit="D")
-    use_previous_friday = days_since_prev_friday <= days_until_next_friday
-
-    nearest_friday.loc[valid_dates] = previous_friday.where(use_previous_friday, next_friday)
-    return nearest_friday.dt.normalize()
-
-
-def align_financials_to_price_calendar(company_df: pd.DataFrame, price_index: pd.DatetimeIndex) -> pd.DataFrame:
+    # Start from an empty weekly grid and fill only the rows matching financial dates.
     aligned_df = pd.DataFrame(index=price_index)
     aligned_df.index.name = "WeekEndingFriday"
 
+    # Work on a copy so the original grouped slice is not modified in place.
     working_df = company_df.copy()
-    working_df["WeekEndingFriday"] = map_to_nearest_friday(working_df["date"])
+    # Use the FMP statement date as the reference date for alignment.
+    parsed_dates = pd.to_datetime(working_df["date"], errors="coerce")
+    valid_dates = parsed_dates.notna()
+
+    # Initialize the aligned weekly date column.
+    working_df["WeekEndingFriday"] = pd.NaT
+    if valid_dates.any():
+        # Compute the previous and next Friday for every valid statement date.
+        valid_parsed_dates = parsed_dates.loc[valid_dates]
+        weekday = valid_parsed_dates.dt.weekday
+        days_since_prev_friday = (weekday - 4) % 7
+        days_until_next_friday = (4 - weekday) % 7
+
+        previous_friday = valid_parsed_dates - pd.to_timedelta(
+            days_since_prev_friday,
+            unit="D",
+        )
+        next_friday = valid_parsed_dates + pd.to_timedelta(
+            days_until_next_friday,
+            unit="D",
+        )
+        # Choose the closest Friday and normalize the timestamp to midnight.
+        use_previous_friday = days_since_prev_friday <= days_until_next_friday
+        nearest_friday = previous_friday.where(use_previous_friday, next_friday).dt.normalize()
+        working_df.loc[valid_dates, "WeekEndingFriday"] = nearest_friday
+
+    # Remove rows where the source date could not be aligned.
     working_df = working_df.dropna(subset=["WeekEndingFriday"])
 
+    # When multiple rows map to the same Friday, keep the most recent filing metadata.
     sort_columns = [
         column
         for column in ("acceptedDate", "filingDate", "date")
@@ -76,83 +111,62 @@ def align_financials_to_price_calendar(company_df: pd.DataFrame, price_index: pd
     if sort_columns:
         working_df = working_df.sort_values(sort_columns, ascending=False)
 
+    # Keep only one financial row per WeekEndingFriday and use that date as index.
     working_df = (
         working_df.drop_duplicates(subset=["WeekEndingFriday"], keep="first")
         .set_index("WeekEndingFriday")
         .sort_index()
     )
+
+    # Join quarterly financial data onto the weekly price calendar.
     aligned_df = aligned_df.join(working_df, how="left")
 
-    ticker = company_df["requested_symbol"].iloc[0]
-    aligned_df["requested_symbol"] = ticker
+    # Ensure the company ticker is available on every row of the aligned dataset.
     if "symbol" in aligned_df.columns:
         aligned_df["symbol"] = aligned_df["symbol"].fillna(ticker)
     else:
         aligned_df["symbol"] = ticker
+
+    # Propagate the company name across all weekly rows when available.
     if "company_name" in aligned_df.columns:
         company_name = company_df["company_name"].dropna()
         if not company_name.empty:
-            aligned_df["company_name"] = aligned_df["company_name"].fillna(company_name.iloc[0])
+            aligned_df["company_name"] = aligned_df["company_name"].fillna(
+                company_name.iloc[0]
+            )
 
-    leading_columns = []
-    for column in ("requested_symbol", "company_name", "symbol"):
-        if column in aligned_df.columns:
-            leading_columns.append(column)
+    # Remove technical and metadata columns not needed in the final outputs.
+    aligned_df = aligned_df.drop(
+        columns=[column for column in COLUMNS_TO_DROP if column in aligned_df.columns]
+    )
 
-    remaining_columns = [
-        column for column in aligned_df.columns if column not in leading_columns
+    # Keep company identifiers first, then all financial variables.
+    ordered_columns = [
+        column for column in ("company_name", "symbol") if column in aligned_df.columns
     ]
-    return aligned_df[leading_columns + remaining_columns]
+    remaining_columns = [
+        column for column in aligned_df.columns if column not in ordered_columns
+    ]
+    aligned_df = aligned_df[ordered_columns + remaining_columns]
 
+    # Save the processed company-level file.
+    company_output_file = SINGLE_COMPANY_OUTPUT_DIR / f"{ticker}Financials.csv"
+    aligned_df.to_csv(company_output_file, index=True)
+    print(f"Saved company file: {company_output_file}")
+    combined_frames.append(aligned_df)
 
-def export_aligned_financials(raw_df: pd.DataFrame) -> pd.DataFrame:
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    SINGLE_COMPANY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    combined_frames: list[pd.DataFrame] = []
-
-    for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
-        print(f"Aligning financial statements for {ticker}...")
-        try:
-            price_index = load_price_calendar(ticker)
-        except (FileNotFoundError, KeyError) as exc:
-            print(f"Price calendar error for {ticker}: {exc}")
-            continue
-
-        aligned_company_df = align_financials_to_price_calendar(company_df, price_index)
-        company_output_file = SINGLE_COMPANY_OUTPUT_DIR / f"{ticker}Financials.csv"
-        aligned_company_df.to_csv(company_output_file, index=True)
-        print(f"Saved company file: {company_output_file}")
-        combined_frames.append(aligned_company_df)
-
-    if not combined_frames:
-        return pd.DataFrame()
-
+# If nothing was processed successfully, report it and stop.
+if not combined_frames:
+    print("Processing completed, but no aligned records were saved.")
+else:
+    # Merge all processed company files into one final dataset.
     combined_df = pd.concat(combined_frames).sort_index()
     combined_df.to_csv(OUTPUT_FILE, index=True)
     print(f"Saved aligned file: {OUTPUT_FILE}")
-    return combined_df
-
-
-def main() -> None:
-    raw_df = load_raw_financials()
-    aligned_df = export_aligned_financials(raw_df)
-
-    if aligned_df.empty:
-        print("Processing completed, but no aligned records were saved.")
-        return
-
+    # Print a compact summary of the processing step.
     print(
         "Processing completed: "
-        f"{aligned_df['requested_symbol'].nunique()} ticker, "
-        f"{len(aligned_df)} total rows."
+        f"{raw_df['requested_symbol'].nunique()} ticker, "
+        f"{len(combined_df)} total rows."
     )
-
-
-if __name__ == "__main__":
-    main()
-
-
-# %%
-a = pd.read_csv(cfg.SINGLE_COMPANY_FINANCIALS / "AAPLFinancials.csv")
-# %%
+#%%
