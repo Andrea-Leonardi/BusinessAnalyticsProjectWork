@@ -122,6 +122,11 @@ Forward-filled values: we repeat the last available observation until a new repo
 
 We will empirically compare the two approaches to evaluate the trade-off between realism and smoothness.
 ---
-scelgo di prendere i prezzi di chiusura della settimana perchè così hanno dentro tutta l'informazione della settimana, lo faccio prendendo i prezzi giornalieri e scegliendo l'ultimo della settimana, a volte non è giovedì per festività quindi la colonna delle date viene modificata al venerdì e i prezzi vengono forzati ad essere venerdì anche se in realtà potrebbero non esserlo questo serve per avere date armonizzate
+We choose to use weekly closing prices, as they incorporate all the information accumulated during the week. Specifically, we start from daily data and select the last available price of each week.
+
+In some cases, due to market holidays, the last trading day may not be Friday (e.g., it could be Thursday). For consistency, we align all dates to Friday, assigning the last available price of the week to that date. This ensures a harmonized and regular weekly time index.
 ---
-occhio alla stagionalità delle revenue tipo aapl ha dei picchi incredibili per natale, potremmo usare revenue ttm che fanno somma mobile degli ultimi 4 trimestri
+
+We also account for seasonality in financial statement variables. For example, companies such as Apple exhibit strong seasonal patterns in revenues, with significant peaks during the holiday season.
+
+To mitigate this effect, we consider using **Trailing Twelve Months (TTM)** revenue, computed as the rolling sum of the last four quarters. This approach provides a smoother and more comparable measure over time and reduces the impact of seasonal fluctuations.
