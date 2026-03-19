@@ -123,3 +123,5 @@ Forward-filled values: we repeat the last available observation until a new repo
 We will empirically compare the two approaches to evaluate the trade-off between realism and smoothness.
 ---
 scelgo di prendere i prezzi di chiusura della settimana perchè così hanno dentro tutta l'informazione della settimana, lo faccio prendendo i prezzi giornalieri e scegliendo l'ultimo della settimana, a volte non è giovedì per festività quindi la colonna delle date viene modificata al venerdì e i prezzi vengono forzati ad essere venerdì anche se in realtà potrebbero non esserlo questo serve per avere date armonizzate
+---
+occhio alla stagionalità delle revenue tipo aapl ha dei picchi incredibili per natale, potremmo usare revenue ttm che fanno somma mobile degli ultimi 4 trimestri
