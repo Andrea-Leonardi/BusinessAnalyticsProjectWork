@@ -34,6 +34,8 @@ df_raw = pd.DataFrame(data)
 
 #ci sono aziende con più di un ticker, prendo solo quello con market cap più alto
 df = df_raw.sort_values(by="marketCap", ascending=False).drop_duplicates(subset=["companyName"], keep="first")
+#elimino GEV che non ha dati finanziari
+df = df[df["symbol"] != "GEV"]
 
 #prendo le prime 10 aziende con market cap più alto per ogni settore
 df = df.sort_values(by="marketCap", ascending=False).groupby("sector").head(10)

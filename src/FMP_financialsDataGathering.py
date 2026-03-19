@@ -21,7 +21,7 @@ FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
 
 # If this list is not empty, the script downloads data only for these tickers.
 # If it is empty, the script loads companies from the enterprises CSV file.
-SELECTED_TICKERS: list[str] = ["GS"]
+SELECTED_TICKERS: list[str] = []
 
 # Financial statement frequency requested from FMP.
 SELECTED_PERIOD = "quarter"
@@ -30,7 +30,7 @@ SELECTED_PERIOD = "quarter"
 STATEMENT_LIMIT = 20
 
 # Number of companies to load from the project CSV when SELECTED_TICKERS is empty.
-SELECTED_COMPANY_LIMIT = 10
+SELECTED_COMPANY_LIMIT = 1000
 
 # HTTP timeout for each API request.
 REQUEST_TIMEOUT = 30
