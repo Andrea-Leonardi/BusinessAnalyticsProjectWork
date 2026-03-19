@@ -11,7 +11,7 @@ import config as cfg
 # ---------------------------------------------------------------------------
 
 # Set this to True when you want the script to re-download the raw FMP data first.
-REDOWNLOAD_RAW_FMP_DATA = False
+REDOWNLOAD_RAW_FMP_DATA = True
 
 # Input/output paths used by the processing step.
 RAW_INPUT_FILE = cfg.FMP_RAW_FINANCIALS
@@ -169,6 +169,16 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
 
     # Join quarterly financial data onto the weekly price calendar.
     aligned_df = aligned_df.join(working_df, how="left")
+
+    # If the first weekly row is still empty, fill it with the latest raw
+    # financial observation available before the first calendar date.
+    first_week = aligned_df.index.min()
+    previous_rows = working_df[working_df.index < first_week]
+    if not previous_rows.empty:
+        previous_row = previous_rows.iloc[-1]
+        first_row_is_empty = aligned_df.loc[first_week].isna().all()
+        if first_row_is_empty:
+            aligned_df.loc[first_week, previous_row.index] = previous_row.values
 
     # -----------------------------------------------------------------------
     # Clean And Reorder Columns

@@ -22,10 +22,9 @@ SELECTED_TICKERS: list[str] = []
 ENTERPRISE_ROW_LIMIT = 10
 
 SELECTED_PERIOD = "quarter"
-STATEMENT_LIMIT = 20
+STATEMENT_LIMIT = 25
 REQUEST_TIMEOUT = 30
 REQUEST_PAUSE_SECONDS = 0.25
-MAX_SUBSCRIPTION_LIMIT = 20
 
 MERGE_KEY_CANDIDATES = [
     "requested_symbol",
@@ -74,15 +73,9 @@ def main() -> None:
             "Set your FMP_API_KEY directly in this file before running the script."
         )
 
-    # Validate the selected period, row limit, and subscription limit.
+    # Validate the selected period and row limit.
     if SELECTED_PERIOD not in {"annual", "quarter"}:
         raise ValueError("SELECTED_PERIOD must be either 'annual' or 'quarter'.")
-
-    if STATEMENT_LIMIT < 0 or STATEMENT_LIMIT > MAX_SUBSCRIPTION_LIMIT:
-        raise ValueError(
-            f"STATEMENT_LIMIT must be between 0 and {MAX_SUBSCRIPTION_LIMIT} "
-            "for the current FMP subscription."
-        )
 
     if ENTERPRISE_ROW_LIMIT is not None and ENTERPRISE_ROW_LIMIT < 0:
         raise ValueError("ENTERPRISE_ROW_LIMIT must be greater than or equal to 0.")
