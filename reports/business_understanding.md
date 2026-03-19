@@ -112,9 +112,12 @@ Based on these considerations, a compact set of indicators derived from the **in
 These indicators summarize the most relevant aspects of firm fundamentals while remaining relatively compact and comparable across companies. Combined with **sentiment indicators extracted from news data**, they allow the model to incorporate both **market perception (textual sentiment)** and **economic fundamentals**, which together may help explain and predict future stock price movements.
 
 ---
+Financial Attributes will be extracted from FMP
+---
+We face the issue that financial statement data are available only at a quarterly or semi-annual frequency. To address this, we consider two alternative approaches in parallel:
 
-### Financial Attributes to Extract from:
-possible sources:
-- Investing.com -> dati gratis annuali fino al 21 o quadrimestrali fino al 25. pagamento 37€/mese
-- 
+Spline interpolation: we interpolate the data to obtain a smooth proxy of the firm’s underlying fundamentals over time. However, this approach introduces a strong assumption, since the interpolated values rely on information that is not actually available to the market at each point in time, potentially leading to look-ahead bias and reduced economic interpretability.
 
+Forward-filled values: we repeat the last available observation until a new report is released. This approach better reflects the information set available to market participants. However, it may reduce the variability of the features; in particular, when including lagged variables, multiple lags may take identical values over extended periods, potentially limiting their informational content.
+
+We will empirically compare the two approaches to evaluate the trade-off between realism and smoothness.
