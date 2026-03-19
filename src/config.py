@@ -6,4 +6,5 @@ ROOT = SRC.parent
 DATA = ROOT / "data"
 ENT = DATA / "enterprises.csv"
 FMP_FINANCIALS = DATA / "financialsData.csv"
-PRICE_DATA = DATA / "priceData.csv"
+ALL_PRICE_DATA = DATA / "allPriceData.csv"
+SINGLE_COMPANY_DATA = DATA / "singleCompanyData"

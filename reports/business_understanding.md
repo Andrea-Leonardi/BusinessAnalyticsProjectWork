@@ -121,3 +121,5 @@ Spline interpolation: we interpolate the data to obtain a smooth proxy of the fi
 Forward-filled values: we repeat the last available observation until a new report is released. This approach better reflects the information set available to market participants. However, it may reduce the variability of the features; in particular, when including lagged variables, multiple lags may take identical values over extended periods, potentially limiting their informational content.
 
 We will empirically compare the two approaches to evaluate the trade-off between realism and smoothness.
+---
+scelgo di prendere i prezzi di chiusura della settimana perchè così hanno dentro tutta l'informazione della settimana, lo faccio prendendo i prezzi giornalieri e scegliendo l'ultimo della settimana, a volte non è giovedì per festività quindi la colonna delle date viene modificata al venerdì e i prezzi vengono forzati ad essere venerdì anche se in realtà potrebbero non esserlo questo serve per avere date armonizzate
