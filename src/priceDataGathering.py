@@ -9,7 +9,7 @@ df = pd.read_csv(cfg.ENT).head(10)
 
 # create a dictionary to store the dataframes for each company
 company_dfs = {}
-cfg.SINGLE_COMPANY_DATA.mkdir(parents=True, exist_ok=True)
+cfg.SINGLE_COMPANY_PRICES.mkdir(parents=True, exist_ok=True)
 
 for ticker in df["Ticker"]:
     print(f"download data for {ticker}...")
@@ -48,7 +48,7 @@ for ticker in df["Ticker"]:
         ["Ticker", "AdjClosePrice", "AdjClosePrice_t-1", "AdjClosePrice_t-2"]
     ]
     company_dfs[ticker] = company_df
-    company_output_path = cfg.SINGLE_COMPANY_DATA / f"{ticker}Prices.csv"
+    company_output_path = cfg.SINGLE_COMPANY_PRICES / f"{ticker}Prices.csv"
     company_df.to_csv(company_output_path, index=True)
     print(f"Saved file: {company_output_path}")
 
