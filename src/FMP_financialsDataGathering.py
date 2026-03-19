@@ -1,11 +1,14 @@
 #%%
 import time
-from pathlib import Path
 
 import pandas as pd
 import requests
 import config as cfg
 
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
 
 INCOME_STATEMENT_URL = "https://financialmodelingprep.com/stable/income-statement"
 BALANCE_SHEET_URL = "https://financialmodelingprep.com/stable/balance-sheet-statement"
@@ -16,9 +19,10 @@ OUTPUT_FILE = cfg.FMP_RAW_FINANCIALS
 FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
 # Leave this empty to load the first ENTERPRISE_ROW_LIMIT companies from enterprises.csv.
 SELECTED_TICKERS: list[str] = []
+ENTERPRISE_ROW_LIMIT = 10
+
 SELECTED_PERIOD = "quarter"
 STATEMENT_LIMIT = 20
-ENTERPRISE_ROW_LIMIT = 10
 REQUEST_TIMEOUT = 30
 REQUEST_PAUSE_SECONDS = 0.25
 MAX_SUBSCRIPTION_LIMIT = 20
@@ -59,33 +63,18 @@ BALANCE_FIELD_MAP = {
 }
 
 
-def load_companies(limit: int | None = ENTERPRISE_ROW_LIMIT) -> pd.DataFrame:
-    if not ENTERPRISES_PATH.exists():
-        raise FileNotFoundError(f"Company file not found: {ENTERPRISES_PATH}")
+def main() -> None:
+    # -----------------------------------------------------------------------
+    # Validate Settings
+    # -----------------------------------------------------------------------
 
-    companies = pd.read_csv(ENTERPRISES_PATH)
-    if "Ticker" not in companies.columns:
-        raise KeyError("The 'Ticker' column does not exist in enterprises.csv")
+    # Stop immediately if the API key has not been configured.
+    if not FMP_API_KEY or FMP_API_KEY == "INSERISCI_LA_TUA_API_KEY":
+        raise EnvironmentError(
+            "Set your FMP_API_KEY directly in this file before running the script."
+        )
 
-    companies = companies.dropna(subset=["Ticker"]).copy()
-    companies["Ticker"] = companies["Ticker"].astype(str).str.strip()
-    companies = companies[companies["Ticker"] != ""]
-
-    if limit is not None:
-        companies = companies.head(limit).copy()
-
-    return companies
-
-
-def build_companies_from_tickers(tickers: list[str]) -> pd.DataFrame:
-    cleaned_tickers = [ticker.strip().upper() for ticker in tickers if ticker and ticker.strip()]
-    if not cleaned_tickers:
-        raise ValueError("The ticker list is empty.")
-
-    return pd.DataFrame({"Ticker": cleaned_tickers})
-
-
-def validate_settings() -> None:
+    # Validate the selected period, row limit, and subscription limit.
     if SELECTED_PERIOD not in {"annual", "quarter"}:
         raise ValueError("SELECTED_PERIOD must be either 'annual' or 'quarter'.")
 
@@ -98,176 +87,113 @@ def validate_settings() -> None:
     if ENTERPRISE_ROW_LIMIT is not None and ENTERPRISE_ROW_LIMIT < 0:
         raise ValueError("ENTERPRISE_ROW_LIMIT must be greater than or equal to 0.")
 
+    # -----------------------------------------------------------------------
+    # Load Company List
+    # -----------------------------------------------------------------------
 
-def fetch_statement_data(
-    endpoint_url: str,
-    symbol: str,
-    api_key: str,
-    period: str,
-    limit: int,
-    session: requests.Session | None = None,
-) -> pd.DataFrame:
-    params = {
-        "symbol": symbol,
-        "period": period,
-        "limit": limit,
-        "apikey": api_key,
-    }
+    # Use manually selected tickers when provided.
+    if SELECTED_TICKERS:
+        cleaned_tickers = [
+            ticker.strip().upper()
+            for ticker in SELECTED_TICKERS
+            if ticker and ticker.strip()
+        ]
+        if not cleaned_tickers:
+            raise ValueError("The ticker list is empty.")
 
-    http = session or requests.Session()
-    response = http.get(endpoint_url, params=params, timeout=REQUEST_TIMEOUT)
-    response.raise_for_status()
-    payload = response.json()
+        companies = pd.DataFrame({"Ticker": cleaned_tickers})
 
-    if not isinstance(payload, list):
-        raise ValueError(f"Unexpected FMP response for {symbol}: {payload}")
+    # Otherwise load the first N valid rows from enterprises.csv.
+    else:
+        if not ENTERPRISES_PATH.exists():
+            raise FileNotFoundError(f"Company file not found: {ENTERPRISES_PATH}")
 
-    if not payload:
-        return pd.DataFrame()
+        companies = pd.read_csv(ENTERPRISES_PATH)
+        if "Ticker" not in companies.columns:
+            raise KeyError("The 'Ticker' column does not exist in enterprises.csv")
 
-    statement_df = pd.DataFrame(payload)
-    statement_df.insert(0, "requested_symbol", symbol)
+        companies = companies.dropna(subset=["Ticker"]).copy()
+        companies["Ticker"] = companies["Ticker"].astype(str).str.strip()
+        companies = companies[companies["Ticker"] != ""]
 
-    for date_col in ("date", "filingDate", "acceptedDate", "fillingDate"):
-        if date_col in statement_df.columns:
-            statement_df[date_col] = pd.to_datetime(statement_df[date_col], errors="coerce")
+        if ENTERPRISE_ROW_LIMIT is not None:
+            companies = companies.head(ENTERPRISE_ROW_LIMIT).copy()
 
-    if "date" in statement_df.columns:
-        statement_df = statement_df.sort_values("date", ascending=False).reset_index(drop=True)
+    # -----------------------------------------------------------------------
+    # Prepare Output
+    # -----------------------------------------------------------------------
 
-    return statement_df
+    # Ensure the output folder exists before writing the raw CSV.
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-
-def fetch_income_statement(
-    symbol: str,
-    api_key: str,
-    period: str = SELECTED_PERIOD,
-    limit: int = STATEMENT_LIMIT,
-    session: requests.Session | None = None,
-) -> pd.DataFrame:
-    return fetch_statement_data(
-        endpoint_url=INCOME_STATEMENT_URL,
-        symbol=symbol,
-        api_key=api_key,
-        period=period,
-        limit=limit,
-        session=session,
-    )
-
-
-def fetch_balance_sheet_statement(
-    symbol: str,
-    api_key: str,
-    period: str = SELECTED_PERIOD,
-    limit: int = STATEMENT_LIMIT,
-    session: requests.Session | None = None,
-) -> pd.DataFrame:
-    return fetch_statement_data(
-        endpoint_url=BALANCE_SHEET_URL,
-        symbol=symbol,
-        api_key=api_key,
-        period=period,
-        limit=limit,
-        session=session,
-    )
-
-
-def select_requested_fields(
-    statement_df: pd.DataFrame,
-    field_map: dict[str, list[str]],
-    base_columns: list[str],
-) -> pd.DataFrame:
-    selected_df = statement_df[base_columns].copy()
-
-    for output_name, candidate_columns in field_map.items():
-        source_column = next(
-            (column for column in candidate_columns if column in statement_df.columns),
-            None,
-        )
-        selected_df[output_name] = (
-            statement_df[source_column] if source_column is not None else pd.NA
-        )
-
-    return selected_df
-
-
-def deduplicate_statement_rows(statement_df: pd.DataFrame, key_columns: list[str]) -> pd.DataFrame:
-    if statement_df.empty or not key_columns:
-        return statement_df
-
-    sort_columns = [
-        column
-        for column in ("acceptedDate", "filingDate", "fillingDate", "date")
-        if column in statement_df.columns
-    ]
-    if sort_columns:
-        statement_df = statement_df.sort_values(sort_columns, ascending=False)
-
-    return statement_df.drop_duplicates(subset=key_columns, keep="first").reset_index(drop=True)
-
-
-def merge_financial_statements(
-    income_df: pd.DataFrame,
-    balance_df: pd.DataFrame,
-) -> pd.DataFrame:
-    merge_keys = [
-        column
-        for column in MERGE_KEY_CANDIDATES
-        if column in income_df.columns and column in balance_df.columns
-    ]
-    if not merge_keys:
-        raise ValueError("No common keys were found to merge income and balance data.")
-
-    income_df = deduplicate_statement_rows(income_df, merge_keys)
-    balance_df = deduplicate_statement_rows(balance_df, merge_keys)
-
-    income_base_columns = [
-        column for column in OUTPUT_METADATA_COLUMNS if column in income_df.columns
-    ]
-    income_selected = select_requested_fields(income_df, INCOME_FIELD_MAP, income_base_columns)
-    balance_selected = select_requested_fields(balance_df, BALANCE_FIELD_MAP, merge_keys)
-
-    merged_df = income_selected.merge(balance_selected, on=merge_keys, how="inner")
-    metadata_columns = [column for column in OUTPUT_METADATA_COLUMNS if column in merged_df.columns]
-    ordered_columns = metadata_columns + list(INCOME_FIELD_MAP.keys()) + list(BALANCE_FIELD_MAP.keys())
-    return merged_df[ordered_columns]
-
-
-def download_raw_financial_statements(
-    companies: pd.DataFrame,
-    api_key: str,
-    period: str = SELECTED_PERIOD,
-    limit: int = STATEMENT_LIMIT,
-    output_file: Path = OUTPUT_FILE,
-    pause_seconds: float = REQUEST_PAUSE_SECONDS,
-) -> pd.DataFrame:
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-
+    # Keep all downloaded company DataFrames to build the final raw dataset.
     combined_frames: list[pd.DataFrame] = []
+
+    # Recover company names when available in the enterprises dataset.
     company_names = {}
     if "Company_name" in companies.columns:
         company_names = companies.set_index("Ticker")["Company_name"].to_dict()
 
+    # Use unique tickers only to avoid duplicate downloads.
     tickers = companies["Ticker"].dropna().astype(str).str.strip().unique()
+
+    # -----------------------------------------------------------------------
+    # Download And Merge FMP Data
+    # -----------------------------------------------------------------------
 
     with requests.Session() as session:
         for ticker in tickers:
             print(f"Downloading raw financial statements for {ticker}...")
+
             try:
-                income_df = fetch_income_statement(
-                    symbol=ticker,
-                    api_key=api_key,
-                    period=period,
-                    limit=limit,
-                    session=session,
-                )
-                balance_df = fetch_balance_sheet_statement(
-                    symbol=ticker,
-                    api_key=api_key,
-                    period=period,
-                    limit=limit,
-                    session=session,
-                )
+                # -----------------------------------------------------------
+                # Download Income Statement And Balance Sheet
+                # -----------------------------------------------------------
+
+                statement_frames = {}
+
+                for statement_name, endpoint_url in {
+                    "income": INCOME_STATEMENT_URL,
+                    "balance": BALANCE_SHEET_URL,
+                }.items():
+                    response = session.get(
+                        endpoint_url,
+                        params={
+                            "symbol": ticker,
+                            "period": SELECTED_PERIOD,
+                            "limit": STATEMENT_LIMIT,
+                            "apikey": FMP_API_KEY,
+                        },
+                        timeout=REQUEST_TIMEOUT,
+                    )
+                    response.raise_for_status()
+                    payload = response.json()
+
+                    if not isinstance(payload, list):
+                        raise ValueError(f"Unexpected FMP response for {ticker}: {payload}")
+
+                    if not payload:
+                        statement_frames[statement_name] = pd.DataFrame()
+                        continue
+
+                    statement_df = pd.DataFrame(payload)
+                    statement_df.insert(0, "requested_symbol", ticker)
+
+                    for date_col in ("date", "filingDate", "acceptedDate", "fillingDate"):
+                        if date_col in statement_df.columns:
+                            statement_df[date_col] = pd.to_datetime(
+                                statement_df[date_col],
+                                errors="coerce",
+                            )
+
+                    if "date" in statement_df.columns:
+                        statement_df = statement_df.sort_values(
+                            "date",
+                            ascending=False,
+                        ).reset_index(drop=True)
+
+                    statement_frames[statement_name] = statement_df
+
             except requests.HTTPError as exc:
                 print(f"HTTP error for {ticker}: {exc}")
                 continue
@@ -278,6 +204,9 @@ def download_raw_financial_statements(
                 print(f"Data error for {ticker}: {exc}")
                 continue
 
+            income_df = statement_frames["income"]
+            balance_df = statement_frames["balance"]
+
             if income_df.empty:
                 print(f"No income statement data available for {ticker}")
                 continue
@@ -286,18 +215,92 @@ def download_raw_financial_statements(
                 print(f"No balance sheet data available for {ticker}")
                 continue
 
-            company_df = merge_financial_statements(income_df, balance_df)
+            # ---------------------------------------------------------------
+            # Build Merge Keys
+            # ---------------------------------------------------------------
+
+            merge_keys = [
+                column
+                for column in MERGE_KEY_CANDIDATES
+                if column in income_df.columns and column in balance_df.columns
+            ]
+            if not merge_keys:
+                print(f"Data error for {ticker}: no common keys were found to merge data.")
+                continue
+
+            # ---------------------------------------------------------------
+            # Deduplicate Both Statements
+            # ---------------------------------------------------------------
+
+            for statement_df in (income_df, balance_df):
+                sort_columns = [
+                    column
+                    for column in ("acceptedDate", "filingDate", "fillingDate", "date")
+                    if column in statement_df.columns
+                ]
+                if sort_columns:
+                    statement_df.sort_values(sort_columns, ascending=False, inplace=True)
+
+            income_df = income_df.drop_duplicates(subset=merge_keys, keep="first").reset_index(drop=True)
+            balance_df = balance_df.drop_duplicates(subset=merge_keys, keep="first").reset_index(drop=True)
+
+            # ---------------------------------------------------------------
+            # Select Requested Fields
+            # ---------------------------------------------------------------
+
+            income_base_columns = [
+                column for column in OUTPUT_METADATA_COLUMNS if column in income_df.columns
+            ]
+            income_selected = income_df[income_base_columns].copy()
+            for output_name, candidate_columns in INCOME_FIELD_MAP.items():
+                source_column = next(
+                    (column for column in candidate_columns if column in income_df.columns),
+                    None,
+                )
+                income_selected[output_name] = (
+                    income_df[source_column] if source_column is not None else pd.NA
+                )
+
+            balance_selected = balance_df[merge_keys].copy()
+            for output_name, candidate_columns in BALANCE_FIELD_MAP.items():
+                source_column = next(
+                    (column for column in candidate_columns if column in balance_df.columns),
+                    None,
+                )
+                balance_selected[output_name] = (
+                    balance_df[source_column] if source_column is not None else pd.NA
+                )
+
+            # ---------------------------------------------------------------
+            # Merge And Save In Memory
+            # ---------------------------------------------------------------
+
+            company_df = income_selected.merge(balance_selected, on=merge_keys, how="inner")
+
+            ordered_columns = (
+                [column for column in OUTPUT_METADATA_COLUMNS if column in company_df.columns]
+                + list(INCOME_FIELD_MAP.keys())
+                + list(BALANCE_FIELD_MAP.keys())
+            )
+            company_df = company_df[ordered_columns]
+
             company_name = company_names.get(ticker)
             if company_name:
                 company_df.insert(1, "company_name", company_name)
 
             combined_frames.append(company_df)
-            time.sleep(pause_seconds)
+            time.sleep(REQUEST_PAUSE_SECONDS)
+
+    # -----------------------------------------------------------------------
+    # Save Final Raw Output
+    # -----------------------------------------------------------------------
 
     if not combined_frames:
-        return pd.DataFrame()
+        print("Download completed, but no raw records were saved.")
+        return
 
     combined_df = pd.concat(combined_frames, ignore_index=True)
+
     if {"requested_symbol", "date"}.issubset(combined_df.columns):
         combined_df = combined_df.sort_values(
             ["requested_symbol", "date"],
@@ -306,36 +309,8 @@ def download_raw_financial_statements(
     elif "requested_symbol" in combined_df.columns:
         combined_df = combined_df.sort_values("requested_symbol").reset_index(drop=True)
 
-    combined_df.to_csv(output_file, index=False)
-    print(f"Saved raw file: {output_file}")
-    return combined_df
-
-
-def main() -> None:
-    if not FMP_API_KEY or FMP_API_KEY == "INSERISCI_LA_TUA_API_KEY":
-        raise EnvironmentError(
-            "Set your FMP_API_KEY directly in this file before running the script."
-        )
-
-    validate_settings()
-
-    if SELECTED_TICKERS:
-        companies = build_companies_from_tickers(SELECTED_TICKERS)
-    else:
-        companies = load_companies(limit=ENTERPRISE_ROW_LIMIT)
-
-    combined_df = download_raw_financial_statements(
-        companies=companies,
-        api_key=FMP_API_KEY,
-        period=SELECTED_PERIOD,
-        limit=STATEMENT_LIMIT,
-        output_file=OUTPUT_FILE,
-    )
-
-    if combined_df.empty:
-        print("Download completed, but no raw records were saved.")
-        return
-
+    combined_df.to_csv(OUTPUT_FILE, index=False)
+    print(f"Saved raw file: {OUTPUT_FILE}")
     print(
         "Raw download completed: "
         f"{combined_df['requested_symbol'].nunique()} ticker, "
