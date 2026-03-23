@@ -292,7 +292,7 @@ import matplotlib.pyplot as plt
 
 
 # Select the company to visualize.
-PLOT_TICKER = "TSM"
+PLOT_TICKER = "AMZN" 
 # Select the financial feature to visualize.
 PLOT_FEATURE = "revenue"
 

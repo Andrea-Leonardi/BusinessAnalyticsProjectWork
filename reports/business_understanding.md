@@ -129,3 +129,12 @@ Financial Attributes will be extracted from FMP
 - We also account for seasonality in financial statement variables. For example, companies such as Apple exhibit strong seasonal patterns in revenues, with significant peaks during the holiday season.
  To mitigate this effect, we consider using **Trailing Twelve Months (TTM)** revenue, computed as the rolling sum of the last four quarters. This approach provides a smoother and more comparable measure over time and reduces the impact of seasonal fluctuations.
 
+- The cubic spline becomes unstable after the last available quarterly observation. Therefore, the dataset must be truncated to avoid unreliable extrapolations.
+  
+## Next Steps
+
+- Fix date alignment issues related to spline interpolation  
+- Select the financial indicators to include and update the data extraction code accordingly  
+- Add lagged financial variables  
+- Address seasonality issues in financial data  
+- Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables
