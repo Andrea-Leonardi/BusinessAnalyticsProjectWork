@@ -101,6 +101,8 @@ Based on these considerations, a compact set of indicators derived from the **in
 
 
 **Financial Attributes will be extracted from FMP**
+The rationale is explained here: [deep research](reports\SelectingFinancial-StatementVariablesforWeeklyStock-ReturnPrediction.pdf)
+
 ### Income Statement
 Endpoint:
 - /api/v3/income-statement/{ticker}?period=quarter
