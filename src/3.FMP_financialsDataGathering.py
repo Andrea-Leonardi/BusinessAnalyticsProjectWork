@@ -19,7 +19,7 @@ OUTPUT_FILE = cfg.FMP_RAW_FINANCIALS
 FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
 # Leave this empty to load the first ENTERPRISE_ROW_LIMIT companies from enterprises.csv.
 SELECTED_TICKERS: list[str] = []
-ENTERPRISE_ROW_LIMIT = 10
+ENTERPRISE_ROW_LIMIT = 110
 
 SELECTED_PERIOD = "quarter"
 STATEMENT_LIMIT = 25

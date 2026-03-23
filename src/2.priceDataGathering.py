@@ -5,7 +5,7 @@ import config as cfg
 
 START_DATE = "2021-01-01"
 
-df = pd.read_csv(cfg.ENT).head(10)
+df = pd.read_csv(cfg.ENT)
 
 # create a dictionary to store the dataframes for each company
 company_dfs = {}

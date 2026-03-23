@@ -68,50 +68,84 @@ Based on these considerations, a compact set of indicators derived from the **in
 ---
 
 ### Selected Variables and Formulas
+  BookToMarket = totalStockholdersEquity / marketCap
 
-- **Revenue Growth**  
-  `Revenue_growth = (Revenue_t − Revenue_{t-1}) / Revenue_{t-1}`  
-  Measures how fast company sales are expanding.
+  GrossProfitability = grossProfit / totalAssets
 
-- **Earnings Growth**  
-  `Earnings_growth = (NetIncome_t − NetIncome_{t-1}) / NetIncome_{t-1}`  
-  Captures improvements or deteriorations in profitability.
+  OperatingMargin = operatingIncome / revenue
 
-- **Net Profit Margin**  
-  `Net_margin = NetIncome / Revenue`  
-  Indicates how much profit is generated for each unit of revenue.
+  ROA = netIncome / totalAssets
 
-- **Operating Margin**  
-  `Operating_margin = OperatingIncome / Revenue`  
-  Measures operational efficiency excluding non-operating effects.
+  ROE = netIncome / totalStockholdersEquity
 
-- **EBITDA Margin**  
-  `EBITDA_margin = EBITDA / Revenue`  
-  Provides a profitability measure independent of capital structure and depreciation.
+  AssetGrowth = (totalAssets_t - totalAssets_{t-4q}) / totalAssets_{t-4q}
 
-- **Return on Equity (ROE)**  
-  `ROE = NetIncome / ShareholdersEquity`  
-  Evaluates how efficiently the firm generates profits from shareholder capital.
+  InvestmentIntensity = capitalExpenditure / totalAssets
 
-- **Return on Assets (ROA)**  
-  `ROA = NetIncome / TotalAssets`  
-  Measures how effectively company assets are used to produce earnings.
+  Accruals = (netIncome - operatingCashFlow) / totalAssets
 
-- **Debt-to-Equity Ratio**  
-  `Debt_to_equity = TotalDebt / ShareholdersEquity`  
-  Indicates financial leverage and risk exposure.
+  IncomeQuality = operatingCashFlow / netIncome
 
-- **Debt-to-Assets Ratio**  
-  `Debt_to_assets = TotalDebt / TotalAssets`  
-  Captures the proportion of assets financed through debt.
+  DebtToAssets = totalDebt / totalAssets
 
-- **Current Ratio**  
-  `Current_ratio = CurrentAssets / CurrentLiabilities`  
-  Measures short-term liquidity and the ability to meet near-term obligations.
+  InterestCoverage = operatingIncome / interestExpense
 
-These indicators summarize the most relevant aspects of firm fundamentals while remaining relatively compact and comparable across companies. Combined with **sentiment indicators extracted from news data**, they allow the model to incorporate both **market perception (textual sentiment)** and **economic fundamentals**, which together may help explain and predict future stock price movements.
+  CashRatio = cashAndCashEquivalents / totalCurrentLiabilities
 
-Financial Attributes will be extracted from FMP
+  WorkingCapitalScaled = (totalCurrentAssets - totalCurrentLiabilities) / totalAssets
+
+  FreeCashFlowYield = freeCashFlow / marketCap
+
+  EarningsYield = netIncome / marketCap
+
+
+
+**Financial Attributes will be extracted from FMP**
+### Income Statement
+Endpoint:
+- /api/v3/income-statement/{ticker}?period=quarter
+
+Fields:
+- revenue
+- grossProfit
+- operatingIncome
+- netIncome
+- interestExpense
+
+---
+
+### Balance Sheet
+Endpoint:
+- /api/v3/balance-sheet-statement/{ticker}?period=quarter
+
+Fields:
+- totalAssets
+- totalStockholdersEquity
+- totalCurrentAssets
+- totalCurrentLiabilities
+- totalDebt
+- cashAndCashEquivalents
+
+---
+
+### Cash Flow Statement
+Endpoint:
+- /api/v3/cash-flow-statement/{ticker}?period=quarter
+
+Fields:
+- operatingCashFlow
+- capitalExpenditure
+- freeCashFlow
+
+---
+### Market Capitalization
+Endpoint:
+- /api/v3/historical-market-cap/{ticker}
+
+Fields:
+- marketCap
+
+---
 
 
 ## Iussues
@@ -120,7 +154,7 @@ Financial Attributes will be extracted from FMP
   - Spline interpolation: we interpolate the data to obtain a smooth proxy of the firm’s underlying fundamentals over time. However, this approach introduces a strong assumption, since the interpolated values rely on information that is not actually available to the market at each point in time, potentially leading to look-ahead bias and reduced economic interpretability.
   - Forward-filled values: we repeat the last available observation until a new report is released. This approach better reflects the information set available to market participants. However, it may reduce the variability of the features; in particular, when including lagged variables, multiple lags may take identical values over extended periods, potentially limiting their informational content.
 
-  We will empirically compare the two approaches to evaluate the trade-off between realism and smoothness.
+  We decided to go with Forward-filled to avoid the forward-looking bias
 
 - We choose to use weekly closing prices, as they incorporate all the information accumulated during the week. Specifically, we start from daily data and select the last available price of each week.
 
@@ -129,12 +163,11 @@ Financial Attributes will be extracted from FMP
 - We also account for seasonality in financial statement variables. For example, companies such as Apple exhibit strong seasonal patterns in revenues, with significant peaks during the holiday season.
  To mitigate this effect, we consider using **Trailing Twelve Months (TTM)** revenue, computed as the rolling sum of the last four quarters. This approach provides a smoother and more comparable measure over time and reduces the impact of seasonal fluctuations.
 
-- The cubic spline becomes unstable after the last available quarterly observation. Therefore, the dataset must be truncated to avoid unreliable extrapolations.
+- we may have miss some duplicated companies
   
 ## Next Steps
 
-- Fix date alignment issues related to spline interpolation  
 - Select the financial indicators to include and update the data extraction code accordingly  
-- Add lagged financial variables  
-- Address seasonality issues in financial data  
+- delete the Spline variables from financials
+- Add lagged financial variables   
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables

@@ -290,41 +290,44 @@ else:
 
 import matplotlib.pyplot as plt
 
+enterprises_df = pd.read_csv(cfg.ENT)
 
-# Select the company to visualize.
-PLOT_TICKER = "AMZN" 
-# Select the financial feature to visualize.
-PLOT_FEATURE = "revenue"
+for ticker in enterprises_df["Ticker"]:
 
-# Load the processed company financial dataset for a visual comparison.
-company_plot_df = pd.read_csv(
-    cfg.SINGLE_COMPANY_FINANCIALS / f"{PLOT_TICKER}Financials.csv",
-    parse_dates=["WeekEndingFriday"],
-)
+    # Select the company to visualize.
+    PLOT_TICKER = ticker 
+    # Select the financial feature to visualize.
+    PLOT_FEATURE = "revenue"
 
-# Compare the forward-filled feature with the spline-smoothed feature.
-plt.figure(figsize=(12, 6))
-plt.plot(
-    company_plot_df["WeekEndingFriday"],
-    company_plot_df[PLOT_FEATURE],
-    label=f"{PLOT_FEATURE} (ffill)",
-    linewidth=2,
-)
-plt.plot(
-    company_plot_df["WeekEndingFriday"],
-    company_plot_df[f"sm-{PLOT_FEATURE}"],
-    label=f"{PLOT_FEATURE} (cubic spline)",
-    linewidth=2,
-)
-plt.title(
-    f"{PLOT_TICKER} {PLOT_FEATURE} Comparison: "
-    "Forward Fill vs Cubic Spline"
-)
-plt.xlabel("WeekEndingFriday")
-plt.ylabel(PLOT_FEATURE)
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.show()
+    # Load the processed company financial dataset for a visual comparison.
+    company_plot_df = pd.read_csv(
+        cfg.SINGLE_COMPANY_FINANCIALS / f"{PLOT_TICKER}Financials.csv",
+        parse_dates=["WeekEndingFriday"],
+    )
+
+    # Compare the forward-filled feature with the spline-smoothed feature.
+    plt.figure(figsize=(12, 6))
+    plt.plot(
+        company_plot_df["WeekEndingFriday"],
+        company_plot_df[PLOT_FEATURE],
+        label=f"{PLOT_FEATURE} (ffill)",
+        linewidth=2,
+    )
+    plt.plot(
+        company_plot_df["WeekEndingFriday"],
+        company_plot_df[f"sm-{PLOT_FEATURE}"],
+        label=f"{PLOT_FEATURE} (cubic spline)",
+        linewidth=2,
+    )
+    plt.title(
+        f"{enterprises_df[enterprises_df['Ticker'] == PLOT_TICKER]['companyName'].iloc[0]} {PLOT_FEATURE} Comparison: "
+        "Forward Fill vs Cubic Spline"
+    )
+    plt.xlabel("WeekEndingFriday")
+    plt.ylabel(PLOT_FEATURE)
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
 
 # %%
