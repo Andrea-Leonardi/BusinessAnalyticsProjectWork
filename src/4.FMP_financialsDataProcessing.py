@@ -34,6 +34,7 @@ COLUMNS_TO_DROP = [
 
 DERIVED_FEATURE_COLUMNS = [
     "BookToMarket",
+    "MarketCap",
     "GrossProfitability",
     "OperatingMargin",
     "ROA",
@@ -139,6 +140,12 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         print(
             f"Price calendar error for {ticker}: "
             f"'WeekEndingFriday' column not found in {price_file}"
+        )
+        continue
+    if "ClosePrice" not in price_df.columns:
+        print(
+            f"Price calendar error for {ticker}: "
+            f"'ClosePrice' column not found in {price_file}"
         )
         continue
     # Build the weekly index shared with the price dataset.
@@ -258,9 +265,31 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     real_financial_df = aligned_df[financial_columns].apply(pd.to_numeric, errors="coerce")
     aligned_df[financial_columns] = real_financial_df.ffill()
 
+    # Build the weekly close-price series used to update market-based ratios
+    # between quarterly statement dates.
+    weekly_close_price = (
+        price_df[["WeekEndingFriday", "ClosePrice"]]
+        .drop_duplicates(subset=["WeekEndingFriday"], keep="last")
+        .set_index("WeekEndingFriday")["ClosePrice"]
+        .reindex(aligned_df.index)
+    )
+
+    # Keep accounting values fixed until the next statement, but rescale the
+    # latest reported market cap with weekly price moves between quarters.
+    if "marketCap" in real_financial_df.columns:
+        reported_market_cap = real_financial_df["marketCap"]
+    else:
+        reported_market_cap = pd.Series(index=aligned_df.index, dtype="float64")
+    market_cap_anchor = reported_market_cap.ffill()
+    anchor_close_price = weekly_close_price.where(reported_market_cap.notna()).ffill()
+    weekly_market_cap = market_cap_anchor * safe_divide(
+        weekly_close_price,
+        anchor_close_price,
+    )
+
     # Derive the final weekly factors from the forward-filled accounting series.
     total_stockholders_equity = get_numeric_series(aligned_df, "totalStockholdersEquity")
-    market_cap = get_numeric_series(aligned_df, "marketCap")
+    market_cap = weekly_market_cap
     gross_profit = get_numeric_series(aligned_df, "grossProfit")
     total_assets = get_numeric_series(aligned_df, "totalAssets")
     operating_income = get_numeric_series(aligned_df, "operatingIncome")
@@ -286,6 +315,7 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         total_stockholders_equity,
         market_cap,
     )
+    derived_features_df["MarketCap"] = market_cap
     derived_features_df["GrossProfitability"] = safe_divide(
         gross_profit,
         total_assets,
