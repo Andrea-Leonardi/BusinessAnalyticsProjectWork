@@ -170,6 +170,6 @@ Fields:
 ## Next Steps
 
 - Select the financial indicators to include and update the data extraction code accordingly  
-- delete the Spline variables from financials
+  - check results and consider to switch to TTM data
 - Add lagged financial variables   
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables

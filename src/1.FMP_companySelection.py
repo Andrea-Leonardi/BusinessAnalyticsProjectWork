@@ -37,6 +37,9 @@ df = df_raw.sort_values(by="marketCap", ascending=False).drop_duplicates(subset=
 
 #elimino GEV che non ha dati finanziari
 df = df[df["symbol"] != "GEV"]
+#elimino TBB e RCB che non hanno dati sulle news e TBB è un duplicato di T 
+df = df[~df["symbol"].isin(["TBB", "RCB"])]
+
 #elimino aziende che non provengono da Nasdaq, NYSE
 df = df[df["exchangeShortName"].isin(["NASDAQ", "NYSE"])]
 
