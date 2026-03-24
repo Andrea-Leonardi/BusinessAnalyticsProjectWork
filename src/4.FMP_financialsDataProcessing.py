@@ -2,11 +2,8 @@
 import subprocess
 import sys
 
-import numpy as np
 import pandas as pd
 import config as cfg
-# SciPy is used to build smooth spline-based financial series.
-from scipy.interpolate import CubicSpline
 
 
 # ---------------------------------------------------------------------------
@@ -202,7 +199,7 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
             )
 
     # -----------------------------------------------------------------------
-    # Build Filled And Smooth Financial Columns
+    # Build Filled Financial Columns
     # -----------------------------------------------------------------------
 
     # Keep only the identifier columns outside the financial transformation.
@@ -215,7 +212,7 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         columns=[column for column in COLUMNS_TO_DROP if column in aligned_df.columns]
     )
 
-    # Identify the financial columns that must be duplicated and transformed.
+    # Identify the financial columns that must be forward-filled.
     financial_columns = [
         column for column in aligned_df.columns if column not in identifier_columns
     ]
@@ -223,32 +220,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     # Fill the base financial columns with the latest available real observation.
     real_financial_df = aligned_df[financial_columns].copy()
     aligned_df[financial_columns] = real_financial_df.ffill()
-
-    # Create a second set of smooth columns using a spline on the real observations.
-    x_all = aligned_df.index.view("int64").astype(float)
-    for column in financial_columns:
-        real_series = pd.to_numeric(real_financial_df[column], errors="coerce")
-        valid_points = real_series.notna()
-        valid_mask = valid_points.to_numpy()
-
-        if not valid_points.any():
-            aligned_df[f"sm-{column}"] = pd.NA
-            continue
-
-        if valid_points.sum() == 1:
-            aligned_df[f"sm-{column}"] = real_series.ffill().bfill()
-            continue
-
-        x_known = x_all[valid_mask]
-        y_known = real_series.loc[valid_points].to_numpy(dtype=float)
-
-        if valid_points.sum() == 2:
-            smooth_values = np.interp(x_all, x_known, y_known)
-        else:
-            spline_model = CubicSpline(x_known, y_known, bc_type="natural")
-            smooth_values = spline_model(x_all)
-
-        aligned_df[f"sm-{column}"] = smooth_values
 
     # Keep company identifiers first, then all financial variables.
     ordered_columns = identifier_columns
@@ -299,29 +270,22 @@ for ticker in enterprises_df["Ticker"]:
     # Select the financial feature to visualize.
     PLOT_FEATURE = "revenue"
 
-    # Load the processed company financial dataset for a visual comparison.
+    # Load the processed company financial dataset for a quick visual check.
     company_plot_df = pd.read_csv(
         cfg.SINGLE_COMPANY_FINANCIALS / f"{PLOT_TICKER}Financials.csv",
         parse_dates=["WeekEndingFriday"],
     )
 
-    # Compare the forward-filled feature with the spline-smoothed feature.
+    # Plot the forward-filled feature on the weekly aligned calendar.
     plt.figure(figsize=(12, 6))
     plt.plot(
         company_plot_df["WeekEndingFriday"],
         company_plot_df[PLOT_FEATURE],
-        label=f"{PLOT_FEATURE} (ffill)",
-        linewidth=2,
-    )
-    plt.plot(
-        company_plot_df["WeekEndingFriday"],
-        company_plot_df[f"sm-{PLOT_FEATURE}"],
-        label=f"{PLOT_FEATURE} (cubic spline)",
+        label=PLOT_FEATURE,
         linewidth=2,
     )
     plt.title(
-        f"{enterprises_df[enterprises_df['Ticker'] == PLOT_TICKER]['companyName'].iloc[0]} {PLOT_FEATURE} Comparison: "
-        "Forward Fill vs Cubic Spline"
+        f"{enterprises_df[enterprises_df['Ticker'] == PLOT_TICKER]['companyName'].iloc[0]} {PLOT_FEATURE}"
     )
     plt.xlabel("WeekEndingFriday")
     plt.ylabel(PLOT_FEATURE)
