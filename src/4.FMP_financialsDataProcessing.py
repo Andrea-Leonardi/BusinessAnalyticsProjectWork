@@ -11,7 +11,7 @@ import config as cfg
 # ---------------------------------------------------------------------------
 
 # Set this to True when you want the script to re-download the raw FMP data first.
-REDOWNLOAD_RAW_FMP_DATA = False
+REDOWNLOAD_RAW_FMP_DATA = True
 
 # Input/output paths used by the processing step.
 RAW_INPUT_FILE = cfg.FMP_RAW_FINANCIALS
@@ -32,6 +32,44 @@ COLUMNS_TO_DROP = [
     "cik",
 ]
 
+DERIVED_FEATURE_COLUMNS = [
+    "BookToMarket",
+    "GrossProfitability",
+    "OperatingMargin",
+    "ROA",
+    "ROE",
+    "AssetGrowth",
+    "InvestmentIntensity",
+    "Accruals",
+    "IncomeQuality",
+    "DebtToAssets",
+    "InterestCoverage",
+    "CashRatio",
+    "WorkingCapitalScaled",
+    "FreeCashFlowYield",
+    "EarningsYield",
+]
+
+
+# ---------------------------------------------------------------------------
+# Utility Helpers
+# ---------------------------------------------------------------------------
+
+# Safely divide two series while turning zero denominators into missing values.
+def safe_divide(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
+    denominator = denominator.mask(denominator == 0)
+    result = numerator.divide(denominator)
+    return result.where(pd.notna(denominator))
+
+
+# Retrieve a numeric series from the aligned dataset and return an empty series
+# if the source column is missing for a given company.
+def get_numeric_series(dataframe: pd.DataFrame, column: str) -> pd.Series:
+    if column not in dataframe.columns:
+        return pd.Series(index=dataframe.index, dtype="float64")
+
+    return pd.to_numeric(dataframe[column], errors="coerce")
+
 
 # ---------------------------------------------------------------------------
 # Optional Raw FMP Download
@@ -40,7 +78,7 @@ COLUMNS_TO_DROP = [
 # Re-run the raw download script before processing when explicitly requested.
 if REDOWNLOAD_RAW_FMP_DATA:
     subprocess.run(
-        [sys.executable, str(cfg.SRC / "FMP_financialsDataGathering.py")],
+        [sys.executable, str(cfg.SRC / "3.FMP_financialsDataGathering.py")],
         check=True,
     )
 
@@ -103,7 +141,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
             f"'WeekEndingFriday' column not found in {price_file}"
         )
         continue
-
     # Build the weekly index shared with the price dataset.
     price_index = pd.DatetimeIndex(price_df["WeekEndingFriday"]).sort_values().unique()
     price_index.name = "WeekEndingFriday"
@@ -217,16 +254,102 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         column for column in aligned_df.columns if column not in identifier_columns
     ]
 
-    # Fill the base financial columns with the latest available real observation.
-    real_financial_df = aligned_df[financial_columns].copy()
+    # Convert the raw financial fields to numeric and propagate the latest observation.
+    real_financial_df = aligned_df[financial_columns].apply(pd.to_numeric, errors="coerce")
     aligned_df[financial_columns] = real_financial_df.ffill()
 
-    # Keep company identifiers first, then all financial variables.
-    ordered_columns = identifier_columns
-    remaining_columns = [
-        column for column in aligned_df.columns if column not in ordered_columns
-    ]
-    aligned_df = aligned_df[ordered_columns + remaining_columns]
+    # Derive the final weekly factors from the forward-filled accounting series.
+    total_stockholders_equity = get_numeric_series(aligned_df, "totalStockholdersEquity")
+    market_cap = get_numeric_series(aligned_df, "marketCap")
+    gross_profit = get_numeric_series(aligned_df, "grossProfit")
+    total_assets = get_numeric_series(aligned_df, "totalAssets")
+    operating_income = get_numeric_series(aligned_df, "operatingIncome")
+    revenue = get_numeric_series(aligned_df, "revenue")
+    net_income = get_numeric_series(aligned_df, "netIncome")
+    capital_expenditure = get_numeric_series(aligned_df, "capitalExpenditure")
+    operating_cash_flow = get_numeric_series(aligned_df, "operatingCashFlow")
+    total_debt = get_numeric_series(aligned_df, "totalDebt")
+    interest_expense = get_numeric_series(aligned_df, "interestExpense")
+    cash_and_cash_equivalents = get_numeric_series(
+        aligned_df,
+        "cashAndCashEquivalents",
+    )
+    total_current_liabilities = get_numeric_series(
+        aligned_df,
+        "totalCurrentLiabilities",
+    )
+    total_current_assets = get_numeric_series(aligned_df, "totalCurrentAssets")
+    free_cash_flow = get_numeric_series(aligned_df, "freeCashFlow")
+
+    derived_features_df = pd.DataFrame(index=aligned_df.index)
+    derived_features_df["BookToMarket"] = safe_divide(
+        total_stockholders_equity,
+        market_cap,
+    )
+    derived_features_df["GrossProfitability"] = safe_divide(
+        gross_profit,
+        total_assets,
+    )
+
+    derived_features_df["OperatingMargin"] = safe_divide(
+        operating_income,
+        revenue,
+    )
+    derived_features_df["ROA"] = safe_divide(
+        net_income,
+        total_assets,
+    )
+    derived_features_df["ROE"] = safe_divide(
+        net_income,
+        total_stockholders_equity,
+    )
+    # On the weekly aligned grid, 4 quarters are approximated with a 52-week lag.
+    derived_features_df["AssetGrowth"] = safe_divide(
+        total_assets - total_assets.shift(52),
+        total_assets.shift(52),
+    )
+    derived_features_df["InvestmentIntensity"] = safe_divide(
+        capital_expenditure,
+        total_assets,
+    )
+    derived_features_df["Accruals"] = safe_divide(
+        net_income - operating_cash_flow,
+        total_assets,
+    )
+    derived_features_df["IncomeQuality"] = safe_divide(
+        operating_cash_flow,
+        net_income,
+    )
+    derived_features_df["DebtToAssets"] = safe_divide(
+        total_debt,
+        total_assets,
+    )
+    derived_features_df["InterestCoverage"] = safe_divide(
+        operating_income,
+        interest_expense,
+    )
+    derived_features_df["CashRatio"] = safe_divide(
+        cash_and_cash_equivalents,
+        total_current_liabilities,
+    )
+    derived_features_df["WorkingCapitalScaled"] = safe_divide(
+        total_current_assets - total_current_liabilities,
+        total_assets,
+    )
+    derived_features_df["FreeCashFlowYield"] = safe_divide(
+        free_cash_flow,
+        market_cap,
+    )
+    derived_features_df["EarningsYield"] = safe_divide(
+        net_income,
+        market_cap,
+    )
+
+    # Save only identifiers and the final engineered variables.
+    aligned_df = pd.concat(
+        [aligned_df[identifier_columns], derived_features_df[DERIVED_FEATURE_COLUMNS]],
+        axis=1,
+    )
 
     # -----------------------------------------------------------------------
     # Save Company Output
@@ -257,18 +380,26 @@ else:
         f"{raw_df['requested_symbol'].nunique()} ticker, "
         f"{len(combined_df)} total rows."
     )
+
+
 #%%
+
+
+# ---------------------------------------------------------------------------
+# Optional Visual Check
+# ---------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
 
-enterprises_df = pd.read_csv(cfg.ENT)
+# Load a small sample of tickers for a quick visual inspection of one feature.
+enterprises_df = pd.read_csv(cfg.ENT).head(10)
 
 for ticker in enterprises_df["Ticker"]:
 
     # Select the company to visualize.
     PLOT_TICKER = ticker 
     # Select the financial feature to visualize.
-    PLOT_FEATURE = "revenue"
+    PLOT_FEATURE = "BookToMarket"
 
     # Load the processed company financial dataset for a quick visual check.
     company_plot_df = pd.read_csv(

@@ -4,14 +4,15 @@ import requests
 import config as cfg
 
 
-# Simple example of how to call the FMP stock screener API.
-# The goal here is to keep the script easy to read and easy to modify.
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
 
+# Define the FMP screener endpoint used to build the initial company universe.
 url = "https://financialmodelingprep.com/stable/company-screener"
 api_key = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
 
-# Change these parameters to try different filters.
-# You can remove a parameter if you do not want to use it.
+# Set the screener filters that restrict the universe to active equities.
 params = {
     "apikey": api_key,
     "isEtf": False,
@@ -21,37 +22,56 @@ params = {
     "includeAllShareClasses": False,
 }
 
-# Send the request to FMP.
+
+# ---------------------------------------------------------------------------
+# Download Screener Results
+# ---------------------------------------------------------------------------
+
+# Request the filtered company universe from FMP.
 response = requests.get(url, params=params, timeout=30)
 response.raise_for_status()
 
-# Convert the JSON response into a pandas DataFrame.
+# Convert the API response into a DataFrame for local filtering.
 data = response.json()
 df_raw = pd.DataFrame(data)
 
 
 # %%
 
-#ci sono aziende con più di un ticker, prendo solo quello con market cap più alto
-df = df_raw.sort_values(by="marketCap", ascending=False).drop_duplicates(subset=["companyName"], keep="first")
 
-#elimino GEV che non ha dati finanziari
+# ---------------------------------------------------------------------------
+# Filter Company Universe
+# ---------------------------------------------------------------------------
+
+# Some companies appear with multiple tickers or share classes.
+# Keep only the line with the highest market cap for each company name.
+df = (
+    df_raw.sort_values(by="marketCap", ascending=False)
+    .drop_duplicates(subset=["companyName"], keep="first")
+)
+
+# Remove tickers that do not have the downstream data required by the project.
 df = df[df["symbol"] != "GEV"]
-#elimino TBB e RCB che non hanno dati sulle news e TBB è un duplicato di T 
 df = df[~df["symbol"].isin(["TBB", "RCB"])]
 
-#elimino aziende che non provengono da Nasdaq, NYSE
+# Keep only companies listed on the two target US exchanges.
 df = df[df["exchangeShortName"].isin(["NASDAQ", "NYSE"])]
 
-#prendo le prime 10 aziende con market cap più alto per ogni settore
+# Keep the top 10 companies by market cap within each sector.
 df = df.sort_values(by="marketCap", ascending=False).groupby("sector").head(10)
 
-#droppo tutte le colonne tranne symbol, companyName, sector, industry, marketCap
+# Keep only the columns needed by the rest of the project.
 df = df[["symbol", "companyName", "sector", "industry", "marketCap"]]
-#rinomino la colonna symbol in Ticker
+
+# Rename the ticker column to match the naming used in the other scripts.
 df = df.rename(columns={"symbol": "Ticker"})
 
-# Save the result directly inside data.
+
+# ---------------------------------------------------------------------------
+# Save Output
+# ---------------------------------------------------------------------------
+
+# Save the final company universe inside the shared data folder.
 df.to_csv(cfg.ENT, index=False)
 print(f"Saved file: {cfg.ENT}")
 
