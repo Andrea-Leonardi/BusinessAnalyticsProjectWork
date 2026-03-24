@@ -35,7 +35,9 @@ SELECTED_TICKERS: list[str] = []
 ENTERPRISE_ROW_LIMIT = 110
 
 SELECTED_PERIOD = "quarter"
-STATEMENT_LIMIT = 25
+# Pull a longer quarterly history so trailing-twelve-month factors are already
+# available when the weekly sample starts in early 2021.
+STATEMENT_LIMIT = 60
 REQUEST_TIMEOUT = 30
 REQUEST_PAUSE_SECONDS = 0.25
 

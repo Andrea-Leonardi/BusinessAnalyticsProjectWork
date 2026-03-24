@@ -36,19 +36,40 @@ DERIVED_FEATURE_COLUMNS = [
     "BookToMarket",
     "MarketCap",
     "GrossProfitability",
+    "GrossProfitability_TTM",
     "OperatingMargin",
+    "OperatingMargin_TTM",
     "ROA",
+    "ROA_TTM",
     "ROE",
+    "ROE_TTM",
     "AssetGrowth",
     "InvestmentIntensity",
+    "InvestmentIntensity_TTM",
     "Accruals",
+    "Accruals_TTM",
     "IncomeQuality",
+    "IncomeQuality_TTM",
     "DebtToAssets",
     "InterestCoverage",
+    "InterestCoverage_TTM",
     "CashRatio",
     "WorkingCapitalScaled",
     "FreeCashFlowYield",
+    "FreeCashFlowYield_TTM",
     "EarningsYield",
+    "EarningsYield_TTM",
+]
+
+TTM_FLOW_COLUMNS = [
+    "revenue",
+    "grossProfit",
+    "operatingIncome",
+    "netIncome",
+    "interestExpense",
+    "capitalExpenditure",
+    "operatingCashFlow",
+    "freeCashFlow",
 ]
 
 
@@ -191,6 +212,195 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     # Remove rows where the source date could not be aligned.
     working_df = working_df.dropna(subset=["WeekEndingFriday"])
 
+    # Build the quarterly factors first on true statement dates. This lets the
+    # weekly mapping inherit both the plain quarterly ratios and the TTM ratios
+    # from older statements that already existed before the price sample starts.
+    statement_level_df = working_df.copy()
+    statement_sort_columns = [
+        column
+        for column in ("acceptedDate", "filingDate", "date")
+        if column in statement_level_df.columns
+    ]
+    if statement_sort_columns:
+        statement_level_df = statement_level_df.sort_values(
+            statement_sort_columns,
+            ascending=False,
+        )
+    if "date" in statement_level_df.columns:
+        statement_level_df = statement_level_df.drop_duplicates(
+            subset=["date"],
+            keep="first",
+        ).sort_values("date")
+
+    statement_numeric_columns = [
+        "revenue",
+        "grossProfit",
+        "operatingIncome",
+        "netIncome",
+        "interestExpense",
+        "totalAssets",
+        "totalStockholdersEquity",
+        "totalCurrentAssets",
+        "totalCurrentLiabilities",
+        "totalDebt",
+        "cashAndCashEquivalents",
+        "operatingCashFlow",
+        "capitalExpenditure",
+        "freeCashFlow",
+        "marketCap",
+    ]
+    for column in statement_numeric_columns:
+        if column in statement_level_df.columns:
+            statement_level_df[column] = pd.to_numeric(
+                statement_level_df[column],
+                errors="coerce",
+            )
+
+    for column in TTM_FLOW_COLUMNS:
+        ttm_column = f"{column}_TTM"
+        if column not in statement_level_df.columns:
+            statement_level_df[ttm_column] = pd.NA
+            continue
+
+        statement_level_df[ttm_column] = statement_level_df[column].rolling(
+            4,
+            min_periods=4,
+        ).sum()
+
+    total_stockholders_equity_statement = get_numeric_series(
+        statement_level_df,
+        "totalStockholdersEquity",
+    )
+    gross_profit_statement = get_numeric_series(statement_level_df, "grossProfit")
+    gross_profit_ttm_statement = get_numeric_series(statement_level_df, "grossProfit_TTM")
+    total_assets_statement = get_numeric_series(statement_level_df, "totalAssets")
+    operating_income_statement = get_numeric_series(statement_level_df, "operatingIncome")
+    operating_income_ttm_statement = get_numeric_series(
+        statement_level_df,
+        "operatingIncome_TTM",
+    )
+    revenue_statement = get_numeric_series(statement_level_df, "revenue")
+    revenue_ttm_statement = get_numeric_series(statement_level_df, "revenue_TTM")
+    net_income_statement = get_numeric_series(statement_level_df, "netIncome")
+    net_income_ttm_statement = get_numeric_series(statement_level_df, "netIncome_TTM")
+    capital_expenditure_statement = get_numeric_series(
+        statement_level_df,
+        "capitalExpenditure",
+    )
+    capital_expenditure_ttm_statement = get_numeric_series(
+        statement_level_df,
+        "capitalExpenditure_TTM",
+    )
+    operating_cash_flow_statement = get_numeric_series(
+        statement_level_df,
+        "operatingCashFlow",
+    )
+    operating_cash_flow_ttm_statement = get_numeric_series(
+        statement_level_df,
+        "operatingCashFlow_TTM",
+    )
+    total_debt_statement = get_numeric_series(statement_level_df, "totalDebt")
+    interest_expense_statement = get_numeric_series(statement_level_df, "interestExpense")
+    interest_expense_ttm_statement = get_numeric_series(
+        statement_level_df,
+        "interestExpense_TTM",
+    )
+    cash_and_cash_equivalents_statement = get_numeric_series(
+        statement_level_df,
+        "cashAndCashEquivalents",
+    )
+    total_current_liabilities_statement = get_numeric_series(
+        statement_level_df,
+        "totalCurrentLiabilities",
+    )
+    total_current_assets_statement = get_numeric_series(
+        statement_level_df,
+        "totalCurrentAssets",
+    )
+
+    statement_level_df["GrossProfitability"] = safe_divide(
+        gross_profit_statement,
+        total_assets_statement,
+    )
+    statement_level_df["GrossProfitability_TTM"] = safe_divide(
+        gross_profit_ttm_statement,
+        total_assets_statement,
+    )
+    statement_level_df["OperatingMargin"] = safe_divide(
+        operating_income_statement,
+        revenue_statement,
+    )
+    statement_level_df["OperatingMargin_TTM"] = safe_divide(
+        operating_income_ttm_statement,
+        revenue_ttm_statement,
+    )
+    statement_level_df["ROA"] = safe_divide(
+        net_income_statement,
+        total_assets_statement,
+    )
+    statement_level_df["ROA_TTM"] = safe_divide(
+        net_income_ttm_statement,
+        total_assets_statement,
+    )
+    statement_level_df["ROE"] = safe_divide(
+        net_income_statement,
+        total_stockholders_equity_statement,
+    )
+    statement_level_df["ROE_TTM"] = safe_divide(
+        net_income_ttm_statement,
+        total_stockholders_equity_statement,
+    )
+    statement_level_df["AssetGrowth"] = safe_divide(
+        total_assets_statement - total_assets_statement.shift(4),
+        total_assets_statement.shift(4),
+    )
+    statement_level_df["InvestmentIntensity"] = safe_divide(
+        capital_expenditure_statement,
+        total_assets_statement,
+    )
+    statement_level_df["InvestmentIntensity_TTM"] = safe_divide(
+        capital_expenditure_ttm_statement,
+        total_assets_statement,
+    )
+    statement_level_df["Accruals"] = safe_divide(
+        net_income_statement - operating_cash_flow_statement,
+        total_assets_statement,
+    )
+    statement_level_df["Accruals_TTM"] = safe_divide(
+        net_income_ttm_statement - operating_cash_flow_ttm_statement,
+        total_assets_statement,
+    )
+    statement_level_df["IncomeQuality"] = safe_divide(
+        operating_cash_flow_statement,
+        net_income_statement,
+    )
+    statement_level_df["IncomeQuality_TTM"] = safe_divide(
+        operating_cash_flow_ttm_statement,
+        net_income_ttm_statement,
+    )
+    statement_level_df["DebtToAssets"] = safe_divide(
+        total_debt_statement,
+        total_assets_statement,
+    )
+    statement_level_df["InterestCoverage"] = safe_divide(
+        operating_income_statement,
+        interest_expense_statement,
+    )
+    statement_level_df["InterestCoverage_TTM"] = safe_divide(
+        operating_income_ttm_statement,
+        interest_expense_ttm_statement,
+    )
+    statement_level_df["CashRatio"] = safe_divide(
+        cash_and_cash_equivalents_statement,
+        total_current_liabilities_statement,
+    )
+    statement_level_df["WorkingCapitalScaled"] = safe_divide(
+        total_current_assets_statement - total_current_liabilities_statement,
+        total_assets_statement,
+    )
+
+    working_df = statement_level_df.copy()
+
     # -----------------------------------------------------------------------
     # Deduplicate And Join
     # -----------------------------------------------------------------------
@@ -256,14 +466,22 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         columns=[column for column in COLUMNS_TO_DROP if column in aligned_df.columns]
     )
 
+    # Keep the raw reported market cap before the forward fill so the weekly
+    # market-cap update can anchor only on true statement rows.
+    reported_market_cap = (
+        pd.to_numeric(aligned_df["marketCap"], errors="coerce")
+        if "marketCap" in aligned_df.columns
+        else pd.Series(index=aligned_df.index, dtype="float64")
+    )
+
     # Identify the financial columns that must be forward-filled.
     financial_columns = [
         column for column in aligned_df.columns if column not in identifier_columns
     ]
 
     # Convert the raw financial fields to numeric and propagate the latest observation.
-    real_financial_df = aligned_df[financial_columns].apply(pd.to_numeric, errors="coerce")
-    aligned_df[financial_columns] = real_financial_df.ffill()
+    numeric_financial_df = aligned_df[financial_columns].apply(pd.to_numeric, errors="coerce")
+    aligned_df[financial_columns] = numeric_financial_df.ffill()
 
     # Build the weekly close-price series used to update market-based ratios
     # between quarterly statement dates.
@@ -276,10 +494,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
 
     # Keep accounting values fixed until the next statement, but rescale the
     # latest reported market cap with weekly price moves between quarters.
-    if "marketCap" in real_financial_df.columns:
-        reported_market_cap = real_financial_df["marketCap"]
-    else:
-        reported_market_cap = pd.Series(index=aligned_df.index, dtype="float64")
     market_cap_anchor = reported_market_cap.ffill()
     anchor_close_price = weekly_close_price.where(reported_market_cap.notna()).ffill()
     weekly_market_cap = market_cap_anchor * safe_divide(
@@ -287,28 +501,15 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         anchor_close_price,
     )
 
-    # Derive the final weekly factors from the forward-filled accounting series.
+    # The non-market ratios are already calculated on statement dates. After
+    # the weekly alignment they just need to be carried forward. Only the
+    # market-cap-based factors are recalculated every week.
     total_stockholders_equity = get_numeric_series(aligned_df, "totalStockholdersEquity")
     market_cap = weekly_market_cap
-    gross_profit = get_numeric_series(aligned_df, "grossProfit")
-    total_assets = get_numeric_series(aligned_df, "totalAssets")
-    operating_income = get_numeric_series(aligned_df, "operatingIncome")
-    revenue = get_numeric_series(aligned_df, "revenue")
-    net_income = get_numeric_series(aligned_df, "netIncome")
-    capital_expenditure = get_numeric_series(aligned_df, "capitalExpenditure")
-    operating_cash_flow = get_numeric_series(aligned_df, "operatingCashFlow")
-    total_debt = get_numeric_series(aligned_df, "totalDebt")
-    interest_expense = get_numeric_series(aligned_df, "interestExpense")
-    cash_and_cash_equivalents = get_numeric_series(
-        aligned_df,
-        "cashAndCashEquivalents",
-    )
-    total_current_liabilities = get_numeric_series(
-        aligned_df,
-        "totalCurrentLiabilities",
-    )
-    total_current_assets = get_numeric_series(aligned_df, "totalCurrentAssets")
     free_cash_flow = get_numeric_series(aligned_df, "freeCashFlow")
+    free_cash_flow_ttm = get_numeric_series(aligned_df, "freeCashFlow_TTM")
+    net_income = get_numeric_series(aligned_df, "netIncome")
+    net_income_ttm = get_numeric_series(aligned_df, "netIncome_TTM")
 
     derived_features_df = pd.DataFrame(index=aligned_df.index)
     derived_features_df["BookToMarket"] = safe_divide(
@@ -316,62 +517,79 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         market_cap,
     )
     derived_features_df["MarketCap"] = market_cap
-    derived_features_df["GrossProfitability"] = safe_divide(
-        gross_profit,
-        total_assets,
+    derived_features_df["GrossProfitability"] = get_numeric_series(
+        aligned_df,
+        "GrossProfitability",
     )
-
-    derived_features_df["OperatingMargin"] = safe_divide(
-        operating_income,
-        revenue,
+    derived_features_df["GrossProfitability_TTM"] = get_numeric_series(
+        aligned_df,
+        "GrossProfitability_TTM",
     )
-    derived_features_df["ROA"] = safe_divide(
-        net_income,
-        total_assets,
+    derived_features_df["OperatingMargin"] = get_numeric_series(
+        aligned_df,
+        "OperatingMargin",
     )
-    derived_features_df["ROE"] = safe_divide(
-        net_income,
-        total_stockholders_equity,
+    derived_features_df["OperatingMargin_TTM"] = get_numeric_series(
+        aligned_df,
+        "OperatingMargin_TTM",
     )
-    # On the weekly aligned grid, 4 quarters are approximated with a 52-week lag.
-    derived_features_df["AssetGrowth"] = safe_divide(
-        total_assets - total_assets.shift(52),
-        total_assets.shift(52),
+    derived_features_df["ROA"] = get_numeric_series(aligned_df, "ROA")
+    derived_features_df["ROA_TTM"] = get_numeric_series(aligned_df, "ROA_TTM")
+    derived_features_df["ROE"] = get_numeric_series(aligned_df, "ROE")
+    derived_features_df["ROE_TTM"] = get_numeric_series(aligned_df, "ROE_TTM")
+    derived_features_df["AssetGrowth"] = get_numeric_series(aligned_df, "AssetGrowth")
+    derived_features_df["InvestmentIntensity"] = get_numeric_series(
+        aligned_df,
+        "InvestmentIntensity",
     )
-    derived_features_df["InvestmentIntensity"] = safe_divide(
-        capital_expenditure,
-        total_assets,
+    derived_features_df["InvestmentIntensity_TTM"] = get_numeric_series(
+        aligned_df,
+        "InvestmentIntensity_TTM",
     )
-    derived_features_df["Accruals"] = safe_divide(
-        net_income - operating_cash_flow,
-        total_assets,
+    derived_features_df["Accruals"] = get_numeric_series(aligned_df, "Accruals")
+    derived_features_df["Accruals_TTM"] = get_numeric_series(
+        aligned_df,
+        "Accruals_TTM",
     )
-    derived_features_df["IncomeQuality"] = safe_divide(
-        operating_cash_flow,
-        net_income,
+    derived_features_df["IncomeQuality"] = get_numeric_series(
+        aligned_df,
+        "IncomeQuality",
     )
-    derived_features_df["DebtToAssets"] = safe_divide(
-        total_debt,
-        total_assets,
+    derived_features_df["IncomeQuality_TTM"] = get_numeric_series(
+        aligned_df,
+        "IncomeQuality_TTM",
     )
-    derived_features_df["InterestCoverage"] = safe_divide(
-        operating_income,
-        interest_expense,
+    derived_features_df["DebtToAssets"] = get_numeric_series(
+        aligned_df,
+        "DebtToAssets",
     )
-    derived_features_df["CashRatio"] = safe_divide(
-        cash_and_cash_equivalents,
-        total_current_liabilities,
+    derived_features_df["InterestCoverage"] = get_numeric_series(
+        aligned_df,
+        "InterestCoverage",
     )
-    derived_features_df["WorkingCapitalScaled"] = safe_divide(
-        total_current_assets - total_current_liabilities,
-        total_assets,
+    derived_features_df["InterestCoverage_TTM"] = get_numeric_series(
+        aligned_df,
+        "InterestCoverage_TTM",
+    )
+    derived_features_df["CashRatio"] = get_numeric_series(aligned_df, "CashRatio")
+    derived_features_df["WorkingCapitalScaled"] = get_numeric_series(
+        aligned_df,
+        "WorkingCapitalScaled",
     )
     derived_features_df["FreeCashFlowYield"] = safe_divide(
         free_cash_flow,
         market_cap,
     )
+    derived_features_df["FreeCashFlowYield_TTM"] = safe_divide(
+        free_cash_flow_ttm,
+        market_cap,
+    )
     derived_features_df["EarningsYield"] = safe_divide(
         net_income,
+        market_cap,
+    )
+    derived_features_df["EarningsYield_TTM"] = safe_divide(
+        net_income_ttm,
         market_cap,
     )
 
@@ -420,7 +638,7 @@ else:
 # ---------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
-
+print("\nPerforming a quick visual check of the processed financial features...")
 # Load a small sample of tickers for a quick visual inspection of one feature.
 enterprises_df = pd.read_csv(cfg.ENT).head(10)
 
@@ -429,7 +647,8 @@ for ticker in enterprises_df["Ticker"]:
     # Select the company to visualize.
     PLOT_TICKER = ticker 
     # Select the financial feature to visualize.
-    PLOT_FEATURE = "BookToMarket"
+    PLOT_FEATURE = "FreeCashFlowYield"
+    PLOT_FEATURE_TTM = f"{PLOT_FEATURE}_TTM"
 
     # Load the processed company financial dataset for a quick visual check.
     company_plot_df = pd.read_csv(
@@ -437,7 +656,7 @@ for ticker in enterprises_df["Ticker"]:
         parse_dates=["WeekEndingFriday"],
     )
 
-    # Plot the forward-filled feature on the weekly aligned calendar.
+    # Plot the base feature and compare it with the TTM version when available.
     plt.figure(figsize=(12, 6))
     plt.plot(
         company_plot_df["WeekEndingFriday"],
@@ -445,8 +664,16 @@ for ticker in enterprises_df["Ticker"]:
         label=PLOT_FEATURE,
         linewidth=2,
     )
+    if PLOT_FEATURE_TTM in company_plot_df.columns:
+        plt.plot(
+            company_plot_df["WeekEndingFriday"],
+            company_plot_df[PLOT_FEATURE_TTM],
+            label=PLOT_FEATURE_TTM,
+            linewidth=2,
+        )
     plt.title(
-        f"{enterprises_df[enterprises_df['Ticker'] == PLOT_TICKER]['companyName'].iloc[0]} {PLOT_FEATURE}"
+        f"{enterprises_df[enterprises_df['Ticker'] == PLOT_TICKER]['companyName'].iloc[0]} "
+        f"{PLOT_FEATURE} Comparison"
     )
     plt.xlabel("WeekEndingFriday")
     plt.ylabel(PLOT_FEATURE)
