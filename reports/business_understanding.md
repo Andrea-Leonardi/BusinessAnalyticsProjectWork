@@ -175,11 +175,5 @@ Fields:
 - Isolated quarters with `totalDebt = 0` between positive-debt quarters are treated as missing in the debt-based ratio, because they are more likely to be provider artifacts than true debt-free states.
 ## Next Steps
  
-- look in the data for outlier and other bad stuff
-  - Missing
-  - zero value
-    - CNQ,MCD,TTE,XEL,TSLA,MCD  hanno valori zero ma non sembrano particolarmente clustered quindi da indagare
-    - BKNG ha valori zero per le prime 13 righe di Accurals_L2Q
-    - 
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables
 
