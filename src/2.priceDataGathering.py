@@ -73,10 +73,12 @@ for ticker in df["Ticker"]:
     # Add short lags that can be reused in later analyses.
     company_df["ClosePrice_t-1"] = company_df["ClosePrice"].shift(1)
     company_df["ClosePrice_t-2"] = company_df["ClosePrice"].shift(2)
+    company_df["ClosePrice_t+1"] = company_df["ClosePrice"].shift(-1)
     company_df["AdjClosePrice_t-1"] = company_df["AdjClosePrice"].shift(1)
     company_df["AdjClosePrice_t-2"] = company_df["AdjClosePrice"].shift(2)
+    company_df["AdjClosePrice_t+1"] = company_df["AdjClosePrice"].shift(-1)
 
-    # Drop the first rows where lagged values are still unavailable.
+    # Drop the edge rows where lagged or forward values are still unavailable.
     company_df = company_df.dropna()
     company_df["Ticker"] = ticker
     company_df = company_df[
@@ -85,9 +87,11 @@ for ticker in df["Ticker"]:
             "ClosePrice",
             "ClosePrice_t-1",
             "ClosePrice_t-2",
+            "ClosePrice_t+1",
             "AdjClosePrice",
             "AdjClosePrice_t-1",
             "AdjClosePrice_t-2",
+            "AdjClosePrice_t+1",
         ]
     ]
 
