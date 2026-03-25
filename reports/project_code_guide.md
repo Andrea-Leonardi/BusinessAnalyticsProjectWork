@@ -190,14 +190,16 @@ High-level logic:
 3. Process one company at a time
 4. Align quarterly statement dates to the nearest Friday
 5. Map each company to its weekly price calendar
-6. Forward-fill the latest known accounting information
-7. Save one processed company file and one aggregated processed file
+6. If needed, seed the first weekly row with the latest statement already known before the price sample starts
+7. Forward-fill the latest known accounting information
+8. Save one processed company file and one aggregated processed file
 
 Important design choice:
 
 - The script now calculates the accounting ratios on true quarterly statement dates first
 - Only after that does it map them to the weekly price calendar
 - This makes the logic easier to interpret and allows TTM values to exist from the start of the weekly sample when enough older quarters were downloaded
+- When an older pre-sample statement exists, the script uses it to seed the first weekly row so the dataset does not start with a long empty block before the first in-sample release
 
 How the TTM values are built:
 
