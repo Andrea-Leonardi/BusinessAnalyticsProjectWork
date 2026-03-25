@@ -75,6 +75,8 @@ INCOME_FIELD_MAP = {
     "revenue": ["revenue"],
     "grossProfit": ["grossProfit"],
     "operatingIncome": ["operatingIncome"],
+    # Prefer the standard FMP field name and fall back only when the payload
+    # exposes the same concept under a legacy alternative name.
     "netIncome": ["netIncome", "bottomLineNetIncome"],
     "interestExpense": ["interestExpense"],
     # Keep both share-count fields so the processing step can choose the
@@ -85,9 +87,11 @@ INCOME_FIELD_MAP = {
 
 BALANCE_FIELD_MAP = {
     "totalAssets": ["totalAssets"],
+    # Prefer stockholders' equity explicitly and fall back to total equity only
+    # when the endpoint uses the broader label for the same balance-sheet item.
     "totalStockholdersEquity": ["totalStockholdersEquity", "totalEquity"],
-    "totalCurrentAssets": ["totalCurrentAssets", "currentAssets"],
-    "totalCurrentLiabilities": ["totalCurrentLiabilities", "currentLiabilities"],
+    "totalCurrentAssets": ["totalCurrentAssets"],
+    "totalCurrentLiabilities": ["totalCurrentLiabilities"],
     "totalDebt": ["totalDebt"],
     "cashAndCashEquivalents": ["cashAndCashEquivalents"],
 }
@@ -344,47 +348,119 @@ def main() -> None:
             ]
             income_selected = income_df[income_base_columns].copy()
             for output_name, candidate_columns in INCOME_FIELD_MAP.items():
-                source_column = next(
-                    (column for column in candidate_columns if column in income_df.columns),
+                primary_column = candidate_columns[0]
+                if primary_column in income_df.columns:
+                    income_selected[output_name] = income_df[primary_column]
+                    continue
+
+                fallback_column = next(
+                    (
+                        column
+                        for column in candidate_columns[1:]
+                        if column in income_df.columns
+                    ),
                     None,
                 )
-                income_selected[output_name] = (
-                    income_df[source_column] if source_column is not None else pd.NA
-                )
+                if fallback_column is not None:
+                    print(
+                        f"Warning for {ticker}: using fallback field "
+                        f"'{fallback_column}' for '{output_name}'."
+                    )
+                    income_selected[output_name] = income_df[fallback_column]
+                else:
+                    print(
+                        f"Warning for {ticker}: field '{primary_column}' was not found "
+                        f"for '{output_name}'. Saving it as missing."
+                    )
+                    income_selected[output_name] = pd.NA
 
             balance_selected = balance_df[income_balance_merge_keys].copy()
             for output_name, candidate_columns in BALANCE_FIELD_MAP.items():
-                source_column = next(
-                    (column for column in candidate_columns if column in balance_df.columns),
+                primary_column = candidate_columns[0]
+                if primary_column in balance_df.columns:
+                    balance_selected[output_name] = balance_df[primary_column]
+                    continue
+
+                fallback_column = next(
+                    (
+                        column
+                        for column in candidate_columns[1:]
+                        if column in balance_df.columns
+                    ),
                     None,
                 )
-                balance_selected[output_name] = (
-                    balance_df[source_column] if source_column is not None else pd.NA
-                )
+                if fallback_column is not None:
+                    print(
+                        f"Warning for {ticker}: using fallback field "
+                        f"'{fallback_column}' for '{output_name}'."
+                    )
+                    balance_selected[output_name] = balance_df[fallback_column]
+                else:
+                    print(
+                        f"Warning for {ticker}: field '{primary_column}' was not found "
+                        f"for '{output_name}'. Saving it as missing."
+                    )
+                    balance_selected[output_name] = pd.NA
 
             cash_flow_selected = cash_flow_df[income_cash_flow_merge_keys].copy()
             for output_name, candidate_columns in CASH_FLOW_FIELD_MAP.items():
-                source_column = next(
-                    (column for column in candidate_columns if column in cash_flow_df.columns),
+                primary_column = candidate_columns[0]
+                if primary_column in cash_flow_df.columns:
+                    cash_flow_selected[output_name] = cash_flow_df[primary_column]
+                    continue
+
+                fallback_column = next(
+                    (
+                        column
+                        for column in candidate_columns[1:]
+                        if column in cash_flow_df.columns
+                    ),
                     None,
                 )
-                cash_flow_selected[output_name] = (
-                    cash_flow_df[source_column] if source_column is not None else pd.NA
-                )
+                if fallback_column is not None:
+                    print(
+                        f"Warning for {ticker}: using fallback field "
+                        f"'{fallback_column}' for '{output_name}'."
+                    )
+                    cash_flow_selected[output_name] = cash_flow_df[fallback_column]
+                else:
+                    print(
+                        f"Warning for {ticker}: field '{primary_column}' was not found "
+                        f"for '{output_name}'. Saving it as missing."
+                    )
+                    cash_flow_selected[output_name] = pd.NA
 
             enterprise_values_selected = enterprise_values_df[income_enterprise_merge_keys].copy()
             for output_name, candidate_columns in ENTERPRISE_VALUE_FIELD_MAP.items():
-                source_column = next(
+                primary_column = candidate_columns[0]
+                if primary_column in enterprise_values_df.columns:
+                    enterprise_values_selected[output_name] = enterprise_values_df[
+                        primary_column
+                    ]
+                    continue
+
+                fallback_column = next(
                     (
                         column
-                        for column in candidate_columns
+                        for column in candidate_columns[1:]
                         if column in enterprise_values_df.columns
                     ),
                     None,
                 )
-                enterprise_values_selected[output_name] = (
-                    enterprise_values_df[source_column] if source_column is not None else pd.NA
-                )
+                if fallback_column is not None:
+                    print(
+                        f"Warning for {ticker}: using fallback field "
+                        f"'{fallback_column}' for '{output_name}'."
+                    )
+                    enterprise_values_selected[output_name] = enterprise_values_df[
+                        fallback_column
+                    ]
+                else:
+                    print(
+                        f"Warning for {ticker}: field '{primary_column}' was not found "
+                        f"for '{output_name}'. Saving it as missing."
+                    )
+                    enterprise_values_selected[output_name] = pd.NA
 
             # ---------------------------------------------------------------
             # Merge And Save In Memory
