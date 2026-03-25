@@ -647,7 +647,7 @@ for ticker in enterprises_df["Ticker"]:
     # Select the company to visualize.
     PLOT_TICKER = ticker 
     # Select the financial feature to visualize.
-    PLOT_FEATURE = "FreeCashFlowYield"
+    PLOT_FEATURE = "GrossProfitability"
     PLOT_FEATURE_TTM = f"{PLOT_FEATURE}_TTM"
 
     # Load the processed company financial dataset for a quick visual check.

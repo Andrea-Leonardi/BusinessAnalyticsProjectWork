@@ -165,13 +165,11 @@ Fields:
 - We also account for seasonality in financial statement variables. For example, companies such as Apple exhibit strong seasonal patterns in revenues, with significant peaks during the holiday season.
  To mitigate this effect, we consider using **Trailing Twelve Months (TTM)** revenue, computed as the rolling sum of the last four quarters. This approach provides a smoother and more comparable measure over time and reduces the impact of seasonal fluctuations.
 
--al momento molte delle variabili di FMP sono fisse da un quarter all'altro e ci sta per cose che sono note al pubblico solo al'uscita delle trimestrali ma tipo il book value è un valore calcolato continuamente da prezzo dell'azione e numero di azioni quindi in realtà non è noto solo al momento delle trimestrali, questo è un problema da risolvere 
-
-- Update market-cap-based ratios weekly by taking the last quarterly market cap reported by FMP and rescaling it with weekly stock price changes between two statement dates.
+- al momento molte delle variabili di FMP sono fisse da un quarter all'altro e ci sta per cose che sono note al pubblico solo al'uscita delle trimestrali ma tipo il book value è un valore calcolato continuamente da prezzo dell'azione e numero di azioni quindi in realtà non è noto solo al momento delle trimestrali, questo è un problema da risolvere 
+  - Update market-cap-based ratios weekly by taking the last quarterly market cap reported by FMP and rescaling it with weekly stock price changes between two statement dates.
+- decido di tenere sia gli indici ttm che quelli normali e decicdere più avanti cosa includere
 ## Next Steps
 
-- Select the financial indicators to include and update the data extraction code accordingly  
-  - check results and consider to switch to TTM data
 - Add lagged financial variables   
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables
 
