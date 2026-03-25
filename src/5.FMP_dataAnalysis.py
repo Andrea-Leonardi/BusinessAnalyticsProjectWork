@@ -83,3 +83,59 @@ plt.tight_layout()
 plt.show()
 
 # %%
+
+
+# ---------------------------------------------------------------------------
+# Summarize Missing And Zero Values By Company Financial File
+# ---------------------------------------------------------------------------
+
+# Inspect each company-level processed financial file and count how many
+# missing values and explicit zeros it contains. The binary release flag is
+# excluded because its zeros are structural by construction.
+financial_files = sorted(cfg.SINGLE_COMPANY_FINANCIALS.glob("*Financials.csv"))
+
+quality_rows = []
+for financial_file in financial_files:
+    company_df = pd.read_csv(financial_file)
+
+    analysis_columns = [
+        column for column in company_df.columns if column != "QuarterlyReleased"
+    ]
+    numeric_columns = [
+        column
+        for column in analysis_columns
+        if pd.api.types.is_numeric_dtype(company_df[column])
+    ]
+    total_cells = len(company_df) * len(analysis_columns)
+    total_numeric_cells = len(company_df) * len(numeric_columns)
+    missing_values = int(company_df[analysis_columns].isna().sum().sum())
+    zero_values = int(company_df[numeric_columns].eq(0).sum().sum())
+
+    quality_rows.append(
+        {
+            "Ticker": financial_file.stem.replace("Financials", ""),
+            "Rows": len(company_df),
+            "MissingValues": missing_values,
+            "MissingPct": (
+                100 * missing_values / total_cells if total_cells > 0 else 0.0
+            ),
+            "ZeroValues": zero_values,
+            "ZeroPct": (
+                100 * zero_values / total_numeric_cells
+                if total_numeric_cells > 0
+                else 0.0
+            ),
+        }
+    )
+
+quality_summary_df = pd.DataFrame(quality_rows).sort_values(
+    by=["MissingValues", "ZeroValues", "Ticker"],
+    ascending=[False, False, True],
+).reset_index(drop=True)
+quality_summary_df["MissingPct"] = quality_summary_df["MissingPct"].round(2)
+quality_summary_df["ZeroPct"] = quality_summary_df["ZeroPct"].round(2)
+
+print("\nMissing and zero-value summary for company financial files:")
+print(quality_summary_df.to_string(index=False))
+
+# %%

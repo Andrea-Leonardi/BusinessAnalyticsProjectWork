@@ -172,5 +172,20 @@ Fields:
 ## Next Steps
  
 - look in the data for outlier and other bad stuff
+  - Missing
+    - O è real estate e non ha interest coverage per nessuna data (TTM e non e lagged ovviamente)
+    - PLTR è troppo giovane come azienda mancano dati 2021
+    - UL ha anche lei problemi per interest coverage (TTM e non e lagged ovviamente)
+    - HSBC ha missing per interest coverage (TTM e non e lagged ovviamente)
+    - BTI ha missing per interest coverage (TTM e non e lagged ovviamente)
+    - META ha missing per interest coverage (TTM e non e lagged ovviamente)
+  - zero value
+    - HSBC ha valori zero per: freecashflowyeld (TTM e non e lagged ovviamente), investment intensity (TTM e non e lagged ovviamente), incomequality(TTM e non e lagged ovviamente)
+    - WFC,BAC,JPM,PDD,BABA,PLD,DLR hanno valori zero per tanti valori di:investment intensity (TTM e non e lagged ovviamente)
+    - NGG ha valori zero per: debttoasset (e lagged ovviamente)
+    - CNQ,MCD,TTE,XEL,TSLA,MCD  hanno valori zero ma non sembrano particolarmente clustered quindi da indagare
+    - BKNG ha valori zero per le prime 13 righe di Accurals_L2Q
+    - ETN, FCX, MS, NEM hanno valori zero per le ultime 12 righe di investment intensity TTM 
+    - 
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables
 

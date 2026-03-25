@@ -308,6 +308,9 @@ What it currently does:
 - Checks first and last available date by ticker
 - Highlights suspicious end dates
 - Plots an example weekly price series for one selected company
+- Summarizes missing values and explicit zeros for each company-level
+  processed financial file, excluding the `QuarterlyReleased` flag
+- Reports both absolute counts and percentages for missing values and zeros
 
 This script is more of a sanity-check script than a final analysis pipeline.
 
