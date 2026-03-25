@@ -168,8 +168,8 @@ Fields:
 - al momento molte delle variabili di FMP sono fisse da un quarter all'altro e ci sta per cose che sono note al pubblico solo al'uscita delle trimestrali ma tipo il book value è un valore calcolato continuamente da prezzo dell'azione e numero di azioni quindi in realtà non è noto solo al momento delle trimestrali, questo è un problema da risolvere 
   - Update market-cap-based ratios weekly by taking the last quarterly market cap reported by FMP and rescaling it with weekly stock price changes between two statement dates.
 - decido di tenere sia gli indici ttm che quelli normali e decicdere più avanti cosa includere
+- inseriamo variabili finanziarie laggate, dividiamo le variabili in due tipi, quelle market based ovvero che si basano su informazioni disponibili al mercato che verranno laggate di 1 e 2 settimane mentre le variabili che si basano sui dati disponibili al rilascio della trimestrale vengono laggate di 1 e 2 trimestrali
 ## Next Steps
-
-- Add lagged financial variables   
+ 
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables
 

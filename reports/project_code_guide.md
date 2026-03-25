@@ -73,7 +73,20 @@ Main logic:
 - Maps each trading day to its `WeekEndingFriday`
 - Keeps the last available trading day in each week
 - Creates a few short lags such as `ClosePrice_t-1` and `ClosePrice_t-2`
+- Creates one forward weekly price column, `ClosePrice_t+1`, that can later be
+  used as a predictive target
 - Saves one company file and one aggregated file
+
+Generated price columns:
+
+- `ClosePrice`
+- `ClosePrice_t-1`
+- `ClosePrice_t-2`
+- `ClosePrice_t+1`
+- `AdjClosePrice`
+- `AdjClosePrice_t-1`
+- `AdjClosePrice_t-2`
+- `AdjClosePrice_t+1`
 
 Why this file matters:
 
@@ -218,6 +231,7 @@ In practice:
 
 Main output ratios:
 
+- `QuarterlyReleased`
 - `BookToMarket`
 - `MarketCap`
 - `GrossProfitability`
@@ -245,10 +259,33 @@ Main output ratios:
 - `EarningsYield`
 - `EarningsYield_TTM`
 
+Lagged output columns:
+
+- Market-based variables also receive weekly lags:
+  - `_L1W`
+  - `_L2W`
+- Fundamental variables also receive quarterly lags:
+  - `_L1Q`
+  - `_L2Q`
+
+Why the lag design is split:
+
+- `BookToMarket`, `MarketCap`, `FreeCashFlowYield`, `FreeCashFlowYield_TTM`, `EarningsYield`, and `EarningsYield_TTM` can move every week because they depend on market cap
+- Their lagged versions are therefore computed as one-week and two-week shifts
+- The other accounting ratios move only when a new quarterly statement becomes public
+- Their lagged versions are therefore computed on the statement timeline first, then carried forward on the weekly calendar
+
 Important distinction:
 
 - Most accounting ratios are stepwise and change only when a new quarterly statement becomes public
 - `BookToMarket`, `FreeCashFlowYield`, and `EarningsYield` can also move between statements because they depend on market cap
+
+About `QuarterlyReleased`:
+
+- This is a binary weekly flag
+- It is equal to `1` when a newly downloaded quarterly FMP observation is mapped to that week
+- It is equal to `0` in all the other weeks
+- Weeks filled only by forward fill remain `0`
 
 
 ## `src/5.FMP_dataAnalysis.py`
