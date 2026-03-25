@@ -32,9 +32,27 @@ COLUMNS_TO_DROP = [
     "cik",
 ]
 
-DERIVED_FEATURE_COLUMNS = [
+TTM_FLOW_COLUMNS = [
+    "revenue",
+    "grossProfit",
+    "operatingIncome",
+    "netIncome",
+    "interestExpense",
+    "capitalExpenditure",
+    "operatingCashFlow",
+    "freeCashFlow",
+]
+
+MARKET_BASED_FEATURE_COLUMNS = [
     "BookToMarket",
     "MarketCap",
+    "FreeCashFlowYield",
+    "FreeCashFlowYield_TTM",
+    "EarningsYield",
+    "EarningsYield_TTM",
+]
+
+FUNDAMENTAL_FEATURE_COLUMNS = [
     "GrossProfitability",
     "GrossProfitability_TTM",
     "OperatingMargin",
@@ -55,22 +73,17 @@ DERIVED_FEATURE_COLUMNS = [
     "InterestCoverage_TTM",
     "CashRatio",
     "WorkingCapitalScaled",
-    "FreeCashFlowYield",
-    "FreeCashFlowYield_TTM",
-    "EarningsYield",
-    "EarningsYield_TTM",
 ]
 
-TTM_FLOW_COLUMNS = [
-    "revenue",
-    "grossProfit",
-    "operatingIncome",
-    "netIncome",
-    "interestExpense",
-    "capitalExpenditure",
-    "operatingCashFlow",
-    "freeCashFlow",
-]
+DERIVED_FEATURE_COLUMNS = (
+    ["QuarterlyReleased"]
+    + MARKET_BASED_FEATURE_COLUMNS
+    + [f"{column}_L1W" for column in MARKET_BASED_FEATURE_COLUMNS]
+    + [f"{column}_L2W" for column in MARKET_BASED_FEATURE_COLUMNS]
+    + FUNDAMENTAL_FEATURE_COLUMNS
+    + [f"{column}_L1Q" for column in FUNDAMENTAL_FEATURE_COLUMNS]
+    + [f"{column}_L2Q" for column in FUNDAMENTAL_FEATURE_COLUMNS]
+)
 
 
 # ---------------------------------------------------------------------------
@@ -399,6 +412,12 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         total_assets_statement,
     )
 
+    # Create quarterly lags on the true statement timeline so each weekly row
+    # later inherits the previous one-quarter and two-quarter values.
+    for column in FUNDAMENTAL_FEATURE_COLUMNS:
+        statement_level_df[f"{column}_L1Q"] = statement_level_df[column].shift(1)
+        statement_level_df[f"{column}_L2Q"] = statement_level_df[column].shift(2)
+
     working_df = statement_level_df.copy()
 
     # -----------------------------------------------------------------------
@@ -420,9 +439,13 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         .set_index("WeekEndingFriday")
         .sort_index()
     )
+    statement_weeks = working_df.index.unique()
 
     # Join quarterly financial data onto the weekly price calendar.
     aligned_df = aligned_df.join(working_df, how="left")
+
+    # Mark the weeks where a new quarterly statement enters the weekly calendar.
+    aligned_df["QuarterlyReleased"] = aligned_df.index.isin(statement_weeks).astype(int)
 
     # If the first weekly row is still empty, fill it with the latest raw
     # financial observation available before the first calendar date.
@@ -512,6 +535,10 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     net_income_ttm = get_numeric_series(aligned_df, "netIncome_TTM")
 
     derived_features_df = pd.DataFrame(index=aligned_df.index)
+    derived_features_df["QuarterlyReleased"] = get_numeric_series(
+        aligned_df,
+        "QuarterlyReleased",
+    )
     derived_features_df["BookToMarket"] = safe_divide(
         total_stockholders_equity,
         market_cap,
@@ -592,6 +619,24 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         net_income_ttm,
         market_cap,
     )
+
+    # Market-based variables move every week, so their lags are computed on
+    # the weekly aligned series rather than on quarterly statement dates.
+    for column in MARKET_BASED_FEATURE_COLUMNS:
+        derived_features_df[f"{column}_L1W"] = derived_features_df[column].shift(1)
+        derived_features_df[f"{column}_L2W"] = derived_features_df[column].shift(2)
+
+    # Fundamental variables change on statement releases, so their quarterly
+    # lag columns are already attached to the aligned dataset after forward fill.
+    for column in FUNDAMENTAL_FEATURE_COLUMNS:
+        derived_features_df[f"{column}_L1Q"] = get_numeric_series(
+            aligned_df,
+            f"{column}_L1Q",
+        )
+        derived_features_df[f"{column}_L2Q"] = get_numeric_series(
+            aligned_df,
+            f"{column}_L2Q",
+        )
 
     # Save only identifiers and the final engineered variables.
     aligned_df = pd.concat(
