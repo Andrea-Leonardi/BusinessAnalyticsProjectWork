@@ -17,7 +17,7 @@ TICKER_COLUMN = "symbol"
 # ---------------------------------------------------------------------------
 
 # Load the final processed financial dataset created by the data processing step.
-df = pd.read_csv(cfg.FMP_FINANCIALS, parse_dates=[DATE_COLUMN])
+df = pd.read_csv(cfg.FMP_FINANCIALS)
 dfRaw = pd.read_csv(cfg.FMP_RAW_FINANCIALS)
 
 

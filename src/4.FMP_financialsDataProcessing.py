@@ -17,6 +17,7 @@ REDOWNLOAD_RAW_FMP_DATA = False
 RAW_INPUT_FILE = cfg.FMP_RAW_FINANCIALS
 OUTPUT_FILE = cfg.FMP_FINANCIALS
 SINGLE_COMPANY_OUTPUT_DIR = cfg.SINGLE_COMPANY_FINANCIALS
+FINAL_OUTPUT_START_DATE = pd.Timestamp("2021-01-01")
 
 # Raw columns that must be parsed as dates before alignment.
 DATE_COLUMNS = ["date", "filingDate", "acceptedDate"]
@@ -156,7 +157,7 @@ combined_frames: list[pd.DataFrame] = []
 
 # Process one ticker at a time.
 for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
-    print(f"Aligning financial statements for {ticker}...")
+    print(f"Aligning financial statements for {ticker}")
 
     # -----------------------------------------------------------------------
     # Load Price Calendar
@@ -644,6 +645,10 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         axis=1,
     )
 
+    # Keep the pre-2021 rows only while building lags and rolling features.
+    # The final exported panel starts at the main analysis window.
+    aligned_df = aligned_df[aligned_df.index >= FINAL_OUTPUT_START_DATE].copy()
+
     # -----------------------------------------------------------------------
     # Save Company Output
     # -----------------------------------------------------------------------
@@ -651,7 +656,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     # Save the processed company-level file.
     company_output_file = SINGLE_COMPANY_OUTPUT_DIR / f"{ticker}Financials.csv"
     aligned_df.to_csv(company_output_file, index=True)
-    print(f"Saved company file: {company_output_file}")
     combined_frames.append(aligned_df)
 
 
@@ -666,7 +670,6 @@ else:
     # Merge all processed company files into one final dataset.
     combined_df = pd.concat(combined_frames).sort_index()
     combined_df.to_csv(OUTPUT_FILE, index=True)
-    print(f"Saved aligned file: {OUTPUT_FILE}")
     # Print a compact summary of the processing step.
     print(
         "Processing completed: "

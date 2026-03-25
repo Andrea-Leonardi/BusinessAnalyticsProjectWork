@@ -171,5 +171,6 @@ Fields:
 - inseriamo variabili finanziarie laggate, dividiamo le variabili in due tipi, quelle market based ovvero che si basano su informazioni disponibili al mercato che verranno laggate di 1 e 2 settimane mentre le variabili che si basano sui dati disponibili al rilascio della trimestrale vengono laggate di 1 e 2 trimestrali
 ## Next Steps
  
+- look in the data for outlier and other bad stuff
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables
 

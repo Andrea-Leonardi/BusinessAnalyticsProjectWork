@@ -66,7 +66,7 @@ Purpose:
 Main logic:
 
 - Starts from the company list in `enterprises.csv`
-- Downloads daily prices from `2021-01-01`
+- Downloads daily prices from a short pre-sample window before `2021-01-01`
 - Keeps both:
   - `ClosePrice`
   - `AdjClosePrice`
@@ -92,6 +92,8 @@ Why this file matters:
 
 - The weekly price calendar becomes the master calendar used later in the financial processing step
 - The processing script aligns quarterly FMP statements to this weekly grid
+- The extra pre-2021 price history is kept so weekly lags are already available
+  when the final analysis window starts in 2021
 
 
 ## `src/3.FMP_financialsDataGathering.py`
@@ -192,7 +194,9 @@ High-level logic:
 5. Map each company to its weekly price calendar
 6. If needed, seed the first weekly row with the latest statement already known before the price sample starts
 7. Forward-fill the latest known accounting information
-8. Save one processed company file and one aggregated processed file
+8. Create weekly and quarterly lagged variables
+9. Trim the final exported dataset to the main analysis window starting in 2021
+10. Save one processed company file and one aggregated processed file
 
 Important design choice:
 
@@ -200,6 +204,7 @@ Important design choice:
 - Only after that does it map them to the weekly price calendar
 - This makes the logic easier to interpret and allows TTM values to exist from the start of the weekly sample when enough older quarters were downloaded
 - When an older pre-sample statement exists, the script uses it to seed the first weekly row so the dataset does not start with a long empty block before the first in-sample release
+- The script also keeps a short pre-2021 window while building weekly lags, then trims the final exported panel back to the main 2021+ sample
 
 How the TTM values are built:
 

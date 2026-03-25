@@ -8,8 +8,9 @@ import config as cfg
 # Configuration
 # ---------------------------------------------------------------------------
 
-# Define the start date used to download the daily price history.
-START_DATE = "2021-01-01"
+# Download a short pre-sample history so weekly lags are already available
+# when the main analysis window starts in 2021.
+START_DATE = "2020-12-01"
 
 
 # ---------------------------------------------------------------------------
@@ -99,7 +100,6 @@ for ticker in df["Ticker"]:
     company_dfs[ticker] = company_df
     company_output_path = cfg.SINGLE_COMPANY_PRICES / f"{ticker}Prices.csv"
     company_df.to_csv(company_output_path, index=True)
-    print(f"Saved file: {company_output_path}")
 
 
 # ---------------------------------------------------------------------------
@@ -110,7 +110,6 @@ for ticker in df["Ticker"]:
 if company_dfs:
     final_df = pd.concat(company_dfs.values()).sort_index()
     final_df.to_csv(cfg.ALL_PRICE_DATA, index=True)
-    print(f"Saved file: {cfg.ALL_PRICE_DATA}")
 else:
     print("No price data was downloaded.")
 
