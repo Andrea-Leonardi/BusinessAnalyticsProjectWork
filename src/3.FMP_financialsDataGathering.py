@@ -39,7 +39,9 @@ SELECTED_PERIOD = "quarter"
 # available when the weekly sample starts in early 2021.
 STATEMENT_LIMIT = 60
 REQUEST_TIMEOUT = 30
-REQUEST_PAUSE_SECONDS = 0.25
+REQUEST_PAUSE_SECONDS = 0.4
+MAX_REQUEST_ATTEMPTS = 5
+RATE_LIMIT_WAIT_SECONDS = 5.0
 
 
 # ---------------------------------------------------------------------------
@@ -196,18 +198,47 @@ def main() -> None:
                     "cash_flow": CASH_FLOW_STATEMENT_URL,
                     "enterprise_values": ENTERPRISE_VALUES_URL,
                 }.items():
-                    response = session.get(
-                        endpoint_url,
-                        params={
-                            "symbol": ticker,
-                            "period": SELECTED_PERIOD,
-                            "limit": STATEMENT_LIMIT,
-                            "apikey": FMP_API_KEY,
-                        },
-                        timeout=REQUEST_TIMEOUT,
-                    )
-                    response.raise_for_status()
-                    payload = response.json()
+                    payload = None
+                    for attempt in range(1, MAX_REQUEST_ATTEMPTS + 1):
+                        response = session.get(
+                            endpoint_url,
+                            params={
+                                "symbol": ticker,
+                                "period": SELECTED_PERIOD,
+                                "limit": STATEMENT_LIMIT,
+                                "apikey": FMP_API_KEY,
+                            },
+                            timeout=REQUEST_TIMEOUT,
+                        )
+
+                        if response.status_code == 429:
+                            retry_after = response.headers.get("Retry-After")
+                            if retry_after:
+                                try:
+                                    wait_seconds = float(retry_after)
+                                except ValueError:
+                                    wait_seconds = RATE_LIMIT_WAIT_SECONDS * attempt
+                            else:
+                                wait_seconds = RATE_LIMIT_WAIT_SECONDS * attempt
+
+                            print(
+                                f"Rate limit for {ticker} on {statement_name} "
+                                f"(attempt {attempt}/{MAX_REQUEST_ATTEMPTS}). "
+                                f"Waiting {wait_seconds:.1f} seconds before retrying..."
+                            )
+                            time.sleep(wait_seconds)
+                            continue
+
+                        response.raise_for_status()
+                        payload = response.json()
+                        time.sleep(REQUEST_PAUSE_SECONDS)
+                        break
+
+                    if payload is None:
+                        raise requests.HTTPError(
+                            f"429 Too Many Requests for {ticker} on {statement_name} "
+                            f"after {MAX_REQUEST_ATTEMPTS} attempts."
+                        )
 
                     if isinstance(payload, list):
                         records = payload

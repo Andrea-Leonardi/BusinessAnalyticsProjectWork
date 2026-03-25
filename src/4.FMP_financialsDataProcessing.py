@@ -70,8 +70,6 @@ FUNDAMENTAL_FEATURE_COLUMNS = [
     "IncomeQuality",
     "IncomeQuality_TTM",
     "DebtToAssets",
-    "InterestCoverage",
-    "InterestCoverage_TTM",
     "CashRatio",
     "WorkingCapitalScaled",
 ]
@@ -270,6 +268,38 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
                 errors="coerce",
             )
 
+    # Standardize capital expenditures as cash outflows. FMP occasionally
+    # flips the sign across quarters, which can create artificial TTM zeros
+    # through cancellation.
+    if "capitalExpenditure" in statement_level_df.columns:
+        non_missing_capex = statement_level_df["capitalExpenditure"].notna()
+        statement_level_df.loc[non_missing_capex, "capitalExpenditure"] = -statement_level_df.loc[
+            non_missing_capex,
+            "capitalExpenditure",
+        ].abs()
+
+    # Keep explicit flags for suspicious provider-style zeros so they can be
+    # converted into missing values after the weekly mapping.
+    statement_level_df["CapexReportedZeroFlag"] = get_numeric_series(
+        statement_level_df,
+        "capitalExpenditure",
+    ).eq(0).astype("int64")
+    statement_level_df["OperatingCashFlowZeroFlag"] = get_numeric_series(
+        statement_level_df,
+        "operatingCashFlow",
+    ).eq(0).astype("int64")
+    statement_level_df["FreeCashFlowZeroFlag"] = get_numeric_series(
+        statement_level_df,
+        "freeCashFlow",
+    ).eq(0).astype("int64")
+
+    total_debt_zero_flag = get_numeric_series(statement_level_df, "totalDebt").eq(0)
+    previous_positive_debt = get_numeric_series(statement_level_df, "totalDebt").shift(1).gt(0)
+    next_positive_debt = get_numeric_series(statement_level_df, "totalDebt").shift(-1).gt(0)
+    statement_level_df["SuspiciousTotalDebtZeroFlag"] = (
+        total_debt_zero_flag & previous_positive_debt & next_positive_debt
+    ).astype("int64")
+
     for column in TTM_FLOW_COLUMNS:
         ttm_column = f"{column}_TTM"
         if column not in statement_level_df.columns:
@@ -280,6 +310,19 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
             4,
             min_periods=4,
         ).sum()
+
+    statement_level_df["CapexTTMZeroFlag"] = get_numeric_series(
+        statement_level_df,
+        "capitalExpenditure_TTM",
+    ).eq(0).astype("int64")
+    statement_level_df["OperatingCashFlowTTMZeroFlag"] = get_numeric_series(
+        statement_level_df,
+        "operatingCashFlow_TTM",
+    ).eq(0).astype("int64")
+    statement_level_df["FreeCashFlowTTMZeroFlag"] = get_numeric_series(
+        statement_level_df,
+        "freeCashFlow_TTM",
+    ).eq(0).astype("int64")
 
     total_stockholders_equity_statement = get_numeric_series(
         statement_level_df,
@@ -314,11 +357,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         "operatingCashFlow_TTM",
     )
     total_debt_statement = get_numeric_series(statement_level_df, "totalDebt")
-    interest_expense_statement = get_numeric_series(statement_level_df, "interestExpense")
-    interest_expense_ttm_statement = get_numeric_series(
-        statement_level_df,
-        "interestExpense_TTM",
-    )
     cash_and_cash_equivalents_statement = get_numeric_series(
         statement_level_df,
         "cashAndCashEquivalents",
@@ -368,12 +406,14 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         total_assets_statement - total_assets_statement.shift(4),
         total_assets_statement.shift(4),
     )
+    # Express investment intensity as a positive spending ratio so higher
+    # capital expenditure corresponds to a larger feature value.
     statement_level_df["InvestmentIntensity"] = safe_divide(
-        capital_expenditure_statement,
+        -capital_expenditure_statement,
         total_assets_statement,
     )
     statement_level_df["InvestmentIntensity_TTM"] = safe_divide(
-        capital_expenditure_ttm_statement,
+        -capital_expenditure_ttm_statement,
         total_assets_statement,
     )
     statement_level_df["Accruals"] = safe_divide(
@@ -396,14 +436,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         total_debt_statement,
         total_assets_statement,
     )
-    statement_level_df["InterestCoverage"] = safe_divide(
-        operating_income_statement,
-        interest_expense_statement,
-    )
-    statement_level_df["InterestCoverage_TTM"] = safe_divide(
-        operating_income_ttm_statement,
-        interest_expense_ttm_statement,
-    )
     statement_level_df["CashRatio"] = safe_divide(
         cash_and_cash_equivalents_statement,
         total_current_liabilities_statement,
@@ -413,11 +445,57 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         total_assets_statement,
     )
 
-    # Create quarterly lags on the true statement timeline so each weekly row
-    # later inherits the previous one-quarter and two-quarter values.
+    # Apply the zero-cleaning rules on the true statement timeline before
+    # creating quarterly lags, so invalid quarters do not propagate as valid
+    # release-to-release lagged values.
+    statement_level_df.loc[
+        statement_level_df["CapexReportedZeroFlag"] == 1,
+        "InvestmentIntensity",
+    ] = pd.NA
+    statement_level_df.loc[
+        statement_level_df["CapexTTMZeroFlag"] == 1,
+        "InvestmentIntensity_TTM",
+    ] = pd.NA
+    statement_level_df.loc[
+        statement_level_df["OperatingCashFlowZeroFlag"] == 1,
+        "IncomeQuality",
+    ] = pd.NA
+    statement_level_df.loc[
+        statement_level_df["OperatingCashFlowTTMZeroFlag"] == 1,
+        "IncomeQuality_TTM",
+    ] = pd.NA
+    statement_level_df.loc[
+        statement_level_df["FreeCashFlowZeroFlag"] == 1,
+        "FreeCashFlowYield",
+    ] = pd.NA
+    statement_level_df.loc[
+        statement_level_df["FreeCashFlowTTMZeroFlag"] == 1,
+        "FreeCashFlowYield_TTM",
+    ] = pd.NA
+    statement_level_df.loc[
+        statement_level_df["SuspiciousTotalDebtZeroFlag"] == 1,
+        "DebtToAssets",
+    ] = pd.NA
+
+    # Build quarterly lags on the statement timeline so pre-2021 statement
+    # history can still seed the first in-sample weeks after the weekly trim.
+    # Add them in one batch to avoid DataFrame fragmentation warnings.
+    quarterly_lag_columns: dict[str, pd.Series] = {}
     for column in FUNDAMENTAL_FEATURE_COLUMNS:
-        statement_level_df[f"{column}_L1Q"] = statement_level_df[column].shift(1)
-        statement_level_df[f"{column}_L2Q"] = statement_level_df[column].shift(2)
+        lag_1q = statement_level_df[column].shift(1)
+        lag_2q = statement_level_df[column].shift(2)
+        quarterly_lag_columns[f"{column}_L1Q"] = lag_1q
+        quarterly_lag_columns[f"{column}_L2Q"] = lag_2q
+        quarterly_lag_columns[f"{column}_L1QMissingFlag"] = lag_1q.isna().astype(
+            "int64"
+        )
+        quarterly_lag_columns[f"{column}_L2QMissingFlag"] = lag_2q.isna().astype(
+            "int64"
+        )
+    statement_level_df = pd.concat(
+        [statement_level_df, pd.DataFrame(quarterly_lag_columns)],
+        axis=1,
+    )
 
     working_df = statement_level_df.copy()
 
@@ -534,6 +612,25 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     free_cash_flow_ttm = get_numeric_series(aligned_df, "freeCashFlow_TTM")
     net_income = get_numeric_series(aligned_df, "netIncome")
     net_income_ttm = get_numeric_series(aligned_df, "netIncome_TTM")
+    capex_zero_flag = get_numeric_series(aligned_df, "CapexReportedZeroFlag")
+    capex_ttm_zero_flag = get_numeric_series(aligned_df, "CapexTTMZeroFlag")
+    operating_cash_flow_zero_flag = get_numeric_series(
+        aligned_df,
+        "OperatingCashFlowZeroFlag",
+    )
+    operating_cash_flow_ttm_zero_flag = get_numeric_series(
+        aligned_df,
+        "OperatingCashFlowTTMZeroFlag",
+    )
+    free_cash_flow_zero_flag = get_numeric_series(aligned_df, "FreeCashFlowZeroFlag")
+    free_cash_flow_ttm_zero_flag = get_numeric_series(
+        aligned_df,
+        "FreeCashFlowTTMZeroFlag",
+    )
+    suspicious_total_debt_zero_flag = get_numeric_series(
+        aligned_df,
+        "SuspiciousTotalDebtZeroFlag",
+    )
 
     derived_features_df = pd.DataFrame(index=aligned_df.index)
     derived_features_df["QuarterlyReleased"] = get_numeric_series(
@@ -591,14 +688,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         aligned_df,
         "DebtToAssets",
     )
-    derived_features_df["InterestCoverage"] = get_numeric_series(
-        aligned_df,
-        "InterestCoverage",
-    )
-    derived_features_df["InterestCoverage_TTM"] = get_numeric_series(
-        aligned_df,
-        "InterestCoverage_TTM",
-    )
     derived_features_df["CashRatio"] = get_numeric_series(aligned_df, "CashRatio")
     derived_features_df["WorkingCapitalScaled"] = get_numeric_series(
         aligned_df,
@@ -621,23 +710,47 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         market_cap,
     )
 
+    # Convert suspicious zero-value segments into missing values rather than
+    # keeping them as economically meaningful zeros.
+    derived_features_df.loc[capex_zero_flag == 1, "InvestmentIntensity"] = pd.NA
+    derived_features_df.loc[capex_ttm_zero_flag == 1, "InvestmentIntensity_TTM"] = pd.NA
+    derived_features_df.loc[operating_cash_flow_zero_flag == 1, "IncomeQuality"] = pd.NA
+    derived_features_df.loc[
+        operating_cash_flow_ttm_zero_flag == 1,
+        "IncomeQuality_TTM",
+    ] = pd.NA
+    derived_features_df.loc[free_cash_flow_zero_flag == 1, "FreeCashFlowYield"] = pd.NA
+    derived_features_df.loc[
+        free_cash_flow_ttm_zero_flag == 1,
+        "FreeCashFlowYield_TTM",
+    ] = pd.NA
+    derived_features_df.loc[suspicious_total_debt_zero_flag == 1, "DebtToAssets"] = pd.NA
+
     # Market-based variables move every week, so their lags are computed on
     # the weekly aligned series rather than on quarterly statement dates.
     for column in MARKET_BASED_FEATURE_COLUMNS:
         derived_features_df[f"{column}_L1W"] = derived_features_df[column].shift(1)
         derived_features_df[f"{column}_L2W"] = derived_features_df[column].shift(2)
 
-    # Fundamental variables change on statement releases, so their quarterly
-    # lag columns are already attached to the aligned dataset after forward fill.
+    # Fundamental lag columns already come from the statement timeline. After
+    # the weekly forward fill, apply the lag-specific missing flags so invalid
+    # release quarters stay missing instead of reusing older values.
     for column in FUNDAMENTAL_FEATURE_COLUMNS:
-        derived_features_df[f"{column}_L1Q"] = get_numeric_series(
+        lag_1q_column = f"{column}_L1Q"
+        lag_2q_column = f"{column}_L2Q"
+        lag_1q_missing_flag = get_numeric_series(
             aligned_df,
-            f"{column}_L1Q",
+            f"{column}_L1QMissingFlag",
         )
-        derived_features_df[f"{column}_L2Q"] = get_numeric_series(
+        lag_2q_missing_flag = get_numeric_series(
             aligned_df,
-            f"{column}_L2Q",
+            f"{column}_L2QMissingFlag",
         )
+
+        derived_features_df[lag_1q_column] = get_numeric_series(aligned_df, lag_1q_column)
+        derived_features_df[lag_2q_column] = get_numeric_series(aligned_df, lag_2q_column)
+        derived_features_df.loc[lag_1q_missing_flag == 1, lag_1q_column] = pd.NA
+        derived_features_df.loc[lag_2q_missing_flag == 1, lag_2q_column] = pd.NA
 
     # Save only identifiers and the final engineered variables.
     aligned_df = pd.concat(

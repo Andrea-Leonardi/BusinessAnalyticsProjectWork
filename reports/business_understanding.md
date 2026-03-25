@@ -17,6 +17,7 @@ Instead of building a high-frequency algorithmic trading bot, this tool is desig
 To ensure statistical rigor, computational feasibility, and high-quality data, we established strict boundaries for our dataset:
 
 * **Target Population (110 Companies):** Instead of analyzing a single sector (which risks severe multicollinearity as stocks tend to move together) or the entire S&P 500 (which is computationally expensive for NLP tasks), we applied **Stratified Sampling**. We selected **10 top companies from each of the 11 GICS Sectors** (totaling 110 companies). This guarantees cross-sector diversity and robust statistical variance.
+  A small number of tickers are manually excluded from the final universe when they create downstream data-quality problems. In particular, `PLTR` was removed because its financial history is too short for a clean 2021+ panel with the selected lagged features, while `HSBC`, `BAC`, `JPM`, and `WFC` were removed because the current feature set generates too many structural missing values for them.
 * **Time Horizon (5 Years: 2021 - 2026):** We deliberately restricted our observation window to the last 5 years. This strategic decision serves two main purposes:
   1. **Excluding the "Black Swan":** It avoids the extreme, unrepeatable market volatility and anomalous patterns caused by the COVID-19 crash in early 2020.
   2. **Data Availability:** It aligns perfectly with the practical limitations of free fundamental financial APIs (e.g., `yfinance`), which reliably provide Income Statements and Balance Sheets for recent years.
@@ -80,15 +81,13 @@ Based on these considerations, a compact set of indicators derived from the **in
 
   AssetGrowth = (totalAssets_t - totalAssets_{t-4q}) / totalAssets_{t-4q}
 
-  InvestmentIntensity = capitalExpenditure / totalAssets
+  InvestmentIntensity = |capitalExpenditure| / totalAssets
 
   Accruals = (netIncome - operatingCashFlow) / totalAssets
 
   IncomeQuality = operatingCashFlow / netIncome
 
   DebtToAssets = totalDebt / totalAssets
-
-  InterestCoverage = operatingIncome / interestExpense
 
   CashRatio = cashAndCashEquivalents / totalCurrentLiabilities
 
@@ -169,23 +168,18 @@ Fields:
   - Update market-cap-based ratios weekly by taking the last quarterly market cap reported by FMP and rescaling it with weekly stock price changes between two statement dates.
 - decido di tenere sia gli indici ttm che quelli normali e decicdere più avanti cosa includere
 - inseriamo variabili finanziarie laggate, dividiamo le variabili in due tipi, quelle market based ovvero che si basano su informazioni disponibili al mercato che verranno laggate di 1 e 2 settimane mentre le variabili che si basano sui dati disponibili al rilascio della trimestrale vengono laggate di 1 e 2 trimestrali
+- InterestCoverage, InterestCoverage_TTM, and all their lagged variants are excluded from the current analysis because they generate structural missing values for multiple companies and sectors.
+- Provider-style exact zeros in `capitalExpenditure`, `operatingCashFlow`, and `freeCashFlow` are treated as missing when building the final ratios.
+- `capitalExpenditure` is also standardized to a consistent outflow sign before computing TTM variables, so artificial zero TTM values caused by sign flips are removed.
+- `InvestmentIntensity` and `InvestmentIntensity_TTM` are stored as positive ratios of investment spending over total assets. This is economically easier to interpret because higher investment now corresponds to a larger feature value instead of a more negative one.
+- Isolated quarters with `totalDebt = 0` between positive-debt quarters are treated as missing in the debt-based ratio, because they are more likely to be provider artifacts than true debt-free states.
 ## Next Steps
  
 - look in the data for outlier and other bad stuff
   - Missing
-    - O è real estate e non ha interest coverage per nessuna data (TTM e non e lagged ovviamente)
-    - PLTR è troppo giovane come azienda mancano dati 2021
-    - UL ha anche lei problemi per interest coverage (TTM e non e lagged ovviamente)
-    - HSBC ha missing per interest coverage (TTM e non e lagged ovviamente)
-    - BTI ha missing per interest coverage (TTM e non e lagged ovviamente)
-    - META ha missing per interest coverage (TTM e non e lagged ovviamente)
   - zero value
-    - HSBC ha valori zero per: freecashflowyeld (TTM e non e lagged ovviamente), investment intensity (TTM e non e lagged ovviamente), incomequality(TTM e non e lagged ovviamente)
-    - WFC,BAC,JPM,PDD,BABA,PLD,DLR hanno valori zero per tanti valori di:investment intensity (TTM e non e lagged ovviamente)
-    - NGG ha valori zero per: debttoasset (e lagged ovviamente)
     - CNQ,MCD,TTE,XEL,TSLA,MCD  hanno valori zero ma non sembrano particolarmente clustered quindi da indagare
     - BKNG ha valori zero per le prime 13 righe di Accurals_L2Q
-    - ETN, FCX, MS, NEM hanno valori zero per le ultime 12 righe di investment intensity TTM 
     - 
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables
 

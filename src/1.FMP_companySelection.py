@@ -50,9 +50,20 @@ df = (
     .drop_duplicates(subset=["companyName"], keep="first")
 )
 
-# Remove tickers that do not have the downstream data required by the project.
-df = df[df["symbol"] != "GEV"]
-df = df[~df["symbol"].isin(["TBB", "RCB"])]
+# Remove tickers that do not have the downstream data quality required by the
+# current project pipeline.
+excluded_tickers = [
+    "GEV",
+    "TBB",
+    "RCB",
+    "PLTR",
+    "HSBC",
+    "BAC",
+    "JPM",
+    "WFC",
+    "MUFG",
+]
+df = df[~df["symbol"].isin(excluded_tickers)]
 
 # Keep only companies listed on the two target US exchanges.
 df = df[df["exchangeShortName"].isin(["NASDAQ", "NYSE"])]

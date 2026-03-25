@@ -110,6 +110,7 @@ for ticker in df["Ticker"]:
 if company_dfs:
     final_df = pd.concat(company_dfs.values()).sort_index()
     final_df.to_csv(cfg.ALL_PRICE_DATA, index=True)
+    print("All done. Final dataset saved")
 else:
     print("No price data was downloaded.")
 

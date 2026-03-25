@@ -83,7 +83,8 @@ plt.tight_layout()
 plt.show()
 
 # %%
-
+import pandas as pd
+import config as cfg
 
 # ---------------------------------------------------------------------------
 # Summarize Missing And Zero Values By Company Financial File

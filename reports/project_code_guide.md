@@ -43,6 +43,15 @@ Main logic:
 
 - Calls the FMP `company-screener` endpoint
 - Removes duplicate companies by keeping the line with the highest `marketCap`
+- Manually excludes a few tickers with downstream data issues:
+  - `GEV`
+  - `TBB`
+  - `RCB`
+  - `PLTR`
+  - `HSBC`
+  - `BAC`
+  - `JPM`
+  - `WFC`
 - Keeps only `NASDAQ` and `NYSE`
 - Keeps the top 10 companies by market cap inside each sector
 - Saves the result to `data/enterprises.csv`
@@ -126,6 +135,12 @@ How the script works:
 6. Merge the four sources into one company-level DataFrame
 7. Concatenate all companies into `financialsDataRaw.csv`
 
+Rate-limit handling:
+
+- The downloader pauses between API calls to avoid hitting FMP too aggressively
+- If FMP returns `429 Too Many Requests`, the script retries the same endpoint a few times with a progressively longer wait
+- This makes the raw download slower, but much more stable when the universe contains many tickers
+
 Important point about column selection:
 
 - The script first tries the primary field name
@@ -205,11 +220,15 @@ Important design choice:
 - This makes the logic easier to interpret and allows TTM values to exist from the start of the weekly sample when enough older quarters were downloaded
 - When an older pre-sample statement exists, the script uses it to seed the first weekly row so the dataset does not start with a long empty block before the first in-sample release
 - The script also keeps a short pre-2021 window while building weekly lags, then trims the final exported panel back to the main 2021+ sample
+- The script applies a zero-value cleaning step for suspicious provider-style zeros in `capitalExpenditure`, `operatingCashFlow`, and `freeCashFlow`
+- It also flags isolated `totalDebt = 0` quarters surrounded by positive debt values and treats the derived debt ratio as missing in those segments
 
 How the TTM values are built:
 
 - TTM is calculated directly on quarterly statement rows
 - For the flow variables, the script uses a rolling sum of the last 4 quarters
+- `capitalExpenditure` is first standardized to a consistent outflow sign so the TTM sum does not collapse to zero because of sign flips in the raw provider data
+- `InvestmentIntensity` and `InvestmentIntensity_TTM` are then stored as positive spending ratios, so higher investment corresponds to a larger feature value
 - Examples of flow variables:
   - `revenue`
   - `grossProfit`
@@ -257,14 +276,21 @@ Main output ratios:
 - `IncomeQuality`
 - `IncomeQuality_TTM`
 - `DebtToAssets`
-- `InterestCoverage`
-- `InterestCoverage_TTM`
 - `CashRatio`
 - `WorkingCapitalScaled`
 - `FreeCashFlowYield`
 - `FreeCashFlowYield_TTM`
 - `EarningsYield`
 - `EarningsYield_TTM`
+
+Excluded from the current analysis:
+
+- `InterestCoverage`
+- `InterestCoverage_TTM`
+- All their lagged variants
+
+These variables were removed from the final analysis set because they create
+structural missing values for multiple companies and sectors.
 
 Lagged output columns:
 
@@ -280,7 +306,8 @@ Why the lag design is split:
 - `BookToMarket`, `MarketCap`, `FreeCashFlowYield`, `FreeCashFlowYield_TTM`, `EarningsYield`, and `EarningsYield_TTM` can move every week because they depend on market cap
 - Their lagged versions are therefore computed as one-week and two-week shifts
 - The other accounting ratios move only when a new quarterly statement becomes public
-- Their lagged versions are therefore computed on the statement timeline first, then carried forward on the weekly calendar
+- Their lagged versions are therefore computed on release weeks after the zero-cleaning step, then carried forward on the weekly calendar
+- Quarterly lag columns are appended in one batch during processing to avoid pandas fragmentation warnings and keep the script faster to run
 
 Important distinction:
 
