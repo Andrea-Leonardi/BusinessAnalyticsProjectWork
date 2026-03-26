@@ -38,8 +38,6 @@ TTM_FLOW_COLUMNS = [
     "grossProfit",
     "operatingIncome",
     "netIncome",
-    "interestExpense",
-    "capitalExpenditure",
     "operatingCashFlow",
     "freeCashFlow",
 ]
@@ -60,17 +58,11 @@ FUNDAMENTAL_FEATURE_COLUMNS = [
     "OperatingMargin_TTM",
     "ROA",
     "ROA_TTM",
-    "ROE",
-    "ROE_TTM",
     "AssetGrowth",
     "InvestmentIntensity",
-    "InvestmentIntensity_TTM",
     "Accruals",
     "Accruals_TTM",
-    "IncomeQuality",
-    "IncomeQuality_TTM",
     "DebtToAssets",
-    "CashRatio",
     "WorkingCapitalScaled",
 ]
 
@@ -195,31 +187,58 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
 
     # Work on a copy so the original grouped slice is not modified in place.
     working_df = company_df.copy()
-    # Use the FMP statement date as the reference date for alignment.
-    parsed_dates = pd.to_datetime(working_df["date"], errors="coerce")
-    valid_dates = parsed_dates.notna()
+    # Use the first date on which the market could reasonably know the new
+    # accounting information. The preferred reference is acceptedDate, then
+    # filingDate. When both are missing or suspiciously earlier than the
+    # quarter-end statement date, fall back to the latest available date
+    # among the raw date fields.
+    statement_dates = pd.to_datetime(working_df["date"], errors="coerce").dt.normalize()
+    if "filingDate" in working_df.columns:
+        filing_dates = pd.to_datetime(working_df["filingDate"], errors="coerce").dt.normalize()
+    else:
+        filing_dates = pd.Series(pd.NaT, index=working_df.index, dtype="datetime64[ns]")
+    if "acceptedDate" in working_df.columns:
+        accepted_dates = pd.to_datetime(
+            working_df["acceptedDate"],
+            errors="coerce",
+        ).dt.normalize()
+    else:
+        accepted_dates = pd.Series(
+            pd.NaT,
+            index=working_df.index,
+            dtype="datetime64[ns]",
+        )
+
+    latest_known_date = pd.concat(
+        [
+            statement_dates.rename("date"),
+            filing_dates.rename("filingDate"),
+            accepted_dates.rename("acceptedDate"),
+        ],
+        axis=1,
+    ).max(axis=1)
+
+    public_dates = accepted_dates.copy()
+    invalid_public_dates = public_dates.isna() | (public_dates < statement_dates)
+    public_dates = public_dates.where(~invalid_public_dates, filing_dates)
+    invalid_public_dates = public_dates.isna() | (public_dates < statement_dates)
+    public_dates = public_dates.where(~invalid_public_dates, latest_known_date)
+    valid_dates = public_dates.notna()
 
     # Initialize the aligned weekly date column.
     working_df["WeekEndingFriday"] = pd.NaT
     if valid_dates.any():
-        # Compute the previous and next Friday for every valid statement date.
-        valid_parsed_dates = parsed_dates.loc[valid_dates]
-        weekday = valid_parsed_dates.dt.weekday
-        days_since_prev_friday = (weekday - 4) % 7
-        days_until_next_friday = (4 - weekday) % 7
-
-        previous_friday = valid_parsed_dates - pd.to_timedelta(
-            days_since_prev_friday,
-            unit="D",
-        )
-        next_friday = valid_parsed_dates + pd.to_timedelta(
-            days_until_next_friday,
-            unit="D",
-        )
-        # Choose the closest Friday and normalize the timestamp to midnight.
-        use_previous_friday = days_since_prev_friday <= days_until_next_friday
-        nearest_friday = previous_friday.where(use_previous_friday, next_friday).dt.normalize()
-        working_df.loc[valid_dates, "WeekEndingFriday"] = nearest_friday
+        # Map each release to the first Friday on or after the public date, so
+        # the feature never appears in the dataset before the market could
+        # observe it.
+        valid_public_dates = public_dates.loc[valid_dates]
+        weekday = valid_public_dates.dt.weekday
+        days_until_release_friday = (4 - weekday) % 7
+        release_friday = (
+            valid_public_dates
+            + pd.to_timedelta(days_until_release_friday, unit="D")
+        ).dt.normalize()
+        working_df.loc[valid_dates, "WeekEndingFriday"] = release_friday
 
     # Remove rows where the source date could not be aligned.
     working_df = working_df.dropna(subset=["WeekEndingFriday"])
@@ -255,7 +274,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         "totalCurrentAssets",
         "totalCurrentLiabilities",
         "totalDebt",
-        "cashAndCashEquivalents",
         "operatingCashFlow",
         "capitalExpenditure",
         "freeCashFlow",
@@ -284,10 +302,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         statement_level_df,
         "capitalExpenditure",
     ).eq(0).astype("int64")
-    statement_level_df["OperatingCashFlowZeroFlag"] = get_numeric_series(
-        statement_level_df,
-        "operatingCashFlow",
-    ).eq(0).astype("int64")
     statement_level_df["FreeCashFlowZeroFlag"] = get_numeric_series(
         statement_level_df,
         "freeCashFlow",
@@ -311,14 +325,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
             min_periods=4,
         ).sum()
 
-    statement_level_df["CapexTTMZeroFlag"] = get_numeric_series(
-        statement_level_df,
-        "capitalExpenditure_TTM",
-    ).eq(0).astype("int64")
-    statement_level_df["OperatingCashFlowTTMZeroFlag"] = get_numeric_series(
-        statement_level_df,
-        "operatingCashFlow_TTM",
-    ).eq(0).astype("int64")
     statement_level_df["FreeCashFlowTTMZeroFlag"] = get_numeric_series(
         statement_level_df,
         "freeCashFlow_TTM",
@@ -331,6 +337,10 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     gross_profit_statement = get_numeric_series(statement_level_df, "grossProfit")
     gross_profit_ttm_statement = get_numeric_series(statement_level_df, "grossProfit_TTM")
     total_assets_statement = get_numeric_series(statement_level_df, "totalAssets")
+    average_assets_statement = (
+        total_assets_statement + total_assets_statement.shift(4)
+    ) / 2
+    average_assets_statement = average_assets_statement.mask(average_assets_statement <= 0)
     operating_income_statement = get_numeric_series(statement_level_df, "operatingIncome")
     operating_income_ttm_statement = get_numeric_series(
         statement_level_df,
@@ -344,10 +354,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         statement_level_df,
         "capitalExpenditure",
     )
-    capital_expenditure_ttm_statement = get_numeric_series(
-        statement_level_df,
-        "capitalExpenditure_TTM",
-    )
     operating_cash_flow_statement = get_numeric_series(
         statement_level_df,
         "operatingCashFlow",
@@ -357,10 +363,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         "operatingCashFlow_TTM",
     )
     total_debt_statement = get_numeric_series(statement_level_df, "totalDebt")
-    cash_and_cash_equivalents_statement = get_numeric_series(
-        statement_level_df,
-        "cashAndCashEquivalents",
-    )
     total_current_liabilities_statement = get_numeric_series(
         statement_level_df,
         "totalCurrentLiabilities",
@@ -376,7 +378,7 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     )
     statement_level_df["GrossProfitability_TTM"] = safe_divide(
         gross_profit_ttm_statement,
-        total_assets_statement,
+        average_assets_statement,
     )
     statement_level_df["OperatingMargin"] = safe_divide(
         operating_income_statement,
@@ -392,15 +394,7 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     )
     statement_level_df["ROA_TTM"] = safe_divide(
         net_income_ttm_statement,
-        total_assets_statement,
-    )
-    statement_level_df["ROE"] = safe_divide(
-        net_income_statement,
-        total_stockholders_equity_statement,
-    )
-    statement_level_df["ROE_TTM"] = safe_divide(
-        net_income_ttm_statement,
-        total_stockholders_equity_statement,
+        average_assets_statement,
     )
     statement_level_df["AssetGrowth"] = safe_divide(
         total_assets_statement - total_assets_statement.shift(4),
@@ -412,10 +406,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         -capital_expenditure_statement,
         total_assets_statement,
     )
-    statement_level_df["InvestmentIntensity_TTM"] = safe_divide(
-        -capital_expenditure_ttm_statement,
-        total_assets_statement,
-    )
     statement_level_df["Accruals"] = safe_divide(
         net_income_statement - operating_cash_flow_statement,
         total_assets_statement,
@@ -424,21 +414,9 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
         net_income_ttm_statement - operating_cash_flow_ttm_statement,
         total_assets_statement,
     )
-    statement_level_df["IncomeQuality"] = safe_divide(
-        operating_cash_flow_statement,
-        net_income_statement,
-    )
-    statement_level_df["IncomeQuality_TTM"] = safe_divide(
-        operating_cash_flow_ttm_statement,
-        net_income_ttm_statement,
-    )
     statement_level_df["DebtToAssets"] = safe_divide(
         total_debt_statement,
         total_assets_statement,
-    )
-    statement_level_df["CashRatio"] = safe_divide(
-        cash_and_cash_equivalents_statement,
-        total_current_liabilities_statement,
     )
     statement_level_df["WorkingCapitalScaled"] = safe_divide(
         total_current_assets_statement - total_current_liabilities_statement,
@@ -451,26 +429,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     statement_level_df.loc[
         statement_level_df["CapexReportedZeroFlag"] == 1,
         "InvestmentIntensity",
-    ] = pd.NA
-    statement_level_df.loc[
-        statement_level_df["CapexTTMZeroFlag"] == 1,
-        "InvestmentIntensity_TTM",
-    ] = pd.NA
-    statement_level_df.loc[
-        statement_level_df["OperatingCashFlowZeroFlag"] == 1,
-        "IncomeQuality",
-    ] = pd.NA
-    statement_level_df.loc[
-        statement_level_df["OperatingCashFlowTTMZeroFlag"] == 1,
-        "IncomeQuality_TTM",
-    ] = pd.NA
-    statement_level_df.loc[
-        statement_level_df["FreeCashFlowZeroFlag"] == 1,
-        "FreeCashFlowYield",
-    ] = pd.NA
-    statement_level_df.loc[
-        statement_level_df["FreeCashFlowTTMZeroFlag"] == 1,
-        "FreeCashFlowYield_TTM",
     ] = pd.NA
     statement_level_df.loc[
         statement_level_df["SuspiciousTotalDebtZeroFlag"] == 1,
@@ -613,15 +571,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     net_income = get_numeric_series(aligned_df, "netIncome")
     net_income_ttm = get_numeric_series(aligned_df, "netIncome_TTM")
     capex_zero_flag = get_numeric_series(aligned_df, "CapexReportedZeroFlag")
-    capex_ttm_zero_flag = get_numeric_series(aligned_df, "CapexTTMZeroFlag")
-    operating_cash_flow_zero_flag = get_numeric_series(
-        aligned_df,
-        "OperatingCashFlowZeroFlag",
-    )
-    operating_cash_flow_ttm_zero_flag = get_numeric_series(
-        aligned_df,
-        "OperatingCashFlowTTMZeroFlag",
-    )
     free_cash_flow_zero_flag = get_numeric_series(aligned_df, "FreeCashFlowZeroFlag")
     free_cash_flow_ttm_zero_flag = get_numeric_series(
         aligned_df,
@@ -660,35 +609,20 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     )
     derived_features_df["ROA"] = get_numeric_series(aligned_df, "ROA")
     derived_features_df["ROA_TTM"] = get_numeric_series(aligned_df, "ROA_TTM")
-    derived_features_df["ROE"] = get_numeric_series(aligned_df, "ROE")
-    derived_features_df["ROE_TTM"] = get_numeric_series(aligned_df, "ROE_TTM")
     derived_features_df["AssetGrowth"] = get_numeric_series(aligned_df, "AssetGrowth")
     derived_features_df["InvestmentIntensity"] = get_numeric_series(
         aligned_df,
         "InvestmentIntensity",
-    )
-    derived_features_df["InvestmentIntensity_TTM"] = get_numeric_series(
-        aligned_df,
-        "InvestmentIntensity_TTM",
     )
     derived_features_df["Accruals"] = get_numeric_series(aligned_df, "Accruals")
     derived_features_df["Accruals_TTM"] = get_numeric_series(
         aligned_df,
         "Accruals_TTM",
     )
-    derived_features_df["IncomeQuality"] = get_numeric_series(
-        aligned_df,
-        "IncomeQuality",
-    )
-    derived_features_df["IncomeQuality_TTM"] = get_numeric_series(
-        aligned_df,
-        "IncomeQuality_TTM",
-    )
     derived_features_df["DebtToAssets"] = get_numeric_series(
         aligned_df,
         "DebtToAssets",
     )
-    derived_features_df["CashRatio"] = get_numeric_series(aligned_df, "CashRatio")
     derived_features_df["WorkingCapitalScaled"] = get_numeric_series(
         aligned_df,
         "WorkingCapitalScaled",
@@ -713,12 +647,6 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     # Convert suspicious zero-value segments into missing values rather than
     # keeping them as economically meaningful zeros.
     derived_features_df.loc[capex_zero_flag == 1, "InvestmentIntensity"] = pd.NA
-    derived_features_df.loc[capex_ttm_zero_flag == 1, "InvestmentIntensity_TTM"] = pd.NA
-    derived_features_df.loc[operating_cash_flow_zero_flag == 1, "IncomeQuality"] = pd.NA
-    derived_features_df.loc[
-        operating_cash_flow_ttm_zero_flag == 1,
-        "IncomeQuality_TTM",
-    ] = pd.NA
     derived_features_df.loc[free_cash_flow_zero_flag == 1, "FreeCashFlowYield"] = pd.NA
     derived_features_df.loc[
         free_cash_flow_ttm_zero_flag == 1,

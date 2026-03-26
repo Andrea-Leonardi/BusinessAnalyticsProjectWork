@@ -77,25 +77,37 @@ Based on these considerations, a compact set of indicators derived from the **in
 
   ROA = netIncome / totalAssets
 
-  ROE = netIncome / totalStockholdersEquity
-
   AssetGrowth = (totalAssets_t - totalAssets_{t-4q}) / totalAssets_{t-4q}
 
   InvestmentIntensity = |capitalExpenditure| / totalAssets
 
   Accruals = (netIncome - operatingCashFlow) / totalAssets
 
-  IncomeQuality = operatingCashFlow / netIncome
-
   DebtToAssets = totalDebt / totalAssets
-
-  CashRatio = cashAndCashEquivalents / totalCurrentLiabilities
 
   WorkingCapitalScaled = (totalCurrentAssets - totalCurrentLiabilities) / totalAssets
 
   FreeCashFlowYield = freeCashFlow / marketCap
 
   EarningsYield = netIncome / marketCap
+
+TTM variants are kept in parallel for the flow-based ratios that remain stable enough for the sample:
+
+  GrossProfitability_TTM = grossProfit_TTM / averageAssets
+
+  OperatingMargin_TTM = operatingIncome_TTM / revenue_TTM
+
+  ROA_TTM = netIncome_TTM / averageAssets
+
+  Accruals_TTM = (netIncome_TTM - operatingCashFlow_TTM) / totalAssets
+
+  FreeCashFlowYield_TTM = freeCashFlow_TTM / marketCap
+
+  EarningsYield_TTM = netIncome_TTM / marketCap
+
+with:
+
+  averageAssets = (totalAssets_t + totalAssets_{t-4q}) / 2
 
 
 
@@ -157,6 +169,8 @@ Fields:
 
   We decided to go with Forward-filled to avoid the forward-looking bias
 
+- Quarterly fundamentals are aligned to the first Friday on or after the first public availability date of the statement. The preferred timestamp is `acceptedDate`, with fallback to `filingDate`; when both are missing or suspiciously earlier than the quarter-end date, the script falls back to the latest available date among `date`, `filingDate`, and `acceptedDate`. This is meant to reduce look-ahead bias and keep the panel closer to the true market information set.
+
 - We choose to use weekly closing prices, as they incorporate all the information accumulated during the week. Specifically, we start from daily data and select the last available price of each week.
 
 - In some cases, due to market holidays, the last trading day may not be Friday (e.g., it could be Thursday). For consistency, we align all dates to Friday, assigning the last available price of the week to that date. This ensures a harmonized and regular weekly time index.
@@ -169,13 +183,15 @@ Fields:
 - decido di tenere sia gli indici ttm che quelli normali e decicdere più avanti cosa includere
 - inseriamo variabili finanziarie laggate, dividiamo le variabili in due tipi, quelle market based ovvero che si basano su informazioni disponibili al mercato che verranno laggate di 1 e 2 settimane mentre le variabili che si basano sui dati disponibili al rilascio della trimestrale vengono laggate di 1 e 2 trimestrali
 - InterestCoverage, InterestCoverage_TTM, and all their lagged variants are excluded from the current analysis because they generate structural missing values for multiple companies and sectors.
-- Provider-style exact zeros in `capitalExpenditure`, `operatingCashFlow`, and `freeCashFlow` are treated as missing when building the final ratios.
-- `capitalExpenditure` is also standardized to a consistent outflow sign before computing TTM variables, so artificial zero TTM values caused by sign flips are removed.
-- `InvestmentIntensity` and `InvestmentIntensity_TTM` are stored as positive ratios of investment spending over total assets. This is economically easier to interpret because higher investment now corresponds to a larger feature value instead of a more negative one.
+- Provider-style exact zeros in `capitalExpenditure` and `freeCashFlow` are treated as missing when building the final ratios that use those inputs directly.
+- `capitalExpenditure` is standardized to a consistent outflow sign before building `InvestmentIntensity`, so the feature remains comparable across quarters even when the raw provider flips the sign convention.
+- `InvestmentIntensity` is stored as a positive ratio of investment spending over total assets. This is economically easier to interpret because higher investment now corresponds to a larger feature value instead of a more negative one.
 - Isolated quarters with `totalDebt = 0` between positive-debt quarters are treated as missing in the debt-based ratio, because they are more likely to be provider artifacts than true debt-free states.
+- `GrossProfitability_TTM` and `ROA_TTM` use average assets over one year instead of a single-quarter denominator. This is more coherent because the numerator already aggregates four quarters of flow information.
+- `ROE` and `ROE_TTM` are excluded from the current analysis. Even though the formula is standard, the ratio becomes hard to interpret when book equity is negative or extremely compressed by share buybacks, and in our panel this would remove entire companies from the complete-case ML dataset.
+- `IncomeQuality`, `CashRatio`, and `InvestmentIntensity_TTM` are also excluded from the current analysis. `IncomeQuality` was too unstable when earnings were close to zero, `CashRatio` was not comparable enough across sectors, especially financials, and `InvestmentIntensity_TTM` was too exposed to provider-level scale anomalies in some companies.
+- For the final ML-ready dataset, rows containing at least one missing value are removed instead of being imputed. Given the large number of remaining observations, this complete-case approach is preferred because it keeps the modeling table easier to interpret and avoids introducing artificial values for economically sensitive financial ratios.
 
 
 ## Next Steps
  
-- Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables
-

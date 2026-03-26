@@ -239,8 +239,8 @@ High-level logic:
 1. Optionally rerun the raw FMP downloader
 2. Load `financialsDataRaw.csv`
 3. Process one company at a time
-4. Align quarterly statement dates to the nearest Friday
-5. Map each company to its weekly price calendar
+4. Build an effective public date for each statement using `acceptedDate`, `filingDate`, and quarter-end fallback logic
+5. Align that public date to the first Friday on or after the release
 6. If needed, seed the first weekly row with the latest statement already known before the price sample starts
 7. Forward-fill the latest known accounting information
 8. Create weekly and quarterly lagged variables
@@ -251,25 +251,27 @@ Important design choice:
 
 - The script now calculates the accounting ratios on true quarterly statement dates first
 - Only after that does it map them to the weekly price calendar
+- Quarter-end `date` is not used directly as the market-availability date anymore
+- The preferred release timestamp is `acceptedDate`, with fallback to `filingDate`
+- If both are missing or suspiciously earlier than the quarter-end date, the script falls back to the latest available value among `date`, `filingDate`, and `acceptedDate`
+- The weekly alignment uses the first Friday on or after that effective public date, so the feature never enters the panel before the market could observe it
 - This makes the logic easier to interpret and allows TTM values to exist from the start of the weekly sample when enough older quarters were downloaded
 - When an older pre-sample statement exists, the script uses it to seed the first weekly row so the dataset does not start with a long empty block before the first in-sample release
 - The script also keeps a short pre-2021 window while building weekly lags, then trims the final exported panel back to the main 2021+ sample
-- The script applies a zero-value cleaning step for suspicious provider-style zeros in `capitalExpenditure`, `operatingCashFlow`, and `freeCashFlow`
+- The script applies a zero-value cleaning step for suspicious provider-style zeros in `capitalExpenditure` and `freeCashFlow`
 - It also flags isolated `totalDebt = 0` quarters surrounded by positive debt values and treats the derived debt ratio as missing in those segments
 
 How the TTM values are built:
 
 - TTM is calculated directly on quarterly statement rows
 - For the flow variables, the script uses a rolling sum of the last 4 quarters
-- `capitalExpenditure` is first standardized to a consistent outflow sign so the TTM sum does not collapse to zero because of sign flips in the raw provider data
-- `InvestmentIntensity` and `InvestmentIntensity_TTM` are then stored as positive spending ratios, so higher investment corresponds to a larger feature value
+- `GrossProfitability_TTM` and `ROA_TTM` use average assets over one year rather than a single-quarter asset denominator
+- `capitalExpenditure` is standardized to a consistent outflow sign before building `InvestmentIntensity`, which is then stored as a positive spending ratio
 - Examples of flow variables:
   - `revenue`
   - `grossProfit`
   - `operatingIncome`
   - `netIncome`
-  - `interestExpense`
-  - `capitalExpenditure`
   - `operatingCashFlow`
   - `freeCashFlow`
 
@@ -300,17 +302,11 @@ Main output ratios:
 - `OperatingMargin_TTM`
 - `ROA`
 - `ROA_TTM`
-- `ROE`
-- `ROE_TTM`
 - `AssetGrowth`
 - `InvestmentIntensity`
-- `InvestmentIntensity_TTM`
 - `Accruals`
 - `Accruals_TTM`
-- `IncomeQuality`
-- `IncomeQuality_TTM`
 - `DebtToAssets`
-- `CashRatio`
 - `WorkingCapitalScaled`
 - `FreeCashFlowYield`
 - `FreeCashFlowYield_TTM`
@@ -321,10 +317,22 @@ Excluded from the current analysis:
 
 - `InterestCoverage`
 - `InterestCoverage_TTM`
-- All their lagged variants
+- `ROE`
+- `ROE_TTM`
+- `IncomeQuality`
+- `IncomeQuality_TTM`
+- `CashRatio`
+- `InvestmentIntensity_TTM`
+- All lagged variants that would depend on the excluded feature families
 
 These variables were removed from the final analysis set because they create
-structural missing values for multiple companies and sectors.
+structural missing values, unstable scaling, or weak cross-sector comparability
+in the current sample.
+
+In particular, the `ROE` family was removed even though the textbook formula is
+correct, because negative or buyback-compressed equity makes the ratio hard to
+interpret and would otherwise eliminate some companies entirely from the
+complete-case ML dataset.
 
 Lagged output columns:
 
@@ -400,12 +408,16 @@ What it currently does:
 - Concatenates all company files into `data/fulldata.csv`
 - Creates `data/fulldata_ml.csv` by dropping `WeekEndingFriday` and `Ticker`
   from the aggregated merged dataset
+- Before exporting `data/fulldata_ml.csv`, it also drops every row that still
+  contains at least one missing value
 
 Why this file matters:
 
 - It creates the final modeling table where market data and financial features live in the same weekly dataset
 - It preserves the weekly calendar already aligned in the earlier steps of the pipeline
 - It also exports an ML-ready matrix without identifier columns for direct use in predictive models
+- The ML-ready export is a complete-case dataset, because rows with any missing
+  values are removed before saving
 
 
 ## Suggested Use When Returning To The Project

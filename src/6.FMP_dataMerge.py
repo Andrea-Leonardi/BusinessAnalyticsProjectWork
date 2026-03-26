@@ -174,8 +174,14 @@ else:
     # Remove the identifier columns to build a matrix that can be passed
     # directly to machine-learning models.
     clean_df = combined_df.drop(columns=[TICKER_COLUMN, DATE_COLUMN], errors="ignore")
+    rows_before_dropna = len(clean_df)
+    clean_df = clean_df.dropna().reset_index(drop=True)
     clean_df.to_csv(ML_OUTPUT_FILE, index=False)
     print(f"Saved ML-ready full dataset: {ML_OUTPUT_FILE}")
+    print(
+        "ML-ready dataset after dropping rows with missing values: "
+        f"{len(clean_df)} rows kept, {rows_before_dropna - len(clean_df)} rows removed."
+    )
 
 
 # %%
