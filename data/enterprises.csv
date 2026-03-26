@@ -1,111 +1,111 @@
 Ticker,companyName,sector,industry,marketCap
-NVDA,NVIDIA Corporation,Technology,Semiconductors,4343595099595.0
-AAPL,Apple Inc.,Technology,Consumer Electronics,3712989993113.0
-GOOGL,Alphabet Inc.,Communication Services,Internet Content & Information,3519380357211.0
-MSFT,Microsoft Corporation,Technology,Software - Infrastructure,2755205755200.0
-AMZN,"Amazon.com, Inc.",Consumer Cyclical,Specialty Retail,2272690097388.0
-TSM,Taiwan Semiconductor Manufacturing Company Limited,Technology,Semiconductors,1803608675495.0
-AVGO,Broadcom Inc.,Technology,Semiconductors,1511565424620.0
-META,"Meta Platforms, Inc.",Communication Services,Internet Content & Information,1499713507328.0
-TSLA,"Tesla, Inc.",Consumer Cyclical,Auto - Manufacturers,1448213599905.0
-BRK-A,Berkshire Hathaway Inc.,Financial Services,Insurance - Diversified,1027613906000.0
-WMT,Walmart Inc.,Consumer Defensive,Discount Stores,981083851773.0
-LLY,Eli Lilly and Company,Healthcare,Drug Manufacturers - General,865851009084.0
-XOM,Exxon Mobil Corporation,Energy,Oil & Gas Integrated,680265759669.0
-V,Visa Inc.,Financial Services,Financial - Credit Services,587878529738.0
-JNJ,Johnson & Johnson,Healthcare,Drug Manufacturers - General,578207100660.0
-ASML,ASML Holding N.V.,Technology,Semiconductors,537230283475.0
-MA,Mastercard Incorporated,Financial Services,Financial - Credit Services,448681973527.0
-COST,Costco Wholesale Corporation,Consumer Defensive,Discount Stores,432499563580.0
-MU,"Micron Technology, Inc.",Technology,Semiconductors,430894355700.0
-ORCL,Oracle Corporation,Technology,Software - Infrastructure,419845188657.0
-CVX,Chevron Corporation,Energy,Oil & Gas Integrated,410187406528.0
-NFLX,"Netflix, Inc.",Communication Services,Entertainment,391020197815.0
-ABBV,AbbVie Inc.,Healthcare,Drug Manufacturers - General,366276210836.0
-AMD,"Advanced Micro Devices, Inc.",Technology,Semiconductors,359130410700.0
-CAT,Caterpillar Inc.,Industrials,Agricultural - Machinery,336496055179.0
-PG,The Procter & Gamble Company,Consumer Defensive,Household & Personal Products,336349427043.0
-HD,"The Home Depot, Inc.",Consumer Cyclical,Home Improvement,331183617610.0
-KO,The Coca-Cola Company,Consumer Defensive,Beverages - Non-Alcoholic,323629180000.0
-CSCO,"Cisco Systems, Inc.",Technology,Communication Equipment,323318071363.0
-GE,GE Aerospace,Industrials,Aerospace & Defense,312815606625.0
-BABA,Alibaba Group Holding Limited,Consumer Cyclical,Specialty Retail,301456184773.0
-MRK,"Merck & Co., Inc.",Healthcare,Drug Manufacturers - General,295129433398.0
-NVS,Novartis AG,Healthcare,Drug Manufacturers - General,291410358579.0
-TM,Toyota Motor Corporation,Consumer Cyclical,Auto - Manufacturers,274913187274.0
-MS,Morgan Stanley,Financial Services,Financial - Capital Markets,263108436134.0
-RTX,RTX Corporation,Industrials,Aerospace & Defense,261746550000.0
-SHEL,Shell plc,Energy,Oil & Gas Integrated,260094250755.0
-PM,Philip Morris International Inc.,Consumer Defensive,Tobacco,257630470325.0
-GS,"The Goldman Sachs Group, Inc.",Financial Services,Financial - Capital Markets,252491831170.0
-UNH,UnitedHealth Group Incorporated,Healthcare,Medical - Healthcare Plans,245571698241.0
-TMUS,"T-Mobile US, Inc.",Communication Services,Telecommunications Services,236407550960.0
-LIN,Linde plc,Basic Materials,Chemicals - Specialty,228147478765.0
-RY,Royal Bank of Canada,Financial Services,Banks - Diversified,226949125000.0
-MCD,McDonald's Corporation,Consumer Cyclical,Restaurants,222430496779.0
-VZ,Verizon Communications Inc.,Communication Services,Telecommunications Services,212444541600.0
-PEP,"PepsiCo, Inc.",Consumer Defensive,Beverages - Non-Alcoholic,207466522780.0
-AXP,American Express Company,Financial Services,Financial - Credit Services,206813934182.0
-T,AT&T Inc.,Communication Services,Telecommunications Services,204424280860.0
-C,Citigroup Inc.,Financial Services,Banks - Diversified,200297140000.0
-TTE,TotalEnergies SE,Energy,Oil & Gas Integrated,198782283138.0
-MUFG,"Mitsubishi UFJ Financial Group, Inc.",Financial Services,Banks - Diversified,192241392647.0
-AMGN,Amgen Inc.,Healthcare,Drug Manufacturers - General,190792222213.0
-NEE,"NextEra Energy, Inc.",Utilities,Regulated Electric,189933683200.0
-TMO,Thermo Fisher Scientific Inc.,Healthcare,Medical - Diagnostics & Research,182313322428.0
-ABT,Abbott Laboratories,Healthcare,Medical - Devices,182161313083.0
-TJX,"The TJX Companies, Inc.",Consumer Cyclical,Apparel - Retail,177780834008.0
-BHP,BHP Group Limited,Basic Materials,Industrial Materials,177762798948.0
-GILD,"Gilead Sciences, Inc.",Healthcare,Drug Manufacturers - General,171638729200.0
-DIS,The Walt Disney Company,Communication Services,Entertainment,170183076833.0
-SCHW,The Charles Schwab Corporation,Financial Services,Financial - Capital Markets,168791222262.0
-COP,ConocoPhillips,Energy,Oil & Gas Exploration & Production,157596186867.0
-BA,The Boeing Company,Industrials,Aerospace & Defense,156763114670.0
-DE,Deere & Company,Industrials,Agricultural - Machinery,156119307923.0
-ETN,Eaton Corporation plc,Industrials,Industrial - Machinery,145462500000.0
-LMT,Lockheed Martin Corporation,Industrials,Aerospace & Defense,144438498021.0
-PDD,PDD Holdings Inc.,Consumer Cyclical,Specialty Retail,143582060232.0
-HON,Honeywell International Inc.,Industrials,Conglomerates,143529216529.0
-UNP,Union Pacific Corporation,Industrials,Railroads,143203050030.0
-RIO,Rio Tinto Group,Basic Materials,Industrial Materials,142166475843.0
-WELL,Welltower Inc.,Real Estate,REIT - Healthcare Facilities,137268855227.0
-SCCO,Southern Copper Corporation,Basic Materials,Copper,136705572644.0
-BUD,Anheuser-Busch InBev SA/NV,Consumer Defensive,Beverages - Alcoholic,136625189678.0
-BKNG,Booking Holdings Inc.,Consumer Cyclical,Travel Services,136598841041.0
-UL,Unilever PLC,Consumer Defensive,Household & Personal Products,132860768000.0
-LOW,"Lowe's Companies, Inc.",Consumer Cyclical,Home Improvement,132485515114.0
-PBR,Petróleo Brasileiro S.A. - Petrobras,Energy,Oil & Gas Integrated,127727347459.0
-BTI,British American Tobacco p.l.c.,Consumer Defensive,Tobacco,127636211731.0
-PLD,"Prologis, Inc.",Real Estate,REIT - Industrial,121177311240.0
-BP,BP p.l.c.,Energy,Oil & Gas Integrated,119087952050.0
-ENB,Enbridge Inc.,Energy,Oil & Gas Midstream,118866098400.0
-PH,Parker-Hannifin Corporation,Industrials,Industrial - Machinery,116316104465.0
-NEM,Newmont Corporation,Basic Materials,Gold,110785014075.0
-MO,"Altria Group, Inc.",Consumer Defensive,Tobacco,107065674712.0
-SO,The Southern Company,Utilities,Regulated Electric,105905487900.0
-CMCSA,Comcast Corporation,Communication Services,Telecommunications Services,104689086026.0
-CNQ,Canadian Natural Resources Limited,Energy,Oil & Gas Exploration & Production,102588004551.0
-EQNR,Equinor ASA,Energy,Oil & Gas Integrated,102511846456.0
-DUK,Duke Energy Corporation,Utilities,Regulated Electric,99666298187.0
-SPOT,Spotify Technology S.A.,Communication Services,Internet Content & Information,97425582111.0
-AEM,Agnico Eagle Mines Limited,Basic Materials,Gold,96232755272.0
-EQIX,"Equinix, Inc.",Real Estate,REIT - Specialty,94909320655.0
-CEG,Constellation Energy Corporation,Utilities,Renewable Utilities,94723824032.0
-NGG,National Grid plc,Utilities,Regulated Electric,83806343980.0
-FCX,Freeport-McMoRan Inc.,Basic Materials,Copper,82056934000.0
-SHW,The Sherwin-Williams Company,Basic Materials,Chemicals - Specialty,79771161250.0
-AMT,American Tower Corporation,Real Estate,REIT - Specialty,78306888473.0
-AMX,"América Móvil, S.A.B. de C.V.",Communication Services,Telecommunications Services,76439134000.0
-ECL,Ecolab Inc.,Basic Materials,Chemicals - Specialty,76060100645.0
-CRH,CRH plc,Basic Materials,Construction Materials,70921457569.0
-AEP,"American Electric Power Company, Inc.",Utilities,Regulated Electric,69392466300.0
-SRE,Sempra,Utilities,Diversified Utilities,62271030880.0
-DLR,"Digital Realty Trust, Inc.",Real Estate,REIT - Office,60623994450.0
-SPG,"Simon Property Group, Inc.",Real Estate,REIT - Retail,59001768865.0
-O,Realty Income Corporation,Real Estate,REIT - Retail,56002346400.0
-D,"Dominion Energy, Inc.",Utilities,Regulated Electric,53307158760.0
-VST,Vistra Corp.,Utilities,Independent Power Producers,51293603231.0
-EXC,Exelon Corporation,Utilities,Regulated Electric,48761166300.0
-PSA,Public Storage,Real Estate,REIT - Industrial,46970670780.0
-CBRE,"CBRE Group, Inc.",Real Estate,Real Estate - Services,40100656885.0
-VTR,"Ventas, Inc.",Real Estate,REIT - Healthcare Facilities,39279605500.0
+NVDA,NVIDIA Corporation,Technology,Semiconductors,4232859090635.0
+AAPL,Apple Inc.,Technology,Consumer Electronics,3760023355388.0
+GOOGL,Alphabet Inc.,Communication Services,Internet Content & Information,3455111251834.0
+MSFT,Microsoft Corporation,Technology,Software - Infrastructure,2749488020100.0
+AMZN,"Amazon.com, Inc.",Consumer Cyclical,Specialty Retail,2278057665172.0
+TSM,Taiwan Semiconductor Manufacturing Company Limited,Technology,Semiconductors,1735250480404.0
+AVGO,Broadcom Inc.,Technology,Semiconductors,1484634990782.0
+TSLA,"Tesla, Inc.",Consumer Cyclical,Auto - Manufacturers,1427328689212.0
+META,"Meta Platforms, Inc.",Communication Services,Internet Content & Information,1415131672225.0
+BRK-A,Berkshire Hathaway Inc.,Financial Services,Insurance - Diversified,1029737881110.0
+WMT,Walmart Inc.,Consumer Defensive,Discount Stores,979090751148.0
+LLY,Eli Lilly and Company,Healthcare,Drug Manufacturers - General,853573105075.0
+XOM,Exxon Mobil Corporation,Energy,Oil & Gas Integrated,684890908770.0
+V,Visa Inc.,Financial Services,Financial - Credit Services,590172896766.0
+JNJ,Johnson & Johnson,Healthcare,Drug Manufacturers - General,579701238127.0
+ASML,ASML Holding N.V.,Technology,Semiconductors,519181158956.0
+MA,Mastercard Incorporated,Financial Services,Financial - Credit Services,448958629211.0
+COST,Costco Wholesale Corporation,Consumer Defensive,Discount Stores,435550165973.0
+CVX,Chevron Corporation,Energy,Oil & Gas Integrated,415965503165.0
+ORCL,Oracle Corporation,Technology,Software - Infrastructure,415559880182.0
+MU,"Micron Technology, Inc.",Technology,Semiconductors,412354474500.0
+NFLX,"Netflix, Inc.",Communication Services,Entertainment,392799873618.0
+ABBV,AbbVie Inc.,Healthcare,Drug Manufacturers - General,370378362944.0
+AMD,"Advanced Micro Devices, Inc.",Technology,Semiconductors,337772039700.0
+PG,The Procter & Gamble Company,Consumer Defensive,Household & Personal Products,335321264282.0
+CAT,Caterpillar Inc.,Industrials,Agricultural - Machinery,331273402787.0
+HD,"The Home Depot, Inc.",Consumer Cyclical,Home Improvement,329878843200.0
+CSCO,"Cisco Systems, Inc.",Technology,Communication Equipment,325451267340.0
+KO,The Coca-Cola Company,Consumer Defensive,Beverages - Non-Alcoholic,324209777200.0
+GE,GE Aerospace,Industrials,Aerospace & Defense,304735724154.0
+MRK,"Merck & Co., Inc.",Healthcare,Drug Manufacturers - General,296192561959.0
+BABA,Alibaba Group Holding Limited,Consumer Cyclical,Specialty Retail,290941890678.0
+NVS,Novartis AG,Healthcare,Drug Manufacturers - General,290859420884.0
+TM,Toyota Motor Corporation,Consumer Cyclical,Auto - Manufacturers,276177403358.0
+MS,Morgan Stanley,Financial Services,Financial - Capital Markets,261226821790.0
+SHEL,Shell plc,Energy,Oil & Gas Integrated,260433947208.0
+RTX,RTX Corporation,Industrials,Aerospace & Defense,258887472300.0
+PM,Philip Morris International Inc.,Consumer Defensive,Tobacco,257000015095.0
+GS,"The Goldman Sachs Group, Inc.",Financial Services,Financial - Capital Markets,248730720807.0
+UNH,UnitedHealth Group Incorporated,Healthcare,Medical - Healthcare Plans,246824290899.0
+TMUS,"T-Mobile US, Inc.",Communication Services,Telecommunications Services,236916695156.0
+LIN,Linde plc,Basic Materials,Chemicals - Specialty,229141459230.0
+RY,Royal Bank of Canada,Financial Services,Banks - Diversified,225727091250.0
+MCD,McDonald's Corporation,Consumer Cyclical,Restaurants,222152191056.0
+VZ,Verizon Communications Inc.,Communication Services,Telecommunications Services,215164945200.0
+PEP,"PepsiCo, Inc.",Consumer Defensive,Beverages - Non-Alcoholic,207904071632.0
+AXP,American Express Company,Financial Services,Financial - Credit Services,206204296571.0
+T,AT&T Inc.,Communication Services,Telecommunications Services,205913060611.0
+TTE,TotalEnergies SE,Energy,Oil & Gas Integrated,200808855821.0
+C,Citigroup Inc.,Financial Services,Banks - Diversified,197620680400.0
+AMGN,Amgen Inc.,Healthcare,Drug Manufacturers - General,190234287169.0
+NEE,"NextEra Energy, Inc.",Utilities,Regulated Electric,190037859200.0
+ABT,Abbott Laboratories,Healthcare,Medical - Devices,183464567234.0
+TMO,Thermo Fisher Scientific Inc.,Healthcare,Medical - Diagnostics & Research,182684806672.0
+TJX,"The TJX Companies, Inc.",Consumer Cyclical,Apparel - Retail,177057423988.0
+BHP,BHP Group Limited,Basic Materials,Industrial Materials,174969782539.0
+GILD,"Gilead Sciences, Inc.",Healthcare,Drug Manufacturers - General,171384238100.0
+DIS,The Walt Disney Company,Communication Services,Entertainment,169553522752.0
+SCHW,The Charles Schwab Corporation,Financial Services,Financial - Capital Markets,167831676415.0
+COP,ConocoPhillips,Energy,Oil & Gas Exploration & Production,161727693201.0
+SAN,"Banco Santander, S.A.",Financial Services,Banks - Diversified,160286191982.0
+DE,Deere & Company,Industrials,Agricultural - Machinery,157599495829.0
+BA,The Boeing Company,Industrials,Aerospace & Defense,154257857740.0
+LMT,Lockheed Martin Corporation,Industrials,Aerospace & Defense,144503270889.0
+HON,Honeywell International Inc.,Industrials,Conglomerates,144485908459.0
+PDD,PDD Holdings Inc.,Consumer Cyclical,Specialty Retail,144077994282.0
+UNP,Union Pacific Corporation,Industrials,Railroads,142366428059.0
+ETN,Eaton Corporation plc,Industrials,Industrial - Machinery,141785208000.0
+RIO,Rio Tinto Group,Basic Materials,Industrial Materials,139649249003.0
+WELL,Welltower Inc.,Real Estate,REIT - Healthcare Facilities,137478180986.0
+BKNG,Booking Holdings Inc.,Consumer Cyclical,Travel Services,136424456112.0
+BUD,Anheuser-Busch InBev SA/NV,Consumer Defensive,Beverages - Alcoholic,135519552305.0
+LOW,"Lowe's Companies, Inc.",Consumer Cyclical,Home Improvement,132569657833.0
+UL,Unilever PLC,Consumer Defensive,Household & Personal Products,131942979800.0
+SCCO,Southern Copper Corporation,Basic Materials,Copper,131716137278.0
+PBR,Petróleo Brasileiro S.A. - Petrobras,Energy,Oil & Gas Integrated,131046186047.0
+BTI,British American Tobacco p.l.c.,Consumer Defensive,Tobacco,127027734000.0
+BP,BP p.l.c.,Energy,Oil & Gas Integrated,121251518675.0
+PLD,"Prologis, Inc.",Real Estate,REIT - Industrial,120656758200.0
+ENB,Enbridge Inc.,Energy,Oil & Gas Midstream,118889662164.0
+PH,Parker-Hannifin Corporation,Industrials,Industrial - Machinery,115176369208.0
+NEM,Newmont Corporation,Basic Materials,Gold,110905052999.0
+MO,"Altria Group, Inc.",Consumer Defensive,Tobacco,108794706461.0
+SO,The Southern Company,Utilities,Regulated Electric,106101381150.0
+CMCSA,Comcast Corporation,Communication Services,Telecommunications Services,105480539889.0
+EQNR,Equinor ASA,Energy,Oil & Gas Integrated,104666521765.0
+CNQ,Canadian Natural Resources Limited,Energy,Oil & Gas Exploration & Production,102963479151.0
+DUK,Duke Energy Corporation,Utilities,Regulated Electric,99957941985.0
+SPOT,Spotify Technology S.A.,Communication Services,Internet Content & Information,98754552616.0
+AEM,Agnico Eagle Mines Limited,Basic Materials,Gold,97442741756.0
+EQIX,"Equinix, Inc.",Real Estate,REIT - Specialty,95249528246.0
+CEG,Constellation Energy Corporation,Utilities,Renewable Utilities,90298673741.0
+NGG,National Grid plc,Utilities,Regulated Electric,82210553470.0
+FCX,Freeport-McMoRan Inc.,Basic Materials,Copper,80483200000.0
+SHW,The Sherwin-Williams Company,Basic Materials,Chemicals - Specialty,80348477000.0
+AMT,American Tower Corporation,Real Estate,REIT - Specialty,78583094990.0
+ECL,Ecolab Inc.,Basic Materials,Chemicals - Specialty,75606929483.0
+AMX,"América Móvil, S.A.B. de C.V.",Communication Services,Telecommunications Services,75480763144.0
+CRH,CRH plc,Basic Materials,Construction Materials,70359703450.0
+AEP,"American Electric Power Company, Inc.",Utilities,Regulated Electric,69549315990.0
+SRE,Sempra,Utilities,Diversified Utilities,62460483240.0
+DLR,"Digital Realty Trust, Inc.",Real Estate,REIT - Office,60598223325.0
+SPG,"Simon Property Group, Inc.",Real Estate,REIT - Retail,59251983993.0
+O,Realty Income Corporation,Real Estate,REIT - Retail,56421944400.0
+D,"Dominion Energy, Inc.",Utilities,Regulated Electric,53614733860.0
+VST,Vistra Corp.,Utilities,Independent Power Producers,50044356343.0
+EXC,Exelon Corporation,Utilities,Regulated Electric,49241924600.0
+PSA,Public Storage,Real Estate,REIT - Industrial,47588451900.0
+CBRE,"CBRE Group, Inc.",Real Estate,Real Estate - Services,40465206407.0
+VTR,"Ventas, Inc.",Real Estate,REIT - Healthcare Facilities,39334226475.0

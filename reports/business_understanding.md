@@ -173,6 +173,8 @@ Fields:
 - `capitalExpenditure` is also standardized to a consistent outflow sign before computing TTM variables, so artificial zero TTM values caused by sign flips are removed.
 - `InvestmentIntensity` and `InvestmentIntensity_TTM` are stored as positive ratios of investment spending over total assets. This is economically easier to interpret because higher investment now corresponds to a larger feature value instead of a more negative one.
 - Isolated quarters with `totalDebt = 0` between positive-debt quarters are treated as missing in the debt-based ratio, because they are more likely to be provider artifacts than true debt-free states.
+
+
 ## Next Steps
  
 - Develop a pipeline to merge all features for each company, including a placeholder for sentiment variables

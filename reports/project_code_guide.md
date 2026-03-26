@@ -8,13 +8,41 @@ The goal is to make the pipeline easy to understand after some time away from th
 
 The project runs in this order:
 
+0. `src/0.FMP_runPipeline.py`
 1. `src/1.FMP_companySelection.py`
 2. `src/2.priceDataGathering.py`
 3. `src/3.FMP_financialsDataGathering.py`
 4. `src/4.FMP_financialsDataProcessing.py`
 5. `src/5.FMP_dataAnalysis.py`
+6. `src/6.FMP_dataMerge.py`
 
 `src/config.py` defines the shared paths used by all scripts.
+
+
+## `src/0.FMP_runPipeline.py`
+
+Purpose:
+
+- Run the main production pipeline from start to finish
+- Clear the old company-level CSV files before rebuilding them
+
+What it currently does:
+
+- Deletes existing CSV files inside:
+  - `data/singleCompanyData/prices/`
+  - `data/singleCompanyData/financials/`
+  - `data/singleCompanyData/fulldata/`
+- Runs these scripts in sequence:
+  1. `src/1.FMP_companySelection.py`
+  2. `src/2.priceDataGathering.py`
+  3. `src/3.FMP_financialsDataGathering.py`
+  4. `src/4.FMP_financialsDataProcessing.py`
+  5. `src/6.FMP_dataMerge.py`
+
+Important note:
+
+- This runner intentionally does not execute `src/5.FMP_dataAnalysis.py`
+- It is meant for rebuilding the core datasets, not for quality-check analysis
 
 
 ## `src/config.py`
@@ -27,8 +55,10 @@ Main outputs:
 - `data/allPriceData.csv`: aggregated weekly price data
 - `data/financialsDataRaw.csv`: raw quarterly accounting data downloaded from FMP
 - `data/financialsData.csv`: final processed weekly financial dataset
+- `data/fulldata.csv`: final merged weekly dataset with prices and financial features
 - `data/singleCompanyData/prices/`: one weekly price file per company
 - `data/singleCompanyData/financials/`: one processed financial file per company
+- `data/singleCompanyData/fulldata/`: one merged weekly file per company
 
 
 ## `src/1.FMP_companySelection.py`
@@ -84,6 +114,8 @@ Main logic:
 - Creates a few short lags such as `ClosePrice_t-1` and `ClosePrice_t-2`
 - Creates one forward weekly price column, `ClosePrice_t+1`, that can later be
   used as a predictive target
+- Creates a binary direction target, `AdjClosePrice_t+1_Up`, equal to `1`
+  when next week's adjusted close is above the current one
 - Saves one company file and one aggregated file
 
 Generated price columns:
@@ -96,6 +128,7 @@ Generated price columns:
 - `AdjClosePrice_t-1`
 - `AdjClosePrice_t-2`
 - `AdjClosePrice_t+1`
+- `AdjClosePrice_t+1_Up`
 
 Why this file matters:
 
@@ -340,6 +373,35 @@ What it currently does:
 - Reports both absolute counts and percentages for missing values and zeros
 
 This script is more of a sanity-check script than a final analysis pipeline.
+
+
+## `src/6.FMP_dataMerge.py`
+
+Purpose:
+
+- Merge the weekly price files with the weekly processed financial files
+- Create one final company-level dataset per ticker
+- Create one large final dataset with all companies stacked together
+
+What it currently does:
+
+- Loads the ticker list from `enterprises.csv`
+- Reads `data/singleCompanyData/prices/{ticker}Prices.csv`
+- Reads `data/singleCompanyData/financials/{ticker}Financials.csv`
+- Standardizes the ticker column so both files use `Ticker`
+- Merges the two sources on:
+  - `WeekEndingFriday`
+  - `Ticker`
+- Reorders the merged columns so the two target columns,
+  `AdjClosePrice_t+1` and `AdjClosePrice_t+1_Up`, appear immediately after
+  `WeekEndingFriday` and `Ticker`
+- Saves one company-level merged file to `data/singleCompanyData/fulldata/{ticker}data.csv`
+- Concatenates all company files into `data/fulldata.csv`
+
+Why this file matters:
+
+- It creates the final modeling table where market data and financial features live in the same weekly dataset
+- It preserves the weekly calendar already aligned in the earlier steps of the pipeline
 
 
 ## Suggested Use When Returning To The Project
