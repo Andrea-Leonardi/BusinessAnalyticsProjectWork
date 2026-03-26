@@ -42,33 +42,42 @@ To transition from a static analytical model to a live production tool, future i
 * **Dynamic Model Inference:** Feeding this live data vector into the serialized, pre-trained classification model to instantly generate the $T+1$ week prediction for the end-user dashboard.
 ...
 
+
 # Define Data Characteristics
 
-## Decide How Data Will Be Gathered
+## How Data Is Gathered
 
-## Stock Prices
+### Stock Prices
+Weekly prices are built from daily Yahoo Finance data.
 
-- Stock prices must account for **splits and merges**.m For this reason, the variable **`Adj Close`** from `yfinance` will be used.
+- The script stores both `ClosePrice` and `AdjClosePrice`
+- `AdjClosePrice` is kept because it adjusts for stock splits and similar corporate actions
+- `ClosePrice` is also retained because it is used to update weekly market-cap-based ratios between two statement releases
 
-## Income Statement and Balance Sheet
+The daily series is mapped to `WeekEndingFriday`, and the last available trading day of each weekly bucket is retained.
 
-Rather than using absolute accounting values (such as total revenue or net income), it is preferable to rely mainly on **financial ratios and growth rates**.
+The current target variable used in the ML-ready dataset is:
 
-Absolute variables are strongly influenced by firm size and therefore introduce large scale differences across companies. For example, a large multinational will naturally have higher revenue and assets than a smaller firm, even if the latter is growing faster or performing more efficiently.
+`AdjClosePrice_t+1_Up = 1` if `AdjClosePrice_{t+1} > AdjClosePrice_t`, otherwise `0`
 
-Using **ratios and variations** allows normalization across firms and focuses the analysis on **economic performance, profitability, financial structure, and growth dynamics**, which are the elements investors typically evaluate when forming expectations about future stock returns.
 
-Another advantage of ratios and growth measures is that they capture **changes in performance**, which are often more informative for financial markets than the level itself. Stock prices tend to react to improvements or deteriorations in profitability, leverage, or growth prospects rather than to the absolute magnitude of accounting variables.
+### Fundamental Data
+Instead of relying on absolute accounting values such as total revenue or net income alone, the project mainly uses financial ratios and scaled variables.
 
-For this reason, variables such as **revenue growth, profitability margins, and leverage ratios** are commonly used in empirical asset pricing and machine learning models aimed at explaining or predicting stock returns.
+Absolute values are heavily influenced by firm size. Ratios make companies more comparable and focus the analysis on profitability, growth, leverage, and balance-sheet structure, which are more relevant for cross-sectional prediction.
 
-Based on these considerations, a compact set of indicators derived from the **income statement** and **balance sheet** has been selected to capture four key dimensions of firm fundamentals:
+The final accounting feature set is intentionally compact and is designed to capture:
 
-**profitability, growth, leverage, and liquidity.**
+- profitability
+- growth
+- leverage
+- investment
+- valuation
 
----
 
-### Selected Variables and Formulas
+## Selected Variables And Formulas
+
+### Core Ratios
   BookToMarket = totalStockholdersEquity / marketCap
 
   GrossProfitability = grossProfit / totalAssets
@@ -91,6 +100,8 @@ Based on these considerations, a compact set of indicators derived from the **in
 
   EarningsYield = netIncome / marketCap
 
+
+### TTM Variants
 TTM variants are kept in parallel for the flow-based ratios that remain stable enough for the sample:
 
   GrossProfitability_TTM = grossProfit_TTM / averageAssets
@@ -110,88 +121,92 @@ with:
   averageAssets = (totalAssets_t + totalAssets_{t-4q}) / 2
 
 
+## Financial Data Source
+Financial attributes are downloaded from Financial Modeling Prep (FMP).
 
-**Financial Attributes will be extracted from FMP**
-The rationale is explained here: [deep research](reports\SelectingFinancial-StatementVariablesforWeeklyStock-ReturnPrediction.pdf)
+The current code uses the stable FMP endpoints, not the old `/api/v3/.../{ticker}` paths.
 
 ### Income Statement
 Endpoint:
-- /api/v3/income-statement/{ticker}?period=quarter
+- `/stable/income-statement?symbol={ticker}&period=quarter&limit=60`
 
-Fields:
-- revenue
-- grossProfit
-- operatingIncome
-- netIncome
-- interestExpense
-
----
+Fields used or retained:
+- `revenue`
+- `grossProfit`
+- `operatingIncome`
+- `netIncome`
+- `interestExpense`
+- `weightedAverageShsOut`
+- `weightedAverageShsOutDil`
 
 ### Balance Sheet
 Endpoint:
-- /api/v3/balance-sheet-statement/{ticker}?period=quarter
+- `/stable/balance-sheet-statement?symbol={ticker}&period=quarter&limit=60`
 
-Fields:
-- totalAssets
-- totalStockholdersEquity
-- totalCurrentAssets
-- totalCurrentLiabilities
-- totalDebt
-- cashAndCashEquivalents
-
----
+Fields used:
+- `totalAssets`
+- `totalStockholdersEquity`
+- `totalCurrentAssets`
+- `totalCurrentLiabilities`
+- `totalDebt`
+- `cashAndCashEquivalents`
 
 ### Cash Flow Statement
 Endpoint:
-- /api/v3/cash-flow-statement/{ticker}?period=quarter
+- `/stable/cash-flow-statement?symbol={ticker}&period=quarter&limit=60`
 
-Fields:
-- operatingCashFlow
-- capitalExpenditure
-- freeCashFlow
+Fields used:
+- `operatingCashFlow`
+- `capitalExpenditure`
+- `freeCashFlow`
 
----
 ### Market Capitalization
 Endpoint:
-- /api/v3/historical-market-cap/{ticker}
+- `/stable/enterprise-values?symbol={ticker}&period=quarter&limit=60`
 
-Fields:
-- marketCap
-
----
+Field used:
+- `marketCap`
 
 
-## Iussues
-- We face the issue that financial statement data are available only at a quarterly or semi-annual frequency. To address this, we consider two alternative approaches in parallel:
+## Current Methodological Choices And Known Issues
 
-  - Spline interpolation: we interpolate the data to obtain a smooth proxy of the firm’s underlying fundamentals over time. However, this approach introduces a strong assumption, since the interpolated values rely on information that is not actually available to the market at each point in time, potentially leading to look-ahead bias and reduced economic interpretability.
-  - Forward-filled values: we repeat the last available observation until a new report is released. This approach better reflects the information set available to market participants. However, it may reduce the variability of the features; in particular, when including lagged variables, multiple lags may take identical values over extended periods, potentially limiting their informational content.
+- Quarterly accounting data are forward-filled between releases. This is preferred to interpolation because it better approximates the information set that was actually available to the market at each point in time.
 
-  We decided to go with Forward-filled to avoid the forward-looking bias
+- Quarterly fundamentals are aligned to the first Friday on or after the first public availability date of the statement. The preferred timestamp is `acceptedDate`, with fallback to `filingDate`. If both are missing or suspiciously earlier than the quarter-end date, the script falls back to the latest available date among `date`, `filingDate`, and `acceptedDate`. This is meant to reduce look-ahead bias.
 
-- Quarterly fundamentals are aligned to the first Friday on or after the first public availability date of the statement. The preferred timestamp is `acceptedDate`, with fallback to `filingDate`; when both are missing or suspiciously earlier than the quarter-end date, the script falls back to the latest available date among `date`, `filingDate`, and `acceptedDate`. This is meant to reduce look-ahead bias and keep the panel closer to the true market information set.
+- Weekly price data are aligned to Friday. When the last trading day of the week is not Friday because of holidays, that last observed trading day is assigned to the corresponding `WeekEndingFriday`.
 
-- We choose to use weekly closing prices, as they incorporate all the information accumulated during the week. Specifically, we start from daily data and select the last available price of each week.
+- TTM versions are kept in parallel with standard quarterly ratios in order to reduce seasonality in flow variables and allow later model comparison.
 
-- In some cases, due to market holidays, the last trading day may not be Friday (e.g., it could be Thursday). For consistency, we align all dates to Friday, assigning the last available price of the week to that date. This ensures a harmonized and regular weekly time index.
+- Market-cap-based ratios are updated weekly by taking the last quarterly market cap reported by FMP and rescaling it with weekly `ClosePrice` changes between two statement dates.
 
-- We also account for seasonality in financial statement variables. For example, companies such as Apple exhibit strong seasonal patterns in revenues, with significant peaks during the holiday season.
- To mitigate this effect, we consider using **Trailing Twelve Months (TTM)** revenue, computed as the rolling sum of the last four quarters. This approach provides a smoother and more comparable measure over time and reduces the impact of seasonal fluctuations.
+- Lagged variables are split into two groups:
+  - market-based variables receive 1-week and 2-week lags
+  - accounting variables receive 1-quarter and 2-quarter lags
 
-- al momento molte delle variabili di FMP sono fisse da un quarter all'altro e ci sta per cose che sono note al pubblico solo al'uscita delle trimestrali ma tipo il book value è un valore calcolato continuamente da prezzo dell'azione e numero di azioni quindi in realtà non è noto solo al momento delle trimestrali, questo è un problema da risolvere 
-  - Update market-cap-based ratios weekly by taking the last quarterly market cap reported by FMP and rescaling it with weekly stock price changes between two statement dates.
-- decido di tenere sia gli indici ttm che quelli normali e decicdere più avanti cosa includere
-- inseriamo variabili finanziarie laggate, dividiamo le variabili in due tipi, quelle market based ovvero che si basano su informazioni disponibili al mercato che verranno laggate di 1 e 2 settimane mentre le variabili che si basano sui dati disponibili al rilascio della trimestrale vengono laggate di 1 e 2 trimestrali
-- InterestCoverage, InterestCoverage_TTM, and all their lagged variants are excluded from the current analysis because they generate structural missing values for multiple companies and sectors.
-- Provider-style exact zeros in `capitalExpenditure` and `freeCashFlow` are treated as missing when building the final ratios that use those inputs directly.
-- `capitalExpenditure` is standardized to a consistent outflow sign before building `InvestmentIntensity`, so the feature remains comparable across quarters even when the raw provider flips the sign convention.
-- `InvestmentIntensity` is stored as a positive ratio of investment spending over total assets. This is economically easier to interpret because higher investment now corresponds to a larger feature value instead of a more negative one.
-- Isolated quarters with `totalDebt = 0` between positive-debt quarters are treated as missing in the debt-based ratio, because they are more likely to be provider artifacts than true debt-free states.
-- `GrossProfitability_TTM` and `ROA_TTM` use average assets over one year instead of a single-quarter denominator. This is more coherent because the numerator already aggregates four quarters of flow information.
-- `ROE` and `ROE_TTM` are excluded from the current analysis. Even though the formula is standard, the ratio becomes hard to interpret when book equity is negative or extremely compressed by share buybacks, and in our panel this would remove entire companies from the complete-case ML dataset.
+- `InterestCoverage`, `InterestCoverage_TTM`, and all their lagged variants are excluded from the current analysis because they generate structural missing values for multiple companies and sectors.
+
+- `ROE` and `ROE_TTM` are excluded from the current analysis. Even though the textbook formula is correct, the ratio becomes hard to interpret when book equity is negative or heavily compressed by buybacks, and in this sample it would eliminate entire companies from the complete-case ML dataset.
+
 - `IncomeQuality`, `CashRatio`, and `InvestmentIntensity_TTM` are also excluded from the current analysis. `IncomeQuality` was too unstable when earnings were close to zero, `CashRatio` was not comparable enough across sectors, especially financials, and `InvestmentIntensity_TTM` was too exposed to provider-level scale anomalies in some companies.
-- For the final ML-ready dataset, rows containing at least one missing value are removed instead of being imputed. Given the large number of remaining observations, this complete-case approach is preferred because it keeps the modeling table easier to interpret and avoids introducing artificial values for economically sensitive financial ratios.
+
+- Provider-style exact zeros in `capitalExpenditure` and `freeCashFlow` are treated as missing when building ratios that use those inputs directly.
+
+- `capitalExpenditure` is standardized to a consistent outflow sign before building `InvestmentIntensity`, so the feature remains comparable across quarters even when the provider flips the sign convention.
+
+- `InvestmentIntensity` is stored as a positive ratio of investment spending over total assets, which makes the feature easier to interpret.
+
+- Isolated quarters with `totalDebt = 0` between positive-debt quarters are treated as missing in the debt-based ratio because they are more likely to be provider artifacts than true debt-free states.
+
+- `GrossProfitability_TTM` and `ROA_TTM` use average assets over one year instead of a single-quarter denominator. This is more coherent because the numerator already aggregates four quarters of flow information.
+
+- For the final ML-ready dataset, rows containing at least one missing value are removed instead of being imputed. Given the large number of remaining observations, this complete-case approach is preferred because it avoids introducing artificial values for economically sensitive financial ratios.
 
 
 ## Next Steps
- 
+- Add the sentiment block to the actual pipeline, so the project becomes truly multi-modal and not only price-plus-fundamentals.
+- Add a proper time-based validation protocol, using chronological train/validation/test splits and avoiding random splits.
+- Define a set of benchmark models, including at least a naive baseline, a price-only model, a fundamentals-only model, and the full model.
+- Enrich the technical-analysis block with return-based variables such as weekly returns, momentum, and rolling volatility instead of relying mainly on price levels.
+- Add an explicit preprocessing policy for modeling, including outlier treatment, scaling, and a rule that all preprocessing parameters must be estimated only on the training set.
+- Document survivorship bias as a project limitation, since the company universe is selected from large companies observed today and then projected backward over the sample period.
