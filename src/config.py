@@ -21,6 +21,7 @@ FMP_RAW_FINANCIALS = DATA / "financialsDataRaw.csv"
 FMP_FINANCIALS = DATA / "financialsData.csv"
 ALL_PRICE_DATA = DATA / "allPriceData.csv"
 FULL_DATA = DATA / "fulldata.csv"
+FULL_DATA_ML = DATA / "fulldata_ml.csv"
 
 
 # ---------------------------------------------------------------------------

@@ -15,6 +15,7 @@ PRICE_INPUT_DIR = cfg.SINGLE_COMPANY_PRICES
 FINANCIAL_INPUT_DIR = cfg.SINGLE_COMPANY_FINANCIALS
 SINGLE_COMPANY_OUTPUT_DIR = cfg.SINGLE_COMPANY_FULL_DATA
 OUTPUT_FILE = cfg.FULL_DATA
+ML_OUTPUT_FILE = cfg.FULL_DATA_ML
 
 
 # ---------------------------------------------------------------------------
@@ -43,6 +44,7 @@ tickers = tickers[tickers != ""].unique()
 
 SINGLE_COMPANY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+ML_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 combined_frames: list[pd.DataFrame] = []
 
@@ -164,6 +166,16 @@ else:
         f"{combined_df[TICKER_COLUMN].nunique()} ticker, "
         f"{len(combined_df)} total rows."
     )
+
+    # -----------------------------------------------------------------------
+    # Save Final ML-Ready Output
+    # -----------------------------------------------------------------------
+
+    # Remove the identifier columns to build a matrix that can be passed
+    # directly to machine-learning models.
+    clean_df = combined_df.drop(columns=[TICKER_COLUMN, DATE_COLUMN], errors="ignore")
+    clean_df.to_csv(ML_OUTPUT_FILE, index=False)
+    print(f"Saved ML-ready full dataset: {ML_OUTPUT_FILE}")
 
 
 # %%

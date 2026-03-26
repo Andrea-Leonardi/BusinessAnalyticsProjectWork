@@ -56,6 +56,7 @@ Main outputs:
 - `data/financialsDataRaw.csv`: raw quarterly accounting data downloaded from FMP
 - `data/financialsData.csv`: final processed weekly financial dataset
 - `data/fulldata.csv`: final merged weekly dataset with prices and financial features
+- `data/fulldata_ml.csv`: ML-ready version of the merged dataset without date and ticker columns
 - `data/singleCompanyData/prices/`: one weekly price file per company
 - `data/singleCompanyData/financials/`: one processed financial file per company
 - `data/singleCompanyData/fulldata/`: one merged weekly file per company
@@ -397,11 +398,14 @@ What it currently does:
   `WeekEndingFriday` and `Ticker`
 - Saves one company-level merged file to `data/singleCompanyData/fulldata/{ticker}data.csv`
 - Concatenates all company files into `data/fulldata.csv`
+- Creates `data/fulldata_ml.csv` by dropping `WeekEndingFriday` and `Ticker`
+  from the aggregated merged dataset
 
 Why this file matters:
 
 - It creates the final modeling table where market data and financial features live in the same weekly dataset
 - It preserves the weekly calendar already aligned in the earlier steps of the pipeline
+- It also exports an ML-ready matrix without identifier columns for direct use in predictive models
 
 
 ## Suggested Use When Returning To The Project
