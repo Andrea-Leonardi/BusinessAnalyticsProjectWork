@@ -369,17 +369,22 @@ About `QuarterlyReleased`:
 Purpose:
 
 - Perform quick checks on the processed dataset
-- Inspect date coverage and visually inspect example price series
 
 What it currently does:
 
-- Loads `financialsData.csv`
-- Checks first and last available date by ticker
-- Highlights suspicious end dates
-- Plots an example weekly price series for one selected company
 - Summarizes missing values and explicit zeros for each company-level
   processed financial file, excluding the `QuarterlyReleased` flag
 - Reports both absolute counts and percentages for missing values and zeros
+- Loads `fulldata_ml.csv`, computes the feature correlation matrix, keeps only
+  variables that show at least one absolute correlation of `0.20` or more, and
+  plots a corrplot-style heatmap for that reduced set
+- Plots a target-centric bar chart of the strongest feature correlations with
+  `AdjClosePrice_t+1_Up`
+- Plots a compact correlation heatmap around the target using only the top
+  target-related features, which is easier to read than a full corrplot and
+  also prints the correlation values inside each cell
+- Handles missing company files or a missing `fulldata_ml.csv` gracefully by
+  printing a message instead of breaking the whole script
 
 This script is more of a sanity-check script than a final analysis pipeline.
 
