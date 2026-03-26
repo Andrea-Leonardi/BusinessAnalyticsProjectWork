@@ -78,6 +78,11 @@ for ticker in df["Ticker"]:
     company_df["AdjClosePrice_t-1"] = company_df["AdjClosePrice"].shift(1)
     company_df["AdjClosePrice_t-2"] = company_df["AdjClosePrice"].shift(2)
     company_df["AdjClosePrice_t+1"] = company_df["AdjClosePrice"].shift(-1)
+    # Use a simple binary target: 1 when next week's adjusted close is higher
+    # than the current adjusted close, 0 otherwise.
+    company_df["AdjClosePrice_t+1_Up"] = (
+        company_df["AdjClosePrice_t+1"] > company_df["AdjClosePrice"]
+    ).astype("int64")
 
     # Drop the edge rows where lagged or forward values are still unavailable.
     company_df = company_df.dropna()
@@ -93,6 +98,7 @@ for ticker in df["Ticker"]:
             "AdjClosePrice_t-1",
             "AdjClosePrice_t-2",
             "AdjClosePrice_t+1",
+            "AdjClosePrice_t+1_Up",
         ]
     ]
 
