@@ -10,6 +10,9 @@ Per implementare la regressione **Fama-MacBeth characteristics-based** è necess
 | 2020-01-03 | MSFT   |
 | 2020-01-10 | AAPL   | 
 
+variabile risposta : return t+1
+come coovariate : interessante usare i return laggati (proxy di momentum)
+
 
 ## 2. Regression logistic penalizzata (LASSO / Elastic Net)
 standardizzare le variabili -----> farlo direttamente in fase di implementazione del modello 

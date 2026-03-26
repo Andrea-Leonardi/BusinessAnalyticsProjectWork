@@ -67,7 +67,7 @@ Balanced Accuracy --> motivo **evaluation.md in metriche di valutazione**
     ATTENZIONE!!!
     convertire rendimenti in "UP" o "DOWN", 
     
-    comparazione: threshold 0.5(approcio econometrico standard) vs  threshold ottimizzato. ??
+    comparazione: threshold 0 (approcio econometrico standard) vs  threshold ottimizzato. ??
 
 ---
 

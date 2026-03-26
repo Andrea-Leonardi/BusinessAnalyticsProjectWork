@@ -55,5 +55,3 @@ Modello nullo (benchmark predittivo)
 Fama-MacBeth characteristics (benchmark econometrico)
 
 
-# CRITERIO DI SCELTA MODELLO FINALE 
-(da valutare)
