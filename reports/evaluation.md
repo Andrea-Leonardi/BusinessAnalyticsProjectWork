@@ -1,8 +1,6 @@
 # OBIETTIVI
 focus sulla capacità predittiva out-of-sample.
 Modelli più complessi migliori rispetto a benchmark semplici?
-Da valutare con gli altri(focus secondario: capacità del modello di predire "DOWN" quando il prezzo effettivamente scende) ---> renderebbe le cose un pò più complesse
-
 
 
 
@@ -42,17 +40,19 @@ Uno split casuale standard presuppone che le osservazioni siano indipendenti e i
 
 # METRICHE DI VALUTAZIONE
 
-accuracy: Balanced Accuracy (variabile risposta sbilanciata) 
-          AUC (capacità discriminante modello)
-          1-error rate
+ La variabile risposta è  sbilanciata, l’accuracy standard può risultare fuorviante. 
+Per questo motivo viene utilizzata la **Balanced Accuracy** come metrica principale, in quanto tiene conto in modo equilibrato della capacità del modello di prevedere entrambe le classi (up/down).
 
-curve roc per mostrare trade-off sensibilità vs specificità (da valutare)
+L’**AUC (Area Under the ROC Curve)** viene utilizzata come metrica complementare per valutare la capacità discriminante del modello indipendentemente dalla soglia di classificazione.
+
+L’**Accuracy (1 − error rate)** viene riportata a fini interpretativi, per fornire una misura facilmente leggibile della percentuale di previsioni corrette.
 
 
 
 
 # BENCHMARK DI CONFRONTO
-null model
+Modello nullo (benchmark predittivo)
+Fama-MacBeth characteristics (benchmark econometrico)
 
 
 # CRITERIO DI SCELTA MODELLO FINALE 

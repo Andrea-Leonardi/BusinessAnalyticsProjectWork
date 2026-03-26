@@ -14,7 +14,7 @@ Questo modello permette di:
 - evidenziare eventuali problemi di dataset sbilanciato
 
 
-## 1. Regressione two-pass (Fama-MacBeth)
+## 1. Regressione two-pass (Fama-MacBeth characteristics-based)
 **Motivazione:** rappresenta il benchmark econometrico classico nell’asset pricing. Consente di stimare relazioni cross-sectional tra caratteristiche fondamentali e rendimenti attesi mantenendo elevata interpretabilità dei coefficienti. È utile come baseline “scientifica” per verificare la presenza di segnale informativo nelle variabili fondamentali.
 
 ---
@@ -48,16 +48,31 @@ Il modello viene incluso principalmente come riferimento di performance per veri
 
 
 
+
 # PREPARAZIONE TRAINING SET
- guardare **Strategia di split del datasetin evaluation.md** 
+ guardare **Strategia di split del dataset in evaluation.md** 
 
 
 
-# ADDESTRAMENTO MODELLI 
+
+# ADDESTRAMENTO MODELLI   PARAMETRI DI CONTROLLO E LIBERIE PRINCIPALI
+
+## Ottimizzazione degli iperparametri
+Balanced Accuracy --> motivo **evaluation.md in metriche di valutazione**
+
 
 ## 1. Regressione two-pass (Fama-MacBeth):
     Usare funzione FamaMacBeth(y,x) from linearmodels.asset_pricing.
     
     ATTENZIONE!!!
-    convertire rendimenti in "UP" o "DOWN", testare threshold ottimale in termini di accuaracy 
+    convertire rendimenti in "UP" o "DOWN", 
+    
+    comparazione: threshold 0.5(approcio econometrico standard) vs  threshold ottimizzato. ??
 
+---
+
+## 2. Regression logistic penalizzata (LASSO / Elastic Net)
+    Usare libreria sklearn.linear_model
+
+    variabili standardizzate ----> usare funzione apposita
+    2 parametri da ottimizzare: parametro di penalità e tipo di penalità
