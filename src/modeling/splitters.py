@@ -29,7 +29,7 @@ def split_data_by_date(
 
     #validation
     df_validation = df[
-        (df[date_col].dt.year == 2021)
+        (df[date_col].dt.year == 2025)
     ]
 
     X_validation = df_validation.drop(columns=[response_var] + exclude_vars, errors="ignore")
@@ -48,3 +48,5 @@ def split_data_by_date(
     return X_train, y_train, X_validation, y_validation, X_test, y_test
 
 
+#togliere ticker e date (ANCORA NON FATTO !!!!!!!!!!)
+#flessibilizzare le date?
