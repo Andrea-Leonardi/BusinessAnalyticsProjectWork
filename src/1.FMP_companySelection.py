@@ -83,6 +83,7 @@ df = df.rename(columns={"symbol": "Ticker"})
 # ---------------------------------------------------------------------------
 
 # Save the final company universe inside the shared data folder.
+cfg.ENT.parent.mkdir(parents=True, exist_ok=True)
 df.to_csv(cfg.ENT, index=False)
 print(f"Saved file: {cfg.ENT}")
 

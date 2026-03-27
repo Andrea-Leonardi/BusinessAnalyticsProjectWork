@@ -9,6 +9,8 @@ from pathlib import Path
 SRC = Path(__file__).resolve().parent
 ROOT = SRC.parent
 DATA = ROOT / "data"
+DATA_EXTRACTION = DATA / "dataExtraction"
+MODELING = DATA / "modeling"
 
 
 # ---------------------------------------------------------------------------
@@ -16,12 +18,12 @@ DATA = ROOT / "data"
 # ---------------------------------------------------------------------------
 
 # Define the common file paths used across the full analytics pipeline.
-ENT = DATA / "enterprises.csv"
-FMP_RAW_FINANCIALS = DATA / "financialsDataRaw.csv"
-FMP_FINANCIALS = DATA / "financialsData.csv"
-ALL_PRICE_DATA = DATA / "allPriceData.csv"
-FULL_DATA = DATA / "fulldata.csv"
-FULL_DATA_ML = DATA / "fulldata_ml.csv"
+ENT = DATA_EXTRACTION / "enterprises.csv"
+FMP_RAW_FINANCIALS = DATA_EXTRACTION / "financialsDataRaw.csv"
+FMP_FINANCIALS = DATA_EXTRACTION / "financialsData.csv"
+ALL_PRICE_DATA = DATA_EXTRACTION / "allPriceData.csv"
+FULL_DATA = DATA_EXTRACTION / "fulldata.csv"
+FULL_DATA_ML = DATA_EXTRACTION / "fulldata_ml.csv"
 
 
 # ---------------------------------------------------------------------------
@@ -29,7 +31,7 @@ FULL_DATA_ML = DATA / "fulldata_ml.csv"
 # ---------------------------------------------------------------------------
 
 # Keep company-level outputs separated by data type for easier inspection.
-SINGLE_COMPANY_DATA = DATA / "singleCompanyData"
+SINGLE_COMPANY_DATA = DATA_EXTRACTION / "singleCompanyData"
 SINGLE_COMPANY_PRICES = SINGLE_COMPANY_DATA / "prices"
 SINGLE_COMPANY_FINANCIALS = SINGLE_COMPANY_DATA / "financials"
 SINGLE_COMPANY_FULL_DATA = SINGLE_COMPANY_DATA / "fulldata"

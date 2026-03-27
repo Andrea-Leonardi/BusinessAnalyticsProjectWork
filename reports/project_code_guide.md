@@ -29,9 +29,9 @@ Purpose:
 What it currently does:
 
 - Deletes existing CSV files inside:
-  - `data/singleCompanyData/prices/`
-  - `data/singleCompanyData/financials/`
-  - `data/singleCompanyData/fulldata/`
+  - `data/dataExtraction/singleCompanyData/prices/`
+  - `data/dataExtraction/singleCompanyData/financials/`
+  - `data/dataExtraction/singleCompanyData/fulldata/`
 - Runs these scripts in sequence:
   1. `src/1.FMP_companySelection.py`
   2. `src/2.priceDataGathering.py`
@@ -51,15 +51,16 @@ This file contains the main project paths.
 
 Main outputs:
 
-- `data/enterprises.csv`: selected company universe
-- `data/allPriceData.csv`: aggregated weekly price data
-- `data/financialsDataRaw.csv`: raw quarterly accounting data downloaded from FMP
-- `data/financialsData.csv`: final processed weekly financial dataset
-- `data/fulldata.csv`: final merged weekly dataset with prices and financial features
-- `data/fulldata_ml.csv`: ML-ready version of the merged dataset without date and ticker columns
-- `data/singleCompanyData/prices/`: one weekly price file per company
-- `data/singleCompanyData/financials/`: one processed financial file per company
-- `data/singleCompanyData/fulldata/`: one merged weekly file per company
+- `data/dataExtraction/enterprises.csv`: selected company universe
+- `data/dataExtraction/allPriceData.csv`: aggregated weekly price data
+- `data/dataExtraction/financialsDataRaw.csv`: raw quarterly accounting data downloaded from FMP
+- `data/dataExtraction/financialsData.csv`: final processed weekly financial dataset
+- `data/dataExtraction/fulldata.csv`: final merged weekly dataset with prices and financial features
+- `data/dataExtraction/fulldata_ml.csv`: ML-ready version of the merged dataset without date and ticker columns
+- `data/dataExtraction/singleCompanyData/prices/`: one weekly price file per company
+- `data/dataExtraction/singleCompanyData/financials/`: one processed financial file per company
+- `data/dataExtraction/singleCompanyData/fulldata/`: one merged weekly file per company
+- `data/modeling/`: empty folder reserved for future modeling outputs
 
 
 ## `src/1.FMP_companySelection.py`
@@ -85,7 +86,7 @@ Main logic:
   - `WFC`
 - Keeps only `NASDAQ` and `NYSE`
 - Keeps the top 10 companies by market cap inside each sector
-- Saves the result to `data/enterprises.csv`
+- Saves the result to `data/dataExtraction/enterprises.csv`
 
 Important output columns:
 
@@ -400,8 +401,8 @@ Purpose:
 What it currently does:
 
 - Loads the ticker list from `enterprises.csv`
-- Reads `data/singleCompanyData/prices/{ticker}Prices.csv`
-- Reads `data/singleCompanyData/financials/{ticker}Financials.csv`
+- Reads `data/dataExtraction/singleCompanyData/prices/{ticker}Prices.csv`
+- Reads `data/dataExtraction/singleCompanyData/financials/{ticker}Financials.csv`
 - Standardizes the ticker column so both files use `Ticker`
 - Merges the two sources on:
   - `WeekEndingFriday`
@@ -409,11 +410,11 @@ What it currently does:
 - Reorders the merged columns so the two target columns,
   `AdjClosePrice_t+1` and `AdjClosePrice_t+1_Up`, appear immediately after
   `WeekEndingFriday` and `Ticker`
-- Saves one company-level merged file to `data/singleCompanyData/fulldata/{ticker}data.csv`
-- Concatenates all company files into `data/fulldata.csv`
-- Creates `data/fulldata_ml.csv` by dropping `WeekEndingFriday` and `Ticker`
+- Saves one company-level merged file to `data/dataExtraction/singleCompanyData/fulldata/{ticker}data.csv`
+- Concatenates all company files into `data/dataExtraction/fulldata.csv`
+- Creates `data/dataExtraction/fulldata_ml.csv` by dropping `WeekEndingFriday` and `Ticker`
   from the aggregated merged dataset
-- Before exporting `data/fulldata_ml.csv`, it also drops every row that still
+- Before exporting `data/dataExtraction/fulldata_ml.csv`, it also drops every row that still
   contains at least one missing value
 
 Why this file matters:
