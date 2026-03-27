@@ -54,6 +54,7 @@ Code folders:
 - `src/config.py`: shared configuration file kept at the root of `src`
 - `src/dataExtraction/`: all extraction, processing, analysis, and merge scripts
 - `src/modeling/`: reserved folder for future modeling code
+- `src/newsExtraction/`: reserved folder for future news and sentiment extraction code
 
 Main outputs:
 
@@ -67,6 +68,7 @@ Main outputs:
 - `data/dataExtraction/singleCompanyData/financials/`: one processed financial file per company
 - `data/dataExtraction/singleCompanyData/fulldata/`: one merged weekly file per company
 - `data/modeling/`: empty folder reserved for future modeling outputs
+- `data/newsExtraction/`: reserved folder for future news and sentiment datasets
 
 
 ## `src/dataExtraction/1.FMP_companySelection.py`

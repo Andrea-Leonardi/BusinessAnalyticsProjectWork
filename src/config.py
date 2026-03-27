@@ -10,9 +10,11 @@ SRC = Path(__file__).resolve().parent
 ROOT = SRC.parent
 DATA_EXTRACTION_SRC = SRC / "dataExtraction"
 MODELING_SRC = SRC / "modeling"
+NEWS_EXTRACTION_SRC = SRC / "newsExtraction"
 DATA = ROOT / "data"
 DATA_EXTRACTION = DATA / "dataExtraction"
 MODELING = DATA / "modeling"
+NEWS_EXTRACTION = DATA / "newsExtraction"
 
 
 # ---------------------------------------------------------------------------
