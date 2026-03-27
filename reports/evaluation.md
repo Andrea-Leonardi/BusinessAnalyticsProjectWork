@@ -10,6 +10,7 @@ Modelli più complessi migliori rispetto a benchmark semplici?
 
 Adottiamo uno **split temporale** del dataset
 
+
 ---
 
 ## Motivazione
@@ -40,12 +41,10 @@ Uno split casuale standard presuppone che le osservazioni siano indipendenti e i
 
 # METRICHE DI VALUTAZIONE
 
- La variabile risposta è  sbilanciata, l’accuracy standard può risultare fuorviante. 
-Per questo motivo viene utilizzata la **Balanced Accuracy** come metrica principale, in quanto tiene conto in modo equilibrato della capacità del modello di prevedere entrambe le classi (up/down).
+L’**Accuracy (1 − error rate)** --> coerente con l'obiettivo
 
 L’**AUC (Area Under the ROC Curve)** viene utilizzata come metrica complementare per valutare la capacità discriminante del modello indipendentemente dalla soglia di classificazione.
 
-L’**Accuracy (1 − error rate)** viene riportata a fini interpretativi, per fornire una misura facilmente leggibile della percentuale di previsioni corrette.
 
 
 

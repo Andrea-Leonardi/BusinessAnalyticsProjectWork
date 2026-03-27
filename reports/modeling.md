@@ -14,7 +14,7 @@ Questo modello permette di:
 - evidenziare eventuali problemi di dataset sbilanciato
 
 
-## 1. Regressione two-pass (Fama-MacBeth characteristics-based)
+## 1. Regressione Fama-MacBeth characteristics-based
 **Motivazione:** rappresenta il benchmark econometrico classico nell’asset pricing. Consente di stimare relazioni cross-sectional tra caratteristiche fondamentali e rendimenti attesi mantenendo elevata interpretabilità dei coefficienti. È utile come baseline “scientifica” per verificare la presenza di segnale informativo nelle variabili fondamentali.
 
 ---
@@ -49,17 +49,36 @@ Il modello viene incluso principalmente come riferimento di performance per veri
 
 
 
+
 # PREPARAZIONE TRAINING SET
  guardare **Strategia di split del dataset in evaluation.md** 
+
+---
+
+### Split principale
+| periodo | uso |
+|--------|-----|
+| 2021–2024 | training (stima modelli per diversi iperparametri) |
+| 2025 | scelta iperparametro migliore (validation) |
+| 2026 | test finale |
+
+---
+
+
+### Ottimizzazione degli iperparametri
+Balanced Accuracy = (Sensitivity + Specificity) / 2
+
+assegna lo stesso peso alle due classi e consente di:
+- valutare la capacità del modello di distinguere entrambe le direzioni del rendimento
+- evitare soluzioni che funzionano bene solo sulla classe dominante
+
+---
+
 
 
 
 
 # ADDESTRAMENTO MODELLI   PARAMETRI DI CONTROLLO E LIBERIE PRINCIPALI
-
-## Ottimizzazione degli iperparametri
-Balanced Accuracy --> motivo **evaluation.md in metriche di valutazione**
-
 
 ## 1. Regressione two-pass (Fama-MacBeth):
     Usare funzione FamaMacBeth(y,x) from linearmodels.asset_pricing.
