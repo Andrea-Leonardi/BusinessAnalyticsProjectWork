@@ -205,8 +205,15 @@ Field used:
 
 ## Next Steps
 - Add the sentiment block to the actual pipeline, so the project becomes truly multi-modal and not only price-plus-fundamentals.
-- Add a proper time-based validation protocol, using chronological train/validation/test splits and avoiding random splits.
 - Define a set of benchmark models, including at least a naive baseline, a price-only model, a fundamentals-only model, and the full model.
 - Enrich the technical-analysis block with return-based variables such as weekly returns, momentum, and rolling volatility instead of relying mainly on price levels.
 - Add an explicit preprocessing policy for modeling, including outlier treatment, scaling, and a rule that all preprocessing parameters must be estimated only on the training set.
 - Document survivorship bias as a project limitation, since the company universe is selected from large companies observed today and then projected backward over the sample period.
+
+riorganizza data
+dividere i codici in cartelle
+risolvere il survorship bias
+aggiungo variabili sui prezzi
+
+
+creare il codice per gli split
