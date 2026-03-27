@@ -47,6 +47,19 @@ To transition from a static analytical model to a live production tool, future i
 
 ## How Data Is Gathered
 
+### Company Universe
+The company universe is now selected using **historical market capitalization near the start of the sample** rather than current market capitalization.
+
+- The reference date is the first trading week of the analysis window, centered on `2021-01-04`
+- The selection step combines:
+  - a broad active US universe from the FMP screener
+  - US companies that were later delisted after the sample start
+- Each candidate is reranked using the closest historical market-cap observation around the reference date
+- The final universe keeps the top 10 companies per sector based on that sample-start market cap
+
+This choice is meant to reduce the ex-post conditioning problem that appears when firms are selected using today’s market cap and then projected backward over the sample. The rationale is consistent with the literature on **look-ahead benchmark bias**, such as Daniel, Sornette, and Woehrmann (2009), *Look-Ahead Benchmark Bias in Portfolio Performance Evaluation*.
+In practical terms, this should be seen as a **strong mitigation** rather than a mathematically perfect elimination of survivorship bias, because the final quality of the historical universe still depends on the coverage and plan limits of the data provider.
+
 ### Stock Prices
 Weekly prices are built from daily Yahoo Finance data.
 
@@ -178,6 +191,8 @@ Field used:
 
 - TTM versions are kept in parallel with standard quarterly ratios in order to reduce seasonality in flow variables and allow later model comparison.
 
+- The company universe is selected using historical market capitalization at the beginning of the sample instead of today’s market capitalization. This substantially reduces survivorship and look-ahead selection bias, although a small residual bias may still remain if the provider’s historical universe coverage is incomplete.
+
 - Market-cap-based ratios are updated weekly by taking the last quarterly market cap reported by FMP and rescaling it with weekly `ClosePrice` changes between two statement dates.
 
 - Lagged variables are split into two groups:
@@ -208,12 +223,4 @@ Field used:
 - Define a set of benchmark models, including at least a naive baseline, a price-only model, a fundamentals-only model, and the full model.
 - Enrich the technical-analysis block with return-based variables such as weekly returns, momentum, and rolling volatility instead of relying mainly on price levels.
 - Add an explicit preprocessing policy for modeling, including outlier treatment, scaling, and a rule that all preprocessing parameters must be estimated only on the training set.
-- Document survivorship bias as a project limitation, since the company universe is selected from large companies observed today and then projected backward over the sample period.
-
-riorganizza data
-dividere i codici in cartelle
-risolvere il survorship bias
-aggiungo variabili sui prezzi
-
-
-creare il codice per gli split
+- Validate the revised historical company-universe construction against external benchmark snapshots when possible, in order to quantify any residual survivorship bias that may still remain because of provider coverage limits.

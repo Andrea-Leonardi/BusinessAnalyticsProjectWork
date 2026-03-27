@@ -73,14 +73,18 @@ Main outputs:
 
 Purpose:
 
-- Download the initial company universe from the FMP screener
-- Keep only active US stocks
-- Keep the largest companies by sector
+- Build the company universe used by the rest of the pipeline
+- Rank companies using market capitalization near the start of the sample
+- Reduce survivorship and look-ahead selection bias relative to a pure current-market-cap screener
 
 Main logic:
 
-- Calls the FMP `company-screener` endpoint
-- Removes duplicate companies by keeping the line with the highest `marketCap`
+- Calls the FMP `company-screener` endpoint for active `NASDAQ` and `NYSE` stocks
+- Calls the FMP `delisted-companies` endpoint to add US tickers that delisted after the sample start
+- Uses the FMP `profile` endpoint to recover sector and industry metadata for delisted names
+- Uses the FMP `historical-market-capitalization` endpoint to recover the closest market cap around `2021-01-04`
+- Replaces today's market cap with that sample-start market cap before ranking companies
+- Removes duplicate companies by keeping the line with the highest historical `marketCap`
 - Manually excludes a few tickers with downstream data issues:
   - `GEV`
   - `TBB`
@@ -90,9 +94,16 @@ Main logic:
   - `BAC`
   - `JPM`
   - `WFC`
-- Keeps only `NASDAQ` and `NYSE`
+- `MUFG`
 - Keeps the top 10 companies by market cap inside each sector
 - Saves the result to `data/dataExtraction/enterprises.csv`
+
+Important methodological note:
+
+- FMP does not expose one single ready-made cross-section of all companies exactly as of `2021-01-04`
+- The script therefore combines a broad active US screener with post-2021 delisted US names and then reranks them on historical market cap
+- On the current API plan, the delisted-company pagination is only partially accessible, so the active screener remains the dominant source of candidates in practice
+- This substantially reduces survivorship bias, but it should still be described as a mitigation rather than a mathematical guarantee of full elimination if the provider coverage itself is incomplete
 
 Important output columns:
 
@@ -101,6 +112,9 @@ Important output columns:
 - `sector`
 - `industry`
 - `marketCap`
+- `historicalMarketCapDate`
+- `selectionReferenceDate`
+- `universeSource`
 
 
 ## `src/dataExtraction/2.priceDataGathering.py`

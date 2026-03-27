@@ -178,6 +178,8 @@ def main() -> None:
     company_names = {}
     if "Company_name" in companies.columns:
         company_names = companies.set_index("Ticker")["Company_name"].to_dict()
+    elif "companyName" in companies.columns:
+        company_names = companies.set_index("Ticker")["companyName"].to_dict()
 
     # Use unique tickers only to avoid duplicate downloads.
     tickers = companies["Ticker"].dropna().astype(str).str.strip().unique()
