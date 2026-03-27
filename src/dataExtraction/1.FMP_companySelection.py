@@ -54,6 +54,8 @@ EXCLUDED_TICKERS = {
     "JPM",
     "WFC",
     "MUFG",
+    "CTA-PA",
+    "HDB",
 }
 
 

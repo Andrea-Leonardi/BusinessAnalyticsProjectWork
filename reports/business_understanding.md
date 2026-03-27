@@ -224,3 +224,5 @@ Field used:
 - Enrich the technical-analysis block with return-based variables such as weekly returns, momentum, and rolling volatility instead of relying mainly on price levels.
 - Add an explicit preprocessing policy for modeling, including outlier treatment, scaling, and a rule that all preprocessing parameters must be estimated only on the training set.
 - Validate the revised historical company-universe construction against external benchmark snapshots when possible, in order to quantify any residual survivorship bias that may still remain because of provider coverage limits.
+
+fare nuove variabili dai prezzi
