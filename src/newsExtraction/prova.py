@@ -41,3 +41,5 @@ else:
         print(f"{index}. {title}")
         print(f"   {article_link}")
         print()
+
+# %%
