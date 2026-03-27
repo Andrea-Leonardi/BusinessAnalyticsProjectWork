@@ -8,18 +8,18 @@ The goal is to make the pipeline easy to understand after some time away from th
 
 The project runs in this order:
 
-0. `src/0.FMP_runPipeline.py`
-1. `src/1.FMP_companySelection.py`
-2. `src/2.priceDataGathering.py`
-3. `src/3.FMP_financialsDataGathering.py`
-4. `src/4.FMP_financialsDataProcessing.py`
-5. `src/5.FMP_dataAnalysis.py`
-6. `src/6.FMP_dataMerge.py`
+0. `src/dataExtraction/rundataExtraction.py`
+1. `src/dataExtraction/1.FMP_companySelection.py`
+2. `src/dataExtraction/2.priceDataGathering.py`
+3. `src/dataExtraction/3.FMP_financialsDataGathering.py`
+4. `src/dataExtraction/4.FMP_financialsDataProcessing.py`
+5. `src/dataExtraction/5.FMP_dataAnalysis.py`
+6. `src/dataExtraction/6.FMP_dataMerge.py`
 
 `src/config.py` defines the shared paths used by all scripts.
 
 
-## `src/0.FMP_runPipeline.py`
+## `src/dataExtraction/rundataExtraction.py`
 
 Purpose:
 
@@ -33,21 +33,27 @@ What it currently does:
   - `data/dataExtraction/singleCompanyData/financials/`
   - `data/dataExtraction/singleCompanyData/fulldata/`
 - Runs these scripts in sequence:
-  1. `src/1.FMP_companySelection.py`
-  2. `src/2.priceDataGathering.py`
-  3. `src/3.FMP_financialsDataGathering.py`
-  4. `src/4.FMP_financialsDataProcessing.py`
-  5. `src/6.FMP_dataMerge.py`
+  1. `src/dataExtraction/1.FMP_companySelection.py`
+  2. `src/dataExtraction/2.priceDataGathering.py`
+  3. `src/dataExtraction/3.FMP_financialsDataGathering.py`
+  4. `src/dataExtraction/4.FMP_financialsDataProcessing.py`
+  5. `src/dataExtraction/6.FMP_dataMerge.py`
 
 Important note:
 
-- This runner intentionally does not execute `src/5.FMP_dataAnalysis.py`
+- This runner intentionally does not execute `src/dataExtraction/5.FMP_dataAnalysis.py`
 - It is meant for rebuilding the core datasets, not for quality-check analysis
 
 
 ## `src/config.py`
 
 This file contains the main project paths.
+
+Code folders:
+
+- `src/config.py`: shared configuration file kept at the root of `src`
+- `src/dataExtraction/`: all extraction, processing, analysis, and merge scripts
+- `src/modeling/`: reserved folder for future modeling code
 
 Main outputs:
 
@@ -63,7 +69,7 @@ Main outputs:
 - `data/modeling/`: empty folder reserved for future modeling outputs
 
 
-## `src/1.FMP_companySelection.py`
+## `src/dataExtraction/1.FMP_companySelection.py`
 
 Purpose:
 
@@ -97,7 +103,7 @@ Important output columns:
 - `marketCap`
 
 
-## `src/2.priceDataGathering.py`
+## `src/dataExtraction/2.priceDataGathering.py`
 
 Purpose:
 
@@ -140,7 +146,7 @@ Why this file matters:
   when the final analysis window starts in 2021
 
 
-## `src/3.FMP_financialsDataGathering.py`
+## `src/dataExtraction/3.FMP_financialsDataGathering.py`
 
 Purpose:
 
@@ -227,7 +233,7 @@ Main output columns in the raw file:
   - `marketCap`
 
 
-## `src/4.FMP_financialsDataProcessing.py`
+## `src/dataExtraction/4.FMP_financialsDataProcessing.py`
 
 Purpose:
 
@@ -365,7 +371,7 @@ About `QuarterlyReleased`:
 - Weeks filled only by forward fill remain `0`
 
 
-## `src/5.FMP_dataAnalysis.py`
+## `src/dataExtraction/5.FMP_dataAnalysis.py`
 
 Purpose:
 
@@ -390,7 +396,7 @@ What it currently does:
 This script is more of a sanity-check script than a final analysis pipeline.
 
 
-## `src/6.FMP_dataMerge.py`
+## `src/dataExtraction/6.FMP_dataMerge.py`
 
 Purpose:
 
@@ -432,8 +438,8 @@ If you want to quickly understand what is happening, read the files in this orde
 
 1. `reports/project_code_guide.md`
 2. `src/config.py`
-3. `src/3.FMP_financialsDataGathering.py`
-4. `src/4.FMP_financialsDataProcessing.py`
+3. `src/dataExtraction/3.FMP_financialsDataGathering.py`
+4. `src/dataExtraction/4.FMP_financialsDataProcessing.py`
 
 That order usually gives the fastest overview of:
 

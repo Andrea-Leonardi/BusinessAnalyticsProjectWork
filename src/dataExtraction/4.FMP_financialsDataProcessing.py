@@ -1,6 +1,9 @@
 #%%
 import subprocess
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pandas as pd
 import config as cfg
@@ -104,7 +107,7 @@ def get_numeric_series(dataframe: pd.DataFrame, column: str) -> pd.Series:
 # Re-run the raw download script before processing when explicitly requested.
 if REDOWNLOAD_RAW_FMP_DATA:
     subprocess.run(
-        [sys.executable, str(cfg.SRC / "3.FMP_financialsDataGathering.py")],
+        [sys.executable, str(cfg.DATA_EXTRACTION_SRC / "3.FMP_financialsDataGathering.py")],
         check=True,
     )
 

@@ -8,6 +8,8 @@ from pathlib import Path
 # Resolve the key folders used by every script in the project.
 SRC = Path(__file__).resolve().parent
 ROOT = SRC.parent
+DATA_EXTRACTION_SRC = SRC / "dataExtraction"
+MODELING_SRC = SRC / "modeling"
 DATA = ROOT / "data"
 DATA_EXTRACTION = DATA / "dataExtraction"
 MODELING = DATA / "modeling"

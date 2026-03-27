@@ -1,8 +1,14 @@
 #%%
+import sys
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 import config as cfg
 
 # ---------------------------------------------------------------------------

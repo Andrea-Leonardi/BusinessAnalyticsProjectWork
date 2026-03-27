@@ -1,6 +1,9 @@
 #%%
 import subprocess
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import config as cfg
 
@@ -16,11 +19,11 @@ SINGLE_COMPANY_OUTPUT_DIRS = [
 ]
 
 PIPELINE_SCRIPTS = [
-    cfg.SRC / "1.FMP_companySelection.py",
-    cfg.SRC / "2.priceDataGathering.py",
-    cfg.SRC / "3.FMP_financialsDataGathering.py",
-    cfg.SRC / "4.FMP_financialsDataProcessing.py",
-    cfg.SRC / "6.FMP_dataMerge.py",
+    cfg.DATA_EXTRACTION_SRC / "1.FMP_companySelection.py",
+    cfg.DATA_EXTRACTION_SRC / "2.priceDataGathering.py",
+    cfg.DATA_EXTRACTION_SRC / "3.FMP_financialsDataGathering.py",
+    cfg.DATA_EXTRACTION_SRC / "4.FMP_financialsDataProcessing.py",
+    cfg.DATA_EXTRACTION_SRC / "6.FMP_dataMerge.py",
 ]
 
 
