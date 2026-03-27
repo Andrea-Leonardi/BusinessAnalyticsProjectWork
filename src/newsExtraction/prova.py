@@ -1,3 +1,4 @@
+#%%
 import json
 from urllib.request import urlopen
 
@@ -35,8 +36,8 @@ else:
 
     for index, article in enumerate(articles, start=1):
         title = article.get("title", "No title")
-        url = article.get("url", "No URL")
+        article_link = article.get("link") or article.get("url") or "No URL"
 
         print(f"{index}. {title}")
-        print(f"   {url}")
+        print(f"   {article_link}")
         print()
