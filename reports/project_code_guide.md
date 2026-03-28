@@ -436,6 +436,8 @@ What it currently does:
 - Merges the two sources on:
   - `WeekEndingFriday`
   - `Ticker`
+- Drops descriptive company-name columns such as `company_name` and `companyName`
+  so the final merged datasets keep only identifiers and model features
 - Reorders the merged columns so the two target columns,
   `AdjClosePrice_t+1` and `AdjClosePrice_t+1_Up`, appear immediately after
   `WeekEndingFriday` and `Ticker`

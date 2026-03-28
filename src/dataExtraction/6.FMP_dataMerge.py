@@ -134,6 +134,9 @@ for ticker in tickers:
         print(f"No overlapping weekly rows found for {ticker}")
         continue
 
+    # Drop human-readable company-name columns from the final merged datasets.
+    full_df = full_df.drop(columns=["company_name", "companyName"], errors="ignore")
+
     full_df = full_df.sort_values([TICKER_COLUMN, DATE_COLUMN]).reset_index(drop=True)
     leading_columns = [
         DATE_COLUMN,
