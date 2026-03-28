@@ -161,11 +161,451 @@ for page in range(0, 5):  # Ipotizziamo di voler scaricare le prime 5 pagine
 print(f"\n✅ Totale articoli recuperati: {len(all_articles)}")
 
 # %%
+
+"""
+questo è il codice che funziona e ci permette di estrarre tutti gli articoli pubblicati tra il 01-01-2021 e il 01-03-2026, senza limiti di pagine, e gestendo correttamente i limiti di velocità dell'API, in modo da non venire bloccati.
+Mentre le versioni precedenti sono solo delle prove per capire come funziona l'API e come gestire i dati, questa versione è quella definitiva che ci permette di scaricare TUTTI gli articoli disponibili in quel range di date, e di salvarli in una lista chiamata "all_articles", che poi potremo trasformare in un DataFrame per le analisi successive.
+probabilmente ci sono delle limitazioni al numero di pagine a cui possiamo accedere per estrarre informazioni, per questo dividiamo in due le richeste di articoli, ossia con la prima richiesta 
+otteniamo gli articoli dal 2021-01-01 al 2023-12-31, e con la seconda richiesta otteniamo gli articoli dal 2024-01-01 al 2026-03-27, in questo modo evitiamo di superare il limite di pagine e di articoli che possiamo scaricare in un'unica chiamata, e ci assicuriamo di ottenere tutti gli articoli disponibili in quel range di date.
+andche dividendo in questo modo si è raggiunto il limite, quindi per evitare problemi faccio 6 diverse operazioni di raccolta, una per ogni anno
+quindi ad ogni operazione si raccolgono gli articoli di un anno dal 01-01 fino a 12-01 per ogni anno rispettivo, in questo modo si evita di superare il limite di pagine e di articoli che si possono scaricare in un'unica chiamata, e si riesce a ottenere tutti gli articoli disponibili in quel range di date, senza perdere nessun dato importante.
+"""
+ENT = DATA_EXTRACTION / "enterprises.csv"
+#%%
+
+import json
+import ssl
+import time
+from urllib.request import urlopen
+from urllib.error import HTTPError
+import certifi
+
+# --- CONFIGURAZIONE ---
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+START_DATE = "2026-01-01"
+END_DATE = "2026-03-27"
+LIMIT_PER_REQUEST = 100 # Massimo consentito per singola chiamata
+
+def get_jsonparsed_data(url: str):
+    context = ssl.create_default_context(cafile=certifi.where())
+    try:
+        response = urlopen(url, context=context)
+        return json.loads(response.read().decode("utf-8"))
+    except HTTPError as e:
+        if e.code == 429:
+            print("⚠️ Limite raggiunto! Aspetto 10 secondi...")
+            time.sleep(10)
+            return get_jsonparsed_data(url)
+        print(f"❌ Errore HTTP {e.code}")
+        return None
+
+# --- LOGICA DI SCARICAMENTO ILLIMITATO ---
+all_articles_2026 = []
+current_page = 0
+keep_going = True
+
+print(f"🚀 Inizio download articoli dal {START_DATE} al {END_DATE}...")
+
+while keep_going:
+    # Costruiamo la URL per la pagina corrente
+    url = (
+        f"https://financialmodelingprep.com/stable/fmp-articles"
+        f"?from={START_DATE}&to={END_DATE}"
+        f"&page={current_page}&limit={LIMIT_PER_REQUEST}"
+        f"&apikey={FMP_API_KEY}"
+    )
+
+    data = get_jsonparsed_data(url)
+
+    # Gestione della struttura (estrazione della lista di articoli)
+    articles_chunk = []
+    if isinstance(data, dict) and "content" in data:
+        articles_chunk = data["content"]
+    elif isinstance(data, list):
+        articles_chunk = data
+
+    # Se la lista è vuota, abbiamo finito tutti gli articoli disponibili
+    if not articles_chunk:
+        print("\n✅ Nessun altro articolo trovato. Download completato!")
+        keep_going = False
+    else:
+        all_articles_2026.extend(articles_chunk)
+        print(f"📦 Scaricata pagina {current_page} ({len(all_articles_2026)} articoli totali...)")
+        
+        # Passiamo alla pagina successiva
+        current_page += 1
+        
+        # --- LIMITATORE DI VELOCITÀ ---
+        # 300 richieste/minuto = 1 richiesta ogni 0.2 secondi.
+        # Usiamo 0.3 secondi per essere sicuri al 100% di non venire bloccati.
+        time.sleep(0.3)
+
+# --- RISULTATO FINALE ---
+print(f"\n🏆 Operazione conclusa!")
+print(f"In totale sono stati scaricati {len(all_articles_2026)} articoli.")
+
+
+"""
+-------------------------------------------------------------------------------------------------------------
+"""
+
+# --- CONFIGURAZIONE ---
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+START_DATE = "2025-01-01"
+END_DATE = "2025-12-31"
+LIMIT_PER_REQUEST = 100 # Massimo consentito per singola chiamata
+
+def get_jsonparsed_data(url: str):
+    context = ssl.create_default_context(cafile=certifi.where())
+    try:
+        response = urlopen(url, context=context)
+        return json.loads(response.read().decode("utf-8"))
+    except HTTPError as e:
+        if e.code == 429:
+            print("⚠️ Limite raggiunto! Aspetto 10 secondi...")
+            time.sleep(10)
+            return get_jsonparsed_data(url)
+        print(f"❌ Errore HTTP {e.code}")
+        return None
+
+all_articles_2025 = []
+current_page = 0
+keep_going = True
+
+print(f"🚀 Inizio download articoli dal {START_DATE} al {END_DATE}...")
+
+while keep_going:
+    # Costruiamo la URL per la pagina corrente
+    url = (
+        f"https://financialmodelingprep.com/stable/fmp-articles"
+        f"?from={START_DATE}&to={END_DATE}"
+        f"&page={current_page}&limit={LIMIT_PER_REQUEST}"
+        f"&apikey={FMP_API_KEY}"
+    )
+
+    data = get_jsonparsed_data(url)
+
+    # Gestione della struttura (estrazione della lista di articoli)
+    articles_chunk = []
+    if isinstance(data, dict) and "content" in data:
+        articles_chunk = data["content"]
+    elif isinstance(data, list):
+        articles_chunk = data
+
+    # Se la lista è vuota, abbiamo finito tutti gli articoli disponibili
+    if not articles_chunk:
+        print("\n✅ Nessun altro articolo trovato. Download completato!")
+        keep_going = False
+    else:
+        all_articles_2025.extend(articles_chunk)
+        print(f"📦 Scaricata pagina {current_page} ({len(all_articles_2025)} articoli totali...)")
+        
+        # Passiamo alla pagina successiva
+        current_page += 1
+        
+        # --- LIMITATORE DI VELOCITÀ ---
+        # 300 richieste/minuto = 1 richiesta ogni 0.2 secondi.
+        # Usiamo 0.3 secondi per essere sicuri al 100% di non venire bloccati.
+        time.sleep(0.3)
+
+# --- RISULTATO FINALE ---
+print(f"\n🏆 Operazione conclusa!")
+print(f"In totale sono stati scaricati {len(all_articles_2025)} articoli.")
+
+
+"""
+-------------------------------------------------------------------------------------------------------------
+"""
+
+# --- CONFIGURAZIONE ---
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+START_DATE = "2024-01-01"
+END_DATE = "2024-12-31"
+LIMIT_PER_REQUEST = 100 # Massimo consentito per singola chiamata
+
+def get_jsonparsed_data(url: str):
+    context = ssl.create_default_context(cafile=certifi.where())
+    try:
+        response = urlopen(url, context=context)
+        return json.loads(response.read().decode("utf-8"))
+    except HTTPError as e:
+        if e.code == 429:
+            print("⚠️ Limite raggiunto! Aspetto 10 secondi...")
+            time.sleep(10)
+            return get_jsonparsed_data(url)
+        print(f"❌ Errore HTTP {e.code}")
+        return None
+
+all_articles_2024 = []
+current_page = 0
+keep_going = True
+
+print(f"🚀 Inizio download articoli dal {START_DATE} al {END_DATE}...")
+
+while keep_going:
+    # Costruiamo la URL per la pagina corrente
+    url = (
+        f"https://financialmodelingprep.com/stable/fmp-articles"
+        f"?from={START_DATE}&to={END_DATE}"
+        f"&page={current_page}&limit={LIMIT_PER_REQUEST}"
+        f"&apikey={FMP_API_KEY}"
+    )
+
+    data = get_jsonparsed_data(url)
+
+    # Gestione della struttura (estrazione della lista di articoli)
+    articles_chunk = []
+    if isinstance(data, dict) and "content" in data:
+        articles_chunk = data["content"]
+    elif isinstance(data, list):
+        articles_chunk = data
+
+    # Se la lista è vuota, abbiamo finito tutti gli articoli disponibili
+    if not articles_chunk:
+        print("\n✅ Nessun altro articolo trovato. Download completato!")
+        keep_going = False
+    else:
+        all_articles_2024.extend(articles_chunk)
+        print(f"📦 Scaricata pagina {current_page} ({len(all_articles_2024)} articoli totali...)")
+        
+        # Passiamo alla pagina successiva
+        current_page += 1
+        
+        # --- LIMITATORE DI VELOCITÀ ---
+        # 300 richieste/minuto = 1 richiesta ogni 0.2 secondi.
+        # Usiamo 0.3 secondi per essere sicuri al 100% di non venire bloccati.
+        time.sleep(0.3)
+
+# --- RISULTATO FINALE ---
+print(f"\n🏆 Operazione conclusa!")
+print(f"In totale sono stati scaricati {len(all_articles_2024)} articoli.")
+
+
+"""
+-------------------------------------------------------------------------------------------------------------
+"""
+
+# --- CONFIGURAZIONE ---
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+START_DATE = "2023-01-01"
+END_DATE = "2023-12-31"
+LIMIT_PER_REQUEST = 100 # Massimo consentito per singola chiamata
+
+def get_jsonparsed_data(url: str):
+    context = ssl.create_default_context(cafile=certifi.where())
+    try:
+        response = urlopen(url, context=context)
+        return json.loads(response.read().decode("utf-8"))
+    except HTTPError as e:
+        if e.code == 429:
+            print("⚠️ Limite raggiunto! Aspetto 10 secondi...")
+            time.sleep(10)
+            return get_jsonparsed_data(url)
+        print(f"❌ Errore HTTP {e.code}")
+        return None
+
+all_articles_2023 = []
+current_page = 0
+keep_going = True
+
+print(f"🚀 Inizio download articoli dal {START_DATE} al {END_DATE}...")
+
+while keep_going:
+    # Costruiamo la URL per la pagina corrente
+    url = (
+        f"https://financialmodelingprep.com/stable/fmp-articles"
+        f"?from={START_DATE}&to={END_DATE}"
+        f"&page={current_page}&limit={LIMIT_PER_REQUEST}"
+        f"&apikey={FMP_API_KEY}"
+    )
+
+    data = get_jsonparsed_data(url)
+
+    # Gestione della struttura (estrazione della lista di articoli)
+    articles_chunk = []
+    if isinstance(data, dict) and "content" in data:
+        articles_chunk = data["content"]
+    elif isinstance(data, list):
+        articles_chunk = data
+
+    # Se la lista è vuota, abbiamo finito tutti gli articoli disponibili
+    if not articles_chunk:
+        print("\n✅ Nessun altro articolo trovato. Download completato!")
+        keep_going = False
+    else:
+        all_articles_2023.extend(articles_chunk)
+        print(f"📦 Scaricata pagina {current_page} ({len(all_articles_2023)} articoli totali...)")
+        
+        # Passiamo alla pagina successiva
+        current_page += 1
+        
+        # --- LIMITATORE DI VELOCITÀ ---
+        # 300 richieste/minuto = 1 richiesta ogni 0.2 secondi.
+        # Usiamo 0.3 secondi per essere sicuri al 100% di non venire bloccati.
+        time.sleep(0.3)
+
+# --- RISULTATO FINALE ---
+print(f"\n🏆 Operazione conclusa!")
+print(f"In totale sono stati scaricati {len(all_articles_2023)} articoli.")
+
+
+"""
+-------------------------------------------------------------------------------------------------------------
+"""
+
+# --- CONFIGURAZIONE ---
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+START_DATE = "2022-01-01" 
+END_DATE = "2022-12-31"
+LIMIT_PER_REQUEST = 100 # Massimo consentito per singola chiamata
+
+def get_jsonparsed_data(url: str):
+    context = ssl.create_default_context(cafile=certifi.where())
+    try:
+        response = urlopen(url, context=context)
+        return json.loads(response.read().decode("utf-8"))
+    except HTTPError as e:
+        if e.code == 429:
+            print("⚠️ Limite raggiunto! Aspetto 10 secondi...")
+            time.sleep(10)
+            return get_jsonparsed_data(url)
+        print(f"❌ Errore HTTP {e.code}")
+        return None
+all_articles_2022 = []
+current_page = 0
+keep_going = True
+
+print(f"🚀 Inizio download articoli dal {START_DATE} al {END_DATE}...")
+
+while keep_going:
+    # Costruiamo la URL per la pagina corrente
+    url = (
+        f"https://financialmodelingprep.com/stable/fmp-articles"
+        f"?from={START_DATE}&to={END_DATE}"
+        f"&page={current_page}&limit={LIMIT_PER_REQUEST}"
+        f"&apikey={FMP_API_KEY}"
+    )
+
+    data = get_jsonparsed_data(url)
+
+    # Gestione della struttura (estrazione della lista di articoli)
+    articles_chunk = []
+    if isinstance(data, dict) and "content" in data:
+        articles_chunk = data["content"]
+    elif isinstance(data, list):
+        articles_chunk = data
+
+    # Se la lista è vuota, abbiamo finito tutti gli articoli disponibili
+    if not articles_chunk:
+        print("\n✅ Nessun altro articolo trovato. Download completato!")
+        keep_going = False
+    else:
+        all_articles_2022.extend(articles_chunk)
+        print(f"📦 Scaricata pagina {current_page} ({len(all_articles_2022)} articoli totali...)")
+        
+        # Passiamo alla pagina successiva
+        current_page += 1
+        
+        # --- LIMITATORE DI VELOCITÀ ---
+        # 300 richieste/minuto = 1 richiesta ogni 0.2 secondi.
+        # Usiamo 0.3 secondi per essere sicuri al 100% di non venire bloccati.
+        time.sleep(0.3)
+
+# --- RISULTATO FINALE ---
+print(f"\n🏆 Operazione conclusa!")
+print(f"In totale sono stati scaricati {len(all_articles_2022)} articoli.")
+
+
+"""
+-------------------------------------------------------------------------------------------------------------
+"""
+
+# --- CONFIGURAZIONE ---
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+START_DATE = "2021-01-01"
+END_DATE = "2021-12-31"
+LIMIT_PER_REQUEST = 100 # Massimo consentito per singola chiamata
+
+def get_jsonparsed_data(url: str):
+    context = ssl.create_default_context(cafile=certifi.where())
+    try:
+        response = urlopen(url, context=context)
+        return json.loads(response.read().decode("utf-8"))
+    except HTTPError as e:
+        if e.code == 429:
+            print("⚠️ Limite raggiunto! Aspetto 10 secondi...")
+            time.sleep(10)
+            return get_jsonparsed_data(url)
+        print(f"❌ Errore HTTP {e.code}")
+        return None
+all_articles_2021 = []
+current_page = 0
+keep_going = True
+
+print(f"🚀 Inizio download articoli dal {START_DATE} al {END_DATE}...")
+
+while keep_going:
+    # Costruiamo la URL per la pagina corrente
+    url = (
+        f"https://financialmodelingprep.com/stable/fmp-articles"
+        f"?from={START_DATE}&to={END_DATE}"
+        f"&page={current_page}&limit={LIMIT_PER_REQUEST}"
+        f"&apikey={FMP_API_KEY}"
+    )
+
+    data = get_jsonparsed_data(url)
+
+    # Gestione della struttura (estrazione della lista di articoli)
+    articles_chunk = []
+    if isinstance(data, dict) and "content" in data:
+        articles_chunk = data["content"]
+    elif isinstance(data, list):
+        articles_chunk = data
+
+    # Se la lista è vuota, abbiamo finito tutti gli articoli disponibili
+    if not articles_chunk:
+        print("\n✅ Nessun altro articolo trovato. Download completato!")
+        keep_going = False
+    else:
+        all_articles_2021.extend(articles_chunk)
+        print(f"📦 Scaricata pagina {current_page} ({len(all_articles_2021)} articoli totali...)")
+        
+        # Passiamo alla pagina successiva
+        current_page += 1
+        
+        # --- LIMITATORE DI VELOCITÀ ---
+        # 300 richieste/minuto = 1 richiesta ogni 0.2 secondi.
+        # Usiamo 0.3 secondi per essere sicuri al 100% di non venire bloccati.
+        time.sleep(0.3)
+
+# --- RISULTATO FINALE ---
+print(f"\n🏆 Operazione conclusa!")
+print(f"In totale sono stati scaricati {len(all_articles_2021)} articoli.")
+
+
+"""
+-------------------------------------------------------------------------------------------------------------
+"""
+#%%
+
+#%%
+all_articles = []
+all_articles.extend(all_articles_2026)# Uniamo le due liste di articoli
+all_articles.extend(all_articles_2025)# Uniamo le due liste di articoli
+all_articles.extend(all_articles_2024)# Uniamo le due liste di articoli
+all_articles.extend(all_articles_2023)# Uniamo le due liste di articoli
+all_articles.extend(all_articles_2022)# Uniamo le due liste di articoli
+all_articles.extend(all_articles_2021)# Uniamo le due liste di articoli
+
+
+#%%
+
 """
 qui dopo aver improtato i dati, rendiamo la lista annidata un dataframe, eliminiamo la colonna image, che non serve
 rinominiamo la colonna tickers in enterprise, e puliamo il testo della colonna content, eliminando i tag html e i \n
 in fine, dalla colonna enterprise, eliminiamo la parte "STOCK:" e lasciamo solo il ticker, es: "PWR", quindi togliamo il nome 
 del mercato in cui è quotata e lasciamo solo il nome dell'azienda, che è quello che ci serve per fare il match con i dati di bilancio e di stock price
+
 """
 #%%
 
@@ -178,6 +618,7 @@ df = pd.DataFrame(all_articles)
 # 2. Puliamo il valore in 'tickers' (prendiamo solo quello dopo i :)
 # Esempio: "STOCK:PWR" diventa "PWR"
 df['tickers'] = df['tickers'].str.split(':').str[1]
+df['market'] = df['tickers'].str.split(':').str[0]
 
 # 3. Rinominiamo la colonna 'tickers' in 'enterprise'
 df = df.rename(columns={'tickers': 'enterprise'})
@@ -205,6 +646,11 @@ df['content'] = df['content'].apply(pulisci_testo)
 # Ora puoi vedere il testo pulito
 print(df.at[0, 'content'])
 
+#%%
+
+#%%
+df.sort_values(by=["date", "enterprise"], ascending=[False, True], inplace=True)
+df.to_csv('data_market.csv', index=False, encoding='utf-8-sig')
 #%%
 
 """
