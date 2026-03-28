@@ -162,6 +162,17 @@ print(f"\n✅ Totale articoli recuperati: {len(all_articles)}")
 
 # %%
 
+
+
+
+
+
+
+
+
+
+
+
 """
 questo è il codice che funziona e ci permette di estrarre tutti gli articoli pubblicati tra il 01-01-2021 e il 01-03-2026, senza limiti di pagine, e gestendo correttamente i limiti di velocità dell'API, in modo da non venire bloccati.
 Mentre le versioni precedenti sono solo delle prove per capire come funziona l'API e come gestire i dati, questa versione è quella definitiva che ci permette di scaricare TUTTI gli articoli disponibili in quel range di date, e di salvarli in una lista chiamata "all_articles", che poi potremo trasformare in un DataFrame per le analisi successive.
@@ -170,8 +181,9 @@ otteniamo gli articoli dal 2021-01-01 al 2023-12-31, e con la seconda richiesta 
 andche dividendo in questo modo si è raggiunto il limite, quindi per evitare problemi faccio 6 diverse operazioni di raccolta, una per ogni anno
 quindi ad ogni operazione si raccolgono gli articoli di un anno dal 01-01 fino a 12-01 per ogni anno rispettivo, in questo modo si evita di superare il limite di pagine e di articoli che si possono scaricare in un'unica chiamata, e si riesce a ottenere tutti gli articoli disponibili in quel range di date, senza perdere nessun dato importante.
 """
+
+
 #%%
-import config as cfg 
 import json
 import ssl
 import time
@@ -583,10 +595,136 @@ print(f"\n🏆 Operazione conclusa!")
 print(f"In totale sono stati scaricati {len(all_articles_2021)} articoli.")
 
 
+
 """
 -------------------------------------------------------------------------------------------------------------
 """
+
+
+
 #%%
+import pandas as pd
+import sys 
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import config as cfg 
+data = pd.read_csv(cfg.ENT)
+name_enterprise = data["Ticker"]
+
+# Convertiamo la colonna in una lista di Python, rimuovendo eventuali duplicati e valori nulli
+tickers_list = name_enterprise.dropna().unique().tolist()
+
+#creaimo una lista, all'interno delle quali saranno presenti altre liste con due date, la prima è la data di inizio, e la seconda è la data di fine, in questo modo possiamo fare 13 diverse operazioni di raccolta, una per ogni trimestre, e ottenere tutti gli articoli disponibili in quel range di date, senza perdere nessun dato importante.
+list_dates = [
+    ["2021-01-01", "2021-03-31"],   # 1° trimestre 2021
+    ["2021-04-01", "2021-06-30"],   # 2° trimestre 2021
+    ["2021-07-01", "2021-09-30"],   # 3° trimestre 2021
+    ["2021-10-01", "2021-12-31"],   # 4° trimestre 2021
+    
+    ["2022-01-01", "2022-03-31"],   # 1° trimestre 2022
+    ["2022-04-01", "2022-06-30"],   # 2° trimestre 2022
+    ["2022-07-01", "2022-09-30"],   # 3° trimestre 2022
+    ["2022-10-01", "2022-12-31"],   # 4° trimestre 2022
+    
+    ["2023-01-01", "2023-03-31"],   # 1° trimestre 2023
+    ["2023-04-01", "2023-06-30"],   # 2° trimestre 2023
+    ["2023-07-01", "2023-09-30"],   # 3° trimestre 2023
+    ["2023-10-01", "2023-12-31"],   # 4° trimestre 2023
+    
+    ["2024-01-01", "2024-03-31"],   # 1° trimestre 2024
+    ["2024-04-01", "2024-06-30"],   # 2° trimestre 2024
+    ["2024-07-01", "2024-09-30"],   # 3° trimestre 2024
+    ["2024-10-01", "2024-12-31"],   # 4° trimestre 2024
+    
+    ["2025-01-01", "2025-03-31"],   # 1° trimestre 2025
+    ["2025-04-01", "2025-06-30"],   # 2° trimestre 2025
+    ["2025-07-01", "2025-09-30"],   # 3° trimestre 2025
+    ["2025-10-01", "2025-12-31"],   # 4° trimestre 2025
+    
+    ["2026-01-01", "2026-03-31"],   # 1° trimestre 2026
+]
+# %%
+
+#%%
+import json
+import ssl
+import time
+from urllib.request import urlopen
+from urllib.error import HTTPError
+import certifi
+EMILIANO
+
+
+# --- CONFIGURAZIONE ---
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7" # Inserisci la chiave rigenerata!
+START_DATE = "2026-01-01"
+END_DATE = "2026-03-27"
+LIMIT_PER_REQUEST = 100
+
+def get_jsonparsed_data(url: str):
+    context = ssl.create_default_context(cafile=certifi.where())
+    try:
+        response = urlopen(url, context=context)
+        return json.loads(response.read().decode("utf-8"))
+    except HTTPError as e:
+        if e.code == 429:
+            print("⚠️ Limite raggiunto! Aspetto 10 secondi...")
+            time.sleep(10)
+            return get_jsonparsed_data(url)
+        print(f"❌ Errore HTTP {e.code} sull'URL: {url}")
+        return None
+
+# --- LOGICA DI SCARICAMENTO MIRATO ---
+all_articles_2026 = []
+
+print(f"🚀 Inizio download articoli per {len(tickers_list)} aziende dal {START_DATE} al {END_DATE}...")
+
+# Iteriamo su ogni singolo ticker della tua lista
+for ticker in tickers_list:
+    print(f"\n🔍 Inizio ricerca per il ticker: {ticker}")
+    current_page = 0
+    keep_going = True
+    
+    while keep_going:
+        # Aggiungiamo il parametro 'tickers={ticker}' all'URL
+        url = (
+            f"https://financialmodelingprep.com/stable/fmp-articles"
+            f"?tickers={ticker}"
+            f"&from={START_DATE}&to={END_DATE}"
+            f"&page={current_page}&limit={LIMIT_PER_REQUEST}"
+            f"&apikey={FMP_API_KEY}"
+        )
+
+        data = get_jsonparsed_data(url)
+
+        # Gestione della struttura
+        articles_chunk = []
+        if isinstance(data, dict) and "content" in data:
+            articles_chunk = data["content"]
+        elif isinstance(data, list):
+            articles_chunk = data
+
+        # Se la lista è vuota, abbiamo finito gli articoli per QUESTO ticker
+        if not articles_chunk:
+            print(f"✅ Nessun altro articolo per {ticker}. Passiamo al prossimo.")
+            keep_going = False
+        else:
+            all_articles_2026.extend(articles_chunk)
+            print(f"📦 {ticker} - Scaricata pagina {current_page} ({len(articles_chunk)} articoli trovati)")
+            
+            current_page += 1
+            
+            # Limitatore di velocità (0.3 secondi)
+            time.sleep(0.3)
+
+# --- RISULTATO FINALE ---
+print(f"\n🏆 Operazione conclusa!")
+print(f"In totale sono stati scaricati {len(all_articles_2026)} articoli per le tue aziende.")
+
+
+
+
+
 
 #%%
 all_articles = []
