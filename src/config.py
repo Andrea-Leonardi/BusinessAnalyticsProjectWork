@@ -28,7 +28,7 @@ FMP_FINANCIALS = DATA_EXTRACTION / "financialsData.csv"
 ALL_PRICE_DATA = DATA_EXTRACTION / "allPriceData.csv"
 FULL_DATA = DATA_EXTRACTION / "fulldata.csv"
 FULL_DATA_ML = DATA_EXTRACTION / "fulldata_ml.csv"
-
+NEWS_ARTICLES = NEWS_EXTRACTION / "newsArticles.csv"
 
 # ---------------------------------------------------------------------------
 # Company-Level Output Folders

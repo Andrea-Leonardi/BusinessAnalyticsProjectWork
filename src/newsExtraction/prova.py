@@ -170,15 +170,15 @@ otteniamo gli articoli dal 2021-01-01 al 2023-12-31, e con la seconda richiesta 
 andche dividendo in questo modo si è raggiunto il limite, quindi per evitare problemi faccio 6 diverse operazioni di raccolta, una per ogni anno
 quindi ad ogni operazione si raccolgono gli articoli di un anno dal 01-01 fino a 12-01 per ogni anno rispettivo, in questo modo si evita di superare il limite di pagine e di articoli che si possono scaricare in un'unica chiamata, e si riesce a ottenere tutti gli articoli disponibili in quel range di date, senza perdere nessun dato importante.
 """
-ENT = DATA_EXTRACTION / "enterprises.csv"
 #%%
-
+import config as cfg 
 import json
 import ssl
 import time
 from urllib.request import urlopen
 from urllib.error import HTTPError
 import certifi
+
 
 # --- CONFIGURAZIONE ---
 FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
@@ -650,7 +650,7 @@ print(df.at[0, 'content'])
 
 #%%
 df.sort_values(by=["date", "enterprise"], ascending=[False, True], inplace=True)
-df.to_csv('data_market.csv', index=False, encoding='utf-8-sig')
+df.to_csv(cfg.NEWS_ARTICLES, index=False, encoding='utf-8-sig')
 #%%
 
 """
