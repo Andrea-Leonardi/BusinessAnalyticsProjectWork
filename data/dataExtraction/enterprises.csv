@@ -58,7 +58,6 @@ BUD,Anheuser-Busch InBev SA/NV,Consumer Defensive,Beverages - Alcoholic,13988885
 UNP,Union Pacific Corporation,Industrials,Railroads,135529476000.0,2021-01-04,2021-01-04,active_screener
 LIN,Linde plc,Basic Materials,Chemicals - Specialty,135217613790.0,2021-01-04,2021-01-04,active_screener
 JD,"JD.com, Inc.",Consumer Cyclical,Specialty Retail,134113655000.0,2021-01-04,2021-01-04,active_screener
-HDB,HDFC Bank Limited,Financial Services,Banks - Regional,129485510000.0,2021-01-04,2021-01-04,active_screener
 PM,Philip Morris International Inc.,Consumer Defensive,Tobacco,126977000000.0,2021-01-04,2021-01-04,active_screener
 RIO,Rio Tinto Group,Basic Materials,Industrial Materials,125224759000.0,2021-01-04,2021-01-04,active_screener
 C,Citigroup Inc.,Financial Services,Banks - Diversified,125211480000.0,2021-01-04,2021-01-04,active_screener
@@ -68,6 +67,7 @@ SBUX,Starbucks Corporation,Consumer Cyclical,Restaurants,121400250000.0,2021-01-
 BA,The Boeing Company,Industrials,Aerospace & Defense,118591200000.0,2021-01-04,2021-01-04,active_screener
 RY,Royal Bank of Canada,Financial Services,Banks - Diversified,116529664500.0,2021-01-04,2021-01-04,active_screener
 TTE,TotalEnergies SE,Energy,Oil & Gas Integrated,111445191087.0,2021-01-04,2021-01-04,active_screener
+BLK,"BlackRock, Inc.",Financial Services,Asset Management,108883529861.0,2021-01-04,2021-01-04,active_screener
 RTX,RTX Corporation,Industrials,Aerospace & Defense,103404573000.0,2021-01-04,2021-01-04,active_screener
 CAT,Caterpillar Inc.,Industrials,Agricultural - Machinery,99526760000.0,2021-01-04,2021-01-04,active_screener
 AMT,American Tower Corporation,Real Estate,REIT - Specialty,97609126258.0,2021-01-04,2021-01-04,active_screener
@@ -78,7 +78,6 @@ VALE,Vale S.A.,Basic Materials,Industrial Materials,89265271200.0,2021-01-04,202
 DE,Deere & Company,Industrials,Agricultural - Machinery,83905140000.0,2021-01-04,2021-01-04,active_screener
 MMM,3M Company,Industrials,Conglomerates,83417850000.0,2021-01-04,2021-01-04,active_screener
 CNI,Canadian National Railway Company,Industrials,Railroads,77911380000.0,2021-01-04,2021-01-04,active_screener
-CTA-PA,"EIDP, Inc.",Basic Materials,Agricultural Inputs,76462389215.0,2021-01-04,2021-01-04,active_screener
 SNAP,Snap Inc.,Communication Services,Internet Content & Information,74466129240.0,2021-01-04,2021-01-04,active_screener
 PBR,Petróleo Brasileiro S.A. - Petrobras,Energy,Oil & Gas Integrated,72982306049.0,2021-01-04,2021-01-04,active_screener
 PLD,"Prologis, Inc.",Real Estate,REIT - Industrial,70973367920.0,2021-01-04,2021-01-04,active_screener
@@ -99,6 +98,7 @@ COP,ConocoPhillips,Energy,Oil & Gas Exploration & Production,51455838750.0,2021-
 NEM,Newmont Corporation,Basic Materials,Gold,50583150000.0,2021-01-04,2021-01-04,active_screener
 SCCO,Southern Copper Corporation,Basic Materials,Copper,50004108000.0,2021-01-04,2021-01-04,active_screener
 NGG,National Grid plc,Utilities,Regulated Electric,45857322349.0,2021-01-04,2021-01-04,active_screener
+B,Barrick Mining Corporation,Basic Materials,Gold,42635553135.0,2021-01-04,2021-01-04,active_screener
 EPD,Enterprise Products Partners L.P.,Energy,Oil & Gas Midstream,42110070000.0,2021-01-04,2021-01-04,active_screener
 AEP,"American Electric Power Company, Inc.",Utilities,Regulated Electric,40530161097.0,2021-01-04,2021-01-04,active_screener
 PSA,Public Storage,Real Estate,REIT - Industrial,38449342200.0,2021-01-04,2021-01-04,active_screener

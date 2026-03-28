@@ -129,13 +129,14 @@ Purpose:
 Main logic:
 
 - Starts from the company list in `enterprises.csv`
-- Downloads daily prices from a short pre-sample window before `2021-01-01`
+- Downloads daily prices from a pre-sample window before `2021-01-01` so 12-week technical indicators are already available at the start of the main sample
 - Keeps both:
   - `ClosePrice`
   - `AdjClosePrice`
 - Maps each trading day to its `WeekEndingFriday`
 - Keeps the last available trading day in each week
 - Creates a few short lags such as `ClosePrice_t-1` and `ClosePrice_t-2`
+- Creates technical indicators from `AdjClosePrice`, including weekly returns, 12-week momentum, rolling volatility, and 12-week drawdown
 - Creates one forward weekly price column, `ClosePrice_t+1`, that can later be
   used as a predictive target
 - Creates a binary direction target, `AdjClosePrice_t+1_Up`, equal to `1`
@@ -153,13 +154,19 @@ Generated price columns:
 - `AdjClosePrice_t-2`
 - `AdjClosePrice_t+1`
 - `AdjClosePrice_t+1_Up`
+- `WeeklyReturn_1W`
+- `WeeklyReturn_4W`
+- `Momentum_12W`
+- `Volatility_4W`
+- `Volatility_12W`
+- `Drawdown_12W`
 
 Why this file matters:
 
 - The weekly price calendar becomes the master calendar used later in the financial processing step
 - The processing script aligns quarterly FMP statements to this weekly grid
-- The extra pre-2021 price history is kept so weekly lags are already available
-  when the final analysis window starts in 2021
+- The extra pre-2021 price history is kept so weekly lags and 12-week technical
+  features are already available when the final analysis window starts in 2021
 
 
 ## `src/dataExtraction/3.FMP_financialsDataGathering.py`

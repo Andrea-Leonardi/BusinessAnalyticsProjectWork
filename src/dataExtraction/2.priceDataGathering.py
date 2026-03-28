@@ -14,9 +14,10 @@ import config as cfg
 # Configuration
 # ---------------------------------------------------------------------------
 
-# Download a short pre-sample history so weekly lags are already available
-# when the main analysis window starts in 2021.
-START_DATE = "2020-12-01"
+# Download a longer pre-sample history so 12-week return, momentum, drawdown,
+# and volatility features are already available when the main sample starts in
+# early 2021.
+START_DATE = "2020-09-01"
 
 
 # ---------------------------------------------------------------------------
@@ -77,20 +78,36 @@ for ticker in df["Ticker"]:
         .sort_index()
     )
 
-    # Add short lags that can be reused in later analyses.
+    # Add the short price lags and the one-step-ahead target fields that are
+    # still useful for diagnostics and downstream modeling.
     company_df["ClosePrice_t-1"] = company_df["ClosePrice"].shift(1)
     company_df["ClosePrice_t-2"] = company_df["ClosePrice"].shift(2)
     company_df["ClosePrice_t+1"] = company_df["ClosePrice"].shift(-1)
     company_df["AdjClosePrice_t-1"] = company_df["AdjClosePrice"].shift(1)
     company_df["AdjClosePrice_t-2"] = company_df["AdjClosePrice"].shift(2)
     company_df["AdjClosePrice_t+1"] = company_df["AdjClosePrice"].shift(-1)
+
+    # Build technical features only from adjusted prices so stock splits and
+    # similar corporate actions do not distort the signals.
+    weekly_return_1w = company_df["AdjClosePrice"].pct_change(1)
+    company_df["WeeklyReturn_1W"] = weekly_return_1w
+    company_df["WeeklyReturn_4W"] = company_df["AdjClosePrice"].pct_change(4)
+    company_df["Momentum_12W"] = company_df["AdjClosePrice"].pct_change(12)
+    company_df["Volatility_4W"] = weekly_return_1w.rolling(window=4).std()
+    company_df["Volatility_12W"] = weekly_return_1w.rolling(window=12).std()
+    rolling_max_12w = company_df["AdjClosePrice"].rolling(window=12).max()
+    company_df["Drawdown_12W"] = (
+        company_df["AdjClosePrice"].divide(rolling_max_12w) - 1
+    )
+
     # Use a simple binary target: 1 when next week's adjusted close is higher
     # than the current adjusted close, 0 otherwise.
     company_df["AdjClosePrice_t+1_Up"] = (
         company_df["AdjClosePrice_t+1"] > company_df["AdjClosePrice"]
     ).astype("int64")
 
-    # Drop the edge rows where lagged or forward values are still unavailable.
+    # Drop the edge rows where lagged, forward, or rolling-window values are
+    # still unavailable.
     company_df = company_df.dropna()
     company_df["Ticker"] = ticker
     company_df = company_df[
@@ -105,6 +122,12 @@ for ticker in df["Ticker"]:
             "AdjClosePrice_t-2",
             "AdjClosePrice_t+1",
             "AdjClosePrice_t+1_Up",
+            "WeeklyReturn_1W",
+            "WeeklyReturn_4W",
+            "Momentum_12W",
+            "Volatility_4W",
+            "Volatility_12W",
+            "Drawdown_12W",
         ]
     ]
 

@@ -66,6 +66,14 @@ Weekly prices are built from daily Yahoo Finance data.
 - The script stores both `ClosePrice` and `AdjClosePrice`
 - `AdjClosePrice` is kept because it adjusts for stock splits and similar corporate actions
 - `ClosePrice` is also retained because it is used to update weekly market-cap-based ratios between two statement releases
+- The technical-analysis block is now built on `AdjClosePrice` rather than on raw price levels alone
+- The current technical feature set includes:
+  - `WeeklyReturn_1W`
+  - `WeeklyReturn_4W`
+  - `Momentum_12W`
+  - `Volatility_4W`
+  - `Volatility_12W`
+  - `Drawdown_12W`
 
 The daily series is mapped to `WeekEndingFriday`, and the last available trading day of each weekly bucket is retained.
 
@@ -189,6 +197,8 @@ Field used:
 
 - Weekly price data are aligned to Friday. When the last trading day of the week is not Friday because of holidays, that last observed trading day is assigned to the corresponding `WeekEndingFriday`.
 
+- The technical block now relies on adjusted-price returns, momentum, rolling volatility, and drawdown measures instead of relying mainly on raw price levels. This is intended to produce more economically meaningful weekly signals and avoid the near-trivial persistence of price-level correlations.
+
 - TTM versions are kept in parallel with standard quarterly ratios in order to reduce seasonality in flow variables and allow later model comparison.
 
 - The company universe is selected using historical market capitalization at the beginning of the sample instead of today’s market capitalization. This substantially reduces survivorship and look-ahead selection bias, although a small residual bias may still remain if the provider’s historical universe coverage is incomplete.
@@ -221,7 +231,6 @@ Field used:
 ## Next Steps
 - Add the sentiment block to the actual pipeline, so the project becomes truly multi-modal and not only price-plus-fundamentals.
 - Define a set of benchmark models, including at least a naive baseline, a price-only model, a fundamentals-only model, and the full model.
-- Enrich the technical-analysis block with return-based variables such as weekly returns, momentum, and rolling volatility instead of relying mainly on price levels.
 - Add an explicit preprocessing policy for modeling, including outlier treatment, scaling, and a rule that all preprocessing parameters must be estimated only on the training set.
 - Validate the revised historical company-universe construction against external benchmark snapshots when possible, in order to quantify any residual survivorship bias that may still remain because of provider coverage limits.
 
