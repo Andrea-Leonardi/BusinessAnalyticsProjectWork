@@ -16,6 +16,8 @@ def split_data_by_date(
     df = pd.read_csv(csv_path)
     df[date_col] = pd.to_datetime(df[date_col])
 
+    df = df.dropna()
+
 
     #training
     df_train = df[
