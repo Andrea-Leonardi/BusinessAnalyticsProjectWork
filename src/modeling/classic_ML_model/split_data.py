@@ -12,6 +12,5 @@ from splitters import split_data_by_date
 
 
 
-X_train, y_train, X_validation, y_validation, X_test, y_test = split_data_by_date(cfg.FULL_DATA, "AdjClosePrice_t+1_Up", None, "WeekEndingFriday")
-
+X_train, y_train, X_validation, y_validation, X_test, y_test = split_data_by_date(cfg.FULL_DATA, "AdjClosePrice_t+1_Up", ["WeekEndingFriday","Ticker"], "WeekEndingFriday")
 
