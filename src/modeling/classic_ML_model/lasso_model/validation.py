@@ -15,14 +15,14 @@ from sklearn.metrics import balanced_accuracy_score
 
 
 param_grid = {
-    "model__C": np.arange(0.1, 1.1, 0.1)
+    "model__C": np.arange(0.1, 0.4, 0.1)
 }
 
 best_score = -1
 best_C = None
 best_model = None
 
-"""
+
 for C in param_grid["model__C"]:
 
     pipeline.set_params(model__C=C)
@@ -38,6 +38,6 @@ for C in param_grid["model__C"]:
         best_C = C
         best_model = pipeline
 
-"""
+
 
 print(best_C, best_score)
