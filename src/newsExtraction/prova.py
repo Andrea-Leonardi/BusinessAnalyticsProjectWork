@@ -612,7 +612,7 @@ data = pd.read_csv(cfg.ENT)
 name_enterprise = data["Ticker"]
 
 # Convertiamo la colonna in una lista di Python, rimuovendo eventuali duplicati e valori nulli
-tickers_list = name_enterprise.dropna().unique().tolist()
+tickers_list = name_enterprise.dropna().unique().tolist()[1:2]
 
 #creaimo una lista, all'interno delle quali saranno presenti altre liste con due date, la prima è la data di inizio, e la seconda è la data di fine, in questo modo possiamo fare 13 diverse operazioni di raccolta, una per ogni trimestre, e ottenere tutti gli articoli disponibili in quel range di date, senza perdere nessun dato importante.
 list_dates = [
@@ -652,14 +652,14 @@ import time
 from urllib.request import urlopen
 from urllib.error import HTTPError
 import certifi
-EMILIANO
+# EMILIANO
 
 
 # --- CONFIGURAZIONE ---
 FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7" # Inserisci la chiave rigenerata!
 START_DATE = "2026-01-01"
 END_DATE = "2026-03-27"
-LIMIT_PER_REQUEST = 100
+LIMIT_PER_REQUEST = 300
 
 def get_jsonparsed_data(url: str):
     context = ssl.create_default_context(cafile=certifi.where())
@@ -688,12 +688,14 @@ for ticker in tickers_list:
     while keep_going:
         # Aggiungiamo il parametro 'tickers={ticker}' all'URL
         url = (
-            f"https://financialmodelingprep.com/stable/fmp-articles"
-            f"?tickers={ticker}"
-            f"&from={START_DATE}&to={END_DATE}"
-            f"&page={current_page}&limit={LIMIT_PER_REQUEST}"
-            f"&apikey={FMP_API_KEY}"
-        )
+                f"https://financialmodelingprep.com/api/v3/stock_news"
+                f"?tickers=AAPL"  # Sostituisci con {ticker} per iterare su tutti i ticker
+                f"&page={current_page}"
+                f"&limit={LIMIT_PER_REQUEST}"
+                f"&from={START_DATE}"
+                f"&to={END_DATE}"
+                f"&apikey={FMP_API_KEY}"
+            )
 
         data = get_jsonparsed_data(url)
 
@@ -720,6 +722,127 @@ for ticker in tickers_list:
 # --- RISULTATO FINALE ---
 print(f"\n🏆 Operazione conclusa!")
 print(f"In totale sono stati scaricati {len(all_articles_2026)} articoli per le tue aziende.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+#%%
+import requests
+import time
+
+# 1. I tuoi dati di partenza
+tickers_list = ["AAPL", "MSFT"]
+list_dates = [
+    ["2025-01-01", "2025-03-20"] # Prova con date recenti
+]
+
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+LIMIT_PER_REQUEST = 50
+
+# Variabili per immagazzinare i dati e fare il conteggio
+all_articles = []
+total_articles_downloaded = 0
+
+# 2. Ciclo sui Ticker e sulle Date
+for ticker in tickers_list:
+    for date_range in list_dates:
+        start_date = date_range[0]
+        end_date = date_range[1]
+        
+        current_page = 0 # FMP solitamente parte dalla pagina 0
+        
+        while True:
+            # 3. IL FIX DELL'ENDPOINT: usiamo /api/v3/stock_news
+            url = (
+                f"https://financialmodelingprep.com/api/v3/stock_news"
+                f"?tickers={ticker}"
+                f"&page={current_page}"
+                f"&limit={LIMIT_PER_REQUEST}"
+                f"&from=2026-01-01"
+                f"&to=2026-03-27"
+                f"&apikey={FMP_API_KEY}"
+            )
+            
+            response = requests.get(url)
+            
+            # Controllo che la chiamata sia andata a buon fine
+            if response.status_code != 200:
+                print(f"⚠️ Errore API {response.status_code} per {ticker} nel periodo {start_date} -> {end_date}")
+                break
+            
+            data = response.json()
+            
+            # Se la pagina è vuota, significa che non ci sono più articoli per questo trimestre. Usciamo dal while.
+            if not data:
+                break
+                
+            all_articles.extend(data)
+            total_articles_downloaded += len(data)
+            
+            # 4. L'INDICATORE DI PROGRESSO
+            print(f"📌 Impresa: {ticker} | 📅 Periodo: {start_date} al {end_date} | 📑 Articoli totali scaricati: {total_articles_downloaded}")
+            
+            current_page += 1
+            
+            # Buona pratica: una piccolissima pausa per non sovraccaricare il server FMP ed evitare blocchi
+            time.sleep(0.1) 
+
+print("\n✅ Download completato!")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -875,3 +998,177 @@ print(res)
 # Ti darà una percentuale per ogni etichetta che hai scelto tu!
 
 #%%
+
+
+
+#%%
+import pandas as pd
+import requests
+import time
+from datetime import datetime
+
+# ==============================
+# CONFIG
+# ==============================
+FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+REQUEST_DELAY = 0.2
+MAX_PAGES = 200
+
+# ==============================
+# LOAD TICKERS
+# ==============================
+data = pd.read_csv(cfg.ENT)
+tickers_list = data["Ticker"].dropna().unique().tolist()
+
+total_tickers = len(tickers_list)
+total_intervals = len(list_dates_monthly)
+
+# ==============================
+# REQUEST
+# ==============================
+def get_data(url):
+    try:
+        res = requests.get(url)
+        time.sleep(REQUEST_DELAY)
+        
+        if res.status_code != 200:
+            print(f"\n❌ HTTP {res.status_code}")
+            return None
+        
+        return res.json()
+    
+    except Exception as e:
+        print(f"\n❌ ERRORE: {e}")
+        return None
+
+# ==============================
+# FETCH PER INTERVALLO
+# ==============================
+def fetch_interval(ticker, start_date, end_date, ticker_idx, interval_idx, depth=0):
+    
+    local_articles = []
+    page = 0
+    
+    while True:
+        url = (
+            f"https://financialmodelingprep.com/stable/fmp-articles"
+            f"?tickers={ticker}"
+            f"&from={start_date}&to={end_date}"
+            f"&page={page}&limit=100"
+            f"&apikey={FMP_API_KEY}"
+        )
+        
+        data = get_data(url)
+        
+        if data is None:
+            break
+        
+        # parsing
+        if isinstance(data, dict) and "content" in data:
+            articles = data["content"]
+        elif isinstance(data, list):
+            articles = data
+        else:
+            articles = []
+        
+        if not articles:
+            break
+        
+        local_articles.extend(articles)
+        
+        # ==============================
+        # 📊 PROGRESS
+        # ==============================
+        print(
+            f"\r📊 [{interval_idx}/{total_intervals}] "
+            f"[{ticker_idx}/{total_tickers}] "
+            f"{ticker:6s} | "
+            f"{start_date} → {end_date} | "
+            f"page {page:3d} | "
+            f"+{len(articles):3d} | "
+            f"Tot intervallo: {len(local_articles):5d}",
+            end=""
+        )
+        
+        page += 1
+        
+        # ==============================
+        # 🚨 LIMITE PAGINE
+        # ==============================
+        if page >= MAX_PAGES:
+            print(f"\n⚠️ SPLIT → {ticker} | {start_date} → {end_date}")
+            break
+    
+    # ==============================
+    # 🔁 SPLIT SE NECESSARIO
+    # ==============================
+    if page >= MAX_PAGES and depth < 5:
+        
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+        mid_dt = start_dt + (end_dt - start_dt) / 2
+        
+        left = fetch_interval(
+            ticker,
+            start_dt.strftime("%Y-%m-%d"),
+            mid_dt.strftime("%Y-%m-%d"),
+            ticker_idx,
+            interval_idx,
+            depth + 1
+        )
+        
+        right = fetch_interval(
+            ticker,
+            mid_dt.strftime("%Y-%m-%d"),
+            end_dt.strftime("%Y-%m-%d"),
+            ticker_idx,
+            interval_idx,
+            depth + 1
+        )
+        
+        return left + right
+    
+    return local_articles
+
+# ==============================
+# MAIN
+# ==============================
+all_articles = []
+global_start = time.time()
+
+for interval_idx, (start_date, end_date) in enumerate(list_dates_monthly, 1):
+    
+    print(f"\n\n📅 INTERVALLO {interval_idx}/{total_intervals} → {start_date} - {end_date}")
+    
+    for ticker_idx, ticker in enumerate(tickers_list, 1):
+        
+        articles = fetch_interval(
+            ticker,
+            start_date,
+            end_date,
+            ticker_idx,
+            interval_idx
+        )
+        
+        print(f"\n✅ {ticker} | {start_date} → {end_date} → {len(articles)} articoli")
+        
+        all_articles.extend(articles)
+
+# ==============================
+# CLEAN + SAVE
+# ==============================
+df = pd.DataFrame(all_articles)
+
+print("\n🧹 Rimozione duplicati...")
+df = df.drop_duplicates(subset=["title", "publishedDate"])
+
+df.to_csv("news_complete.csv", index=False)
+
+# ==============================
+# STATS FINALI
+# ==============================
+elapsed = time.time() - global_start
+
+print("\n🏆 COMPLETATO")
+print(f"📊 Totale articoli: {len(df)}")
+print(f"⏱️ Tempo totale: {elapsed/60:.2f} minuti")
