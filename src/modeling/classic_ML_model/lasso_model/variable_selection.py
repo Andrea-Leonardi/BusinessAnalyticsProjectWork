@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 
-from training_model import  lasso_logistic_model
-
 from pathlib import Path
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from training_model import lasso_logistic_model
 from split_data import X_train_full
 
 
