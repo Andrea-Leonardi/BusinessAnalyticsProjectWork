@@ -1,7 +1,11 @@
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import SGDClassifier
+
+
 import numpy as np
 from sklearn.model_selection import GridSearchCV
 
-from training_model import pipeline
 
 from pathlib import Path
 import sys
@@ -9,35 +13,59 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from split_data import X_train, y_train, X_validation, y_validation
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import accuracy_score
 
+
+
+
+pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("model", SGDClassifier(
+        loss="log_loss",      
+        penalty="l1",                  
+        max_iter=5000,
+        tol=1e-3,
+        random_state=42
+    ))
+])
 
 
 
 param_grid = {
-    "model__C": np.arange(0.1, 0.4, 0.1)
+    "model__alpha": [1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2]
 }
 
 best_score = -1
-best_C = None
-best_model = None
+best_alpha = None
 
 
-for C in param_grid["model__C"]:
+scores = {}
 
-    pipeline.set_params(model__C=C)
+for alpha in param_grid["model__alpha"]:
+
+    pipeline.set_params(model__alpha=alpha)
 
     pipeline.fit(X_train, y_train)
 
     y_pred = pipeline.predict(X_validation)
 
-    score = balanced_accuracy_score(y_validation, y_pred)
+    score = accuracy_score(y_validation, y_pred)
+    scores[alpha] = score
 
     if score > best_score:
         best_score = score
-        best_C = C
-        best_model = pipeline
+        best_alpha = alpha
+        
 
 
 
-print(best_C, best_score)
+"""
+print(scores)
+print(best_alpha, best_score)
+"""
+
+
+
+
+
+
