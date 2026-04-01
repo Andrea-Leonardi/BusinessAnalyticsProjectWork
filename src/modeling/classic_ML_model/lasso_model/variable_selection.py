@@ -1,7 +1,14 @@
 import pandas as pd
 import numpy as np
 
-from training_model import X_train_full, lasso_logistic_model
+from training_model import  lasso_logistic_model
+
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from split_data import X_train_full
 
 
 # estrazione  modello logistico dalla pipeline
@@ -33,7 +40,8 @@ excluded_variables = results[results["coefficient"] == 0]
 
 
 
-"""
-print("selected_variables)
+
+print(selected_variables)
 print(excluded_variables)
+"""
 """

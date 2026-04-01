@@ -3,7 +3,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train, y_train, X_validation, y_validation 
+from split_data import X_train_full, y_train_full
 
 
 from sklearn.metrics import accuracy_score
@@ -17,13 +17,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 
 from validation import best_alpha
-
-
-
-
-# unione training_set e validation_set
-X_train_full = pd.concat([X_train, X_validation], axis=0).reset_index(drop=True)
-y_train_full = pd.concat([y_train, y_validation], axis=0).reset_index(drop=True)
 
 
 
