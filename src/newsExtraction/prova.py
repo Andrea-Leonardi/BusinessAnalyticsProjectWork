@@ -1172,3 +1172,47 @@ elapsed = time.time() - global_start
 print("\n🏆 COMPLETATO")
 print(f"📊 Totale articoli: {len(df)}")
 print(f"⏱️ Tempo totale: {elapsed/60:.2f} minuti")
+
+
+
+
+#%%
+from newspaper import Article
+url = "https://www.benzinga.com/trading-ideas/long-ideas/21/01/19015660/will-alibaba-or-pinduoduo-stock-grow-more-by-2022"
+article = Article(url)
+article.download()
+article.parse()
+
+print(f"✅ LIBRERIA CARICATA CON SUCCESSO")
+print(f"TITOLO: {article.title}")
+print("-" * 30)
+print(f"TESTO ESTRATTO:\n{article.text}")
+# %%
+prova = pd.re
+
+
+def nome_funzione x: 
+    if x["colonna1"].is.null():
+        article = Articole(x["url"])
+        x["colonna2"] = article.text
+    retunr x
+
+# %%
+import pandas as pd
+from newspaper import Article
+
+df = pd.read_csv('news_dataset_full_text_0_30.csv')
+df = df.iloc[0:10, :]
+
+def imputazione_articoli_mancanti(row):
+    if pd.isna(row['content']):
+        try:
+            article = Article(row['link'])
+            article.download()
+            article.parse()
+            return article.text
+        except Exception as e:
+            print(f"Errore nell'estrazione dell'articolo da {row['link']}: {e}")
+            return None
+    else:
+        return row['content']
