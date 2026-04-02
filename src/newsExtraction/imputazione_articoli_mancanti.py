@@ -42,7 +42,7 @@ def imputazione_articoli_mancanti(row):
         article.parse()
 
         num_parole = len(article.text.split())
-        if num_parole > 50:
+        if num_parole > 77:
             massimo = int(num_parole * 0.5)
             minimo = int(num_parole * 0.25)
             riassunnto = riassunto(article.text, max_l=massimo, min_l=minimo)
