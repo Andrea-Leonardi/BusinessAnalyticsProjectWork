@@ -1,14 +1,17 @@
+#%%
 import pandas as pd
 from newspaper import Article
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM 
+import sys 
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import config as cfg 
 """
 appena si crea il dataste qui va inserito il percorso del csv da cui prendere i dati    
 
 """
-df = pd.read_csv("")
-df = df.iloc[0:10, :]
+df = pd.read_csv(cfg.NEWS_ARTICLES)
 
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 # QUESTO DEVE RESTARE (Caricamento del motore)
 model_name = "facebook/bart-large-cnn"
@@ -55,3 +58,7 @@ def imputazione_articoli_mancanti(row):
     return row  # Se 'Summary' non è NaN, restituisci la riga senza modifiche  
        
 df = df.apply(imputazione_articoli_mancanti, axis=1)
+
+df.sort_values(by=["enterprise", "date"], ascending=[False, True], inplace=True)
+df.to_csv(cfg.NEWS_ARTICLES, index=False, encoding='utf-8-sig')
+
