@@ -106,7 +106,7 @@ tf_idf_df = pd.DataFrame(
 )
 
 # Seleziona le colonne anagrafiche e concatena con i vettori
-df_vettorizzato = pd.concat([df[['ID', 'Ticker', 'Date']], tf_idf_df], axis=1)
+tf_idf_df = pd.concat([df[['ID', 'Ticker', 'Date']], tf_idf_df], axis=1)
 
 print("Dimensioni matrice TF-IDF:", tf_idf_df.shape)
 print(tf_idf_df.head())
@@ -130,9 +130,17 @@ bag_of_words_df = pd.DataFrame(
 )
 
 # Seleziona le colonne anagrafiche e concatena con i vettori
-df_vettorizzato = pd.concat([df[['ID', 'Ticker', 'Date']], bag_of_words_df], axis=1)
+bag_of_words_df = pd.concat([df[['ID', 'Ticker', 'Date']], bag_of_words_df], axis=1)
 
 print("Dimensioni matrice Bag of Words:", bag_of_words_df.shape)
 print(bag_of_words_df.head())
+
+
+
+tf_idf_df.sort_values(by=["Ticker", "Date"], ascending=[False, True], inplace=True)
+tf_idf_df.to_csv(cfg.VECTORIZATION_TFIDF_ARTICLES, index=False, encoding='utf-8-sig')
+
+bag_of_words_df.sort_values(by=["Ticker", "Date"], ascending=[False, True], inplace=True)
+bag_of_words_df.to_csv(cfg.VECTORIZATION_BAG_OF_WORDS_ARTICLES, index=False, encoding='utf-8-sig')
 
 # %%
