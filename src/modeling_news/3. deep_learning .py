@@ -1,3 +1,4 @@
+#%%
 """
 Carica il dataset Financial PhraseBank da Hugging Face senza usare
 `datasets.load_dataset(...)`, che non supporta piu` i dataset basati su
@@ -18,7 +19,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 HF_CACHE_DIR = PROJECT_ROOT / "data" / "hf_cache"
 DATASET_REPO_ID = "financial_phrasebank"
 DATASET_FILENAME = "data/FinancialPhraseBank-v1.0.zip"
-DATASET_CONFIG = "sentences_allagree"
+DATASET_CONFIG = "sentences_50agree"
 
 CONFIG_TO_FILENAME = {
     "sentences_allagree": "FinancialPhraseBank-v1.0/Sentences_AllAgree.txt",
@@ -94,3 +95,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# %%
