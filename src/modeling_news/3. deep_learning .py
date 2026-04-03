@@ -95,5 +95,26 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
+
+# Chiamiamo la funzione che hai scritto nel tuo script
+phrasebank_df = load_phrasebank_dataframe()
+
+# Ora puoi vederlo!
+print(phrasebank_df[['sentence', 'label', 'label_id']].head(10))
+
+# %%
+# 1. Estrazione casuale di 4000 righe
+# random_state serve a rendere l'estrazione "riproducibile" 
+# (se lo riavvii, otterrai sempre le stesse 4000 righe)
+df_random = phrasebank_df.sample(n=4000, random_state=42)
+
+# 2. Reset dell'indice (opzionale ma consigliato)
+# Serve per avere un nuovo indice da 0 a 3999 invece di quelli sparsi originali
+df_random = df_random.reset_index(drop=True)
+
+# Verifica il risultato
+print(f"Nuovo numero di frasi: {len(df_random)}")
+print(df_random.head())
 
 # %%
