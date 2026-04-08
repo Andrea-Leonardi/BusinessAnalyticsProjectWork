@@ -73,6 +73,21 @@ def wait_for_rate_limit(rate_state):
     rate_state["last_request_time"] = now
 
 
+def validate_api_credentials():
+    # Il download Alpaca e possibile solo se sono disponibili delle credenziali.
+    if not API_KEY or not SECRET_KEY:
+        raise EnvironmentError(
+            "Variabili d'ambiente mancanti: imposta ALPACA_API_KEY e ALPACA_SECRET_KEY."
+        )
+
+
+def fill_missing_summaries(df):
+    # Mantengo coerente il dataset: se manca il summary, uso il titolo della news.
+    summary_missing_mask = df["Summary"].isna() | df["Summary"].astype(str).str.strip().eq("")
+    df.loc[summary_missing_mask, "Summary"] = df.loc[summary_missing_mask, "Headline"].fillna("")
+    return int(summary_missing_mask.sum())
+
+
 def download_single_ticker_news(ticker):
     # Creo finestre temporali ampie per ridurre il numero di richieste.
     start_dt = datetime.strptime(START_DATE, "%Y-%m-%d")
@@ -274,25 +289,41 @@ def main():
     downloaded_tickers = []
     downloaded_rows = 0
     empty_download_tickers = []
+    preserved_existing_tickers = []
+
+    if tickers_to_refresh:
+        validate_api_credentials()
 
     # Scarico tutti i ticker mancanti nel dataset news e gli eventuali refresh espliciti.
     for ticker in tickers_to_refresh:
         print(f"Avvio aggiornamento per {ticker}")
         ticker_df = download_single_ticker_news(ticker)
+        ticker_already_present = news_df["Ticker"].eq(ticker).any()
+
+        # Se il download e vuoto ma avevo gia dati storici, li mantengo invece di cancellarli.
+        if ticker_df.empty and ticker_already_present:
+            print(f"{ticker}: download vuoto, mantengo le news gia presenti.")
+            empty_download_tickers.append(ticker)
+            preserved_existing_tickers.append(ticker)
+            continue
 
         # Prima rimuovo tutte le righe correnti del ticker, poi inserisco il nuovo risultato.
         news_df = news_df[news_df["Ticker"] != ticker].copy()
-        news_df = pd.concat([news_df, ticker_df], ignore_index=True)
+        if not ticker_df.empty:
+            news_df = pd.concat([news_df, ticker_df], ignore_index=True)
 
         # Aggiorno anche il file raw del ticker per mantenere allineati i file intermedi.
-        target_output_path = RAW_OUTPUT_DIR / f"{ticker}.csv"
-        ticker_df.to_csv(target_output_path, index=False, encoding="utf-8-sig")
+        if not ticker_df.empty:
+            target_output_path = RAW_OUTPUT_DIR / f"{ticker}.csv"
+            ticker_df.to_csv(target_output_path, index=False, encoding="utf-8-sig")
 
         downloaded_tickers.append(ticker)
         downloaded_rows += len(ticker_df)
 
         if ticker_df.empty:
             empty_download_tickers.append(ticker)
+
+    filled_summary_from_headline = fill_missing_summaries(news_df)
 
     # Deduplica e ordinamento finale prima del salvataggio.
     news_df.drop_duplicates(subset=["ID", "Ticker"], inplace=True)
@@ -309,6 +340,8 @@ def main():
             "downloaded_tickers": downloaded_tickers,
             "downloaded_rows": int(downloaded_rows),
             "empty_download_tickers": empty_download_tickers,
+            "preserved_existing_tickers_after_empty_download": preserved_existing_tickers,
+            "filled_summary_from_headline": int(filled_summary_from_headline),
             "forced_refresh_ticker": TARGET_TICKER or None,
             "output": str(cfg.NEWS_ARTICLES),
         },

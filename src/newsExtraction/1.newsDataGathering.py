@@ -76,6 +76,14 @@ def wait_for_rate_limit(rate_state):
     rate_state["last_request_time"] = now
 
 
+def validate_api_credentials():
+    # Il download reale parte solo se sono disponibili delle credenziali Alpaca.
+    if not API_KEY or not SECRET_KEY:
+        raise EnvironmentError(
+            "Variabili d'ambiente mancanti: imposta ALPACA_API_KEY e ALPACA_SECRET_KEY."
+        )
+
+
 def main():
     # Carico i ticker dal file anagrafico del progetto.
     # L'offset e il limite restano opzionali per test parziali.
@@ -114,6 +122,12 @@ def main():
             "force_refresh": FORCE_REFRESH,
         },
     )
+
+    download_required = FORCE_REFRESH or any(
+        not (RAW_OUTPUT_DIR / f"{ticker}.csv").exists() for ticker in tickers
+    )
+    if download_required:
+        validate_api_credentials()
 
     rate_state = {"request_times": deque(), "last_request_time": 0.0}
 

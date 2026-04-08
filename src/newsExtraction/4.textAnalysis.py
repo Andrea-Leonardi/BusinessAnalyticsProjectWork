@@ -40,6 +40,13 @@ def clean_summaries(summary_series: pd.Series) -> pd.Series:
     return cleaned.mask(cleaned.eq("nan"), "")
 
 
+def prepare_analysis_text(summary_series: pd.Series, headline_series: pd.Series) -> pd.Series:
+    # Se il summary manca anche dopo gli step precedenti, uso il titolo come fallback.
+    cleaned_summary = clean_summaries(summary_series)
+    cleaned_headline = clean_summaries(headline_series)
+    return cleaned_summary.mask(cleaned_summary.eq(""), cleaned_headline)
+
+
 def get_pipeline_device() -> int:
     if torch is not None and torch.cuda.is_available():
         return 0
@@ -55,6 +62,11 @@ def get_model_kwargs() -> dict:
 def build_pipelines():
     device = get_pipeline_device()
     model_kwargs = get_model_kwargs()
+
+    if device == 0:
+        print("Text analysis: uso GPU (CUDA).")
+    else:
+        print("Text analysis: uso CPU.")
 
     pipe_finbert = pipeline(
         "sentiment-analysis",
@@ -131,13 +143,13 @@ def analyze_unique_texts(
 def main():
     start_time = time.time()
 
-    df = pd.read_csv(cfg.NEWS_ARTICLES, usecols=["ID", "Ticker", "Date", "Summary"])
+    df = pd.read_csv(cfg.NEWS_ARTICLES, usecols=["ID", "Ticker", "Date", "Headline", "Summary"])
     if MAX_ROWS is not None:
         df = df.iloc[:MAX_ROWS].copy()
 
-    df["Summary"] = clean_summaries(df["Summary"])
-    non_empty_mask = df["Summary"].ne("")
-    unique_texts = pd.unique(df.loc[non_empty_mask, "Summary"]).tolist()
+    df["AnalysisText"] = prepare_analysis_text(df["Summary"], df["Headline"])
+    non_empty_mask = df["AnalysisText"].ne("")
+    unique_texts = pd.unique(df.loc[non_empty_mask, "AnalysisText"]).tolist()
 
     pipe_finbert, pipe_emotions, pipe_zeroshot = build_pipelines()
     metrics_by_text = analyze_unique_texts(
@@ -148,7 +160,7 @@ def main():
     )
 
     base_columns = df[["ID", "Ticker", "Date"]].copy()
-    metrics_rows = [metrics_by_text.get(text, {}) for text in df["Summary"]]
+    metrics_rows = [metrics_by_text.get(text, {}) for text in df["AnalysisText"]]
     metrics_df = pd.DataFrame(metrics_rows)
 
     text_analysis = pd.concat([base_columns, metrics_df], axis=1)
