@@ -40,8 +40,24 @@ def conta_valori_nulli(colonna):
 
 null = df.apply(conta_valori_nulli, axis=0)
 tot_articoli = len(df)
+tot_ticker = df["Ticker"].dropna().astype(str).str.strip().replace("", pd.NA).dropna().nunique()
 
-print(f"In totale abbiamo {tot_articoli} articoli sulle 110 tra il 2021-01-01 e il 2026-03-27.")
+# Ricavo il range date reale dal dataset invece di stamparne uno fisso.
+parsed_dates = pd.to_datetime(df["Date"], errors="coerce", utc=True)
+min_date = parsed_dates.min()
+max_date = parsed_dates.max()
+
+if pd.notna(min_date) and pd.notna(max_date):
+    min_date_str = min_date.strftime("%Y-%m-%d")
+    max_date_str = max_date.strftime("%Y-%m-%d")
+else:
+    min_date_str = "data minima non disponibile"
+    max_date_str = "data massima non disponibile"
+
+print(
+    f"In totale abbiamo {tot_articoli} articoli su {tot_ticker} ticker "
+    f"tra {min_date_str} e {max_date_str}."
+)
 print(f"Nella colonna ID abbiamo {null['ID']} valori nulli.")
 print(f"Nella colonna Ticker abbiamo {null['Ticker']} valori nulli.")
 print(f"Nella colonna Date abbiamo {null['Date']} valori nulli.")
@@ -70,7 +86,7 @@ plt.figure(figsize=(15, 7))
 articoli_ordinati.plot(kind="bar", color="skyblue", width=0.8)
 
 plt.title("Frequenza Articoli per Azienda (Ordine Crescente)", fontsize=15)
-plt.xlabel("Aziende (110 Ticker)", fontsize=12)
+plt.xlabel(f"Aziende ({tot_ticker} Ticker)", fontsize=12)
 plt.ylabel("Numero di Articoli", fontsize=12)
 
 # I ticker sono molti: nascondo le etichette per rendere il grafico leggibile.
