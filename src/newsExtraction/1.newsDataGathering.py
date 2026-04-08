@@ -100,6 +100,12 @@ def deduplicate_news_df(df):
 
 
 def main():
+    # Quando rilancio il gathering ricreo sempre il dataset finale da zero.
+    # Se esiste, il file aggregato precedente viene eliminato subito.
+    if cfg.NEWS_ARTICLES.exists():
+        cfg.NEWS_ARTICLES.unlink()
+        print(f"Rimosso dataset finale precedente: {cfg.NEWS_ARTICLES}")
+
     # Carico i ticker dal file anagrafico del progetto.
     # L'offset e il limite restano opzionali per test parziali.
     try:

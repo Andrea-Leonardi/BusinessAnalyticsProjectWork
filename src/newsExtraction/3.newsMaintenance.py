@@ -247,6 +247,14 @@ def main():
     valid_tickers = valid_tickers[valid_tickers.ne("")]
     valid_ticker_set = set(valid_tickers.drop_duplicates().tolist())
 
+    # Elimino dalla cartella raw i CSV di ticker che non sono piu presenti in enterprises.csv.
+    removed_invalid_raw_files = []
+    for raw_path in RAW_OUTPUT_DIR.glob("*.csv"):
+        raw_ticker = raw_path.stem.strip().upper()
+        if raw_ticker not in valid_ticker_set:
+            raw_path.unlink()
+            removed_invalid_raw_files.append(raw_path.name)
+
     # Carico il dataset news esistente oppure ne creo uno vuoto.
     if cfg.NEWS_ARTICLES.exists():
         news_df = pd.read_csv(cfg.NEWS_ARTICLES)
@@ -359,6 +367,7 @@ def main():
         {
             "rows_final": len(news_df),
             "removed_invalid_ticker_rows": int(removed_invalid_ticker_rows),
+            "removed_invalid_raw_files": removed_invalid_raw_files,
             "missing_tickers_in_news_before_update": len(missing_in_news),
             "manual_tickers_requested": manual_tickers,
             "downloaded_tickers": downloaded_tickers,
