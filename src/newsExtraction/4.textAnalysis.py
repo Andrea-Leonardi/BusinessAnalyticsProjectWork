@@ -58,6 +58,7 @@ else:
     ENABLE_ZERO_SHOT = ZERO_SHOT_ENV.lower() not in {"0", "false", "no"}
 
 MAX_ROWS = int(os.getenv("TEXT_ANALYSIS_MAX_ROWS", "0")) or None
+PROGRESS_LOG_SECONDS = float(os.getenv("TEXT_ANALYSIS_PROGRESS_LOG_SECONDS", "10"))
 
 # Batch size piu aggressivi per sfruttare meglio la GPU.
 FINBERT_BATCH_SIZE = int(os.getenv("TEXT_ANALYSIS_FINBERT_BATCH_SIZE", "128"))
@@ -90,6 +91,35 @@ def prepare_analysis_text(summary_series: pd.Series, headline_series: pd.Series)
     cleaned_summary = clean_summaries(summary_series)
     cleaned_headline = clean_summaries(headline_series)
     return cleaned_summary.mask(cleaned_summary.eq(""), cleaned_headline)
+
+
+def maybe_print_progress(
+    stage_name: str,
+    processed_items: int,
+    total_items: int,
+    stage_start_time: float,
+    progress_state: dict[str, float],
+    force: bool = False,
+):
+    # Stampo solo ogni tot secondi o a fine stage, cosi vedo l'avanzamento
+    # senza rallentare il run con output troppo frequenti.
+    now = time.time()
+    last_print_time = progress_state.get(stage_name, 0.0)
+
+    if not force and processed_items < total_items and now - last_print_time < PROGRESS_LOG_SECONDS:
+        return
+
+    if total_items > 0:
+        progress_pct = processed_items / total_items * 100
+    else:
+        progress_pct = 100.0
+
+    elapsed = now - stage_start_time
+    print(
+        f"[{stage_name}] {processed_items}/{total_items} "
+        f"({progress_pct:.1f}%) | elapsed {elapsed:.1f}s"
+    )
+    progress_state[stage_name] = now
 
 
 # ---------------------------------------------------------------------------
@@ -261,37 +291,72 @@ def analyze_unique_texts(
 ) -> dict[str, dict]:
     # Analizza una sola volta ogni testo unico per ridurre i tempi di esecuzione.
     metrics_by_text = {text: {} for text in unique_texts}
+    progress_state = {}
+    total_texts = len(unique_texts)
 
     # -----------------------------------------------------------------------
     # 1. TEXTBLOB
     # -----------------------------------------------------------------------
 
-    for text in unique_texts:
+    textblob_start_time = time.time()
+    for index, text in enumerate(unique_texts, start=1):
         blob = TextBlob(text)
         metrics_by_text[text]["TEXTBLOB_Polarity"] = round(blob.sentiment.polarity, 4)
         metrics_by_text[text]["TEXTBLOB_Subjectivity"] = round(blob.sentiment.subjectivity, 4)
+        maybe_print_progress(
+            stage_name="TextBlob",
+            processed_items=index,
+            total_items=total_texts,
+            stage_start_time=textblob_start_time,
+            progress_state=progress_state,
+            force=index == total_texts,
+        )
 
     # -----------------------------------------------------------------------
     # 2. FINBERT
     # -----------------------------------------------------------------------
 
+    finbert_processed = 0
+    finbert_start_time = time.time()
     for batch in iter_batches(unique_texts, FINBERT_BATCH_SIZE):
         outputs = pipe_finbert(batch, truncation=True)
         add_scored_output(metrics_by_text, batch, outputs, "FINBERT")
+        finbert_processed += len(batch)
+        maybe_print_progress(
+            stage_name="FinBERT",
+            processed_items=finbert_processed,
+            total_items=total_texts,
+            stage_start_time=finbert_start_time,
+            progress_state=progress_state,
+            force=finbert_processed == total_texts,
+        )
 
     # -----------------------------------------------------------------------
     # 3. GOEMOTIONS
     # -----------------------------------------------------------------------
 
+    emotions_processed = 0
+    emotions_start_time = time.time()
     for batch in iter_batches(unique_texts, EMOTIONS_BATCH_SIZE):
         outputs = pipe_emotions(batch, truncation=True)
         add_scored_output(metrics_by_text, batch, outputs, "EMO")
+        emotions_processed += len(batch)
+        maybe_print_progress(
+            stage_name="GoEmotions",
+            processed_items=emotions_processed,
+            total_items=total_texts,
+            stage_start_time=emotions_start_time,
+            progress_state=progress_state,
+            force=emotions_processed == total_texts,
+        )
 
     # -----------------------------------------------------------------------
     # 4. ZERO-SHOT
     # -----------------------------------------------------------------------
 
     if pipe_zeroshot is not None:
+        zeroshot_processed = 0
+        zeroshot_start_time = time.time()
         for batch in iter_batches(unique_texts, ZERO_SHOT_BATCH_SIZE):
             outputs = pipe_zeroshot(
                 batch,
@@ -304,6 +369,15 @@ def analyze_unique_texts(
             for text, output in zip(batch, outputs):
                 for label, score in zip(output["labels"], output["scores"]):
                     metrics_by_text[text][f"GPOMS_{label}"] = round(score, 4)
+            zeroshot_processed += len(batch)
+            maybe_print_progress(
+                stage_name="ZeroShot",
+                processed_items=zeroshot_processed,
+                total_items=total_texts,
+                stage_start_time=zeroshot_start_time,
+                progress_state=progress_state,
+                force=zeroshot_processed == total_texts,
+            )
 
     return metrics_by_text
 
@@ -327,6 +401,15 @@ def main():
     non_empty_mask = df[ANALYSIS_TEXT_COLUMN].ne("")
     unique_texts = pd.unique(df.loc[non_empty_mask, ANALYSIS_TEXT_COLUMN]).tolist()
 
+    print(
+        "Input text analysis:",
+        {
+            "rows": len(df),
+            "unique_non_empty_texts": len(unique_texts),
+            "progress_log_seconds": PROGRESS_LOG_SECONDS,
+        },
+    )
+
     # -----------------------------------------------------------------------
     # 2. LETTURA CACHE E INDIVIDUAZIONE DEI TESTI DAVVERO NUOVI
     # -----------------------------------------------------------------------
@@ -349,6 +432,7 @@ def main():
 
     new_metrics_df = pd.DataFrame(columns=[CACHE_KEY_COLUMN])
     if missing_texts:
+        print("Avvio analisi dei nuovi testi.")
         pipe_finbert, pipe_emotions, pipe_zeroshot = build_pipelines()
         new_metrics_by_text = analyze_unique_texts(
             unique_texts=missing_texts,
