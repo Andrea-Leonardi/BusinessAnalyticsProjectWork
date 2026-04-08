@@ -1,3 +1,21 @@
+"""
+3.newsMaintenance.py
+
+Scopo del file:
+- allineare il dataset news con i ticker presenti in enterprises.csv
+- eliminare ticker non piu validi dal dataset generale e dai file raw
+- scaricare i ticker mancanti nel dataset news
+- opzionalmente forzare il refresh di ticker indicati manualmente
+
+Idea generale del flusso:
+1. legge i ticker validi da enterprises.csv
+2. rimuove i file raw di ticker non piu ammessi
+3. pulisce newsArticles.csv dai ticker non validi
+4. trova i ticker mancanti nel dataset news
+5. scarica i ticker mancanti e quelli indicati manualmente
+6. riempie i summary mancanti con il titolo e salva il risultato
+"""
+
 import os
 import sys
 import time
@@ -12,7 +30,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import config as cfg
 
 
-# Credenziali Alpaca usate per il download mirato di un solo ticker.
+# ---------------------------------------------------------------------------
+# API, PARAMETRI E SCHEMA DATI
+# ---------------------------------------------------------------------------
+
 API_KEY = os.getenv("ALPACA_API_KEY", "PKVESCM6H235I3XWBT25AYP7JC")
 SECRET_KEY = os.getenv("ALPACA_SECRET_KEY", "6MPjbdQyG6PmWP1niRAAGPFM3HQw2SvAWMGWL3r5Q3FM")
 NEWS_URL = "https://data.alpaca.markets/v1beta1/news"
@@ -22,14 +43,7 @@ HEADERS = {
     "accept": "application/json",
 }
 
-
-# Lista manuale di ticker da riscaricare o aggiungere dopo l'allineamento automatico.
-# Se la lasci vuota, lo script fa solo l'allineamento tra enterprises.csv e newsArticles.csv.
-# Esempio: MANUAL_TICKERS_TO_DOWNLOAD = ["AAPL", "MSFT"]
 MANUAL_TICKERS_TO_DOWNLOAD = []
-
-# Ticker opzionale via variabile d'ambiente.
-# Se valorizzato, viene aggiunto alla lista manuale sopra.
 TARGET_TICKER = os.getenv("NEWS_MAINTENANCE_TICKER", "").strip().upper()
 START_DATE = os.getenv("NEWS_IMPORT_START", "2021-01-01")
 END_DATE = os.getenv("NEWS_IMPORT_END", "2026-03-27")
@@ -41,17 +55,18 @@ MAX_RETRIES = int(os.getenv("NEWS_IMPORT_MAX_RETRIES", "3"))
 RETRY_BACKOFF_SECONDS = float(os.getenv("NEWS_IMPORT_RETRY_BACKOFF_SECONDS", "2"))
 REQUEST_TIMEOUT_SECONDS = int(os.getenv("NEWS_IMPORT_TIMEOUT_SECONDS", "20"))
 
-
-# Colonne finali del dataset news.
-# Manteniamo ID per identificare gli articoli in modo univoco.
 OUTPUT_COLUMNS = ["ID", "Ticker", "Date", "Headline", "Summary"]
 PRIMARY_DEDUP_COLUMNS = ["ID", "Ticker"]
 FALLBACK_DEDUP_COLUMNS = ["Ticker", "Date", "Headline", "Summary"]
 RAW_OUTPUT_DIR = cfg.NEWS_EXTRACTION / "raw_news_data"
 
 
+# ---------------------------------------------------------------------------
+# FUNZIONI DI SUPPORTO
+# ---------------------------------------------------------------------------
+
 def wait_for_rate_limit(rate_state):
-    # Rispetto dei limiti per secondo e per minuto dell'API.
+    # Tiene il ritmo delle richieste entro i limiti dell'API.
     now = time.time()
     elapsed = now - rate_state["last_request_time"]
     min_interval = 1.0 / MAX_REQUESTS_PER_SECOND
@@ -77,7 +92,7 @@ def wait_for_rate_limit(rate_state):
 
 
 def validate_api_credentials():
-    # Il download Alpaca e possibile solo se sono disponibili delle credenziali.
+    # Verifica che esistano credenziali usabili per i download mirati.
     if not API_KEY or not SECRET_KEY:
         raise EnvironmentError(
             "Variabili d'ambiente mancanti: imposta ALPACA_API_KEY e ALPACA_SECRET_KEY."
@@ -85,7 +100,7 @@ def validate_api_credentials():
 
 
 def fill_missing_summaries(df):
-    # Mantengo coerente il dataset: se manca il summary, uso il titolo della news.
+    # Se il summary manca, lo sostituisco con il titolo.
     summary_missing_mask = df["Summary"].isna() | df["Summary"].astype(str).str.strip().eq("")
     df.loc[summary_missing_mask, "Summary"] = df.loc[summary_missing_mask, "Headline"].fillna("")
     return int(summary_missing_mask.sum())
@@ -93,7 +108,7 @@ def fill_missing_summaries(df):
 
 def deduplicate_news_df(df):
     # Se gli ID sono presenti uso la chiave forte ID + Ticker.
-    # Per i file storici gia ripuliti senza ID tengo un fallback sui campi testuali.
+    # Altrimenti uso un fallback testuale per i file storici.
     if df.empty:
         return df
 
@@ -103,8 +118,12 @@ def deduplicate_news_df(df):
     return df.drop_duplicates(subset=FALLBACK_DEDUP_COLUMNS)
 
 
+# ---------------------------------------------------------------------------
+# DOWNLOAD MIRATO DI UN SINGOLO TICKER
+# ---------------------------------------------------------------------------
+
 def download_single_ticker_news(ticker):
-    # Creo finestre temporali ampie per ridurre il numero di richieste.
+    # Costruisco una coda di finestre temporali ampie.
     start_dt = datetime.strptime(START_DATE, "%Y-%m-%d")
     end_dt_exclusive = datetime.strptime(END_DATE, "%Y-%m-%d") + timedelta(days=1)
     pending_windows = deque()
@@ -143,7 +162,10 @@ def download_single_ticker_news(ticker):
             request_ok = False
             last_error = None
 
-            # Retry semplice per evitare di perdere una finestra per errori transitori.
+            # -------------------------------------------------------------------
+            # 1. RICHIESTA API CON RETRY E PAGINAZIONE
+            # -------------------------------------------------------------------
+
             for attempt in range(1, MAX_RETRIES + 1):
                 try:
                     wait_for_rate_limit(rate_state)
@@ -160,7 +182,6 @@ def download_single_ticker_news(ticker):
                     first_page_size = len(batch)
                     window_articles.extend(batch)
 
-                    # Se ci sono piu pagine, continuo fino in fondo.
                     next_page_token = payload.get("next_page_token")
                     seen_tokens = set()
 
@@ -197,11 +218,13 @@ def download_single_ticker_news(ticker):
                         print(f"{ticker}: errore richiesta, retry tra {sleep_seconds:.1f}s.")
                         time.sleep(sleep_seconds)
 
-            # Se una finestra fallisce definitivamente, fermo tutto per non salvare un dataset monco.
             if not request_ok:
                 raise RuntimeError(f"Download fallito per {ticker}: {last_error}")
 
-            # Se la finestra e troppo piena e l'API non espone paginazione, la divido in due.
+            # -------------------------------------------------------------------
+            # 2. SPLIT DELLE FINESTRE TROPPO PIENE
+            # -------------------------------------------------------------------
+
             window_span = window_end - window_start
             if first_page_size == API_LIMIT and not used_pagination and window_span > timedelta(days=1):
                 midpoint = window_start + window_span / 2
@@ -216,7 +239,10 @@ def download_single_ticker_news(ticker):
                 print(f"{ticker}: finestra troppo densa, la divido in due.")
                 continue
 
-            # Normalizzo il risultato nel formato usato da newsArticles.csv.
+            # -------------------------------------------------------------------
+            # 3. NORMALIZZAZIONE DEGLI ARTICOLI
+            # -------------------------------------------------------------------
+
             for article in window_articles:
                 ticker_rows.append(
                     {
@@ -236,18 +262,27 @@ def download_single_ticker_news(ticker):
     return ticker_df
 
 
+# ---------------------------------------------------------------------------
+# FLUSSO PRINCIPALE
+# ---------------------------------------------------------------------------
+
 def main():
-    # Creo le cartelle dati se necessario.
+    # -----------------------------------------------------------------------
+    # 1. PREPARAZIONE CARTELLE E TICKER VALIDI
+    # -----------------------------------------------------------------------
+
     cfg.NEWS_EXTRACTION.mkdir(parents=True, exist_ok=True)
     RAW_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Carico i ticker ammessi dall'universo corrente.
     enterprises_df = pd.read_csv(cfg.ENT, usecols=["Ticker"])
     valid_tickers = enterprises_df["Ticker"].dropna().astype(str).str.strip()
     valid_tickers = valid_tickers[valid_tickers.ne("")]
     valid_ticker_set = set(valid_tickers.drop_duplicates().tolist())
 
-    # Elimino dalla cartella raw i CSV di ticker che non sono piu presenti in enterprises.csv.
+    # -----------------------------------------------------------------------
+    # 2. PULIZIA DEI FILE RAW NON PIU VALIDI
+    # -----------------------------------------------------------------------
+
     removed_invalid_raw_files = []
     for raw_path in RAW_OUTPUT_DIR.glob("*.csv"):
         raw_ticker = raw_path.stem.strip().upper()
@@ -255,7 +290,10 @@ def main():
             raw_path.unlink()
             removed_invalid_raw_files.append(raw_path.name)
 
-    # Carico il dataset news esistente oppure ne creo uno vuoto.
+    # -----------------------------------------------------------------------
+    # 3. CARICAMENTO E NORMALIZZAZIONE DEL DATASET GENERALE
+    # -----------------------------------------------------------------------
+
     if cfg.NEWS_ARTICLES.exists():
         news_df = pd.read_csv(cfg.NEWS_ARTICLES)
     else:
@@ -266,7 +304,7 @@ def main():
             news_df[column] = pd.NA
     news_df = news_df[OUTPUT_COLUMNS].copy()
 
-    # Allineo anche tutti i CSV raw per ticker allo stesso schema ridotto.
+    # Allineo tutti i raw esistenti allo schema corrente.
     for raw_path in RAW_OUTPUT_DIR.glob("*.csv"):
         raw_df = pd.read_csv(raw_path)
         for column in OUTPUT_COLUMNS:
@@ -278,42 +316,42 @@ def main():
             raw_df.sort_values(by=["Date", "ID"], ascending=[True, True], inplace=True)
         raw_df.to_csv(raw_path, index=False, encoding="utf-8-sig")
 
-    # Calcolo i ticker effettivamente presenti nel dataset news attuale.
+    # -----------------------------------------------------------------------
+    # 4. RIMOZIONE DEI TICKER NON PIU PRESENTI IN ENTERPRISES
+    # -----------------------------------------------------------------------
+
     news_tickers = news_df["Ticker"].dropna().astype(str).str.strip()
     news_tickers = news_tickers[news_tickers.ne("")]
     news_ticker_set = set(news_tickers.drop_duplicates().tolist())
 
-    # Elimino le righe di ticker che non esistono piu in enterprises.csv.
     rows_before_cleanup = len(news_df)
     news_df = news_df[news_df["Ticker"].isin(valid_ticker_set)].copy()
     removed_invalid_ticker_rows = rows_before_cleanup - len(news_df)
 
-    # Identifico i ticker presenti in enterprises.csv ma assenti da newsArticles.csv.
+    # -----------------------------------------------------------------------
+    # 5. COSTRUZIONE DELLA LISTA DI REFRESH
+    # -----------------------------------------------------------------------
+
     missing_in_news = sorted(valid_ticker_set - news_ticker_set)
     tickers_to_refresh = list(missing_in_news)
 
-    # Normalizzo la lista manuale definita in alto nel file.
     manual_tickers = []
     for ticker in MANUAL_TICKERS_TO_DOWNLOAD:
         cleaned_ticker = str(ticker).strip().upper()
         if cleaned_ticker:
             manual_tickers.append(cleaned_ticker)
 
-    # Mantengo anche il supporto opzionale via variabile d'ambiente.
     if TARGET_TICKER:
         manual_tickers.append(TARGET_TICKER)
 
-    # Tolgo eventuali duplicati preservando l'ordine.
     manual_tickers = list(dict.fromkeys(manual_tickers))
 
-    # Valido i ticker manuali rispetto a enterprises.csv.
     invalid_manual_tickers = [ticker for ticker in manual_tickers if ticker not in valid_ticker_set]
     if invalid_manual_tickers:
         raise ValueError(
             f"Questi ticker manuali non sono presenti in enterprises.csv: {invalid_manual_tickers}"
         )
 
-    # Dopo l'allineamento aggiungo anche gli eventuali ticker scelti manualmente.
     for ticker in manual_tickers:
         if ticker not in tickers_to_refresh:
             tickers_to_refresh.append(ticker)
@@ -326,25 +364,25 @@ def main():
     if tickers_to_refresh:
         validate_api_credentials()
 
-    # Scarico tutti i ticker mancanti nel dataset news e gli eventuali refresh espliciti.
+    # -----------------------------------------------------------------------
+    # 6. DOWNLOAD E SOSTITUZIONE DEI TICKER DA AGGIORNARE
+    # -----------------------------------------------------------------------
+
     for ticker in tickers_to_refresh:
         print(f"Avvio aggiornamento per {ticker}")
         ticker_df = download_single_ticker_news(ticker)
         ticker_already_present = news_df["Ticker"].eq(ticker).any()
 
-        # Se il download e vuoto ma avevo gia dati storici, li mantengo invece di cancellarli.
         if ticker_df.empty and ticker_already_present:
             print(f"{ticker}: download vuoto, mantengo le news gia presenti.")
             empty_download_tickers.append(ticker)
             preserved_existing_tickers.append(ticker)
             continue
 
-        # Prima rimuovo tutte le righe correnti del ticker, poi inserisco il nuovo risultato.
         news_df = news_df[news_df["Ticker"] != ticker].copy()
         if not ticker_df.empty:
             news_df = pd.concat([news_df, ticker_df], ignore_index=True)
 
-        # Aggiorno anche il file raw del ticker per mantenere allineati i file intermedi.
         if not ticker_df.empty:
             target_output_path = RAW_OUTPUT_DIR / f"{ticker}.csv"
             ticker_df.to_csv(target_output_path, index=False, encoding="utf-8-sig")
@@ -355,9 +393,11 @@ def main():
         if ticker_df.empty:
             empty_download_tickers.append(ticker)
 
-    filled_summary_from_headline = fill_missing_summaries(news_df)
+    # -----------------------------------------------------------------------
+    # 7. CHIUSURA DEL DATASET FINALE
+    # -----------------------------------------------------------------------
 
-    # Deduplica e ordinamento finale prima del salvataggio.
+    filled_summary_from_headline = fill_missing_summaries(news_df)
     news_df = deduplicate_news_df(news_df)
     news_df.sort_values(by=["Ticker", "Date"], ascending=[True, True], inplace=True)
     news_df.to_csv(cfg.NEWS_ARTICLES, index=False, encoding="utf-8-sig")
