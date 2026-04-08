@@ -25,6 +25,9 @@ from pathlib import Path
 import pandas as pd
 from textblob import TextBlob
 
+# Flag rapido per spegnere il modello zero-shot quando si vuole un run piu leggero.
+USE_ZERO_SHOT_MODEL = False
+
 # I modelli richiesti da questo script sono gia in cache.
 # Forzo l'offline mode per evitare tentativi di rete durante il run.
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
@@ -46,11 +49,13 @@ import config as cfg
 # ---------------------------------------------------------------------------
 
 ZERO_SHOT_LABELS = ["Calm", "Alert", "Sure", "Vital", "Kind", "Happy"]
-ENABLE_ZERO_SHOT = os.getenv("TEXT_ANALYSIS_ENABLE_ZERO_SHOT", "1").lower() not in {
-    "0",
-    "false",
-    "no",
-}
+ZERO_SHOT_ENV = os.getenv("TEXT_ANALYSIS_ENABLE_ZERO_SHOT")
+if ZERO_SHOT_ENV is None:
+    # Se non arriva niente dall'ambiente, uso il flag rapido definito in alto.
+    ENABLE_ZERO_SHOT = USE_ZERO_SHOT_MODEL
+else:
+    # Se invece arriva una variabile d'ambiente, quella ha la precedenza.
+    ENABLE_ZERO_SHOT = ZERO_SHOT_ENV.lower() not in {"0", "false", "no"}
 MAX_ROWS = int(os.getenv("TEXT_ANALYSIS_MAX_ROWS", "0")) or None
 FINBERT_BATCH_SIZE = int(os.getenv("TEXT_ANALYSIS_FINBERT_BATCH_SIZE", "64"))
 EMOTIONS_BATCH_SIZE = int(os.getenv("TEXT_ANALYSIS_EMOTIONS_BATCH_SIZE", "32"))
