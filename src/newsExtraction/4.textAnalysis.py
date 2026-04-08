@@ -7,6 +7,12 @@ from pathlib import Path
 
 import pandas as pd
 from textblob import TextBlob
+
+# I modelli richiesti da questo script sono gia stati scaricati in cache.
+# Forzo la modalita offline per evitare tentativi di rete superflui durante il run.
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+
 from transformers import pipeline
 
 try:
@@ -55,7 +61,7 @@ def get_pipeline_device() -> int:
 
 def get_model_kwargs() -> dict:
     if torch is not None and torch.cuda.is_available():
-        return {"torch_dtype": torch.float16}
+        return {"dtype": torch.float16}
     return {}
 
 
@@ -73,6 +79,8 @@ def build_pipelines():
         model="ProsusAI/finbert",
         top_k=None,
         device=device,
+        local_files_only=True,
+        use_safetensors=False,
         model_kwargs=model_kwargs,
     )
     pipe_emotions = pipeline(
@@ -80,6 +88,8 @@ def build_pipelines():
         model="SamLowe/roberta-base-go_emotions",
         top_k=None,
         device=device,
+        local_files_only=True,
+        use_safetensors=False,
         model_kwargs=model_kwargs,
     )
 
@@ -89,6 +99,8 @@ def build_pipelines():
             "zero-shot-classification",
             model="facebook/bart-large-mnli",
             device=device,
+            local_files_only=True,
+            use_safetensors=False,
             model_kwargs=model_kwargs,
         )
 

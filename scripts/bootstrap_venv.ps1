@@ -38,11 +38,21 @@ if (-not (Test-Path $VenvPath)) {
 }
 
 $VenvPython = Join-Path $VenvPath "Scripts\python.exe"
+$NvidiaSmiCommand = Get-Command nvidia-smi -ErrorAction SilentlyContinue
 
 & $VenvPython -m pip install --upgrade pip setuptools wheel
 
 if (-not $SkipDependencyInstall) {
     & $VenvPython -m pip install -r $RequirementsPath
+
+    if ($NvidiaSmiCommand) {
+        Write-Host "NVIDIA GPU rilevata: installo PyTorch con supporto CUDA 12.8..." -ForegroundColor Cyan
+        & $VenvPython -m pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+    }
+    else {
+        Write-Host "Nessuna NVIDIA GPU rilevata: installo PyTorch CPU..." -ForegroundColor Cyan
+        & $VenvPython -m pip install --upgrade torch torchvision torchaudio
+    }
 }
 
 if ($RegisterKernel) {

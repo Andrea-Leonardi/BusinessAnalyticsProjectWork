@@ -42,8 +42,11 @@ RETRY_BACKOFF_SECONDS = float(os.getenv("NEWS_IMPORT_RETRY_BACKOFF_SECONDS", "2"
 REQUEST_TIMEOUT_SECONDS = int(os.getenv("NEWS_IMPORT_TIMEOUT_SECONDS", "20"))
 
 
-# Colonne standard del dataset news.
-OUTPUT_COLUMNS = ["ID", "Ticker", "Date", "Source", "Headline", "Summary", "Content", "URL"]
+# Colonne finali del dataset news.
+# Manteniamo ID per identificare gli articoli in modo univoco.
+OUTPUT_COLUMNS = ["ID", "Ticker", "Date", "Headline", "Summary"]
+PRIMARY_DEDUP_COLUMNS = ["ID", "Ticker"]
+FALLBACK_DEDUP_COLUMNS = ["Ticker", "Date", "Headline", "Summary"]
 RAW_OUTPUT_DIR = cfg.NEWS_EXTRACTION / "raw_news_data"
 
 
@@ -86,6 +89,18 @@ def fill_missing_summaries(df):
     summary_missing_mask = df["Summary"].isna() | df["Summary"].astype(str).str.strip().eq("")
     df.loc[summary_missing_mask, "Summary"] = df.loc[summary_missing_mask, "Headline"].fillna("")
     return int(summary_missing_mask.sum())
+
+
+def deduplicate_news_df(df):
+    # Se gli ID sono presenti uso la chiave forte ID + Ticker.
+    # Per i file storici gia ripuliti senza ID tengo un fallback sui campi testuali.
+    if df.empty:
+        return df
+
+    if "ID" in df.columns and df["ID"].notna().any():
+        return df.drop_duplicates(subset=PRIMARY_DEDUP_COLUMNS)
+
+    return df.drop_duplicates(subset=FALLBACK_DEDUP_COLUMNS)
 
 
 def download_single_ticker_news(ticker):
@@ -208,17 +223,14 @@ def download_single_ticker_news(ticker):
                         "ID": article.get("id"),
                         "Ticker": ticker,
                         "Date": article.get("created_at"),
-                        "Source": article.get("source", ""),
                         "Headline": article.get("headline", ""),
                         "Summary": article.get("summary", ""),
-                        "Content": article.get("content", ""),
-                        "URL": article.get("url", ""),
                     }
                 )
 
     ticker_df = pd.DataFrame(ticker_rows, columns=OUTPUT_COLUMNS)
     if not ticker_df.empty:
-        ticker_df.drop_duplicates(subset=["ID", "Ticker"], inplace=True)
+        ticker_df = deduplicate_news_df(ticker_df)
         ticker_df.sort_values(by=["Date", "ID"], ascending=[True, True], inplace=True)
 
     return ticker_df
@@ -245,6 +257,18 @@ def main():
         if column not in news_df.columns:
             news_df[column] = pd.NA
     news_df = news_df[OUTPUT_COLUMNS].copy()
+
+    # Allineo anche tutti i CSV raw per ticker allo stesso schema ridotto.
+    for raw_path in RAW_OUTPUT_DIR.glob("*.csv"):
+        raw_df = pd.read_csv(raw_path)
+        for column in OUTPUT_COLUMNS:
+            if column not in raw_df.columns:
+                raw_df[column] = pd.NA
+        raw_df = raw_df[OUTPUT_COLUMNS].copy()
+        if not raw_df.empty:
+            raw_df = deduplicate_news_df(raw_df)
+            raw_df.sort_values(by=["Date", "ID"], ascending=[True, True], inplace=True)
+        raw_df.to_csv(raw_path, index=False, encoding="utf-8-sig")
 
     # Calcolo i ticker effettivamente presenti nel dataset news attuale.
     news_tickers = news_df["Ticker"].dropna().astype(str).str.strip()
@@ -326,7 +350,7 @@ def main():
     filled_summary_from_headline = fill_missing_summaries(news_df)
 
     # Deduplica e ordinamento finale prima del salvataggio.
-    news_df.drop_duplicates(subset=["ID", "Ticker"], inplace=True)
+    news_df = deduplicate_news_df(news_df)
     news_df.sort_values(by=["Ticker", "Date"], ascending=[True, True], inplace=True)
     news_df.to_csv(cfg.NEWS_ARTICLES, index=False, encoding="utf-8-sig")
 

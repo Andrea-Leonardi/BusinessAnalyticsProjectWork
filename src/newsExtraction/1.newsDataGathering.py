@@ -40,8 +40,11 @@ TICKER_LIMIT = int(os.getenv("NEWS_IMPORT_TICKER_LIMIT", "0")) or None
 FORCE_REFRESH = os.getenv("NEWS_IMPORT_FORCE_REFRESH", "0").lower() in {"1", "true", "yes"}
 
 
-# Colonne standard attese dal resto della pipeline news.
-OUTPUT_COLUMNS = ["ID", "Ticker", "Date", "Source", "Headline", "Summary", "Content", "URL"]
+# Colonne finali dei CSV news.
+# Manteniamo ID per identificare gli articoli in modo univoco.
+OUTPUT_COLUMNS = ["ID", "Ticker", "Date", "Headline", "Summary"]
+PRIMARY_DEDUP_COLUMNS = ["ID", "Ticker"]
+FALLBACK_DEDUP_COLUMNS = ["Ticker", "Date", "Headline", "Summary"]
 
 
 # Tutti i file intermedi e finali finiscono nella cartella dati del progetto.
@@ -82,6 +85,18 @@ def validate_api_credentials():
         raise EnvironmentError(
             "Variabili d'ambiente mancanti: imposta ALPACA_API_KEY e ALPACA_SECRET_KEY."
         )
+
+
+def deduplicate_news_df(df):
+    # Se gli ID sono presenti uso la chiave forte ID + Ticker.
+    # Per i file storici gia ripuliti senza ID tengo un fallback sui campi testuali.
+    if df.empty:
+        return df
+
+    if "ID" in df.columns and df["ID"].notna().any():
+        return df.drop_duplicates(subset=PRIMARY_DEDUP_COLUMNS)
+
+    return df.drop_duplicates(subset=FALLBACK_DEDUP_COLUMNS)
 
 
 def main():
@@ -250,11 +265,8 @@ def main():
                             "ID": article.get("id"),
                             "Ticker": ticker,
                             "Date": article.get("created_at"),
-                            "Source": article.get("source", ""),
                             "Headline": article.get("headline", ""),
                             "Summary": article.get("summary", ""),
-                            "Content": article.get("content", ""),
-                            "URL": article.get("url", ""),
                         }
                     )
 
@@ -262,7 +274,7 @@ def main():
 
             # Rimuovo duplicati generati da finestre sovrapposte o da split successivi.
             if not ticker_news.empty:
-                ticker_news.drop_duplicates(subset=["ID", "Ticker"], inplace=True)
+                ticker_news = deduplicate_news_df(ticker_news)
                 ticker_news.sort_values(by=["Date", "ID"], ascending=[True, True], inplace=True)
 
             ticker_news.to_csv(output_path, index=False, encoding="utf-8-sig")
@@ -275,8 +287,9 @@ def main():
         return
 
     merged_news = pd.concat((pd.read_csv(path) for path in all_files), ignore_index=True)
+    merged_news = merged_news[OUTPUT_COLUMNS].copy()
     if not merged_news.empty:
-        merged_news.drop_duplicates(subset=["ID", "Ticker"], inplace=True)
+        merged_news = deduplicate_news_df(merged_news)
         merged_news.sort_values(by=["Ticker", "Date"], ascending=[True, True], inplace=True)
 
     merged_news.to_csv(cfg.NEWS_ARTICLES, index=False, encoding="utf-8-sig")

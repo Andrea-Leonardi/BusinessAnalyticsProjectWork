@@ -80,7 +80,7 @@ def clean_text(text):
 
 # --- APPLICAZIONE AL DATAFRAME ---
 
-# Creiamo una nuova colonna 'Summary_Clean' mantenendo le altre (ID, Ticker, Date)
+# Creiamo una nuova colonna 'Summary_Clean' mantenendo le altre colonne chiave.
 df['Summary'] = df['Summary'].apply(clean_text)
 
 # Se vuoi vedere il risultato:

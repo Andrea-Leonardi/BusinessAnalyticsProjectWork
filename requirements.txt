@@ -20,7 +20,6 @@ lxml_html_clean
 newspaper3k
 nltk
 textblob
-torch
 tqdm
 transformers
 

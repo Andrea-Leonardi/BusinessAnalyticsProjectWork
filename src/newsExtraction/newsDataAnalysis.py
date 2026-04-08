@@ -18,14 +18,11 @@ null = df.apply(conta_valori_nulli, axis=0)
 tot_articoli = len(df)
 
 print(f"In totale abbiamo {tot_articoli} articoli sulle 110 tra il 2021-01-01 e il 2026-03-27.")
-print(f"Nella colonna degli ID abbiamo {null['ID']} valori nulli.")
+print(f"Nella colonna ID abbiamo {null['ID']} valori nulli.")
 print(f"Nella colonna Ticker abbiamo {null['Ticker']} valori nulli.")
 print(f"Nella colonna Date abbiamo {null['Date']} valori nulli.")
-print(f"Nella colonna Source abbiamo {null['Source']} valori nulli.")
 print(f"Nella colonna Headline abbiamo {null['Headline']} valori nulli.")
 print(f"Nella colonna Summary abbiamo {null['Summary']} valori nulli.")
-print(f"Nella colonna Content abbiamo {null['Content']} valori nulli.")
-print(f"Nella colonna URL abbiamo {null['URL']} valori nulli.")
 
 #%%
 # vediamo qunati articoli abbiamo per ogni azienda

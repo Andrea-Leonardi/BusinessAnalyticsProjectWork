@@ -79,7 +79,7 @@ def analyze_row(row):
 # Applicazione del modello
 text_analysis = df.apply(analyze_row, axis=1).apply(pd.Series)
 
-text_analysis.sort_values(by=["enterprise", "date"], ascending=[False, True], inplace=True)
+text_analysis.sort_values(by=["Ticker", "Date"], ascending=[True, True], inplace=True)
 text_analysis.to_csv(cfg.ANALYSIS_TEXT, index=False, encoding='utf-8-sig')
 
 # %%
