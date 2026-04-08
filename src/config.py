@@ -30,10 +30,12 @@ FULL_DATA = DATA_EXTRACTION / "fulldata.csv"
 FULL_DATA_ML = DATA_EXTRACTION / "fulldata_ml.csv"
 NEWS_ARTICLES = NEWS_EXTRACTION / "newsArticles.csv"
 ANALYSIS_TEXT = NEWS_EXTRACTION / "textAnalysis.csv"
+ANALYSIS_TEXT_WEEKLY = NEWS_EXTRACTION / "textAnalysisWeekly.csv"
 VECTORIZATION_BAG_OF_WORDS_FINANCIAL_PHRASEBANK = NEWS_EXTRACTION / "vectorizationBagOfWordsFinancialPhrasebank.csv"
 VECTORIZATION_TFIDF_FINANCIAL_PHRASEBANK = NEWS_EXTRACTION / "vectorizationTfidfFinancialPhrasebank.csv"
 VECTORIZATION_BAG_OF_WORDS_ARTICLES = NEWS_EXTRACTION / "vectorizationBagOfWordsArticles.csv"
 VECTORIZATION_TFIDF_ARTICLES = NEWS_EXTRACTION / "vectorizationTfidfArticles.csv"
+FULL_DATA_WITH_NEWS = DATA_EXTRACTION / "fulldata_with_news.csv"
 # ---------------------------------------------------------------------------
 # Company-Level Output Folders
 # ---------------------------------------------------------------------------
