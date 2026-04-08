@@ -1,0 +1,30 @@
+# Core analytics
+numpy
+pandas>=3.0
+requests
+yfinance
+matplotlib
+seaborn
+scikit-learn
+
+# Jupyter / VS Code notebooks
+ipykernel
+
+# News extraction and NLP
+beautifulsoup4
+certifi
+datasets
+huggingface-hub
+lxml
+lxml_html_clean
+newspaper3k
+nltk
+textblob
+torch
+tqdm
+transformers
+
+# Utilities
+python-dotenv
+setuptools
+wheel

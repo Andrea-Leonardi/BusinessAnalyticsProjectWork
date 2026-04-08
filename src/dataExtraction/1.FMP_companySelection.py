@@ -56,6 +56,9 @@ EXCLUDED_TICKERS = {
     "MUFG",
     "CTA-PA",
     "HDB",
+    "PUK",
+    "NGG",
+    "BBDO"
 }
 
 

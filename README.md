@@ -1,22 +1,74 @@
 # BusinessAnalyticsProjectWork
-Main repository for the project files
+
+Repository for the Business Analytics project code, data, and reports.
+
+## Environment Setup
+
+This project now standardizes on a single local virtual environment named `.venv`.
+Do not create additional `venv`, `env`, or notebook-specific environments inside the repository.
+
+### Bootstrap the project
+
+From the repository root in PowerShell:
+
+```powershell
+.\scripts\bootstrap_venv.ps1
+```
+
+If you want to recreate the environment from scratch:
+
+```powershell
+.\scripts\bootstrap_venv.ps1 -Recreate
+```
+
+If you also want to register a dedicated Jupyter kernel:
+
+```powershell
+.\scripts\bootstrap_venv.ps1 -RegisterKernel
+```
+
+The bootstrap script:
+
+1. uses the local Python installation
+2. creates or reuses `.venv`
+3. upgrades `pip`
+4. installs the packages listed in [requirements.txt](/c:/Users/leoan/OneDrive/All/Andrea/Documenti/GitHub/BusinessAnalyticsProjectWork/requirements.txt)
+
+The default environment excludes ad hoc notebook-only packages that are not part of the shared project workflow.
+In particular, legacy `alpaca_trade_api` cells found in some notebook exports are not required for the main repository setup.
+
+### VS Code and Jupyter
+
+The repository includes [settings.json](/c:/Users/leoan/OneDrive/All/Andrea/Documenti/GitHub/BusinessAnalyticsProjectWork/.vscode/settings.json) that points VS Code to `.venv\Scripts\python.exe`.
+
+If Jupyter still shows the wrong kernel:
+
+1. open the Command Palette
+2. run `Python: Select Interpreter`
+3. choose `.venv\Scripts\python.exe`
+4. reopen the notebook and select the `.venv` kernel
+
+### Legacy environments
+
+If you still see folders such as `.venv_old`, treat them as temporary backups only.
+Once the new `.venv` works and you have reinstalled the required packages, you can delete those legacy folders locally.
 
 ## Repository Structure
 
-The repository is organized to follow a clear workflow for the project development and to keep code, data, and documentation well separated.
-
 ### `reports/`
-This folder contains text files documenting each phase of the project.  
-Here we write the reports describing what has been done, the decisions taken, and the results obtained for every step of the CRISP-DM process.
+
+Project documentation and CRISP-DM deliverables.
 
 ### `data/`
-This folder stores the datasets used in the project.  
-It may include raw and processed data files such as `.csv`, `.txt`, or other structured formats.
+
+Raw and processed datasets used by the project.
 
 ### `notebooks/`
-This folder contains links to the **Google Colab notebooks** used for collaborative development.  
-Notebooks allow the team to experiment, test models, and develop the code together in an interactive environment.
+
+Exploratory notebooks and Colab-derived scripts.
+Some notebook fragments still contain Colab-specific commands such as `!pip install` or `google.colab`; these are not part of the standard local setup.
+Some exported notebook code also references legacy packages that are intentionally not included in the default environment.
 
 ### `src/`
-This folder contains the **final implementation of the project code**.  
-Here we store clean and reusable scripts written in `.py` or `.R` that implement the data processing pipeline, feature engineering, and modeling.
+
+Reusable project scripts for data extraction, news processing, and modeling.
