@@ -8,16 +8,16 @@ import config as cfg
 
 
 def main():
-    # Carico il dataset news prodotto dallo step di raccolta.
+    # Carico il dataset news gia creato.
     df = pd.read_csv(cfg.NEWS_ARTICLES)
 
-    # Considero missing sia i NaN veri sia eventuali stringhe vuote o fatte solo di spazi.
+    # Considero missing sia i NaN sia le stringhe vuote o composte solo da spazi.
     summary_missing_mask = df["Summary"].isna() | df["Summary"].astype(str).str.strip().eq("")
 
-    # Quando il summary manca, copio direttamente il titolo dell'articolo.
-    df.loc[summary_missing_mask, "Summary"] = df.loc[summary_missing_mask, "Headline"]
+    # Quando manca il summary, uso direttamente il titolo della news.
+    df.loc[summary_missing_mask, "Summary"] = df.loc[summary_missing_mask, "Headline"].fillna("")
 
-    # Mantengo un ordinamento coerente con il resto della pipeline.
+    # Ordino e salvo di nuovo il file aggiornato.
     df.sort_values(by=["Ticker", "Date"], ascending=[True, True], inplace=True)
     df.to_csv(cfg.NEWS_ARTICLES, index=False, encoding="utf-8-sig")
 
