@@ -23,8 +23,13 @@ HEADERS = {
 }
 
 
-# Ticker da aggiornare in modo mirato.
-# Se lasciato vuoto, lo script pulisce solo i ticker non piu validi.
+# Lista manuale di ticker da riscaricare o aggiungere dopo l'allineamento automatico.
+# Se la lasci vuota, lo script fa solo l'allineamento tra enterprises.csv e newsArticles.csv.
+# Esempio: MANUAL_TICKERS_TO_DOWNLOAD = ["AAPL", "MSFT"]
+MANUAL_TICKERS_TO_DOWNLOAD = []
+
+# Ticker opzionale via variabile d'ambiente.
+# Se valorizzato, viene aggiunto alla lista manuale sopra.
 TARGET_TICKER = os.getenv("NEWS_MAINTENANCE_TICKER", "").strip().upper()
 START_DATE = os.getenv("NEWS_IMPORT_START", "2021-01-01")
 END_DATE = os.getenv("NEWS_IMPORT_END", "2026-03-27")
@@ -226,28 +231,68 @@ def main():
             news_df[column] = pd.NA
     news_df = news_df[OUTPUT_COLUMNS].copy()
 
+    # Calcolo i ticker effettivamente presenti nel dataset news attuale.
+    news_tickers = news_df["Ticker"].dropna().astype(str).str.strip()
+    news_tickers = news_tickers[news_tickers.ne("")]
+    news_ticker_set = set(news_tickers.drop_duplicates().tolist())
+
     # Elimino le righe di ticker che non esistono piu in enterprises.csv.
     rows_before_cleanup = len(news_df)
     news_df = news_df[news_df["Ticker"].isin(valid_ticker_set)].copy()
     removed_invalid_ticker_rows = rows_before_cleanup - len(news_df)
 
-    downloaded_rows = 0
+    # Identifico i ticker presenti in enterprises.csv ma assenti da newsArticles.csv.
+    missing_in_news = sorted(valid_ticker_set - news_ticker_set)
+    tickers_to_refresh = list(missing_in_news)
 
-    # Se specifico un ticker target, lo riscarico e sostituisco le sue righe nel dataset.
+    # Normalizzo la lista manuale definita in alto nel file.
+    manual_tickers = []
+    for ticker in MANUAL_TICKERS_TO_DOWNLOAD:
+        cleaned_ticker = str(ticker).strip().upper()
+        if cleaned_ticker:
+            manual_tickers.append(cleaned_ticker)
+
+    # Mantengo anche il supporto opzionale via variabile d'ambiente.
     if TARGET_TICKER:
-        if TARGET_TICKER not in valid_ticker_set:
-            raise ValueError(f"{TARGET_TICKER} non e presente in enterprises.csv")
+        manual_tickers.append(TARGET_TICKER)
 
-        print(f"Avvio aggiornamento mirato per {TARGET_TICKER}")
-        target_df = download_single_ticker_news(TARGET_TICKER)
-        downloaded_rows = len(target_df)
+    # Tolgo eventuali duplicati preservando l'ordine.
+    manual_tickers = list(dict.fromkeys(manual_tickers))
 
-        news_df = news_df[news_df["Ticker"] != TARGET_TICKER].copy()
-        news_df = pd.concat([news_df, target_df], ignore_index=True)
+    # Valido i ticker manuali rispetto a enterprises.csv.
+    invalid_manual_tickers = [ticker for ticker in manual_tickers if ticker not in valid_ticker_set]
+    if invalid_manual_tickers:
+        raise ValueError(
+            f"Questi ticker manuali non sono presenti in enterprises.csv: {invalid_manual_tickers}"
+        )
+
+    # Dopo l'allineamento aggiungo anche gli eventuali ticker scelti manualmente.
+    for ticker in manual_tickers:
+        if ticker not in tickers_to_refresh:
+            tickers_to_refresh.append(ticker)
+
+    downloaded_tickers = []
+    downloaded_rows = 0
+    empty_download_tickers = []
+
+    # Scarico tutti i ticker mancanti nel dataset news e gli eventuali refresh espliciti.
+    for ticker in tickers_to_refresh:
+        print(f"Avvio aggiornamento per {ticker}")
+        ticker_df = download_single_ticker_news(ticker)
+
+        # Prima rimuovo tutte le righe correnti del ticker, poi inserisco il nuovo risultato.
+        news_df = news_df[news_df["Ticker"] != ticker].copy()
+        news_df = pd.concat([news_df, ticker_df], ignore_index=True)
 
         # Aggiorno anche il file raw del ticker per mantenere allineati i file intermedi.
-        target_output_path = RAW_OUTPUT_DIR / f"{TARGET_TICKER}.csv"
-        target_df.to_csv(target_output_path, index=False, encoding="utf-8-sig")
+        target_output_path = RAW_OUTPUT_DIR / f"{ticker}.csv"
+        ticker_df.to_csv(target_output_path, index=False, encoding="utf-8-sig")
+
+        downloaded_tickers.append(ticker)
+        downloaded_rows += len(ticker_df)
+
+        if ticker_df.empty:
+            empty_download_tickers.append(ticker)
 
     # Deduplica e ordinamento finale prima del salvataggio.
     news_df.drop_duplicates(subset=["ID", "Ticker"], inplace=True)
@@ -259,8 +304,12 @@ def main():
         {
             "rows_final": len(news_df),
             "removed_invalid_ticker_rows": int(removed_invalid_ticker_rows),
-            "downloaded_target_ticker": TARGET_TICKER or None,
+            "missing_tickers_in_news_before_update": len(missing_in_news),
+            "manual_tickers_requested": manual_tickers,
+            "downloaded_tickers": downloaded_tickers,
             "downloaded_rows": int(downloaded_rows),
+            "empty_download_tickers": empty_download_tickers,
+            "forced_refresh_ticker": TARGET_TICKER or None,
             "output": str(cfg.NEWS_ARTICLES),
         },
     )
