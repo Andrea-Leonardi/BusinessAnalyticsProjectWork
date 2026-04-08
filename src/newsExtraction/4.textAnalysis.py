@@ -34,6 +34,7 @@ os.environ.setdefault("HF_HUB_OFFLINE", "1")
 os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
 from transformers import pipeline
+from transformers.pipelines.pt_utils import KeyDataset
 
 try:
     import torch
@@ -91,6 +92,20 @@ def prepare_analysis_text(summary_series: pd.Series, headline_series: pd.Series)
     cleaned_summary = clean_summaries(summary_series)
     cleaned_headline = clean_summaries(headline_series)
     return cleaned_summary.mask(cleaned_summary.eq(""), cleaned_headline)
+
+
+class TextDataset:
+    # Dataset minimale per far processare alla pipeline tutti i testi dentro
+    # un solo flusso, evitando chiamate GPU sequenziali dal lato Python.
+
+    def __init__(self, texts: list[str]):
+        self.rows = [{"text": text} for text in texts]
+
+    def __len__(self):
+        return len(self.rows)
+
+    def __getitem__(self, index):
+        return self.rows[index]
 
 
 def maybe_print_progress(
@@ -283,6 +298,42 @@ def add_scored_output(metrics_by_text: dict[str, dict], texts: list[str], output
             metrics_by_text[text][f"{prefix}_{label}"] = round(item["score"], 4)
 
 
+def stream_pipeline_outputs(
+    pipe,
+    texts: list[str],
+    batch_size: int,
+    stage_name: str,
+    progress_state: dict[str, float],
+    stage_start_time: float,
+    **pipeline_kwargs,
+):
+    # Faccio girare la pipeline su un dataset unico invece che su tante call
+    # separate, cosi la GPU lavora in modo piu efficiente.
+    dataset = TextDataset(texts)
+    keyed_dataset = KeyDataset(dataset, "text")
+    streamed_outputs = []
+
+    for index, output in enumerate(
+        pipe(
+            keyed_dataset,
+            batch_size=batch_size,
+            **pipeline_kwargs,
+        ),
+        start=1,
+    ):
+        streamed_outputs.append(output)
+        maybe_print_progress(
+            stage_name=stage_name,
+            processed_items=index,
+            total_items=len(texts),
+            stage_start_time=stage_start_time,
+            progress_state=progress_state,
+            force=index == len(texts),
+        )
+
+    return streamed_outputs
+
+
 def analyze_unique_texts(
     unique_texts: list[str],
     pipe_finbert,
@@ -316,68 +367,60 @@ def analyze_unique_texts(
     # 2. FINBERT
     # -----------------------------------------------------------------------
 
-    finbert_processed = 0
     finbert_start_time = time.time()
-    for batch in iter_batches(unique_texts, FINBERT_BATCH_SIZE):
-        outputs = pipe_finbert(batch, truncation=True)
-        add_scored_output(metrics_by_text, batch, outputs, "FINBERT")
-        finbert_processed += len(batch)
-        maybe_print_progress(
-            stage_name="FinBERT",
-            processed_items=finbert_processed,
-            total_items=total_texts,
-            stage_start_time=finbert_start_time,
-            progress_state=progress_state,
-            force=finbert_processed == total_texts,
-        )
+    finbert_outputs = stream_pipeline_outputs(
+        pipe=pipe_finbert,
+        texts=unique_texts,
+        batch_size=FINBERT_BATCH_SIZE,
+        stage_name="FinBERT",
+        progress_state=progress_state,
+        stage_start_time=finbert_start_time,
+        truncation=True,
+    )
+    add_scored_output(metrics_by_text, unique_texts, finbert_outputs, "FINBERT")
 
     # -----------------------------------------------------------------------
     # 3. GOEMOTIONS
     # -----------------------------------------------------------------------
 
-    emotions_processed = 0
     emotions_start_time = time.time()
-    for batch in iter_batches(unique_texts, EMOTIONS_BATCH_SIZE):
-        outputs = pipe_emotions(batch, truncation=True)
-        add_scored_output(metrics_by_text, batch, outputs, "EMO")
-        emotions_processed += len(batch)
-        maybe_print_progress(
-            stage_name="GoEmotions",
-            processed_items=emotions_processed,
-            total_items=total_texts,
-            stage_start_time=emotions_start_time,
-            progress_state=progress_state,
-            force=emotions_processed == total_texts,
-        )
+    emotions_outputs = stream_pipeline_outputs(
+        pipe=pipe_emotions,
+        texts=unique_texts,
+        batch_size=EMOTIONS_BATCH_SIZE,
+        stage_name="GoEmotions",
+        progress_state=progress_state,
+        stage_start_time=emotions_start_time,
+        truncation=True,
+    )
+    add_scored_output(metrics_by_text, unique_texts, emotions_outputs, "EMO")
 
     # -----------------------------------------------------------------------
     # 4. ZERO-SHOT
     # -----------------------------------------------------------------------
 
     if pipe_zeroshot is not None:
-        zeroshot_processed = 0
         zeroshot_start_time = time.time()
-        for batch in iter_batches(unique_texts, ZERO_SHOT_BATCH_SIZE):
-            outputs = pipe_zeroshot(
-                batch,
-                candidate_labels=ZERO_SHOT_LABELS,
-                truncation=True,
-            )
-            if isinstance(outputs, dict):
-                outputs = [outputs]
+        zeroshot_outputs = stream_pipeline_outputs(
+            pipe=pipe_zeroshot,
+            texts=unique_texts,
+            batch_size=ZERO_SHOT_BATCH_SIZE,
+            stage_name="ZeroShot",
+            progress_state=progress_state,
+            stage_start_time=zeroshot_start_time,
+            candidate_labels=ZERO_SHOT_LABELS,
+            truncation=True,
+        )
 
-            for text, output in zip(batch, outputs):
-                for label, score in zip(output["labels"], output["scores"]):
-                    metrics_by_text[text][f"GPOMS_{label}"] = round(score, 4)
-            zeroshot_processed += len(batch)
-            maybe_print_progress(
-                stage_name="ZeroShot",
-                processed_items=zeroshot_processed,
-                total_items=total_texts,
-                stage_start_time=zeroshot_start_time,
-                progress_state=progress_state,
-                force=zeroshot_processed == total_texts,
-            )
+        for text, output in zip(unique_texts, zeroshot_outputs):
+            if isinstance(output, dict):
+                output = [output]
+
+            if isinstance(output, list):
+                output = output[0]
+
+            for label, score in zip(output["labels"], output["scores"]):
+                metrics_by_text[text][f"GPOMS_{label}"] = round(score, 4)
 
     return metrics_by_text
 
