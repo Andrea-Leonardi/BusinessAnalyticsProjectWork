@@ -20,11 +20,11 @@ from sklearn.metrics import accuracy_score
 param_grid = { 
 
     "n_estimators": [500],
-    "max_depth":  [3, 5, 8], 
-    "min_samples_leaf" : [20],#[5], , None
+    "max_depth":  [3], #, 5, 8], 
+    "min_samples_leaf" : [20], #[5], , None
     "max_features":["sqrt", 0.3, 0.5] #["sqrt"] 
 
-}   #72 combinazioni in totale
+}   
 
 
 
@@ -62,9 +62,9 @@ for n_estimators, max_depth,min_samples_leaf, max_features in itertools.product(
         n_jobs=-1,
     )
 
-    random_forest_model.fit(X_train, y_train)
+    random_forest_model.fit(X_train_selected, y_train)
 
-    y_pred_validation = random_forest_model.predict(X_validation)
+    y_pred_validation = random_forest_model.predict(X_validation_selected)
 
     score = accuracy_score(y_validation, y_pred_validation)
 
