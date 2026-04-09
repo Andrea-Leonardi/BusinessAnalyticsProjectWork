@@ -1,0 +1,1021 @@
+symbol,companyName,sector,industry,exchangeShortName,marketCap,historicalMarketCapDate,selectionReferenceDate,universeSource
+GOOGL,Alphabet Inc.,Communication Services,Internet Content & Information,NASDAQ,1162111841047.0,2021-01-04,2021-01-04,active_screener
+AVGO,Broadcom Inc.,Technology,Semiconductors,NASDAQ,173490104000.0,2021-01-04,2021-01-04,active_screener
+MSFT,Microsoft Corporation,Technology,Software - Infrastructure,NASDAQ,1641164910000.0,2021-01-04,2021-01-04,active_screener
+TSM,Taiwan Semiconductor Manufacturing Company Limited,Technology,Semiconductors,NYSE,579284689200.0,2021-01-04,2021-01-04,active_screener
+AMZN,"Amazon.com, Inc.",Consumer Cyclical,Specialty Retail,NASDAQ,1606046400000.0,2021-01-04,2021-01-04,active_screener
+AAPL,Apple Inc.,Technology,Consumer Electronics,NASDAQ,2168067329160.0,2021-01-04,2021-01-04,active_screener
+META,"Meta Platforms, Inc.",Communication Services,Internet Content & Information,NASDAQ,773976778260.0,2021-01-04,2021-01-04,active_screener
+NVDA,NVIDIA Corporation,Technology,Semiconductors,NASDAQ,324603600000.0,2021-01-04,2021-01-04,active_screener
+TSLA,"Tesla, Inc.",Consumer Cyclical,Auto - Manufacturers,NASDAQ,701318580000.0,2021-01-04,2021-01-04,active_screener
+GOOG,Alphabet Inc.,Communication Services,Internet Content & Information,NASDAQ,1162111841047.0,2021-01-04,2021-01-04,active_screener
+BRK-A,Berkshire Hathaway Inc.,Financial Services,Insurance - Diversified,NYSE,526623825000.0,2021-01-04,2021-01-04,active_screener
+BRK-B,Berkshire Hathaway Inc.,Financial Services,Insurance - Diversified,NYSE,525417859350.0,2021-01-04,2021-01-04,active_screener
+WMT,Walmart Inc.,Consumer Defensive,Discount Stores,NASDAQ,414065520000.0,2021-01-04,2021-01-04,active_screener
+LLY,Eli Lilly and Company,Healthcare,Drug Manufacturers - General,NYSE,150406400000.0,2021-01-04,2021-01-04,active_screener
+JPM,JPMorgan Chase & Co.,Financial Services,Banks - Diversified,NYSE,387427860000.0,2021-01-04,2021-01-04,active_screener
+XOM,Exxon Mobil Corporation,Energy,Oil & Gas Integrated,NYSE,177023437500.0,2021-01-04,2021-01-04,active_screener
+V,Visa Inc.,Financial Services,Financial - Credit Services,NYSE,477547680000.0,2021-01-04,2021-01-04,active_screener
+JNJ,Johnson & Johnson,Healthcare,Drug Manufacturers - General,NYSE,412017863000.0,2021-01-04,2021-01-04,active_screener
+ASML,ASML Holding N.V.,Technology,Semiconductors,NASDAQ,207650000000.0,2021-01-04,2021-01-04,active_screener
+MU,"Micron Technology, Inc.",Technology,Semiconductors,NASDAQ,82936000000.0,2021-01-04,2021-01-04,active_screener
+COST,Costco Wholesale Corporation,Consumer Defensive,Discount Stores,NASDAQ,168457390100.0,2021-01-04,2021-01-04,active_screener
+MA,Mastercard Incorporated,Financial Services,Financial - Credit Services,NYSE,349381060000.0,2021-01-04,2021-01-04,active_screener
+NFLX,"Netflix, Inc.",Communication Services,Entertainment,NASDAQ,231761829600.0,2021-01-04,2021-01-04,active_screener
+ORCL,Oracle Corporation,Technology,Software - Infrastructure,NYSE,185703750000.0,2021-01-04,2021-01-04,active_screener
+CVX,Chevron Corporation,Energy,Oil & Gas Integrated,NYSE,162043876750.0,2021-01-04,2021-01-04,active_screener
+AMD,"Advanced Micro Devices, Inc.",Technology,Semiconductors,NASDAQ,111959900000.0,2021-01-04,2021-01-04,active_screener
+ABBV,AbbVie Inc.,Healthcare,Drug Manufacturers - General,NYSE,186470290000.0,2021-01-04,2021-01-04,active_screener
+BAC,Bank of America Corporation,Financial Services,Banks - Diversified,NYSE,261264003000.0,2021-01-04,2021-01-04,active_screener
+CAT,Caterpillar Inc.,Industrials,Agricultural - Machinery,NYSE,99526760000.0,2021-01-04,2021-01-04,active_screener
+PG,The Procter & Gamble Company,Consumer Defensive,Household & Personal Products,NYSE,338913162000.0,2021-01-04,2021-01-04,active_screener
+HD,"The Home Depot, Inc.",Consumer Cyclical,Home Improvement,NYSE,283450080000.0,2021-01-04,2021-01-04,active_screener
+KO,The Coca-Cola Company,Consumer Defensive,Beverages - Non-Alcoholic,NYSE,227237320000.0,2021-01-04,2021-01-04,active_screener
+CSCO,"Cisco Systems, Inc.",Technology,Communication Equipment,NASDAQ,185643080000.0,2021-01-04,2021-01-04,active_screener
+GE,GE Aerospace,Industrials,Aerospace & Defense,NYSE,57160545000.0,2021-01-04,2021-01-04,active_screener
+PLTR,Palantir Technologies Inc.,Technology,Software - Infrastructure,NASDAQ,42560462460.0,2021-01-04,2021-01-04,active_screener
+AZN,AstraZeneca PLC,Healthcare,Drug Manufacturers - General,NYSE,268304000000.0,2021-01-04,2021-01-04,active_screener
+HSBC,HSBC Holdings plc,Financial Services,Banks - Diversified,NYSE,103974156000.0,2021-01-04,2021-01-04,active_screener
+AMAT,"Applied Materials, Inc.",Technology,Semiconductors,NASDAQ,79486050000.0,2021-01-04,2021-01-04,active_screener
+NVS,Novartis AG,Healthcare,Drug Manufacturers - General,NYSE,201103600000.0,2021-01-04,2021-01-04,active_screener
+MRK,"Merck & Co., Inc.",Healthcare,Drug Manufacturers - General,NYSE,195416649268.0,2021-01-04,2021-01-04,active_screener
+LRCX,Lam Research Corporation,Technology,Semiconductors,NASDAQ,68199127999.0,2021-01-04,2021-01-04,active_screener
+INTC,Intel Corporation,Technology,Semiconductors,NASDAQ,201461520000.0,2021-01-04,2021-01-04,active_screener
+BABA,Alibaba Group Holding Limited,Consumer Cyclical,Specialty Retail,NYSE,616676025000.0,2021-01-04,2021-01-04,active_screener
+TM,Toyota Motor Corporation,Consumer Cyclical,Auto - Manufacturers,NYSE,214294867287.0,2021-01-04,2021-01-04,active_screener
+MS,Morgan Stanley,Financial Services,Financial - Capital Markets,NYSE,122652350000.0,2021-01-04,2021-01-04,active_screener
+UNH,UnitedHealth Group Incorporated,Healthcare,Medical - Healthcare Plans,NYSE,329928000000.0,2021-01-04,2021-01-04,active_screener
+RTX,RTX Corporation,Industrials,Aerospace & Defense,NYSE,103404573000.0,2021-01-04,2021-01-04,active_screener
+GS,"The Goldman Sachs Group, Inc.",Financial Services,Financial - Capital Markets,NYSE,94498998940.0,2021-01-04,2021-01-04,active_screener
+WFC,Wells Fargo & Company,Financial Services,Banks - Diversified,NYSE,122996610000.0,2021-01-04,2021-01-04,active_screener
+SHEL,Shell plc,Energy,Oil & Gas Integrated,NYSE,140194531500.0,2021-01-04,2021-01-04,active_screener
+PM,Philip Morris International Inc.,Consumer Defensive,Tobacco,NYSE,126977000000.0,2021-01-04,2021-01-04,active_screener
+RY,Royal Bank of Canada,Financial Services,Banks - Diversified,NYSE,116529664500.0,2021-01-04,2021-01-04,active_screener
+LIN,Linde plc,Basic Materials,Chemicals - Specialty,NASDAQ,135217613790.0,2021-01-04,2021-01-04,active_screener
+TMUS,"T-Mobile US, Inc.",Communication Services,Telecommunications Services,NASDAQ,164679357043.0,2021-01-04,2021-01-04,active_screener
+IBM,International Business Machines Corporation,Technology,Information Technology Services,NYSE,105788027836.0,2021-01-04,2021-01-04,active_screener
+KLAC,KLA Corporation,Technology,Semiconductors,NASDAQ,40039014330.0,2021-01-04,2021-01-04,active_screener
+MCD,McDonald's Corporation,Consumer Cyclical,Restaurants,NYSE,156782076000.0,2021-01-04,2021-01-04,active_screener
+AXP,American Express Company,Financial Services,Financial - Credit Services,NYSE,94904160000.0,2021-01-04,2021-01-04,active_screener
+PEP,"PepsiCo, Inc.",Consumer Defensive,Beverages - Non-Alcoholic,NASDAQ,199092600000.0,2021-01-04,2021-01-04,active_screener
+MUFG,"Mitsubishi UFJ Financial Group, Inc.",Financial Services,Banks - Diversified,NYSE,56243128860.0,2021-01-04,2021-01-04,active_screener
+C,Citigroup Inc.,Financial Services,Banks - Diversified,NYSE,125211480000.0,2021-01-04,2021-01-04,active_screener
+VZ,Verizon Communications Inc.,Communication Services,Telecommunications Services,NYSE,243697850000.0,2021-01-04,2021-01-04,active_screener
+TTE,TotalEnergies SE,Energy,Oil & Gas Integrated,NYSE,111445191087.0,2021-01-04,2021-01-04,active_screener
+SAP,SAP SE,Technology,Software - Application,NYSE,152738181712.0,2021-01-04,2021-01-04,active_screener
+BHP,BHP Group Limited,Basic Materials,Industrial Materials,NYSE,152196834229.0,2021-01-04,2021-01-04,active_screener
+NEE,"NextEra Energy, Inc.",Utilities,Regulated Electric,NYSE,145589952000.0,2021-01-04,2021-01-04,active_screener
+TXN,Texas Instruments Incorporated,Technology,Semiconductors,NASDAQ,149566840000.0,2021-01-04,2021-01-04,active_screener
+AMGN,Amgen Inc.,Healthcare,Drug Manufacturers - General,NASDAQ,130782820000.0,2021-01-04,2021-01-04,active_screener
+ABT,Abbott Laboratories,Healthcare,Medical - Devices,NYSE,193868846348.0,2021-01-04,2021-01-04,active_screener
+TJX,"The TJX Companies, Inc.",Consumer Cyclical,Apparel - Retail,NYSE,80485873380.0,2021-01-04,2021-01-04,active_screener
+ANET,"Arista Networks, Inc.",Technology,Computer Hardware,NYSE,21609859200.0,2021-01-04,2021-01-04,active_screener
+T,AT&T Inc.,Communication Services,Telecommunications Services,NYSE,159117420000.0,2021-01-04,2021-01-04,active_screener
+SAN,"Banco Santander, S.A.",Financial Services,Banks - Diversified,NYSE,58077176468.0,2021-01-04,2021-01-04,active_screener
+DIS,The Walt Disney Company,Communication Services,Entertainment,NYSE,322844560000.0,2021-01-04,2021-01-04,active_screener
+GILD,"Gilead Sciences, Inc.",Healthcare,Drug Manufacturers - General,NASDAQ,75498160000.0,2021-01-04,2021-01-04,active_screener
+TMO,Thermo Fisher Scientific Inc.,Healthcare,Medical - Diagnostics & Research,NYSE,185897080000.0,2021-01-04,2021-01-04,active_screener
+SCHW,The Charles Schwab Corporation,Financial Services,Financial - Capital Markets,NYSE,99294320000.0,2021-01-04,2021-01-04,active_screener
+BA,The Boeing Company,Industrials,Aerospace & Defense,NYSE,118591200000.0,2021-01-04,2021-01-04,active_screener
+ADI,"Analog Devices, Inc.",Technology,Semiconductors,NASDAQ,53911022060.0,2021-01-04,2021-01-04,active_screener
+TD,The Toronto-Dominion Bank,Financial Services,Banks - Diversified,NYSE,104160463255.0,2021-01-04,2021-01-04,active_screener
+NVO,Novo Nordisk A/S,Healthcare,Drug Manufacturers - General,NYSE,164997824000.0,2021-01-04,2021-01-04,active_screener
+CRM,"Salesforce, Inc.",Technology,Software - Application,NYSE,201803960000.0,2021-01-04,2021-01-04,active_screener
+APH,Amphenol Corporation,Technology,"Hardware, Equipment & Parts",NYSE,38459610000.0,2021-01-04,2021-01-04,active_screener
+DE,Deere & Company,Industrials,Agricultural - Machinery,NYSE,83905140000.0,2021-01-04,2021-01-04,active_screener
+ISRG,"Intuitive Surgical, Inc.",Healthcare,Medical - Instruments & Supplies,NASDAQ,94241181200.0,2021-01-04,2021-01-04,active_screener
+RIO,Rio Tinto Group,Basic Materials,Industrial Materials,NYSE,125224759000.0,2021-01-04,2021-01-04,active_screener
+SHOP,Shopify Inc.,Technology,Software - Application,NASDAQ,134631417880.0,2021-01-04,2021-01-04,active_screener
+BLK,"BlackRock, Inc.",Financial Services,Asset Management,NYSE,108883529861.0,2021-01-04,2021-01-04,active_screener
+PFE,Pfizer Inc.,Healthcare,Drug Manufacturers - General,NYSE,205547040000.0,2021-01-04,2021-01-04,active_screener
+SCCO,Southern Copper Corporation,Basic Materials,Copper,NYSE,50004108000.0,2021-01-04,2021-01-04,active_screener
+COP,ConocoPhillips,Energy,Oil & Gas Exploration & Production,NYSE,51455838750.0,2021-01-04,2021-01-04,active_screener
+ETN,Eaton Corporation plc,Industrials,Industrial - Machinery,NYSE,47298125000.0,2021-01-04,2021-01-04,active_screener
+UBER,"Uber Technologies, Inc.",Technology,Software - Application,NYSE,92052000000.0,2021-01-04,2021-01-04,active_screener
+UNP,Union Pacific Corporation,Industrials,Railroads,NYSE,135529476000.0,2021-01-04,2021-01-04,active_screener
+HON,Honeywell International Inc.,Industrials,Conglomerates,NASDAQ,144774790000.0,2021-01-04,2021-01-04,active_screener
+LMT,Lockheed Martin Corporation,Industrials,Aerospace & Defense,NYSE,96154560000.0,2021-01-04,2021-01-04,active_screener
+BKNG,Booking Holdings Inc.,Consumer Cyclical,Travel Services,NASDAQ,88665572000.0,2021-01-04,2021-01-04,active_screener
+BUD,Anheuser-Busch InBev SA/NV,Consumer Defensive,Beverages - Alcoholic,NYSE,139888850000.0,2021-01-04,2021-01-04,active_screener
+WELL,Welltower Inc.,Real Estate,REIT - Healthcare Facilities,NYSE,25702045600.0,2021-01-04,2021-01-04,active_screener
+PDD,PDD Holdings Inc.,Consumer Cyclical,Specialty Retail,NASDAQ,207788283350.0,2021-01-04,2021-01-04,active_screener
+GLW,Corning Incorporated,Technology,"Hardware, Equipment & Parts",NYSE,26748720000.0,2021-01-04,2021-01-04,active_screener
+BX,Blackstone Inc.,Financial Services,Asset Management,NYSE,68494974382.0,2021-01-04,2021-01-04,active_screener
+HDB,HDFC Bank Limited,Financial Services,Banks - Regional,NYSE,129485510000.0,2021-01-04,2021-01-04,active_screener
+DHR,Danaher Corporation,Healthcare,Medical - Diagnostics & Research,NYSE,141120884000.0,2021-01-04,2021-01-04,active_screener
+LOW,"Lowe's Companies, Inc.",Consumer Cyclical,Home Improvement,NYSE,117718920000.0,2021-01-04,2021-01-04,active_screener
+QCOM,QUALCOMM Incorporated,Technology,Semiconductors,NASDAQ,168250500000.0,2021-01-04,2021-01-04,active_screener
+BBVA,"Banco Bilbao Vizcaya Argentaria, S.A.",Financial Services,Banks - Diversified,NYSE,32885580000.0,2021-01-04,2021-01-04,active_screener
+TBB,AT&T Inc. 5.35% GLB NTS 66,Communication Services,Telecommunications Services,NYSE,159117420000.0,2021-01-04,2021-01-04,active_screener
+UBS,UBS Group AG,Financial Services,Banks - Diversified,NYSE,50564057353.0,2021-01-04,2021-01-04,active_screener
+SPGI,S&P Global Inc.,Financial Services,Financial - Data & Stock Exchanges,NYSE,80179950000.0,2021-01-04,2021-01-04,active_screener
+BTI,British American Tobacco p.l.c.,Consumer Defensive,Tobacco,NYSE,86219900000.0,2021-01-04,2021-01-04,active_screener
+SYK,Stryker Corporation,Healthcare,Medical - Devices,NYSE,89943226000.0,2021-01-04,2021-01-04,active_screener
+CB,Chubb Limited,Financial Services,Insurance - Property & Casualty,NYSE,67459289516.0,2021-01-04,2021-01-04,active_screener
+PBR,Petróleo Brasileiro S.A. - Petrobras,Energy,Oil & Gas Integrated,NYSE,72982306049.0,2021-01-04,2021-01-04,active_screener
+NEM,Newmont Corporation,Basic Materials,Gold,NYSE,50583150000.0,2021-01-04,2021-01-04,active_screener
+PLD,"Prologis, Inc.",Real Estate,REIT - Industrial,NYSE,70973367920.0,2021-01-04,2021-01-04,active_screener
+SONY,Sony Group Corporation,Technology,Consumer Electronics,NYSE,123577958100.0,2021-01-04,2021-01-04,active_screener
+UL,Unilever PLC,Consumer Defensive,Household & Personal Products,NYSE,178762487352.0,2021-01-04,2021-01-04,active_screener
+DELL,Dell Technologies Inc.,Technology,Computer Hardware,NYSE,27540000000.0,2021-01-04,2021-01-04,active_screener
+IBKR,"Interactive Brokers Group, Inc.",Financial Services,Investment - Banking & Investment Services,NASDAQ,21799009629.0,2021-01-04,2021-01-04,active_screener
+BMY,Bristol-Myers Squibb Company,Healthcare,Drug Manufacturers - General,NYSE,137245680000.0,2021-01-04,2021-01-04,active_screener
+BP,BP p.l.c.,Energy,Oil & Gas Integrated,NYSE,70466452709.0,2021-01-04,2021-01-04,active_screener
+PH,Parker-Hannifin Corporation,Industrials,Industrial - Machinery,NYSE,34339341469.0,2021-01-04,2021-01-04,active_screener
+ACN,Accenture plc,Technology,Information Technology Services,NYSE,163107016110.0,2021-01-04,2021-01-04,active_screener
+COF,Capital One Financial Corporation,Financial Services,Financial - Credit Services,NYSE,44869424000.0,2021-01-04,2021-01-04,active_screener
+PANW,"Palo Alto Networks, Inc.",Technology,Software - Infrastructure,NASDAQ,33724194000.0,2021-01-04,2021-01-04,active_screener
+GSK,GSK plc,Healthcare,Drug Manufacturers - General,NYSE,75374328000.0,2021-01-04,2021-01-04,active_screener
+PGR,The Progressive Corporation,Financial Services,Insurance - Property & Casualty,NYSE,56811337000.0,2021-01-04,2021-01-04,active_screener
+PBR-A,Petróleo Brasileiro S.A. - Petrobras,Energy,Oil & Gas Integrated,NYSE,71743106930.0,2021-01-04,2021-01-04,active_screener
+ENB,Enbridge Inc.,Energy,Oil & Gas Midstream,NYSE,64643340000.0,2021-01-04,2021-01-04,active_screener
+WDC,Western Digital Corporation,Technology,Computer Hardware,NASDAQ,12077820000.0,2021-01-04,2021-01-04,active_screener
+SNY,Sanofi,Healthcare,Drug Manufacturers - General,NASDAQ,60903375000.0,2021-01-04,2021-01-04,active_screener
+MDT,Medtronic plc,Healthcare,Medical - Devices,NYSE,156209328000.0,2021-01-04,2021-01-04,active_screener
+HCA,"HCA Healthcare, Inc.",Healthcare,Medical - Care Facilities,NYSE,55330447719.0,2021-01-04,2021-01-04,active_screener
+VRTX,Vertex Pharmaceuticals Incorporated,Healthcare,Biotechnology,NASDAQ,59507029670.0,2021-01-04,2021-01-04,active_screener
+MO,"Altria Group, Inc.",Consumer Defensive,Tobacco,NYSE,75839880000.0,2021-01-04,2021-01-04,active_screener
+SBUX,Starbucks Corporation,Consumer Cyclical,Restaurants,NASDAQ,121400250000.0,2021-01-04,2021-01-04,active_screener
+SO,The Southern Company,Utilities,Regulated Electric,NYSE,62921600000.0,2021-01-04,2021-01-04,active_screener
+MFG,"Mizuho Financial Group, Inc.",Financial Services,Banks - Regional,NYSE,32330063169.0,2021-01-04,2021-01-04,active_screener
+CME,CME Group Inc.,Financial Services,Financial - Data & Stock Exchanges,NASDAQ,64215757100.0,2021-01-04,2021-01-04,active_screener
+INTU,Intuit Inc.,Technology,Software - Application,NASDAQ,100359000000.0,2021-01-04,2021-01-04,active_screener
+STX,Seagate Technology Holdings plc,Technology,Computer Hardware,NASDAQ,13998640000.0,2021-01-04,2021-01-04,active_screener
+AEM,Agnico Eagle Mines Limited,Basic Materials,Gold,NYSE,18268138560.0,2021-01-04,2021-01-04,active_screener
+MCK,McKesson Corporation,Healthcare,Medical - Distribution,NYSE,27699484000.0,2021-01-04,2021-01-04,active_screener
+BNJ,Brookfield Finance Inc. 4.50% P,Financial Services,Investment - Banking & Investment Services,NYSE,48555022500.0,2021-01-04,2021-01-04,active_screener
+VRT,Vertiv Holdings Co,Industrials,Electrical Equipment & Parts,NYSE,6474660542.0,2021-01-04,2021-01-04,active_screener
+DUK,Duke Energy Corporation,Utilities,Regulated Electric,NYSE,68986990000.0,2021-01-04,2021-01-04,active_screener
+CRWD,"CrowdStrike Holdings, Inc.",Technology,Software - Infrastructure,NASDAQ,44448633000.0,2021-01-04,2021-01-04,active_screener
+BNH,Brookfield Finance Inc. 4.625%,Financial Services,Financial - Credit Services,NYSE,48555022500.0,2021-01-04,2021-01-04,active_screener
+NOW,"ServiceNow, Inc.",Technology,Software - Application,NYSE,103789450000.0,2021-01-04,2021-01-04,active_screener
+CMCSA,Comcast Corporation,Communication Services,Telecommunications Services,NASDAQ,231891410000.0,2021-01-04,2021-01-04,active_screener
+HWM,Howmet Aerospace Inc.,Industrials,Industrial - Machinery,NYSE,11661580000.0,2021-01-04,2021-01-04,active_screener
+EQNR,Equinor ASA,Energy,Oil & Gas Integrated,NYSE,54793760000.0,2021-01-04,2021-01-04,active_screener
+EQIX,"Equinix, Inc.",Real Estate,REIT - Specialty,NASDAQ,61866384799.0,2021-01-04,2021-01-04,active_screener
+CVS,CVS Health Corporation,Healthcare,Medical - Healthcare Plans,NYSE,91896870000.0,2021-01-04,2021-01-04,active_screener
+MRVL,"Marvell Technology, Inc.",Technology,Semiconductors,NASDAQ,31191127990.0,2021-01-04,2021-01-04,active_screener
+TT,Trane Technologies plc,Industrials,Construction,NYSE,34468812000.0,2021-01-04,2021-01-04,active_screener
+BMO,Bank of Montreal,Financial Services,Banks - Diversified,NYSE,49959026353.0,2021-01-04,2021-01-04,active_screener
+IBN,ICICI Bank Limited,Financial Services,Banks - Regional,NYSE,49898264740.0,2021-01-04,2021-01-04,active_screener
+SPOT,Spotify Technology S.A.,Communication Services,Internet Content & Information,NYSE,59265838467.0,2021-01-04,2021-01-04,active_screener
+NOC,Northrop Grumman Corporation,Industrials,Aerospace & Defense,NYSE,48075356000.0,2021-01-04,2021-01-04,active_screener
+ITUB,Itaú Unibanco Holding S.A.,Financial Services,Banks - Regional,NYSE,43079260901.0,2021-01-04,2021-01-04,active_screener
+CNQ,Canadian Natural Resources Limited,Energy,Oil & Gas Exploration & Production,NYSE,28974866440.0,2021-01-04,2021-01-04,active_screener
+ICE,"Intercontinental Exchange, Inc.",Financial Services,Financial - Data & Stock Exchanges,NYSE,63674600000.0,2021-01-04,2021-01-04,active_screener
+ADBE,Adobe Inc.,Technology,Software - Infrastructure,NASDAQ,232477860000.0,2021-01-04,2021-01-04,active_screener
+GD,General Dynamics Corporation,Industrials,Aerospace & Defense,NYSE,41461845880.0,2021-01-04,2021-01-04,active_screener
+BN,Brookfield Corporation,Financial Services,Asset Management,NYSE,48555022500.0,2021-01-04,2021-01-04,active_screener
+FCX,Freeport-McMoRan Inc.,Basic Materials,Copper,NYSE,39732960000.0,2021-01-04,2021-01-04,active_screener
+WM,"Waste Management, Inc.",Industrials,Waste Management,NYSE,48561607000.0,2021-01-04,2021-01-04,active_screener
+BSX,Boston Scientific Corporation,Healthcare,Medical - Devices,NYSE,50037549000.0,2021-01-04,2021-01-04,active_screener
+CM,Canadian Imperial Bank of Commerce,Financial Services,Banks - Diversified,NYSE,37804190120.0,2021-01-04,2021-01-04,active_screener
+MAR,"Marriott International, Inc.",Consumer Cyclical,Travel Lodging,NASDAQ,40762359000.0,2021-01-04,2021-01-04,active_screener
+NGG,National Grid plc,Utilities,Regulated Electric,NYSE,45857322349.0,2021-01-04,2021-01-04,active_screener
+WMB,"The Williams Companies, Inc.",Energy,Oil & Gas Midstream,NYSE,24414384600.0,2021-01-04,2021-01-04,active_screener
+MELI,"MercadoLibre, Inc.",Consumer Cyclical,Specialty Retail,NASDAQ,81782905000.0,2021-01-04,2021-01-04,active_screener
+BK,The Bank of New York Mellon Corporation,Financial Services,Asset Management,NYSE,36833323450.0,2021-01-04,2021-01-04,active_screener
+FDX,FedEx Corporation,Industrials,Integrated Freight & Logistics,NYSE,67095350000.0,2021-01-04,2021-01-04,active_screener
+PNC,"The PNC Financial Services Group, Inc.",Financial Services,Banks - Regional,NYSE,63537900000.0,2021-01-04,2021-01-04,active_screener
+BNS,The Bank of Nova Scotia,Financial Services,Banks - Diversified,NYSE,64187520000.0,2021-01-04,2021-01-04,active_screener
+PWR,"Quanta Services, Inc.",Industrials,Engineering & Construction,NYSE,9563258250.0,2021-01-04,2021-01-04,active_screener
+USB,U.S. Bancorp,Financial Services,Banks - Regional,NYSE,69272240000.0,2021-01-04,2021-01-04,active_screener
+MRSH,"Marsh & McLennan Companies, Inc.",Financial Services,Insurance - Brokers,NYSE,57776590000.0,2021-01-04,2021-01-04,active_screener
+UPS,"United Parcel Service, Inc.",Industrials,Integrated Freight & Logistics,NYSE,142833600000.0,2021-01-04,2021-01-04,active_screener
+JCI,Johnson Controls International plc,Industrials,Construction,NYSE,31356220000.0,2021-01-04,2021-01-04,active_screener
+SHW,The Sherwin-Williams Company,Basic Materials,Chemicals - Specialty,NYSE,64100328000.0,2021-01-04,2021-01-04,active_screener
+KKR,KKR & Co. Inc.,Financial Services,Asset Management,NYSE,22867263891.0,2021-01-04,2021-01-04,active_screener
+SMFG,"Sumitomo Mitsui Financial Group, Inc.",Financial Services,Banks - Diversified,NYSE,25078807932.0,2021-01-04,2021-01-04,active_screener
+AMT,American Tower Corporation,Real Estate,REIT - Specialty,NYSE,97609126258.0,2021-01-04,2021-01-04,active_screener
+ING,ING Groep N.V.,Financial Services,Banks - Diversified,NYSE,36156831541.0,2021-01-04,2021-01-04,active_screener
+CMI,Cummins Inc.,Industrials,Industrial - Machinery,NYSE,32541390000.0,2021-01-04,2021-01-04,active_screener
+LYG,Lloyds Banking Group plc,Financial Services,Banks - Regional,NYSE,32807900000.0,2021-01-04,2021-01-04,active_screener
+EPD,Enterprise Products Partners L.P.,Energy,Oil & Gas Midstream,NYSE,42110070000.0,2021-01-04,2021-01-04,active_screener
+E,Eni S.p.A.,Energy,Oil & Gas Integrated,NYSE,37136137500.0,2021-01-04,2021-01-04,active_screener
+BCS,Barclays PLC,Financial Services,Banks - Diversified,NYSE,33176582500.0,2021-01-04,2021-01-04,active_screener
+ADP,"Automatic Data Processing, Inc.",Industrials,Staffing & Employment Services,NASDAQ,71943168000.0,2021-01-04,2021-01-04,active_screener
+REGN,"Regeneron Pharmaceuticals, Inc.",Healthcare,Biotechnology,NASDAQ,53356030000.0,2021-01-04,2021-01-04,active_screener
+EMR,Emerson Electric Co.,Industrials,Industrial - Machinery,NYSE,46759194000.0,2021-01-04,2021-01-04,active_screener
+MCO,Moody's Corporation,Financial Services,Financial - Data & Stock Exchanges,NYSE,54662400000.0,2021-01-04,2021-01-04,active_screener
+AMX,"América Móvil, S.A.B. de C.V.",Communication Services,Telecommunications Services,NYSE,49074179987.0,2021-01-04,2021-01-04,active_screener
+ABNB,"Airbnb, Inc.",Consumer Cyclical,Travel Services,NASDAQ,83623584000.0,2021-01-04,2021-01-04,active_screener
+CDNS,"Cadence Design Systems, Inc.",Technology,Software - Application,NASDAQ,37201090960.0,2021-01-04,2021-01-04,active_screener
+SNPS,"Synopsys, Inc.",Technology,Software - Infrastructure,NASDAQ,38841240600.0,2021-01-04,2021-01-04,active_screener
+MMM,3M Company,Industrials,Conglomerates,NYSE,83417850000.0,2021-01-04,2021-01-04,active_screener
+CSX,CSX Corporation,Industrials,Railroads,NASDAQ,66931059999.0,2021-01-04,2021-01-04,active_screener
+ITW,Illinois Tool Works Inc.,Industrials,Industrial - Machinery,NYSE,64310958000.0,2021-01-04,2021-01-04,active_screener
+ORLY,"O'Reilly Automotive, Inc.",Consumer Cyclical,Auto - Parts,NASDAQ,30425565441.0,2021-01-04,2021-01-04,active_screener
+SLB,SLB N.V.,Energy,Oil & Gas Equipment & Services,NYSE,30686100000.0,2021-01-04,2021-01-04,active_screener
+ECL,Ecolab Inc.,Basic Materials,Chemicals - Specialty,NYSE,61292660000.0,2021-01-04,2021-01-04,active_screener
+SU,Suncor Energy Inc.,Energy,Oil & Gas Integrated,NYSE,25447840000.0,2021-01-04,2021-01-04,active_screener
+RCL,Royal Caribbean Cruises Ltd.,Consumer Cyclical,Travel Services,NYSE,17185242880.0,2021-01-04,2021-01-04,active_screener
+CRH,CRH plc,Basic Materials,Construction Materials,NYSE,33497453000.0,2021-01-04,2021-01-04,active_screener
+MDLZ,"Mondelez International, Inc.",Consumer Defensive,Food Confectioners,NASDAQ,81783040000.0,2021-01-04,2021-01-04,active_screener
+MSI,"Motorola Solutions, Inc.",Technology,Communication Equipment,NYSE,28357750000.0,2021-01-04,2021-01-04,active_screener
+EOG,"EOG Resources, Inc.",Energy,Oil & Gas Exploration & Production,NYSE,28918800000.0,2021-01-04,2021-01-04,active_screener
+NET,"Cloudflare, Inc.",Technology,Software - Infrastructure,NYSE,22820586730.0,2021-01-04,2021-01-04,active_screener
+CI,Cigna Corporation,Healthcare,Medical - Healthcare Plans,NYSE,71641578560.0,2021-01-04,2021-01-04,active_screener
+MNST,Monster Beverage Corporation,Consumer Defensive,Beverages - Non-Alcoholic,NASDAQ,47854467000.0,2021-01-04,2021-01-04,active_screener
+CVNA,Carvana Co.,Consumer Cyclical,Auto - Dealerships,NYSE,28848193669.0,2021-01-04,2021-01-04,active_screener
+KMI,"Kinder Morgan, Inc.",Energy,Oil & Gas Midstream,NYSE,30686293560.0,2021-01-04,2021-01-04,active_screener
+CP,Canadian Pacific Kansas City Ltd.,Industrials,Railroads,NYSE,45968505000.0,2021-01-04,2021-01-04,active_screener
+AEP,"American Electric Power Company, Inc.",Utilities,Regulated Electric,NASDAQ,40530161097.0,2021-01-04,2021-01-04,active_screener
+NTES,"NetEase, Inc.",Technology,Electronic Gaming & Multimedia,NASDAQ,64808796024.0,2021-01-04,2021-01-04,active_screener
+HLT,Hilton Worldwide Holdings Inc.,Consumer Cyclical,Travel Lodging,NYSE,29758153746.0,2021-01-04,2021-01-04,active_screener
+ROST,"Ross Stores, Inc.",Consumer Cyclical,Apparel - Retail,NASDAQ,41578932410.0,2021-01-04,2021-01-04,active_screener
+VLO,Valero Energy Corporation,Energy,Oil & Gas Refining & Marketing,NYSE,22682110000.0,2021-01-04,2021-01-04,active_screener
+GM,General Motors Company,Consumer Cyclical,Auto - Manufacturers,NYSE,58617970000.0,2021-01-04,2021-01-04,active_screener
+VALE,Vale S.A.,Basic Materials,Industrial Materials,NYSE,89265271200.0,2021-01-04,2021-01-04,active_screener
+B,Barrick Mining Corporation,Basic Materials,Gold,NYSE,42635553135.0,2021-01-04,2021-01-04,active_screener
+AON,Aon plc,Financial Services,Insurance - Brokers,NYSE,46453305000.0,2021-01-04,2021-01-04,active_screener
+ELV,Elevance Health Inc.,Healthcare,Medical - Healthcare Plans,NYSE,78052100000.0,2021-01-04,2021-01-04,active_screener
+CIEN,Ciena Corporation,Technology,Communication Equipment,NYSE,7941805320.0,2021-01-04,2021-01-04,active_screener
+CTAS,Cintas Corporation,Industrials,Specialty Business Services,NASDAQ,36168710400.0,2021-01-04,2021-01-04,active_screener
+DASH,"DoorDash, Inc.",Communication Services,Internet Content & Information,NASDAQ,45628569850.0,2021-01-04,2021-01-04,active_screener
+TDG,TransDigm Group Incorporated,Industrials,Aerospace & Defense,NYSE,34319927999.0,2021-01-04,2021-01-04,active_screener
+CL,Colgate-Palmolive Company,Consumer Defensive,Household & Personal Products,NYSE,71562438000.0,2021-01-04,2021-01-04,active_screener
+MPC,Marathon Petroleum Corporation,Energy,Oil & Gas Refining & Marketing,NYSE,26528250000.0,2021-01-04,2021-01-04,active_screener
+WBD,"Warner Bros. Discovery, Inc.",Communication Services,Entertainment,NASDAQ,17918550000.0,2021-01-04,2021-01-04,active_screener
+PSX,Phillips 66,Energy,Oil & Gas Refining & Marketing,NYSE,30712539519.0,2021-01-04,2021-01-04,active_screener
+LHX,"L3Harris Technologies, Inc.",Industrials,Aerospace & Defense,NYSE,37296948000.0,2021-01-04,2021-01-04,active_screener
+TRV,"The Travelers Companies, Inc.",Financial Services,Insurance - Property & Casualty,NYSE,34197365000.0,2021-01-04,2021-01-04,active_screener
+RSG,"Republic Services, Inc.",Industrials,Waste Management,NYSE,29876676000.0,2021-01-04,2021-01-04,active_screener
+TRP,TC Energy Corporation,Energy,Oil & Gas Midstream,NYSE,34150270269.0,2021-01-04,2021-01-04,active_screener
+NSC,Norfolk Southern Corporation,Industrials,Railroads,NYSE,58686816000.0,2021-01-04,2021-01-04,active_screener
+APD,"Air Products and Chemicals, Inc.",Basic Materials,Chemicals - Specialty,NYSE,59433120000.0,2021-01-04,2021-01-04,active_screener
+TEL,TE Connectivity Ltd.,Technology,"Hardware, Equipment & Parts",NYSE,39819300000.0,2021-01-04,2021-01-04,active_screener
+CNI,Canadian National Railway Company,Industrials,Railroads,NYSE,77911380000.0,2021-01-04,2021-01-04,active_screener
+PCAR,PACCAR Inc,Industrials,Agricultural - Machinery,NASDAQ,29448672000.0,2021-01-04,2021-01-04,active_screener
+SRE,Sempra,Utilities,Diversified Utilities,NYSE,37252039000.0,2021-01-04,2021-01-04,active_screener
+MPWR,"Monolithic Power Systems, Inc.",Technology,Semiconductors,NASDAQ,16598580360.0,2021-01-04,2021-01-04,active_screener
+ET,Energy Transfer LP,Energy,Oil & Gas Midstream,NYSE,16487079999.0,2021-01-04,2021-01-04,active_screener
+LITE,Lumentum Holdings Inc.,Technology,Communication Equipment,NASDAQ,7331376000.0,2021-01-04,2021-01-04,active_screener
+DLR,"Digital Realty Trust, Inc.",Real Estate,REIT - Office,NYSE,38029315221.0,2021-01-04,2021-01-04,active_screener
+NKE,"NIKE, Inc.",Consumer Cyclical,Apparel - Footwear & Accessories,NYSE,221077800000.0,2021-01-04,2021-01-04,active_screener
+WPM,Wheaton Precious Metals Corp.,Basic Materials,Gold,NYSE,20344777340.0,2021-01-04,2021-01-04,active_screener
+COR,"Cencora, Inc.",Healthcare,Medical - Distribution,NYSE,19774394000.0,2021-01-04,2021-01-04,active_screener
+SPG,"Simon Property Group, Inc.",Real Estate,REIT - Retail,NYSE,27204285496.0,2021-01-04,2021-01-04,active_screener
+BKR,Baker Hughes Company,Energy,Oil & Gas Equipment & Services,NASDAQ,15554800000.0,2021-01-04,2021-01-04,active_screener
+RACE,Ferrari N.V.,Consumer Cyclical,Auto - Manufacturers,NYSE,41948496870.0,2021-01-04,2021-01-04,active_screener
+APO,"Apollo Global Management, Inc.",Financial Services,Asset Management - Global,NYSE,10987267290.0,2021-01-04,2021-01-04,active_screener
+TFC,Truist Financial Corporation,Financial Services,Banks - Regional,NYSE,63488521880.0,2021-01-04,2021-01-04,active_screener
+FTNT,"Fortinet, Inc.",Technology,Software - Infrastructure,NASDAQ,23724650000.0,2021-01-04,2021-01-04,active_screener
+DB,Deutsche Bank AG,Financial Services,Banks - Regional,NYSE,22513188000.0,2021-01-04,2021-01-04,active_screener
+O,Realty Income Corporation,Real Estate,REIT - Retail,NYSE,21537165527.0,2021-01-04,2021-01-04,active_screener
+LNG,"Cheniere Energy, Inc.",Energy,Oil & Gas Midstream,NYSE,14898339000.0,2021-01-04,2021-01-04,active_screener
+MFC,Manulife Financial Corporation,Financial Services,Insurance - Life,NYSE,34064550000.0,2021-01-04,2021-01-04,active_screener
+TAK,Takeda Pharmaceutical Company Limited,Healthcare,Drug Manufacturers - Specialty & Generic,NYSE,56244764547.0,2021-01-04,2021-01-04,active_screener
+AFL,Aflac Incorporated,Financial Services,Insurance - Life,NYSE,29755232220.0,2021-01-04,2021-01-04,active_screener
+INFY,Infosys Limited,Technology,Information Technology Services,NYSE,73205645565.0,2021-01-04,2021-01-04,active_screener
+RCB,Ready Capital Corporation,Real Estate,REIT - Mortgage,NYSE,1411918155.0,2021-01-04,2021-01-04,active_screener
+RELX,RELX Plc,Communication Services,Publishing,NYSE,48001570000.0,2021-01-04,2021-01-04,active_screener
+AZO,"AutoZone, Inc.",Consumer Cyclical,Auto - Parts,NYSE,26733699200.0,2021-01-04,2021-01-04,active_screener
+MPLX,MPLX Lp,Energy,Oil & Gas Midstream,NYSE,22782890000.0,2021-01-04,2021-01-04,active_screener
+CTVA,"Corteva, Inc.",Basic Materials,Agricultural Inputs,NYSE,28509390000.0,2021-01-04,2021-01-04,active_screener
+BDX,"Becton, Dickinson and Company",Healthcare,Medical - Instruments & Supplies,NYSE,43972810700.0,2021-01-04,2021-01-04,active_screener
+TGT,Target Corporation,Consumer Defensive,Discount Stores,NYSE,88957104000.0,2021-01-04,2021-01-04,active_screener
+OXY,Occidental Petroleum Corporation,Energy,Oil & Gas Exploration & Production,NYSE,16282595000.0,2021-01-04,2021-01-04,active_screener
+AJG,Arthur J. Gallagher & Co.,Financial Services,Insurance - Brokers,NYSE,23398704000.0,2021-01-04,2021-01-04,active_screener
+D,"Dominion Energy, Inc.",Utilities,Regulated Electric,NYSE,59547951000.0,2021-01-04,2021-01-04,active_screener
+TER,"Teradyne, Inc.",Technology,Semiconductors,NASDAQ,19844062290.0,2021-01-04,2021-01-04,active_screener
+FAST,Fastenal Company,Industrials,Industrial - Distribution,NASDAQ,27371137999.0,2021-01-04,2021-01-04,active_screener
+ALL,The Allstate Corporation,Financial Services,Insurance - Property & Casualty,NYSE,32694200000.0,2021-01-04,2021-01-04,active_screener
+OKE,"ONEOK, Inc.",Energy,Oil & Gas Midstream,NYSE,16721025000.0,2021-01-04,2021-01-04,active_screener
+UI,Ubiquiti Inc.,Technology,Communication Equipment,NYSE,17006435600.0,2021-01-04,2021-01-04,active_screener
+GWW,"W.W. Grainger, Inc.",Industrials,Industrial - Distribution,NYSE,20591556000.0,2021-01-04,2021-01-04,active_screener
+FIX,"Comfort Systems USA, Inc.",Industrials,Engineering & Construction,NYSE,1871631880.0,2021-01-04,2021-01-04,active_screener
+AME,"AMETEK, Inc.",Industrials,Industrial - Machinery,NYSE,27278895300.0,2021-01-04,2021-01-04,active_screener
+KEYS,"Keysight Technologies, Inc.",Technology,"Hardware, Equipment & Parts",NYSE,24399480000.0,2021-01-04,2021-01-04,active_screener
+AU,AngloGold Ashanti Plc,Basic Materials,Gold,NYSE,10676113785.0,2021-01-04,2021-01-04,active_screener
+ZTS,Zoetis Inc.,Healthcare,Drug Manufacturers - Specialty & Generic,NYSE,77787045000.0,2021-01-04,2021-01-04,active_screener
+ASX,"ASE Technology Holding Co., Ltd.",Technology,Semiconductors,NYSE,12844591366.0,2021-01-04,2021-01-04,active_screener
+TRGP,Targa Resources Corp.,Energy,Oil & Gas Midstream,NYSE,5977560000.0,2021-01-04,2021-01-04,active_screener
+NXPI,NXP Semiconductors N.V.,Technology,Semiconductors,NASDAQ,44970313040.0,2021-01-04,2021-01-04,active_screener
+EA,Electronic Arts Inc.,Communication Services,Electronic Gaming & Multimedia,NASDAQ,40178880000.0,2021-01-04,2021-01-04,active_screener
+VST,Vistra Corp.,Utilities,Independent Power Producers,NYSE,9296531941.0,2021-01-04,2021-01-04,active_screener
+FNV,Franco-Nevada Corporation,Basic Materials,Gold,NYSE,25040952688.0,2021-01-04,2021-01-04,active_screener
+FANG,"Diamondback Energy, Inc.",Energy,Oil & Gas Exploration & Production,NASDAQ,8034430860.0,2021-01-04,2021-01-04,active_screener
+ETR,Entergy Corporation,Utilities,Regulated Electric,NYSE,19655514312.0,2021-01-04,2021-01-04,active_screener
+SNOW,Snowflake Inc.,Technology,Software - Application,NYSE,79054043232.0,2021-01-04,2021-01-04,active_screener
+FER,Ferrovial SE,Industrials,Engineering & Construction,NASDAQ,20555655800.0,2021-01-04,2021-01-04,active_screener
+CCJ,Cameco Corporation,Energy,Uranium,NYSE,5316312040.0,2021-01-04,2021-01-04,active_screener
+ADSK,"Autodesk, Inc.",Technology,Software - Application,NASDAQ,65215747999.0,2021-01-04,2021-01-04,active_screener
+SE,Sea Limited,Consumer Cyclical,Specialty Retail,NYSE,100927942665.0,2021-01-04,2021-01-04,active_screener
+CAH,"Cardinal Health, Inc.",Healthcare,Medical - Distribution,NYSE,15455560000.0,2021-01-04,2021-01-04,active_screener
+NOK,Nokia Oyj,Technology,Communication Equipment,NYSE,21877636190.0,2021-01-04,2021-01-04,active_screener
+EXC,Exelon Corporation,Utilities,Regulated Electric,NASDAQ,28684720000.0,2021-01-04,2021-01-04,active_screener
+XEL,Xcel Energy Inc.,Utilities,Regulated Electric,NASDAQ,35325080000.0,2021-01-04,2021-01-04,active_screener
+NDAQ,"Nasdaq, Inc.",Financial Services,Financial - Data & Stock Exchanges,NASDAQ,21741668388.0,2021-01-04,2021-01-04,active_screener
+CVE,Cenovus Energy Inc.,Energy,Oil & Gas Integrated,NYSE,12467532000.0,2021-01-04,2021-01-04,active_screener
+MET,"MetLife, Inc.",Financial Services,Insurance - Life,NYSE,40472625024.0,2021-01-04,2021-01-04,active_screener
+GRMN,Garmin Ltd.,Technology,"Hardware, Equipment & Parts",NYSE,22797244800.0,2021-01-04,2021-01-04,active_screener
+ARGX,argenx SE,Healthcare,Biotechnology,NASDAQ,16036859291.0,2021-01-04,2021-01-04,active_screener
+FERG,Ferguson plc,Industrials,Industrial - Distribution,NYSE,26894608000.0,2021-01-04,2021-01-04,active_screener
+ABEV,Ambev S.A.,Consumer Defensive,Beverages - Alcoholic,NYSE,47062241487.0,2021-01-04,2021-01-04,active_screener
+CARR,Carrier Global Corporation,Industrials,Construction,NYSE,32190179000.0,2021-01-04,2021-01-04,active_screener
+URI,"United Rentals, Inc.",Industrials,Rental & Leasing Services,NYSE,16612421700.0,2021-01-04,2021-01-04,active_screener
+PSA,Public Storage,Real Estate,REIT - Industrial,NYSE,38449342200.0,2021-01-04,2021-01-04,active_screener
+F,Ford Motor Company,Consumer Cyclical,Auto - Manufacturers,NYSE,33909600000.0,2021-01-04,2021-01-04,active_screener
+EW,Edwards Lifesciences Corporation,Healthcare,Medical - Devices,NYSE,55414944000.0,2021-01-04,2021-01-04,active_screener
+IDXX,"IDEXX Laboratories, Inc.",Healthcare,Medical - Diagnostics & Research,NASDAQ,42061088100.0,2021-01-04,2021-01-04,active_screener
+BSBR,Banco Santander (Brasil) S.A.,Financial Services,Banks - Regional,NYSE,60071059140.0,2021-01-04,2021-01-04,active_screener
+WAB,Westinghouse Air Brake Technologies Corporation,Industrials,Railroads,NYSE,13694525000.0,2021-01-04,2021-01-04,active_screener
+MT,ArcelorMittal S.A.,Basic Materials,Steel,NYSE,28213100000.0,2021-01-04,2021-01-04,active_screener
+KR,The Kroger Co.,Consumer Defensive,Grocery Stores,NYSE,24167585972.0,2021-01-04,2021-01-04,active_screener
+WDS,Woodside Energy Group Ltd,Energy,Oil & Gas Exploration & Production,NYSE,16858636353.0,2021-01-04,2021-01-04,active_screener
+COHR,"Coherent, Inc.",Technology,"Hardware, Equipment & Parts",NYSE,7963339670.0,2021-01-04,2021-01-04,active_screener
+DAL,"Delta Air Lines, Inc.",Industrials,"Airlines, Airports & Air Services",NYSE,24632279999.0,2021-01-04,2021-01-04,active_screener
+CMG,"Chipotle Mexican Grill, Inc.",Consumer Cyclical,Restaurants,NYSE,37096875000.0,2021-01-04,2021-01-04,active_screener
+YUM,"Yum! Brands, Inc.",Consumer Cyclical,Restaurants,NYSE,31851819999.0,2021-01-04,2021-01-04,active_screener
+ROK,"Rockwell Automation, Inc.",Industrials,Industrial - Machinery,NYSE,28615167000.0,2021-01-04,2021-01-04,active_screener
+EBAY,eBay Inc.,Consumer Cyclical,Specialty Retail,NASDAQ,35071500000.0,2021-01-04,2021-01-04,active_screener
+CCEP,Coca-Cola Europacific Partners PLC,Consumer Defensive,Beverages - Non-Alcoholic,NASDAQ,22022000000.0,2021-01-04,2021-01-04,active_screener
+GFI,Gold Fields Limited,Basic Materials,Gold,NYSE,9447181572.0,2021-01-04,2021-01-04,active_screener
+ODFL,"Old Dominion Freight Line, Inc.",Industrials,Trucking,NASDAQ,22360669618.0,2021-01-04,2021-01-04,active_screener
+RKT,"Rocket Companies, Inc.",Financial Services,Financial - Mortgages,NYSE,3101901219.0,2021-01-04,2021-01-04,active_screener
+ALNY,"Alnylam Pharmaceuticals, Inc.",Healthcare,Biotechnology,NASDAQ,14997948000.0,2021-01-04,2021-01-04,active_screener
+PYPL,"PayPal Holdings, Inc.",Financial Services,Financial - Credit Services,NASDAQ,272042160000.0,2021-01-04,2021-01-04,active_screener
+ESLT,Elbit Systems Ltd.,Industrials,Aerospace & Defense,NASDAQ,5746442000.0,2021-01-04,2021-01-04,active_screener
+DEO,Diageo plc,Consumer Defensive,Beverages - Wineries & Distilleries,NYSE,93415810853.0,2021-01-04,2021-01-04,active_screener
+HSY,The Hershey Company,Consumer Defensive,Food Confectioners,NYSE,31324727400.0,2021-01-04,2021-01-04,active_screener
+AMP,"Ameriprise Financial, Inc.",Financial Services,Asset Management,NYSE,22535578000.0,2021-01-04,2021-01-04,active_screener
+CBRE,"CBRE Group, Inc.",Real Estate,Real Estate - Services,NYSE,19983699393.0,2021-01-04,2021-01-04,active_screener
+WCN,"Waste Connections, Inc.",Industrials,Waste Management,NYSE,26582358709.0,2021-01-04,2021-01-04,active_screener
+AIG,"American International Group, Inc.",Financial Services,Insurance - Diversified,NYSE,32232741211.0,2021-01-04,2021-01-04,active_screener
+DHI,"D.R. Horton, Inc.",Consumer Cyclical,Residential Construction,NYSE,24397282000.0,2021-01-04,2021-01-04,active_screener
+NUE,Nucor Corporation,Basic Materials,Steel,NYSE,15849933460.0,2021-01-04,2021-01-04,active_screener
+PEG,Public Service Enterprise Group Incorporated,Utilities,Regulated Electric,NYSE,28087920000.0,2021-01-04,2021-01-04,active_screener
+BBD,Banco Bradesco S.A.,Financial Services,Banks - Regional,NYSE,44585389800.0,2021-01-04,2021-01-04,active_screener
+ED,"Consolidated Edison, Inc.",Utilities,Regulated Electric,NYSE,24179852000.0,2021-01-04,2021-01-04,active_screener
+DDOG,"Datadog, Inc.",Technology,Software - Application,NASDAQ,27919481820.0,2021-01-04,2021-01-04,active_screener
+MSCI,MSCI Inc.,Financial Services,Financial - Data & Stock Exchanges,NYSE,36166569600.0,2021-01-04,2021-01-04,active_screener
+HEI,HEICO Corporation,Industrials,Aerospace & Defense,NYSE,17255500200.0,2021-01-04,2021-01-04,active_screener
+PCG,PG&E Corporation,Utilities,Regulated Electric,NYSE,24236850000.0,2021-01-04,2021-01-04,active_screener
+VTR,"Ventas, Inc.",Real Estate,REIT - Healthcare Facilities,NYSE,17564482720.0,2021-01-04,2021-01-04,active_screener
+ERIC,Telefonaktiebolaget LM Ericsson (publ),Technology,Communication Equipment,NASDAQ,40069120000.0,2021-01-04,2021-01-04,active_screener
+RKLB,"Rocket Lab USA, Inc.",Industrials,Aerospace & Defense,NASDAQ,4613571787.0,2021-01-04,2021-01-04,active_screener
+CCL,Carnival Corporation & plc,Consumer Cyclical,Leisure,NYSE,22316100000.0,2021-01-04,2021-01-04,active_screener
+KGC,Kinross Gold Corporation,Basic Materials,Gold,NYSE,10048328220.0,2021-01-04,2021-01-04,active_screener
+HIG,"The Hartford Financial Services Group, Inc.",Financial Services,Insurance - Diversified,NYSE,17297478000.0,2021-01-04,2021-01-04,active_screener
+BIDU,"Baidu, Inc.",Communication Services,Internet Content & Information,NASDAQ,72953200000.0,2021-01-04,2021-01-04,active_screener
+KB,KB Financial Group Inc.,Financial Services,Banks - Regional,NYSE,15246378420.0,2021-01-04,2021-01-04,active_screener
+VOD,Vodafone Group Public Limited Company,Communication Services,Telecommunications Services,NASDAQ,50196063859.0,2021-01-04,2021-01-04,active_screener
+ASTS,"AST SpaceMobile, Inc.",Technology,Communication Equipment,NASDAQ,912408567.0,2021-01-04,2021-01-04,active_screener
+ELC,"Entergy Louisiana, LLC COLLATERAL TR MT",Utilities,Regulated Electric,NYSE,19655514312.0,2021-01-04,2021-01-04,active_screener
+JD,"JD.com, Inc.",Consumer Cyclical,Specialty Retail,NASDAQ,134113655000.0,2021-01-04,2021-01-04,active_screener
+TRI,Thomson Reuters Corporation,Industrials,Specialty Business Services,NASDAQ,38675442724.0,2021-01-04,2021-01-04,active_screener
+PUK,Prudential plc,Financial Services,Insurance - Life,NYSE,178134787425.0,2021-01-04,2021-01-04,active_screener
+MCHP,Microchip Technology Incorporated,Technology,Semiconductors,NASDAQ,37203216000.0,2021-01-04,2021-01-04,active_screener
+WEC,"WEC Energy Group, Inc.",Utilities,Regulated Electric,NYSE,28505852000.0,2021-01-04,2021-01-04,active_screener
+VMC,Vulcan Materials Company,Basic Materials,Construction Materials,NYSE,19444531000.0,2021-01-04,2021-01-04,active_screener
+XYZ,"Block, Inc.",Technology,Software - Infrastructure,NYSE,100621828680.0,2021-01-04,2021-01-04,active_screener
+STT,State Street Corporation,Financial Services,Asset Management,NYSE,25341181750.0,2021-01-04,2021-01-04,active_screener
+LYV,"Live Nation Entertainment, Inc.",Communication Services,Entertainment,NYSE,15160973471.0,2021-01-04,2021-01-04,active_screener
+ALC,Alcon Inc.,Healthcare,Medical - Instruments & Supplies,NYSE,32163496000.0,2021-01-04,2021-01-04,active_screener
+MLM,"Martin Marietta Materials, Inc.",Basic Materials,Construction Materials,NYSE,17306940000.0,2021-01-04,2021-01-04,active_screener
+EQT,EQT Corporation,Energy,Oil & Gas Exploration & Production,NYSE,3739405320.0,2021-01-04,2021-01-04,active_screener
+TTWO,"Take-Two Interactive Software, Inc.",Communication Services,Electronic Gaming & Multimedia,NASDAQ,23234953500.0,2021-01-04,2021-01-04,active_screener
+CCI,Crown Castle Inc.,Real Estate,REIT - Specialty,NYSE,66960000000.0,2021-01-04,2021-01-04,active_screener
+CUK,Carnival Corporation & plc,Consumer Cyclical,Leisure,NYSE,22316100000.0,2021-01-04,2021-01-04,active_screener
+CTA-PA,"EIDP, Inc.",Basic Materials,Agricultural Inputs,NYSE,76462389215.0,2021-01-04,2021-01-04,active_screener
+CLS,Celestica Inc.,Technology,"Hardware, Equipment & Parts",NYSE,1019599000.0,2021-01-04,2021-01-04,active_screener
+LVS,Las Vegas Sands Corp.,Consumer Cyclical,"Gambling, Resorts & Casinos",NYSE,44273800000.0,2021-01-04,2021-01-04,active_screener
+ROP,"Roper Technologies, Inc.",Industrials,Industrial - Machinery,NASDAQ,44052750000.0,2021-01-04,2021-01-04,active_screener
+SLF,Sun Life Financial Inc.,Financial Services,Insurance - Diversified,NYSE,25851150000.0,2021-01-04,2021-01-04,active_screener
+BBDO,Banco Bradesco S.A.,Financial Services,Banks - Regional,NYSE,233511969600.0,2021-01-04,2021-01-04,active_screener
+NTR,Nutrien Ltd.,Basic Materials,Agricultural Inputs,NYSE,28158194940.0,2021-01-04,2021-01-04,active_screener
+SYY,Sysco Corporation,Consumer Defensive,Food Distribution,NYSE,36958412547.0,2021-01-04,2021-01-04,active_screener
+TEVA,Teva Pharmaceutical Industries Limited,Healthcare,Drug Manufacturers - Specialty & Generic,NYSE,11363660000.0,2021-01-04,2021-01-04,active_screener
+MSTR,Strategy Inc,Technology,Software - Application,NASDAQ,4101904400.0,2021-01-04,2021-01-04,active_screener
+EME,"EMCOR Group, Inc.",Industrials,Engineering & Construction,NYSE,4898967943.0,2021-01-04,2021-01-04,active_screener
+SATS,EchoStar Corporation,Technology,Communication Equipment,NASDAQ,1964720030.0,2021-01-04,2021-01-04,active_screener
+ACGL,Arch Capital Group Ltd.,Financial Services,Insurance - Diversified,NASDAQ,13988195535.0,2021-01-04,2021-01-04,active_screener
+KDP,Keurig Dr Pepper Inc.,Consumer Defensive,Beverages - Non-Alcoholic,NASDAQ,44516628000.0,2021-01-04,2021-01-04,active_screener
+IX,ORIX Corporation,Financial Services,Financial - Credit Services,NYSE,3701773548.0,2021-01-04,2021-01-04,active_screener
+BE,Bloom Energy Corporation,Industrials,Electrical Equipment & Parts,NYSE,4659631050.0,2021-01-04,2021-01-04,active_screener
+INSM,Insmed Incorporated,Healthcare,Biotechnology,NASDAQ,3441171009.0,2021-01-04,2021-01-04,active_screener
+ADM,Archer-Daniels-Midland Company,Consumer Defensive,Agricultural Farm Products,NYSE,28076810000.0,2021-01-04,2021-01-04,active_screener
+NRG,"NRG Energy, Inc.",Utilities,Independent Power Producers,NYSE,8893500000.0,2021-01-04,2021-01-04,active_screener
+ARES,Ares Management Corporation,Financial Services,Asset Management,NYSE,10407417721.0,2021-01-04,2021-01-04,active_screener
+STM,STMicroelectronics N.V.,Technology,Semiconductors,NYSE,34788821292.0,2021-01-04,2021-01-04,active_screener
+RYAAY,Ryanair Holdings plc,Industrials,"Airlines, Airports & Air Services",NASDAQ,9431643100.0,2021-01-04,2021-01-04,active_screener
+TCOM,Trip.com Group Limited,Consumer Cyclical,Travel Services,NASDAQ,20253992532.0,2021-01-04,2021-01-04,active_screener
+RMD,ResMed Inc.,Healthcare,Medical - Instruments & Supplies,NYSE,30837219553.0,2021-01-04,2021-01-04,active_screener
+PRU,"Prudential Financial, Inc.",Financial Services,Insurance - Life,NYSE,30277320000.0,2021-01-04,2021-01-04,active_screener
+IR,Ingersoll Rand Inc.,Industrials,Industrial - Machinery,NYSE,18574752000.0,2021-01-04,2021-01-04,active_screener
+ONC,BeOne Medicines Ltd.,Healthcare,Medical - Pharmaceuticals,NASDAQ,23871246121.0,2021-01-04,2021-01-04,active_screener
+HPE,Hewlett Packard Enterprise Company,Technology,Communication Equipment,NYSE,15041000000.0,2021-01-04,2021-01-04,active_screener
+SHG,"Shinhan Financial Group Co., Ltd.",Financial Services,Banks - Regional,NYSE,15624049980.0,2021-01-04,2021-01-04,active_screener
+CHT,"Chunghwa Telecom Co., Ltd.",Communication Services,Telecommunications Services,NYSE,30122166701.0,2021-01-04,2021-01-04,active_screener
+A,"Agilent Technologies, Inc.",Healthcare,Medical - Diagnostics & Research,NYSE,36303840000.0,2021-01-04,2021-01-04,active_screener
+PAYX,"Paychex, Inc.",Industrials,Staffing & Employment Services,NASDAQ,32583816000.0,2021-01-04,2021-01-04,active_screener
+FITB,Fifth Third Bancorp,Financial Services,Banks - Regional,NASDAQ,19454010590.0,2021-01-04,2021-01-04,active_screener
+HMC,"Honda Motor Co., Ltd.",Consumer Cyclical,Auto - Manufacturers,NYSE,14927065421.0,2021-01-04,2021-01-04,active_screener
+NWG,NatWest Group plc,Financial Services,Banks - Diversified,NYSE,12925349675.0,2021-01-04,2021-01-04,active_screener
+CPRT,"Copart, Inc.",Industrials,Specialty Business Services,NASDAQ,28489377280.0,2021-01-04,2021-01-04,active_screener
+MTB,M&T Bank Corporation,Financial Services,Banks - Regional,NYSE,16303471920.0,2021-01-04,2021-01-04,active_screener
+HAL,Halliburton Company,Energy,Oil & Gas Equipment & Services,NYSE,16739869999.0,2021-01-04,2021-01-04,active_screener
+IRM,Iron Mountain Incorporated,Real Estate,REIT - Specialty,NYSE,8275746960.0,2021-01-04,2021-01-04,active_screener
+AXON,"Axon Enterprise, Inc.",Industrials,Aerospace & Defense,NASDAQ,7465468561.0,2021-01-04,2021-01-04,active_screener
+WDAY,"Workday, Inc.",Technology,Software - Application,NASDAQ,54520076473.0,2021-01-04,2021-01-04,active_screener
+TS,Tenaris S.A.,Energy,Oil & Gas Equipment & Services,NYSE,9456101370.0,2021-01-04,2021-01-04,active_screener
+CQP,"Cheniere Energy Partners, L.P.",Energy,Oil & Gas Midstream,NYSE,16843199999.0,2021-01-04,2021-01-04,active_screener
+ATO,Atmos Energy Corporation,Utilities,Regulated Gas,NYSE,12145008830.0,2021-01-04,2021-01-04,active_screener
+AEE,Ameren Corporation,Utilities,Regulated Electric,NYSE,19367472000.0,2021-01-04,2021-01-04,active_screener
+OTIS,Otis Worldwide Corporation,Industrials,Industrial - Machinery,NYSE,28308644000.0,2021-01-04,2021-01-04,active_screener
+UAL,"United Airlines Holdings, Inc.",Industrials,"Airlines, Airports & Air Services",NASDAQ,13470528743.0,2021-01-04,2021-01-04,active_screener
+TPL,Texas Pacific Land Corporation,Energy,Oil & Gas Exploration & Production,NYSE,5870752921.0,2021-01-04,2021-01-04,active_screener
+DTE,DTE Energy Company,Utilities,Regulated Electric,NYSE,19706520000.0,2021-01-04,2021-01-04,active_screener
+TPR,"Tapestry, Inc.",Consumer Cyclical,Luxury Goods,NYSE,9099922000.0,2021-01-04,2021-01-04,active_screener
+JBL,Jabil Inc.,Technology,"Hardware, Equipment & Parts",NYSE,6338151000.0,2021-01-04,2021-01-04,active_screener
+FISV,"Fiserv, Inc.",Technology,Information Technology Services,NASDAQ,74829712000.0,2021-01-04,2021-01-04,active_screener
+TDY,Teledyne Technologies Incorporated,Technology,"Hardware, Equipment & Parts",NYSE,13430477082.0,2021-01-04,2021-01-04,active_screener
+NTRA,"Natera, Inc.",Healthcare,Medical - Diagnostics & Research,NASDAQ,8349017590.0,2021-01-04,2021-01-04,active_screener
+DVN,Devon Energy Corporation,Energy,Oil & Gas Exploration & Production,NYSE,10549020000.0,2021-01-04,2021-01-04,active_screener
+FE,FirstEnergy Corp.,Utilities,Regulated Electric,NYSE,16023930000.0,2021-01-04,2021-01-04,active_screener
+KMB,Kimberly-Clark Corporation,Consumer Defensive,Household & Personal Products,NASDAQ,45115880000.0,2021-01-04,2021-01-04,active_screener
+VICI,VICI Properties Inc.,Real Estate,REIT - Diversified,NYSE,13224244448.0,2021-01-04,2021-01-04,active_screener
+CTSH,Cognizant Technology Solutions Corporation,Technology,Information Technology Services,NASDAQ,42092600000.0,2021-01-04,2021-01-04,active_screener
+IQV,IQVIA Holdings Inc.,Healthcare,Medical - Diagnostics & Research,NYSE,33818900000.0,2021-01-04,2021-01-04,active_screener
+PPL,PPL Corporation,Utilities,Regulated Electric,NYSE,21213405220.0,2021-01-04,2021-01-04,active_screener
+DOV,Dover Corporation,Industrials,Industrial - Machinery,NYSE,17731975100.0,2021-01-04,2021-01-04,active_screener
+XYL,Xylem Inc.,Industrials,Industrial - Machinery,NYSE,17974107000.0,2021-01-04,2021-01-04,active_screener
+RJF,"Raymond James Financial, Inc.",Financial Services,Financial - Capital Markets,NYSE,12958023000.0,2021-01-04,2021-01-04,active_screener
+FTS,Fortis Inc.,Utilities,Regulated Electric,NYSE,19951361916.0,2021-01-04,2021-01-04,active_screener
+EXR,Extra Space Storage Inc.,Real Estate,REIT - Industrial,NYSE,14559113351.0,2021-01-04,2021-01-04,active_screener
+EC,Ecopetrol S.A.,Energy,Oil & Gas Integrated,NYSE,26623059818.0,2021-01-04,2021-01-04,active_screener
+EIX,Edison International,Utilities,Regulated Electric,NYSE,22925710000.0,2021-01-04,2021-01-04,active_screener
+FTI,TechnipFMC plc,Energy,Oil & Gas Equipment & Services,NYSE,3624582000.0,2021-01-04,2021-01-04,active_screener
+CNP,"CenterPoint Energy, Inc.",Utilities,Regulated Electric,NYSE,11779680000.0,2021-01-04,2021-01-04,active_screener
+DOW,Dow Inc.,Basic Materials,Chemicals,NYSE,40248992000.0,2021-01-04,2021-01-04,active_screener
+CHTR,"Charter Communications, Inc.",Communication Services,Telecommunications Services,NASDAQ,123844476655.0,2021-01-04,2021-01-04,active_screener
+HUBB,Hubbell Incorporated,Industrials,Electrical Equipment & Parts,NYSE,8458452000.0,2021-01-04,2021-01-04,active_screener
+BAP,Credicorp Ltd.,Financial Services,Banks - Regional,NYSE,12538245136.0,2021-01-04,2021-01-04,active_screener
+STRC,MicroStrategy Incorporated Variable Rate Series A Perpetual Stretch Preferred Stock,Technology,Software - Application,NASDAQ,4101904400.0,2021-01-04,2021-01-04,active_screener
+CASY,"Casey's General Stores, Inc.",Consumer Cyclical,Specialty Retail,NASDAQ,6572909920.0,2021-01-04,2021-01-04,active_screener
+EXPE,"Expedia Group, Inc.",Consumer Cyclical,Travel Services,NASDAQ,19072427970.0,2021-01-04,2021-01-04,active_screener
+ON,ON Semiconductor Corporation,Technology,Semiconductors,NASDAQ,13505778000.0,2021-01-04,2021-01-04,active_screener
+WTW,Willis Towers Watson Public Limited Company,Financial Services,Insurance - Brokers,NASDAQ,26481000000.0,2021-01-04,2021-01-04,active_screener
+MTZ,"MasTec, Inc.",Industrials,Engineering & Construction,NYSE,4874420310.0,2021-01-04,2021-01-04,active_screener
+CFG,"Citizens Financial Group, Inc.",Financial Services,Banks - Regional,NYSE,15129886080.0,2021-01-04,2021-01-04,active_screener
+AXIA,AXIA Energia S.A.,Utilities,Renewable Utilities,NYSE,10700108806.0,2021-01-04,2021-01-04,active_screener
+VEEV,Veeva Systems Inc.,Healthcare,Medical - Healthcare Information Services,NYSE,41603322180.0,2021-01-04,2021-01-04,active_screener
+STLD,"Steel Dynamics, Inc.",Basic Materials,Steel,NASDAQ,7727369299.0,2021-01-04,2021-01-04,active_screener
+KHC,The Kraft Heinz Company,Consumer Defensive,Packaged Foods,NASDAQ,41863289999.0,2021-01-04,2021-01-04,active_screener
+DG,Dollar General Corporation,Consumer Defensive,Discount Stores,NYSE,51062288109.0,2021-01-04,2021-01-04,active_screener
+FLEX,Flex Ltd.,Technology,"Hardware, Equipment & Parts",NASDAQ,9130207440.0,2021-01-04,2021-01-04,active_screener
+PHG,Koninklijke Philips N.V.,Healthcare,Medical - Devices,NYSE,48758717615.0,2021-01-04,2021-01-04,active_screener
+MTD,Mettler-Toledo International Inc.,Healthcare,Medical - Diagnostics & Research,NYSE,27123816936.0,2021-01-04,2021-01-04,active_screener
+TW,Tradeweb Markets Inc.,Financial Services,Financial - Capital Markets,NASDAQ,12389781139.0,2021-01-04,2021-01-04,active_screener
+CW,Curtiss-Wright Corporation,Industrials,Aerospace & Defense,NYSE,4556661560.0,2021-01-04,2021-01-04,active_screener
+FOXA,Fox Corporation,Communication Services,Entertainment,NASDAQ,16969090000.0,2021-01-04,2021-01-04,active_screener
+TECK,Teck Resources Limited,Basic Materials,Industrial Materials,NYSE,10078761000.0,2021-01-04,2021-01-04,active_screener
+STRF,MicroStrategy Incorporated 10.00% Series A Perpetual Strife Preferred Stock,Technology,Software - Application,NASDAQ,4101904400.0,2021-01-04,2021-01-04,active_screener
+FTAI,FTAI Aviation Ltd.,Industrials,Rental & Leasing Services,NASDAQ,1671522951.0,2021-01-04,2021-01-04,active_screener
+AWK,"American Water Works Company, Inc.",Utilities,Regulated Water,NYSE,27193440000.0,2021-01-04,2021-01-04,active_screener
+VIV,Telefônica Brasil S.A.,Communication Services,Telecommunications Services,NYSE,14840875024.0,2021-01-04,2021-01-04,active_screener
+BIIB,Biogen Inc.,Healthcare,Drug Manufacturers - General,NASDAQ,36904105000.0,2021-01-04,2021-01-04,active_screener
+ES,Eversource Energy,Utilities,Regulated Electric,NYSE,29044248315.0,2021-01-04,2021-01-04,active_screener
+ROL,"Rollins, Inc.",Consumer Cyclical,Personal Products & Services,NYSE,18814194720.0,2021-01-04,2021-01-04,active_screener
+STZ,"Constellation Brands, Inc.",Consumer Defensive,Beverages - Wineries & Distilleries,NYSE,42044308900.0,2021-01-04,2021-01-04,active_screener
+PBA,Pembina Pipeline Corporation,Energy,Oil & Gas Midstream,NYSE,13167000000.0,2021-01-04,2021-01-04,active_screener
+SYF,Synchrony Financial,Financial Services,Financial - Credit Services,NYSE,19913862000.0,2021-01-04,2021-01-04,active_screener
+FICO,Fair Isaac Corporation,Technology,Software - Application,NYSE,14696497620.0,2021-01-04,2021-01-04,active_screener
+DXCM,"DexCom, Inc.",Healthcare,Medical - Devices,NASDAQ,34448436000.0,2021-01-04,2021-01-04,active_screener
+EL,The Estée Lauder Companies Inc.,Consumer Defensive,Household & Personal Products,NYSE,92714364000.0,2021-01-04,2021-01-04,active_screener
+WRB,W. R. Berkley Corporation,Financial Services,Insurance - Property & Casualty,NYSE,12116523871.0,2021-01-04,2021-01-04,active_screener
+UTHR,United Therapeutics Corporation,Healthcare,Biotechnology,NASDAQ,6865724000.0,2021-01-04,2021-01-04,active_screener
+CINF,Cincinnati Financial Corporation,Financial Services,Insurance - Property & Casualty,NASDAQ,13604500000.0,2021-01-04,2021-01-04,active_screener
+CTRA,Coterra Energy Inc.,Energy,Oil & Gas Exploration & Production,NYSE,6623400000.0,2021-01-04,2021-01-04,active_screener
+QSR,Restaurant Brands International Inc.,Consumer Cyclical,Restaurants,NYSE,18173340000.0,2021-01-04,2021-01-04,active_screener
+VRSN,"VeriSign, Inc.",Technology,Software - Infrastructure,NASDAQ,24155898000.0,2021-01-04,2021-01-04,active_screener
+LPLA,LPL Financial Holdings Inc.,Financial Services,Financial - Capital Markets,NASDAQ,8235887980.0,2021-01-04,2021-01-04,active_screener
+XPO,"XPO Logistics, Inc.",Industrials,Integrated Freight & Logistics,NYSE,4271799999.0,2021-01-04,2021-01-04,active_screener
+NMR,"Nomura Holdings, Inc.",Financial Services,Financial - Capital Markets,NYSE,15978524400.0,2021-01-04,2021-01-04,active_screener
+PPG,"PPG Industries, Inc.",Basic Materials,Chemicals - Specialty,NYSE,33546994000.0,2021-01-04,2021-01-04,active_screener
+ZM,"Zoom Communications, Inc.",Technology,Software - Application,NASDAQ,103529635674.0,2021-01-04,2021-01-04,active_screener
+BG,Bunge Global S.A.,Consumer Defensive,Agricultural Farm Products,NYSE,9221898841.0,2021-01-04,2021-01-04,active_screener
+AER,AerCap Holdings N.V.,Industrials,Rental & Leasing Services,NYSE,5556546330.0,2021-01-04,2021-01-04,active_screener
+VRSK,"Verisk Analytics, Inc.",Industrials,Consulting Services,NASDAQ,32996772847.0,2021-01-04,2021-01-04,active_screener
+FIS,"Fidelity National Information Services, Inc.",Technology,Information Technology Services,NYSE,86884110000.0,2021-01-04,2021-01-04,active_screener
+FOX,Fox Corporation,Communication Services,Entertainment,NASDAQ,16733490000.0,2021-01-04,2021-01-04,active_screener
+HBAN,Huntington Bancshares Incorporated,Financial Services,Banks - Regional,NASDAQ,12786080000.0,2021-01-04,2021-01-04,active_screener
+CMS,CMS Energy Corporation,Utilities,Regulated Electric,NYSE,17203446000.0,2021-01-04,2021-01-04,active_screener
+HUM,Humana Inc.,Healthcare,Medical - Healthcare Plans,NYSE,53144068065.0,2021-01-04,2021-01-04,active_screener
+LYB,LyondellBasell Industries N.V.,Basic Materials,Chemicals - Specialty,NYSE,29822860000.0,2021-01-04,2021-01-04,active_screener
+OMC,Omnicom Group Inc.,Communication Services,Advertising Agencies,NYSE,13125728000.0,2021-01-04,2021-01-04,active_screener
+WWD,"Woodward, Inc.",Industrials,Aerospace & Defense,NASDAQ,7521855860.0,2021-01-04,2021-01-04,active_screener
+UMC,United Microelectronics Corporation,Technology,Semiconductors,NYSE,19554481386.0,2021-01-04,2021-01-04,active_screener
+MKL,Markel Corporation,Financial Services,Insurance - Property & Casualty,NYSE,14109337190.0,2021-01-04,2021-01-04,active_screener
+ULTA,"Ulta Beauty, Inc.",Consumer Cyclical,Specialty Retail,NASDAQ,15914642270.0,2021-01-04,2021-01-04,active_screener
+TSCO,Tractor Supply Company,Consumer Cyclical,Specialty Retail,NASDAQ,16226574100.0,2021-01-04,2021-01-04,active_screener
+AVB,"AvalonBay Communities, Inc.",Real Estate,REIT - Residential,NYSE,21662565402.0,2021-01-04,2021-01-04,active_screener
+WIT,Wipro Limited,Technology,Information Technology Services,NYSE,15814663855.0,2021-01-04,2021-01-04,active_screener
+SQM,Sociedad Química y Minera de Chile S.A.,Basic Materials,Chemicals - Specialty,NYSE,13451896405.0,2021-01-04,2021-01-04,active_screener
+FMX,"Fomento Económico Mexicano, S.A.B. de C.V.",Consumer Defensive,Beverages - Alcoholic,NYSE,13688011815.0,2021-01-04,2021-01-04,active_screener
+BNTX,BioNTech SE,Healthcare,Biotechnology,NASDAQ,20843106250.0,2021-01-04,2021-01-04,active_screener
+PHM,"PulteGroup, Inc.",Consumer Cyclical,Residential Construction,NYSE,11202829470.0,2021-01-04,2021-01-04,active_screener
+SBAC,SBA Communications Corporation,Real Estate,REIT - Specialty,NASDAQ,29429766743.0,2021-01-04,2021-01-04,active_screener
+TSN,"Tyson Foods, Inc.",Consumer Defensive,Agricultural Farm Products,NYSE,23050500000.0,2021-01-04,2021-01-04,active_screener
+NI,NiSource Inc.,Utilities,Regulated Gas,NYSE,8867166000.0,2021-01-04,2021-01-04,active_screener
+EQR,Equity Residential,Real Estate,REIT - Residential,NYSE,21406100000.0,2021-01-04,2021-01-04,active_screener
+LH,Labcorp Holdings Inc.,Healthcare,Medical - Diagnostics & Research,NYSE,17178576000.0,2021-01-04,2021-01-04,active_screener
+RL,Ralph Lauren Corporation,Consumer Cyclical,Apparel - Manufacturers,NYSE,7437915046.0,2021-01-04,2021-01-04,active_screener
+TSEM,Tower Semiconductor Ltd.,Technology,Semiconductors,NASDAQ,2806440000.0,2021-01-04,2021-01-04,active_screener
+SOJD,Southern Company (The) Series 2,Utilities,Regulated Electric,NYSE,28969800000.0,2021-01-04,2021-01-04,active_screener
+BCE,BCE Inc.,Communication Services,Telecommunications Services,NYSE,38893522532.0,2021-01-04,2021-01-04,active_screener
+DRI,"Darden Restaurants, Inc.",Consumer Cyclical,Restaurants,NYSE,15169320000.0,2021-01-04,2021-01-04,active_screener
+STLA,Stellantis N.V.,Consumer Cyclical,Auto - Manufacturers,NYSE,28595043800.0,2021-01-04,2021-01-04,active_screener
+LEN,Lennar Corporation,Consumer Cyclical,Residential Construction,NYSE,22950915400.0,2021-01-04,2021-01-04,active_screener
+WSM,"Williams-Sonoma, Inc.",Consumer Cyclical,Specialty Retail,NYSE,7877160719.0,2021-01-04,2021-01-04,active_screener
+CHD,"Church & Dwight Co., Inc.",Consumer Defensive,Household & Personal Products,NYSE,21234320000.0,2021-01-04,2021-01-04,active_screener
+SBS,Companhia de Saneamento Básico do Estado de São Paulo - SABESP,Utilities,Regulated Water,NYSE,5519888189.0,2021-01-04,2021-01-04,active_screener
+EFX,Equifax Inc.,Industrials,Consulting Services,NYSE,22893528000.0,2021-01-04,2021-01-04,active_screener
+SW,Smurfit Westrock Plc,Consumer Cyclical,Packaging & Containers,NYSE,10968624129.0,2021-01-04,2021-01-04,active_screener
+STE,STERIS plc,Healthcare,Medical - Devices,NYSE,16087998480.0,2021-01-04,2021-01-04,active_screener
+FWONK,Formula One Group,Communication Services,Entertainment,NASDAQ,9324080000.0,2021-01-04,2021-01-04,active_screener
+ZS,"Zscaler, Inc.",Technology,Software - Infrastructure,NASDAQ,26476856160.0,2021-01-04,2021-01-04,active_screener
+DGX,Quest Diagnostics Incorporated,Healthcare,Medical - Diagnostics & Research,NYSE,16108960000.0,2021-01-04,2021-01-04,active_screener
+IHG,InterContinental Hotels Group PLC,Consumer Cyclical,Travel Lodging,NYSE,11637701087.0,2021-01-04,2021-01-04,active_screener
+CRS,Carpenter Technology Corporation,Industrials,Manufacturing - Metal Fabrication,NYSE,1356747000.0,2021-01-04,2021-01-04,active_screener
+CPAY,"Corpay, Inc.",Technology,Software - Infrastructure,NYSE,22788221948.0,2021-01-04,2021-01-04,active_screener
+FN,Fabrinet,Technology,"Hardware, Equipment & Parts",NYSE,2858550000.0,2021-01-04,2021-01-04,active_screener
+FSLR,"First Solar, Inc.",Energy,Solar,NASDAQ,10740349120.0,2021-01-04,2021-01-04,active_screener
+SOJC,The Southern Company JR 2017B NT 77,Utilities,Regulated Electric,NYSE,28662400000.0,2021-01-04,2021-01-04,active_screener
+JBHT,"J.B. Hunt Transport Services, Inc.",Industrials,Integrated Freight & Logistics,NASDAQ,14248678449.0,2021-01-04,2021-01-04,active_screener
+ATI,ATI Inc.,Industrials,Manufacturing - Metal Fabrication,NYSE,2026264000.0,2021-01-04,2021-01-04,active_screener
+PAAS,Pan American Silver Corp.,Basic Materials,Silver,NYSE,7849043130.0,2021-01-04,2021-01-04,active_screener
+PSTG,"Everpure, Inc",Technology,Computer Hardware,NYSE,6295148920.0,2021-01-04,2021-01-04,active_screener
+BURL,"Burlington Stores, Inc.",Consumer Cyclical,Apparel - Retail,NYSE,16820968548.0,2021-01-04,2021-01-04,active_screener
+DLTR,"Dollar Tree, Inc.",Consumer Defensive,Discount Stores,NASDAQ,25088124000.0,2021-01-04,2021-01-04,active_screener
+BWXT,"BWX Technologies, Inc.",Industrials,Aerospace & Defense,NYSE,5618154765.0,2021-01-04,2021-01-04,active_screener
+ALB,Albemarle Corporation,Basic Materials,Chemicals - Specialty,NYSE,17184916960.0,2021-01-04,2021-01-04,active_screener
+KOF,"Coca-Cola FEMSA, S.A.B. de C.V.",Consumer Defensive,Beverages - Non-Alcoholic,NYSE,9594499744.0,2021-01-04,2021-01-04,active_screener
+MRNA,"Moderna, Inc.",Healthcare,Biotechnology,NASDAQ,44692000000.0,2021-01-04,2021-01-04,active_screener
+RPRX,Royalty Pharma plc,Healthcare,Biotechnology,NASDAQ,18252460800.0,2021-01-04,2021-01-04,active_screener
+CHRW,"C.H. Robinson Worldwide, Inc.",Industrials,Integrated Freight & Logistics,NASDAQ,12424503960.0,2021-01-04,2021-01-04,active_screener
+FWONA,Formula One Group,Communication Services,Entertainment,NASDAQ,8398400000.0,2021-01-04,2021-01-04,active_screener
+NVT,nVent Electric plc,Industrials,Electrical Equipment & Parts,NYSE,3779958000.0,2021-01-04,2021-01-04,active_screener
+LDOS,"Leidos Holdings, Inc.",Technology,Information Technology Services,NYSE,14546480000.0,2021-01-04,2021-01-04,active_screener
+USFD,US Foods Holding Corp.,Consumer Defensive,Food Distribution,NYSE,7028666645.0,2021-01-04,2021-01-04,active_screener
+MDB,"MongoDB, Inc.",Technology,Software - Infrastructure,NASDAQ,21199037602.0,2021-01-04,2021-01-04,active_screener
+ROIV,Roivant Sciences Ltd.,Healthcare,Biotechnology,NASDAQ,6964305848.0,2021-01-04,2021-01-04,active_screener
+EXAS,Exact Sciences Corporation,Healthcare,Medical - Diagnostics & Research,NASDAQ,21818016180.0,2021-01-04,2021-01-04,active_screener
+DD,"DuPont de Nemours, Inc.",Basic Materials,Chemicals - Specialty,NYSE,17793216000.0,2021-01-04,2021-01-04,active_screener
+IP,International Paper Company,Consumer Cyclical,Packaging & Containers,NYSE,18002910091.0,2021-01-04,2021-01-04,active_screener
+TU,TELUS Corporation,Communication Services,Telecommunications Services,NYSE,25843180000.0,2021-01-04,2021-01-04,active_screener
+LUV,Southwest Airlines Co.,Industrials,"Airlines, Airports & Air Services",NYSE,26618640000.0,2021-01-04,2021-01-04,active_screener
+TWLO,Twilio Inc.,Communication Services,Internet Content & Information,NYSE,55930217642.0,2021-01-04,2021-01-04,active_screener
+STRK,MicroStrategy Incorporated,Technology,Software - Application,NASDAQ,4101904400.0,2021-01-04,2021-01-04,active_screener
+AGI,Alamos Gold Inc.,Basic Materials,Gold,NYSE,3786360640.0,2021-01-04,2021-01-04,active_screener
+SNA,Snap-on Incorporated,Industrials,Manufacturing - Tools & Accessories,NYSE,9047064000.0,2021-01-04,2021-01-04,active_screener
+SOJE,Southern Company (The) Series 2,Utilities,Regulated Electric,NYSE,62921600000.0,2021-01-04,2021-01-04,active_screener
+ZTO,ZTO Express (Cayman) Inc.,Industrials,Integrated Freight & Logistics,NYSE,23239551701.0,2021-01-04,2021-01-04,active_screener
+EXPD,"Expeditors International of Washington, Inc.",Industrials,Integrated Freight & Logistics,NYSE,15620144340.0,2021-01-04,2021-01-04,active_screener
+AMCR,Amcor plc,Consumer Cyclical,Packaging & Containers,NYSE,17627620000.0,2021-01-04,2021-01-04,active_screener
+GIS,"General Mills, Inc.",Consumer Defensive,Packaged Foods,NYSE,36303450000.0,2021-01-04,2021-01-04,active_screener
+CF,"CF Industries Holdings, Inc.",Basic Materials,Agricultural Inputs,NYSE,8280097000.0,2021-01-04,2021-01-04,active_screener
+FLUT,Flutter Entertainment plc,Consumer Cyclical,"Gambling, Resorts & Casinos",NYSE,37151500500.0,2021-01-04,2021-01-04,active_screener
+AQNB,Algonquin Power & Utilities Cor,Utilities,Regulated Electric,NYSE,16706516093.0,2021-01-04,2021-01-04,active_screener
+KEP,Korea Electric Power Corporation,Utilities,Regulated Electric,NYSE,15612566352.0,2021-01-04,2021-01-04,active_screener
+WST,"West Pharmaceutical Services, Inc.",Healthcare,Medical - Instruments & Supplies,NYSE,21103623000.0,2021-01-04,2021-01-04,active_screener
+ILMN,"Illumina, Inc.",Healthcare,Medical - Diagnostics & Research,NASDAQ,52180400000.0,2021-01-04,2021-01-04,active_screener
+PKX,POSCO Holdings Inc.,Basic Materials,Steel,NYSE,18944550055.0,2021-01-04,2021-01-04,active_screener
+INCY,Incyte Corporation,Healthcare,Biotechnology,NASDAQ,19001796450.0,2021-01-04,2021-01-04,active_screener
+WAT,Waters Corporation,Healthcare,Medical - Diagnostics & Research,NYSE,15574339000.0,2021-01-04,2021-01-04,active_screener
+AA,Alcoa Corporation,Basic Materials,Aluminum,NYSE,4324500000.0,2021-01-04,2021-01-04,active_screener
+APG,APi Group Corporation,Industrials,Engineering & Construction,NYSE,3372479836.0,2021-01-04,2021-01-04,active_screener
+IFF,International Flavors & Fragrances Inc.,Basic Materials,Chemicals - Specialty,NYSE,21516380872.0,2021-01-04,2021-01-04,active_screener
+NVR,"NVR, Inc.",Consumer Cyclical,Residential Construction,NYSE,14841307450.0,2021-01-04,2021-01-04,active_screener
+LI,Li Auto Inc.,Consumer Cyclical,Auto - Manufacturers,NASDAQ,29375023056.0,2021-01-04,2021-01-04,active_screener
+PKG,Packaging Corporation of America,Consumer Cyclical,Packaging & Containers,NYSE,12814800000.0,2021-01-04,2021-01-04,active_screener
+TLK,Perusahaan Perseroan (Persero) PT Telekomunikasi Indonesia Tbk,Communication Services,Telecommunications Services,NYSE,24488179943.0,2021-01-04,2021-01-04,active_screener
+LNT,Alliant Energy Corporation,Utilities,Regulated Electric,NASDAQ,12622500000.0,2021-01-04,2021-01-04,active_screener
+EVRG,"Evergy, Inc.",Utilities,Regulated Electric,NASDAQ,12217375000.0,2021-01-04,2021-01-04,active_screener
+RVMD,"Revolution Medicines, Inc.",Healthcare,Biotechnology,NASDAQ,2671033482.0,2021-01-04,2021-01-04,active_screener
+LULU,Lululemon Athletica Inc.,Consumer Cyclical,Apparel - Retail,NASDAQ,46453176000.0,2021-01-04,2021-01-04,active_screener
+RGLD,"Royal Gold, Inc.",Basic Materials,Gold,NASDAQ,7228898112.0,2021-01-04,2021-01-04,active_screener
+RBA,"RB Global, Inc.",Industrials,Specialty Business Services,NYSE,7330799980.0,2021-01-04,2021-01-04,active_screener
+DUKB,Duke Energy Corporation 5.625%,Utilities,Regulated Electric,NYSE,21770390000.0,2021-01-04,2021-01-04,active_screener
+RBC,RBC Bearings Incorporated,Industrials,Manufacturing - Tools & Accessories,NYSE,3058941225.0,2021-01-04,2021-01-04,active_screener
+ZBH,"Zimmer Biomet Holdings, Inc.",Healthcare,Medical - Devices,NYSE,30904640000.0,2021-01-04,2021-01-04,active_screener
+ITT,ITT Inc.,Industrials,Industrial - Machinery,NYSE,6479404000.0,2021-01-04,2021-01-04,active_screener
+RCI,Rogers Communications Inc.,Communication Services,Telecommunications Services,NYSE,23962250000.0,2021-01-04,2021-01-04,active_screener
+WY,Weyerhaeuser Company,Real Estate,REIT - Specialty,NYSE,24565437580.0,2021-01-04,2021-01-04,active_screener
+YUMC,"Yum China Holdings, Inc.",Consumer Cyclical,Restaurants,NYSE,23961000000.0,2021-01-04,2021-01-04,active_screener
+BEKE,KE Holdings Inc.,Real Estate,Real Estate - Services,NYSE,69976270170.0,2021-01-04,2021-01-04,active_screener
+GMAB,Genmab A/S,Healthcare,Biotechnology,NASDAQ,26654510719.0,2021-01-04,2021-01-04,active_screener
+VNOM,"Viper Energy, Inc.",Energy,Oil & Gas Midstream,NASDAQ,796047663.0,2021-01-04,2021-01-04,active_screener
+CX,"CEMEX, S.A.B. de C.V.",Basic Materials,Construction Materials,NYSE,7792982611.0,2021-01-04,2021-01-04,active_screener
+YPF,YPF Sociedad Anónima,Energy,Oil & Gas Integrated,NYSE,1774403147.0,2021-01-04,2021-01-04,active_screener
+THC,Tenet Healthcare Corporation,Healthcare,Medical - Care Facilities,NYSE,4143924819.0,2021-01-04,2021-01-04,active_screener
+DKS,"DICK'S Sporting Goods, Inc.",Consumer Cyclical,Specialty Retail,NYSE,4747582960.0,2021-01-04,2021-01-04,active_screener
+HOLX,"Hologic, Inc.",Healthcare,Medical - Instruments & Supplies,NASDAQ,18899545760.0,2021-01-04,2021-01-04,active_screener
+CNC,Centene Corporation,Healthcare,Medical - Healthcare Plans,NYSE,36128246210.0,2021-01-04,2021-01-04,active_screener
+BIP,Brookfield Infrastructure Partners L.P.,Utilities,Diversified Utilities,NYSE,14617869000.0,2021-01-04,2021-01-04,active_screener
+RTO,Rentokil Initial plc,Industrials,Specialty Business Services,NYSE,13630380000.0,2021-01-04,2021-01-04,active_screener
+COKE,"Coca-Cola Consolidated, Inc.",Consumer Defensive,Beverages - Non-Alcoholic,NASDAQ,2503528300.0,2021-01-04,2021-01-04,active_screener
+XPEV,XPeng Inc.,Consumer Cyclical,Auto - Manufacturers,NYSE,37716925560.0,2021-01-04,2021-01-04,active_screener
+WES,"Western Midstream Partners, LP",Energy,Oil & Gas Midstream,NYSE,5866076800.0,2021-01-04,2021-01-04,active_screener
+LII,Lennox International Inc.,Industrials,Construction,NYSE,10192740000.0,2021-01-04,2021-01-04,active_screener
+RS,Reliance Steel & Aluminum Co.,Basic Materials,Steel,NYSE,7618942950.0,2021-01-04,2021-01-04,active_screener
+BALL,Ball Corporation,Consumer Cyclical,Packaging & Containers,NYSE,29424315360.0,2021-01-04,2021-01-04,active_screener
+HTHT,H World Group Limited,Consumer Cyclical,Travel Lodging,NASDAQ,14089500000.0,2021-01-04,2021-01-04,active_screener
+CSGP,"CoStar Group, Inc.",Real Estate,Real Estate - Services,NASDAQ,35057978340.0,2021-01-04,2021-01-04,active_screener
+SGI,Somnigroup International Inc,Consumer Defensive,Household & Personal Products,NYSE,5212620000.0,2021-01-04,2021-01-04,active_screener
+ESS,"Essex Property Trust, Inc.",Real Estate,REIT - Residential,NYSE,14833880765.0,2021-01-04,2021-01-04,active_screener
+CCZ,Comcast Holdings Corp.,Communication Services,Broadcasting,NYSE,72742480047.0,2021-01-04,2021-01-04,active_screener
+CLH,"Clean Harbors, Inc.",Industrials,Waste Management,NYSE,4088355329.0,2021-01-04,2021-01-04,active_screener
+HII,"Huntington Ingalls Industries, Inc.",Industrials,Aerospace & Defense,NYSE,6594810000.0,2021-01-04,2021-01-04,active_screener
+OVV,Ovintiv Inc.,Energy,Oil & Gas Exploration & Production,NYSE,3906702000.0,2021-01-04,2021-01-04,active_screener
+MGA,Magna International Inc.,Consumer Cyclical,Auto - Parts,NYSE,20955814348.0,2021-01-04,2021-01-04,active_screener
+TXT,Textron Inc.,Industrials,Aerospace & Defense,NYSE,10528677420.0,2021-01-04,2021-01-04,active_screener
+WSO,"Watsco, Inc.",Industrials,Industrial - Distribution,NYSE,7934389166.0,2021-01-04,2021-01-04,active_screener
+SUI,"Sun Communities, Inc.",Real Estate,REIT - Residential,NYSE,15767427000.0,2021-01-04,2021-01-04,active_screener
+NWS,News Corporation,Communication Services,Entertainment,NASDAQ,10610768000.0,2021-01-04,2021-01-04,active_screener
+INVH,Invitation Homes Inc.,Real Estate,REIT - Residential,NYSE,16215591847.0,2021-01-04,2021-01-04,active_screener
+NLY,"Annaly Capital Management, Inc.",Real Estate,REIT - Mortgage,NYSE,11515505904.0,2021-01-04,2021-01-04,active_screener
+WPC,W. P. Carey Inc.,Real Estate,REIT - Diversified,NYSE,11758991369.0,2021-01-04,2021-01-04,active_screener
+DECK,Deckers Outdoor Corporation,Consumer Cyclical,Apparel - Footwear & Accessories,NYSE,7952476080.0,2021-01-04,2021-01-04,active_screener
+TKO,"TKO Group Holdings, Inc.",Communication Services,Entertainment,NYSE,3653694720.0,2021-01-04,2021-01-04,active_screener
+VTRS,Viatris Inc.,Healthcare,Drug Manufacturers - Specialty & Generic,NASDAQ,22368725546.0,2021-01-04,2021-01-04,active_screener
+WLK,Westlake Corporation,Basic Materials,Chemicals - Specialty,NYSE,10447569187.0,2021-01-04,2021-01-04,active_screener
+J,Jacobs Solutions Inc.,Industrials,Engineering & Construction,NYSE,11422674780.0,2021-01-04,2021-01-04,active_screener
+GPN,Global Payments Inc.,Industrials,Specialty Business Services,NYSE,61425188500.0,2021-01-04,2021-01-04,active_screener
+KIM,Kimco Realty Corporation,Real Estate,REIT - Retail,NYSE,6169408920.0,2021-01-04,2021-01-04,active_screener
+PAA,"Plains All American Pipeline, L.P.",Energy,Oil & Gas Midstream,NASDAQ,5920399999.0,2021-01-04,2021-01-04,active_screener
+NIO,NIO Inc.,Consumer Cyclical,Auto - Manufacturers,NYSE,83012141319.0,2021-01-04,2021-01-04,active_screener
+GFL,GFL Environmental Inc.,Industrials,Waste Management,NYSE,10018503201.0,2021-01-04,2021-01-04,active_screener
+JLL,Jones Lang LaSalle Incorporated,Real Estate,Real Estate - Services,NYSE,7283453090.0,2021-01-04,2021-01-04,active_screener
+GPC,Genuine Parts Company,Consumer Cyclical,Specialty Retail,NYSE,14216015720.0,2021-01-04,2021-01-04,active_screener
+ROKU,"Roku, Inc.",Communication Services,Entertainment,NASDAQ,41223364600.0,2021-01-04,2021-01-04,active_screener
+MEDP,"Medpace Holdings, Inc.",Healthcare,Medical - Diagnostics & Research,NASDAQ,4805918260.0,2021-01-04,2021-01-04,active_screener
+H,Hyatt Hotels Corporation,Consumer Cyclical,Travel Lodging,NYSE,7208341385.0,2021-01-04,2021-01-04,active_screener
+MAA,"Mid-America Apartment Communities, Inc.",Real Estate,REIT - Residential,NYSE,14021212730.0,2021-01-04,2021-01-04,active_screener
+PR,Permian Resources Corporation,Energy,Oil & Gas Exploration & Production,NYSE,412823800.0,2021-01-04,2021-01-04,active_screener
+TME,Tencent Music Entertainment Group,Communication Services,Internet Content & Information,NYSE,32491680856.0,2021-01-04,2021-01-04,active_screener
+BBIO,"BridgeBio Pharma, Inc.",Healthcare,Biotechnology,NASDAQ,8822268673.0,2021-01-04,2021-01-04,active_screener
+WMG,Warner Music Group Corp.,Communication Services,Entertainment,NASDAQ,18963337845.0,2021-01-04,2021-01-04,active_screener
+PODD,Insulet Corporation,Healthcare,Medical - Devices,NASDAQ,16635353060.0,2021-01-04,2021-01-04,active_screener
+ASND,Ascendis Pharma A/S,Healthcare,Biotechnology,NASDAQ,8896734456.0,2021-01-04,2021-01-04,active_screener
+NWSA,News Corporation,Communication Services,Entertainment,NASDAQ,10728928000.0,2021-01-04,2021-01-04,active_screener
+SNN,Smith & Nephew plc,Healthcare,Medical - Devices,NYSE,37806223168.0,2021-01-04,2021-01-04,active_screener
+SMMT,Summit Therapeutics Inc.,Healthcare,Biotechnology,NASDAQ,428169060.0,2021-01-04,2021-01-04,active_screener
+COO,"The Cooper Companies, Inc.",Healthcare,Medical - Instruments & Supplies,NASDAQ,17542448000.0,2021-01-04,2021-01-04,active_screener
+REG,Regency Centers Corporation,Real Estate,REIT - Retail,NASDAQ,7597108737.0,2021-01-04,2021-01-04,active_screener
+RPM,RPM International Inc.,Basic Materials,Chemicals - Specialty,NYSE,11429214060.0,2021-01-04,2021-01-04,active_screener
+SREA,Sempra,Utilities,Regulated Electric,NYSE,17023352080.0,2021-01-04,2021-01-04,active_screener
+PFGC,Performance Food Group Company,Consumer Defensive,Food Distribution,NYSE,6147981000.0,2021-01-04,2021-01-04,active_screener
+NYT,The New York Times Company,Communication Services,Publishing,NYSE,8248232400.0,2021-01-04,2021-01-04,active_screener
+APA,APA Corporation,Energy,Oil & Gas Exploration & Production,NASDAQ,5583060000.0,2021-01-04,2021-01-04,active_screener
+MKC-V,"McCormick & Company, Incorporated",Consumer Defensive,Packaged Foods,NYSE,24973850000.0,2021-01-04,2021-01-04,active_screener
+MKC,"McCormick & Company, Incorporated",Consumer Defensive,Packaged Foods,NYSE,25104729000.0,2021-01-04,2021-01-04,active_screener
+HST,"Host Hotels & Resorts, Inc.",Real Estate,REIT - Hotel & Motel,NASDAQ,9776363623.0,2021-01-04,2021-01-04,active_screener
+BBY,"Best Buy Co., Inc.",Consumer Cyclical,Specialty Retail,NYSE,26067106000.0,2021-01-04,2021-01-04,active_screener
+TIGO,Millicom International Cellular S.A.,Communication Services,Telecommunications Services,NASDAQ,4975872668.0,2021-01-04,2021-01-04,active_screener
+FMS,Fresenius Medical Care AG & Co. KGaA,Healthcare,Medical - Care Facilities,NYSE,24923917800.0,2021-01-04,2021-01-04,active_screener
+LAMR,Lamar Advertising Company,Real Estate,REIT - Specialty,NASDAQ,8105699881.0,2021-01-04,2021-01-04,active_screener
+OHI,"Omega Healthcare Investors, Inc.",Real Estate,REIT - Healthcare Facilities,NYSE,8146997160.0,2021-01-04,2021-01-04,active_screener
+NBIX,"Neurocrine Biosciences, Inc.",Healthcare,Drug Manufacturers - Specialty & Generic,NASDAQ,9030954000.0,2021-01-04,2021-01-04,active_screener
+SKM,"SK Telecom Co.,Ltd",Communication Services,Telecommunications Services,NYSE,25184382736.0,2021-01-04,2021-01-04,active_screener
+HAS,"Hasbro, Inc.",Consumer Cyclical,Leisure,NASDAQ,12662892000.0,2021-01-04,2021-01-04,active_screener
+TOL,"Toll Brothers, Inc.",Consumer Cyclical,Residential Construction,NYSE,5377719600.0,2021-01-04,2021-01-04,active_screener
+PEN,"Penumbra, Inc.",Healthcare,Medical - Devices,NYSE,6401623027.0,2021-01-04,2021-01-04,active_screener
+GLPI,"Gaming and Leisure Properties, Inc.",Real Estate,REIT - Specialty,NASDAQ,9452992750.0,2021-01-04,2021-01-04,active_screener
+TIMB,TIM S.A.,Communication Services,Telecommunications Services,NYSE,6632415169.0,2021-01-04,2021-01-04,active_screener
+APTV,Aptiv PLC,Consumer Cyclical,Auto - Parts,NYSE,35007848100.0,2021-01-04,2021-01-04,active_screener
+CLX,The Clorox Company,Consumer Defensive,Household & Personal Products,NYSE,24952734509.0,2021-01-04,2021-01-04,active_screener
+ALGN,"Align Technology, Inc.",Healthcare,Medical - Devices,NASDAQ,41590340000.0,2021-01-04,2021-01-04,active_screener
+HL,Hecla Mining Company,Basic Materials,Gold,NYSE,3626545790.0,2021-01-04,2021-01-04,active_screener
+BF-B,Brown-Forman Corporation,Consumer Defensive,Beverages - Wineries & Distilleries,NYSE,37345079970.0,2021-01-04,2021-01-04,active_screener
+DPZ,"Domino's Pizza, Inc.",Consumer Cyclical,Restaurants,NASDAQ,14686735387.0,2021-01-04,2021-01-04,active_screener
+PNW,Pinnacle West Capital Corporation,Utilities,Regulated Electric,NYSE,8923645610.0,2021-01-04,2021-01-04,active_screener
+CDE,"Coeur Mining, Inc.",Basic Materials,Gold,NYSE,2614329510.0,2021-01-04,2021-01-04,active_screener
+BJ,"BJ's Wholesale Club Holdings, Inc.",Consumer Defensive,Discount Stores,NYSE,5064648240.0,2021-01-04,2021-01-04,active_screener
+FIVE,"Five Below, Inc.",Consumer Cyclical,Discount Stores,NASDAQ,9340535016.0,2021-01-04,2021-01-04,active_screener
+GMED,"Globus Medical, Inc.",Healthcare,Medical - Devices,NYSE,6325512440.0,2021-01-04,2021-01-04,active_screener
+IONS,"Ionis Pharmaceuticals, Inc.",Healthcare,Biotechnology,NASDAQ,7992920600.0,2021-01-04,2021-01-04,active_screener
+ELS,"Equity LifeStyle Properties, Inc.",Real Estate,REIT - Residential,NYSE,11002214150.0,2021-01-04,2021-01-04,active_screener
+MOD,Modine Manufacturing Company,Consumer Cyclical,Auto - Parts,NYSE,617313173.0,2021-01-04,2021-01-04,active_screener
+PINS,"Pinterest, Inc.",Communication Services,Internet Content & Information,NYSE,42788325509.0,2021-01-04,2021-01-04,active_screener
+GH,"Guardant Health, Inc.",Healthcare,Medical - Diagnostics & Research,NASDAQ,12825323200.0,2021-01-04,2021-01-04,active_screener
+CCK,"Crown Holdings, Inc.",Consumer Cyclical,Packaging & Containers,NYSE,12995272000.0,2021-01-04,2021-01-04,active_screener
+AR,Antero Resources Corporation,Energy,Oil & Gas Exploration & Production,NYSE,1676614900.0,2021-01-04,2021-01-04,active_screener
+JAZZ,Jazz Pharmaceuticals plc,Healthcare,Biotechnology,NASDAQ,9057467200.0,2021-01-04,2021-01-04,active_screener
+MDGL,"Madrigal Pharmaceuticals, Inc.",Healthcare,Biotechnology,NASDAQ,1738642413.0,2021-01-04,2021-01-04,active_screener
+UHS,"Universal Health Services, Inc.",Healthcare,Medical - Care Facilities,NYSE,11469308960.0,2021-01-04,2021-01-04,active_screener
+HRL,Hormel Foods Corporation,Consumer Defensive,Packaged Foods,NYSE,25003371030.0,2021-01-04,2021-01-04,active_screener
+DKNG,DraftKings Inc.,Consumer Cyclical,"Gambling, Resorts & Casinos",NASDAQ,17837278060.0,2021-01-04,2021-01-04,active_screener
+EXEL,"Exelixis, Inc.",Healthcare,Biotechnology,NASDAQ,5526737590.0,2021-01-04,2021-01-04,active_screener
+ENSG,"The Ensign Group, Inc.",Healthcare,Medical - Care Facilities,NASDAQ,4082825280.0,2021-01-04,2021-01-04,active_screener
+JHX,James Hardie Industries plc,Basic Materials,Construction Materials,NYSE,13169016000.0,2021-01-04,2021-01-04,active_screener
+PSKY,Paramount Skydance Corporation Class B Common Stock,Communication Services,Entertainment,NASDAQ,24705000000.0,2021-01-04,2021-01-04,active_screener
+DOC,"Healthpeak Properties, Inc.",Real Estate,REIT - Healthcare Facilities,NYSE,15562436310.0,2021-01-04,2021-01-04,active_screener
+SCI,Service Corporation International,Consumer Cyclical,Personal Products & Services,NYSE,8249518899.0,2021-01-04,2021-01-04,active_screener
+ELAN,Elanco Animal Health Incorporated,Healthcare,Drug Manufacturers - Specialty & Generic,NYSE,14844350000.0,2021-01-04,2021-01-04,active_screener
+AGNC,AGNC Investment Corp.,Real Estate,REIT - Mortgage,NASDAQ,8213643000.0,2021-01-04,2021-01-04,active_screener
+IAG,IAMGOLD Corporation,Basic Materials,Gold,NYSE,1869894000.0,2021-01-04,2021-01-04,active_screener
+SUZ,Suzano S.A.,Basic Materials,"Paper, Lumber & Forest Products",NYSE,15057312832.0,2021-01-04,2021-01-04,active_screener
+BWA,BorgWarner Inc.,Consumer Cyclical,Auto - Parts,NYSE,7958195999.0,2021-01-04,2021-01-04,active_screener
+WTRG,"Essential Utilities, Inc.",Utilities,Regulated Water,NYSE,11758357350.0,2021-01-04,2021-01-04,active_screener
+UDR,"UDR, Inc.",Real Estate,REIT - Residential,NYSE,10927388450.0,2021-01-04,2021-01-04,active_screener
+TXRH,"Texas Roadhouse, Inc.",Consumer Cyclical,Restaurants,NASDAQ,5171243620.0,2021-01-04,2021-01-04,active_screener
+RDY,Dr. Reddy's Laboratories Limited,Healthcare,Drug Manufacturers - Specialty & Generic,NYSE,11806231276.0,2021-01-04,2021-01-04,active_screener
+BMRN,BioMarin Pharmaceutical Inc.,Healthcare,Biotechnology,NASDAQ,15686923600.0,2021-01-04,2021-01-04,active_screener
+WYNN,"Wynn Resorts, Limited",Consumer Cyclical,"Gambling, Resorts & Casinos",NASDAQ,11868038000.0,2021-01-04,2021-01-04,active_screener
+EHC,Encompass Health Corporation,Healthcare,Medical - Care Facilities,NYSE,6481530000.0,2021-01-04,2021-01-04,active_screener
+CHWY,"Chewy, Inc.",Consumer Cyclical,Specialty Retail,NYSE,35949116108.0,2021-01-04,2021-01-04,active_screener
+CPT,Camden Property Trust,Real Estate,REIT - Residential,NYSE,9586376100.0,2021-01-04,2021-01-04,active_screener
+AM,Antero Midstream Corporation,Energy,Oil & Gas Midstream,NYSE,3745025270.0,2021-01-04,2021-01-04,active_screener
+AMH,American Homes 4 Rent,Real Estate,REIT - Residential,NYSE,9217849936.0,2021-01-04,2021-01-04,active_screener
+KT,KT Corporation,Communication Services,Telecommunications Services,NYSE,5202090894.0,2021-01-04,2021-01-04,active_screener
+DINO,HF Sinclair Corporation,Energy,Oil & Gas Refining & Marketing,NYSE,4105844330.0,2021-01-04,2021-01-04,active_screener
+HMY,Harmony Gold Mining Company Limited,Basic Materials,Gold,NYSE,3283280000.0,2021-01-04,2021-01-04,active_screener
+ALSN,"Allison Transmission Holdings, Inc.",Consumer Cyclical,Auto - Parts,NYSE,4670880000.0,2021-01-04,2021-01-04,active_screener
+AG,First Majestic Silver Corp.,Basic Materials,Silver,NYSE,3169040800.0,2021-01-04,2021-01-04,active_screener
+BEP,Brookfield Renewable Partners L.P.,Utilities,Renewable Utilities,NYSE,12166321580.0,2021-01-04,2021-01-04,active_screener
+CIG-C,Companhia Energética de Minas Gerais,Utilities,Diversified Utilities,NYSE,5358652973.0,2021-01-04,2021-01-04,active_screener
+GME,GameStop Corp.,Consumer Cyclical,Specialty Retail,NYSE,1124048000.0,2021-01-04,2021-01-04,active_screener
+EGP,"EastGroup Properties, Inc.",Real Estate,REIT - Industrial,NYSE,5260639800.0,2021-01-04,2021-01-04,active_screener
+RRC,Range Resources Corporation,Energy,Oil & Gas Exploration & Production,NYSE,1726593670.0,2021-01-04,2021-01-04,active_screener
+MGM,MGM Resorts International,Consumer Cyclical,"Gambling, Resorts & Casinos",NYSE,14688888251.0,2021-01-04,2021-01-04,active_screener
+OGE,OGE Energy Corp.,Utilities,Regulated Electric,NYSE,6391194000.0,2021-01-04,2021-01-04,active_screener
+AES,The AES Corporation,Utilities,Diversified Utilities,NYSE,15477839999.0,2021-01-04,2021-01-04,active_screener
+RVTY,"Revvity, Inc.",Healthcare,Medical - Diagnostics & Research,NYSE,16301194279.0,2021-01-04,2021-01-04,active_screener
+PAG,"Penske Automotive Group, Inc.",Consumer Cyclical,Auto - Dealerships,NYSE,4632082000.0,2021-01-04,2021-01-04,active_screener
+ZG,"Zillow Group, Inc. Class A",Communication Services,Internet Content & Information,NASDAQ,33203873339.0,2021-01-04,2021-01-04,active_screener
+Z,"Zillow Group, Inc. Class C",Communication Services,Internet Content & Information,NASDAQ,31807710180.0,2021-01-04,2021-01-04,active_screener
+SJM,The J. M. Smucker Company,Consumer Defensive,Packaged Foods,NYSE,12962123000.0,2021-01-04,2021-01-04,active_screener
+DAR,Darling Ingredients Inc.,Consumer Defensive,Packaged Foods,NYSE,9275320250.0,2021-01-04,2021-01-04,active_screener
+W,Wayfair Inc.,Consumer Cyclical,Specialty Retail,NYSE,24355380000.0,2021-01-04,2021-01-04,active_screener
+ACI,"Albertsons Companies, Inc.",Consumer Defensive,Grocery Stores,NYSE,7945392000.0,2021-01-04,2021-01-04,active_screener
+MP,MP Materials Corp.,Basic Materials,Industrial Materials,NYSE,4922403573.0,2021-01-04,2021-01-04,active_screener
+GSAT,"Globalstar, Inc.",Communication Services,Telecommunications Services,NASDAQ,860034048.0,2021-01-04,2021-01-04,active_screener
+GAP,"The Gap, Inc.",Consumer Cyclical,Apparel - Retail,NYSE,7207500000.0,2021-01-04,2021-01-04,active_screener
+BVN,Compañía de Minas Buenaventura S.A.A.,Basic Materials,Other Precious Metals,NYSE,3136737807.0,2021-01-04,2021-01-04,active_screener
+HBM,Hudbay Minerals Inc.,Basic Materials,Copper,NYSE,1928498641.0,2021-01-04,2021-01-04,active_screener
+SBSW,Sibanye Stillwater Limited,Basic Materials,Gold,NYSE,12456778950.0,2021-01-04,2021-01-04,active_screener
+DDS,"Dillard's, Inc.",Consumer Cyclical,Department Stores,NYSE,1275884000.0,2021-01-04,2021-01-04,active_screener
+CELH,"Celsius Holdings, Inc.",Consumer Defensive,Beverages - Non-Alcoholic,NASDAQ,3591717480.0,2021-01-04,2021-01-04,active_screener
+FRT,Federal Realty Investment Trust,Real Estate,REIT - Retail,NYSE,6321791340.0,2021-01-04,2021-01-04,active_screener
+EDU,New Oriental Education & Technology Group Inc.,Consumer Defensive,Education & Training Services,NYSE,29400954000.0,2021-01-04,2021-01-04,active_screener
+MUSA,Murphy USA Inc.,Consumer Cyclical,Specialty Retail,NYSE,3478194199.0,2021-01-04,2021-01-04,active_screener
+ADC,Agree Realty Corporation,Real Estate,REIT - Retail,NYSE,4080108571.0,2021-01-04,2021-01-04,active_screener
+NFG,National Fuel Gas Company,Energy,Oil & Gas Integrated,NYSE,3760485753.0,2021-01-04,2021-01-04,active_screener
+BRX,Brixmor Property Group Inc.,Real Estate,REIT - Retail,NYSE,4700280200.0,2021-01-04,2021-01-04,active_screener
+ESI,Element Solutions Inc,Basic Materials,Chemicals - Specialty,NYSE,4276560000.0,2021-01-04,2021-01-04,active_screener
+SUN,Sunoco LP,Energy,Oil & Gas Refining & Marketing,NYSE,2384438309.0,2021-01-04,2021-01-04,active_screener
+CUBE,CubeSmart,Real Estate,REIT - Industrial,NYSE,6438842800.0,2021-01-04,2021-01-04,active_screener
+CTRE,"CareTrust REIT, Inc.",Real Estate,REIT - Healthcare Facilities,NYSE,2042996760.0,2021-01-04,2021-01-04,active_screener
+CTDD,Qwest Corp. 6.75% NT 57,Communication Services,Telecommunications Services,NYSE,11369383755.0,2021-01-04,2021-01-04,active_screener
+PPC,Pilgrim's Pride Corporation,Consumer Defensive,Packaged Foods,NASDAQ,4618276800.0,2021-01-04,2021-01-04,active_screener
+EMN,Eastman Chemical Company,Basic Materials,Chemicals - Specialty,NYSE,13416738000.0,2021-01-04,2021-01-04,active_screener
+MOS,The Mosaic Company,Basic Materials,Agricultural Inputs,NYSE,8975664000.0,2021-01-04,2021-01-04,active_screener
+BXP,"BXP, Inc.",Real Estate,REIT - Office,NYSE,14161380959.0,2021-01-04,2021-01-04,active_screener
+CWEN,"Clearway Energy, Inc.",Utilities,Renewable Utilities,NYSE,3915990000.0,2021-01-04,2021-01-04,active_screener
+PSO,Pearson plc,Communication Services,Publishing,NYSE,6921908000.0,2021-01-04,2021-01-04,active_screener
+TAP,Molson Coors Beverage Company,Consumer Defensive,Beverages - Alcoholic,NYSE,9906050000.0,2021-01-04,2021-01-04,active_screener
+HESM,Hess Midstream LP,Energy,Oil & Gas Midstream,NYSE,370367000.0,2021-01-04,2021-01-04,active_screener
+REXR,"Rexford Industrial Realty, Inc.",Real Estate,REIT - Industrial,NYSE,6217392498.0,2021-01-04,2021-01-04,active_screener
+UGI,UGI Corporation,Utilities,Regulated Gas,NYSE,7268674700.0,2021-01-04,2021-01-04,active_screener
+TX,Ternium S.A.,Basic Materials,Steel,NYSE,5769482627.0,2021-01-04,2021-01-04,active_screener
+NNN,"NNN REIT, Inc.",Real Estate,REIT - Retail,NYSE,6870088955.0,2021-01-04,2021-01-04,active_screener
+IDA,"IDACORP, Inc.",Utilities,Regulated Electric,NYSE,4641544930.0,2021-01-04,2021-01-04,active_screener
+FRO,Frontline Ltd.,Energy,Oil & Gas Midstream,NYSE,1265228800.0,2021-01-04,2021-01-04,active_screener
+SNAP,Snap Inc.,Communication Services,Internet Content & Information,NYSE,74466129240.0,2021-01-04,2021-01-04,active_screener
+SIRI,Sirius XM Holdings Inc.,Communication Services,Entertainment,NASDAQ,25525290000.0,2021-01-04,2021-01-04,active_screener
+SSL,Sasol Limited,Basic Materials,Chemicals - Specialty,NYSE,5444337534.0,2021-01-04,2021-01-04,active_screener
+GGB,Gerdau S.A.,Basic Materials,Steel,NYSE,7027349929.0,2021-01-04,2021-01-04,active_screener
+MSGS,Madison Square Garden Sports Corp.,Communication Services,Entertainment,NYSE,4327547400.0,2021-01-04,2021-01-04,active_screener
+ARE,"Alexandria Real Estate Equities, Inc.",Real Estate,REIT - Office,NYSE,23449965630.0,2021-01-04,2021-01-04,active_screener
+MTCH,"Match Group, Inc.",Communication Services,Internet Content & Information,NASDAQ,40275858080.0,2021-01-04,2021-01-04,active_screener
+NXE,NexGen Energy Ltd.,Energy,Uranium,NYSE,1083862140.0,2021-01-04,2021-01-04,active_screener
+OR,OR Royalties Inc.,Basic Materials,Gold,NYSE,2185797560.0,2021-01-04,2021-01-04,active_screener
+MTDR,Matador Resources Company,Energy,Oil & Gas Exploration & Production,NYSE,1458919430.0,2021-01-04,2021-01-04,active_screener
+CAG,"Conagra Brands, Inc.",Consumer Defensive,Packaged Foods,NYSE,17480343000.0,2021-01-04,2021-01-04,active_screener
+CIG,Companhia Energética de Minas Gerais,Utilities,Diversified Utilities,NYSE,3621372785.0,2021-01-04,2021-01-04,active_screener
+LBRDA,Liberty Broadband Corporation,Communication Services,Telecommunications Services,NASDAQ,29980760000.0,2021-01-04,2021-01-04,active_screener
+FR,"First Industrial Realty Trust, Inc.",Real Estate,REIT - Industrial,NYSE,5271953920.0,2021-01-04,2021-01-04,active_screener
+WFRD,Weatherford International plc,Energy,Oil & Gas Equipment & Services,NASDAQ,401800000.0,2021-01-04,2021-01-04,active_screener
+AGRO,Adecoagro S.A.,Consumer Defensive,Agricultural Farm Products,NYSE,4081027480.0,2021-01-04,2021-01-04,active_screener
+LUMN,"Lumen Technologies, Inc.",Communication Services,Telecommunications Services,NYSE,10521647280.0,2021-01-04,2021-01-04,active_screener
+STAG,"STAG Industrial, Inc.",Real Estate,REIT - Industrial,NYSE,4809934800.0,2021-01-04,2021-01-04,active_screener
+INGR,Ingredion Incorporated,Consumer Defensive,Packaged Foods,NYSE,5300426170.0,2021-01-04,2021-01-04,active_screener
+SSRM,SSR Mining Inc.,Basic Materials,Gold,NASDAQ,4725528000.0,2021-01-04,2021-01-04,active_screener
+SFM,"Sprouts Farmers Market, Inc.",Consumer Defensive,Grocery Stores,NASDAQ,2388030120.0,2021-01-04,2021-01-04,active_screener
+CMC,Commercial Metals Company,Basic Materials,Steel,NYSE,2461064084.0,2021-01-04,2021-01-04,active_screener
+PRMB,Primo Brands Corporation,Consumer Defensive,Beverages - Non-Alcoholic,NYSE,2626365900.0,2021-01-04,2021-01-04,active_screener
+CHRD,Chord Energy Corporation,Energy,Oil & Gas Exploration & Production,NASDAQ,991548188.0,2021-01-04,2021-01-04,active_screener
+ICL,ICL Group Ltd,Basic Materials,Agricultural Inputs,NYSE,6403500000.0,2021-01-04,2021-01-04,active_screener
+CMSD,CMS Energy Corporation 5.875% Junior Subordinated Notes due 2079,Utilities,Regulated Electric,NYSE,7990596311.0,2021-01-04,2021-01-04,active_screener
+CMSC,CMS Energy Corporation 5.875% J,Utilities,Regulated Electric,NYSE,8045550000.0,2021-01-04,2021-01-04,active_screener
+EGO,Eldorado Gold Corporation,Basic Materials,Gold,NYSE,2483618820.0,2021-01-04,2021-01-04,active_screener
+VIST,"Vista Energy, S.A.B. de C.V.",Energy,Oil & Gas Exploration & Production,NYSE,221434690.0,2021-01-04,2021-01-04,active_screener
+ORA,"Ormat Technologies, Inc.",Utilities,Renewable Utilities,NYSE,5129060680.0,2021-01-04,2021-01-04,active_screener
+NOV,NOV Inc.,Energy,Oil & Gas Equipment & Services,NYSE,5324499995.0,2021-01-04,2021-01-04,active_screener
+CE,Celanese Corporation,Basic Materials,Chemicals,NYSE,14294486698.0,2021-01-04,2021-01-04,active_screener
+FSV,FirstService Corporation,Real Estate,Real Estate - Services,NASDAQ,5849583520.0,2021-01-04,2021-01-04,active_screener
+EPRT,"Essential Properties Realty Trust, Inc.",Real Estate,REIT - Diversified,NYSE,2185730272.0,2021-01-04,2021-01-04,active_screener
+UZE,"Array Digital Infrastructure, Inc. 5.500% Senior Notes due 2070",Communication Services,Telecommunications Services,NYSE,2687826064.0,2021-01-04,2021-01-04,active_screener
+TAL,TAL Education Group,Consumer Defensive,Education & Training Services,NYSE,43627264480.0,2021-01-04,2021-01-04,active_screener
+STWD,"Starwood Property Trust, Inc.",Real Estate,REIT - Mortgage,NYSE,5247067880.0,2021-01-04,2021-01-04,active_screener
+BEPH,Brookfield BRP Holdings Canada 4.625% Perpetual Subordinated Notes,Real Estate,Real Estate - Development,NYSE,12166321580.0,2021-01-04,2021-01-04,active_screener
+TRNO,Terreno Realty Corporation,Real Estate,REIT - Industrial,NYSE,3840399746.0,2021-01-04,2021-01-04,active_screener
+TXNM,"TXNM Energy, Inc.",Utilities,Regulated Electric,NYSE,4160507337.0,2021-01-04,2021-01-04,active_screener
+CENX,Century Aluminum Company,Basic Materials,Aluminum,NASDAQ,1005516000.0,2021-01-04,2021-01-04,active_screener
+BEPI,Brookfield BRP Holdings Canada 4.875% Perpetual Subordinated Notes,Real Estate,Real Estate - Development,NYSE,12166321580.0,2021-01-04,2021-01-04,active_screener
+UZF,"Array Digital Infrastructure, Inc. 5.500% Senior Notes due 2070",Communication Services,Telecommunications Services,NYSE,2687826064.0,2021-01-04,2021-01-04,active_screener
+UZD,"Array Digital Infrastructure, Inc. 6.250% Senior Notes due 2069",Communication Services,Telecommunications Services,NYSE,2687826064.0,2021-01-04,2021-01-04,active_screener
+SWX,"Southwest Gas Holdings, Inc.",Utilities,Regulated Gas,NYSE,3423744000.0,2021-01-04,2021-01-04,active_screener
+BPYPO,Brookfield Property Partners L.P.,Real Estate,Real Estate - Services,NASDAQ,12022250000.0,2021-01-04,2021-01-04,active_screener
+EXP,Eagle Materials Inc.,Basic Materials,Construction Materials,NYSE,4168392261.0,2021-01-04,2021-01-04,active_screener
+POR,Portland General Electric Company,Utilities,Regulated Electric,NYSE,3695976120.0,2021-01-04,2021-01-04,active_screener
+BEPC,Brookfield Renewable Corporation,Utilities,Renewable Utilities,NYSE,9979117374.0,2021-01-04,2021-01-04,active_screener
+HR,Healthcare Realty Trust Incorporated,Real Estate,REIT - Healthcare Facilities,NYSE,3982813800.0,2021-01-04,2021-01-04,active_screener
+AXTA,Axalta Coating Systems Ltd.,Basic Materials,Chemicals - Specialty,NYSE,6595980000.0,2021-01-04,2021-01-04,active_screener
+AROC,"Archrock, Inc.",Energy,Oil & Gas Equipment & Services,NYSE,1337082750.0,2021-01-04,2021-01-04,active_screener
+UGP,Ultrapar Participações S.A.,Energy,Oil & Gas Refining & Marketing,NYSE,4983552960.0,2021-01-04,2021-01-04,active_screener
+CMSA,CMS Energy Corporation 5.6% JRSUB NT 78,Utilities,Regulated Electric,NYSE,17203446000.0,2021-01-04,2021-01-04,active_screener
+OLLI,"Ollie's Bargain Outlet Holdings, Inc.",Consumer Defensive,Discount Stores,NASDAQ,5360352180.0,2021-01-04,2021-01-04,active_screener
+NEU,NewMarket Corporation,Basic Materials,Chemicals - Specialty,NYSE,4389069630.0,2021-01-04,2021-01-04,active_screener
+CPB,Campbell Soup Company,Consumer Defensive,Packaged Foods,NASDAQ,14704590000.0,2021-01-04,2021-01-04,active_screener
+RHP,"Ryman Hospitality Properties, Inc.",Real Estate,REIT - Hotel & Motel,NYSE,3533428750.0,2021-01-04,2021-01-04,active_screener
+RIG,Transocean Ltd.,Energy,Oil & Gas Drilling,NYSE,1431440000.0,2021-01-04,2021-01-04,active_screener
+CRC,California Resources Corporation,Energy,Oil & Gas Exploration & Production,NYSE,1957362815.0,2021-01-04,2021-01-04,active_screener
+ENIC,Enel Chile S.A.,Utilities,Regulated Electric,NYSE,5547157887.0,2021-01-04,2021-01-04,active_screener
+OGS,"ONE Gas, Inc.",Utilities,Regulated Gas,NYSE,4027451119.0,2021-01-04,2021-01-04,active_screener
+GLNG,Golar LNG Limited,Energy,Oil & Gas Midstream,NASDAQ,1097580440.0,2021-01-04,2021-01-04,active_screener
+BCPC,Balchem Corporation,Basic Materials,Chemicals - Specialty,NASDAQ,3720291700.0,2021-01-04,2021-01-04,active_screener
+LW,"Lamb Weston Holdings, Inc.",Consumer Defensive,Packaged Foods,NYSE,11085655000.0,2021-01-04,2021-01-04,active_screener
+MUR,Murphy Oil Corporation,Energy,Oil & Gas Exploration & Production,NYSE,1925844829.0,2021-01-04,2021-01-04,active_screener
+NJR,New Jersey Resources Corporation,Utilities,Regulated Gas,NYSE,3318631039.0,2021-01-04,2021-01-04,active_screener
+BKH,Black Hills Corporation,Utilities,Diversified Utilities,NYSE,3760485320.0,2021-01-04,2021-01-04,active_screener
+NXST,"Nexstar Media Group, Inc.",Communication Services,Entertainment,NASDAQ,4669039000.0,2021-01-04,2021-01-04,active_screener
+SR,Spire Inc.,Utilities,Regulated Gas,NYSE,3271956000.0,2021-01-04,2021-01-04,active_screener
+CIGI,Colliers International Group Inc.,Real Estate,Real Estate - Services,NASDAQ,3457673730.0,2021-01-04,2021-01-04,active_screener
+CNX,CNX Resources Corporation,Energy,Oil & Gas Exploration & Production,NYSE,2436753864.0,2021-01-04,2021-01-04,active_screener
+UFPI,"UFP Industries, Inc.",Basic Materials,"Paper, Lumber & Forest Products",NASDAQ,3281888770.0,2021-01-04,2021-01-04,active_screener
+MGY,Magnolia Oil & Gas Corporation,Energy,Oil & Gas Exploration & Production,NYSE,1212071520.0,2021-01-04,2021-01-04,active_screener
+TKC,Turkcell Iletisim Hizmetleri A.S.,Communication Services,Telecommunications Services,NYSE,4696861475.0,2021-01-04,2021-01-04,active_screener
+RITM,Rithm Capital Corp.,Real Estate,REIT - Mortgage,NYSE,3932261387.0,2021-01-04,2021-01-04,active_screener
+KRG,Kite Realty Group Trust,Real Estate,REIT - Retail,NYSE,1208543148.0,2021-01-04,2021-01-04,active_screener
+CRK,"Comstock Resources, Inc.",Energy,Oil & Gas Exploration & Production,NYSE,1048137810.0,2021-01-04,2021-01-04,active_screener
+MAC,The Macerich Company,Real Estate,REIT - Retail,NYSE,1690462800.0,2021-01-04,2021-01-04,active_screener
+LPX,Louisiana-Pacific Corporation,Basic Materials,"Paper, Lumber & Forest Products",NYSE,3914580000.0,2021-01-04,2021-01-04,active_screener
+POST,"Post Holdings, Inc.",Consumer Defensive,Packaged Foods,NYSE,4278675000.0,2021-01-04,2021-01-04,active_screener
+VNO,Vornado Realty Trust,Real Estate,REIT - Office,NYSE,7017383879.0,2021-01-04,2021-01-04,active_screener
+CLF,Cleveland-Cliffs Inc.,Basic Materials,Steel,NYSE,8445999989.0,2021-01-04,2021-01-04,active_screener
+TEO,Telecom Argentina S.A.,Communication Services,Telecommunications Services,NYSE,2730876396.0,2021-01-04,2021-01-04,active_screener
+TGS,Transportadora de Gas del Sur S.A.,Energy,Oil & Gas Integrated,NYSE,796421199.0,2021-01-04,2021-01-04,active_screener
+PBF,PBF Energy Inc.,Energy,Oil & Gas Refining & Marketing,NYSE,820295666.0,2021-01-04,2021-01-04,active_screener
+SBRA,"Sabra Health Care REIT, Inc.",Real Estate,REIT - Healthcare Facilities,NASDAQ,3560829771.0,2021-01-04,2021-01-04,active_screener
+LAUR,"Laureate Education, Inc.",Consumer Defensive,Education & Training Services,NASDAQ,2865205440.0,2021-01-04,2021-01-04,active_screener
+OUT,Outfront Media Inc.,Real Estate,REIT - Specialty,NYSE,2664778843.0,2021-01-04,2021-01-04,active_screener
+BIPC,Brookfield Infrastructure Corporation,Utilities,Regulated Gas,NYSE,3159763708.0,2021-01-04,2021-01-04,active_screener
+TDS,"Telephone and Data Systems, Inc.",Communication Services,Telecommunications Services,NYSE,2136359999.0,2021-01-04,2021-01-04,active_screener
+PSMT,"PriceSmart, Inc.",Consumer Defensive,Discount Stores,NASDAQ,2801882240.0,2021-01-04,2021-01-04,active_screener
+CNR,"Core Natural Resources, Inc.",Energy,Coal,NYSE,231920964.0,2021-01-04,2021-01-04,active_screener
+AQN,Algonquin Power & Utilities Corp.,Utilities,Renewable Utilities,NYSE,9744468288.0,2021-01-04,2021-01-04,active_screener
+WFG,West Fraser Timber Co. Ltd.,Basic Materials,"Paper, Lumber & Forest Products",NYSE,6011902800.0,2021-01-04,2021-01-04,active_screener
+MEOH,Methanex Corporation,Basic Materials,Chemicals,NASDAQ,3463558927.0,2021-01-04,2021-01-04,active_screener
+LOPE,"Grand Canyon Education, Inc.",Consumer Defensive,Education & Training Services,NASDAQ,4134195639.0,2021-01-04,2021-01-04,active_screener
+SPHR,Sphere Entertainment Co.,Communication Services,Entertainment,NYSE,1576978000.0,2021-01-04,2021-01-04,active_screener
+GHC,Graham Holdings Company,Consumer Defensive,Education & Training Services,NYSE,2612194970.0,2021-01-04,2021-01-04,active_screener
+HCC,"Warrior Met Coal, Inc.",Energy,Coal,NYSE,1130798093.0,2021-01-04,2021-01-04,active_screener
+PAGP,"Plains GP Holdings, L.P.",Energy,Oil & Gas Midstream,NASDAQ,1650940000.0,2021-01-04,2021-01-04,active_screener
+PAM,Pampa Energía S.A.,Utilities,Independent Power Producers,NYSE,759163200.0,2021-01-04,2021-01-04,active_screener
+KEN,Kenon Holdings Ltd.,Utilities,Independent Power Producers,NYSE,1582735856.0,2021-01-04,2021-01-04,active_screener
+LBRT,Liberty Energy Inc.,Energy,Oil & Gas Equipment & Services,NYSE,1724909281.0,2021-01-04,2021-01-04,active_screener
+PHI,PLDT Inc.,Communication Services,Telecommunications Services,NYSE,6222412800.0,2021-01-04,2021-01-04,active_screener
+VVV,Valvoline Inc.,Energy,Oil & Gas Refining & Marketing,NYSE,4163250000.0,2021-01-04,2021-01-04,active_screener
+SEI,"Solaris Energy Infrastructure, Inc.",Energy,Oil & Gas Equipment & Services,NYSE,250140950.0,2021-01-04,2021-01-04,active_screener
+NWE,Northwestern Energy Group Inc,Utilities,Diversified Utilities,NASDAQ,2894067960.0,2021-01-04,2021-01-04,active_screener
+TDW,Tidewater Inc.,Energy,Oil & Gas Equipment & Services,NYSE,360336600.0,2021-01-04,2021-01-04,active_screener
+ENPH,"Enphase Energy, Inc.",Energy,Solar,NASDAQ,22615628720.0,2021-01-04,2021-01-04,active_screener
+AKO-B,Embotelladora Andina S.A.,Consumer Defensive,Beverages - Non-Alcoholic,NYSE,15324978046.0,2021-01-04,2021-01-04,active_screener
+ARIS,Aris Mining Corporation,Basic Materials,Other Precious Metals,NYSE,398145600.0,2021-01-04,2021-01-04,active_screener
+AD,"Array Digital Infrastructure, Inc.",Communication Services,Telecommunications Services,NYSE,2687826064.0,2021-01-04,2021-01-04,active_screener
+NHI,"National Health Investors, Inc.",Real Estate,REIT - Healthcare Facilities,NYSE,3016865743.0,2021-01-04,2021-01-04,active_screener
+TAC,TransAlta Corporation,Utilities,Independent Power Producers,NYSE,2068200000.0,2021-01-04,2021-01-04,active_screener
+SKT,Tanger Inc.,Real Estate,REIT - Retail,NYSE,931053840.0,2021-01-04,2021-01-04,active_screener
+LBTYK,Liberty Global plc,Communication Services,Telecommunications Services,NASDAQ,7085411256.0,2021-01-04,2021-01-04,active_screener
+EPR,EPR Properties,Real Estate,REIT - Specialty,NYSE,2308213110.0,2021-01-04,2021-01-04,active_screener
+SXT,Sensient Technologies Corporation,Basic Materials,Chemicals - Specialty,NYSE,3091961080.0,2021-01-04,2021-01-04,active_screener
+CBT,Cabot Corporation,Basic Materials,Chemicals - Specialty,NYSE,2513040000.0,2021-01-04,2021-01-04,active_screener
+CSTM,Constellium SE,Basic Materials,Aluminum,NYSE,1942686440.0,2021-01-04,2021-01-04,active_screener
+STNG,Scorpio Tankers Inc.,Energy,Oil & Gas Midstream,NYSE,623939998.0,2021-01-04,2021-01-04,active_screener
+MZTI,The Marzetti Company,Consumer Defensive,Packaged Foods,NASDAQ,4879606650.0,2021-01-04,2021-01-04,active_screener
+LRN,"Stride, Inc.",Consumer Defensive,Education & Training Services,NYSE,846411150.0,2021-01-04,2021-01-04,active_screener
+PTEN,"Patterson-UTI Energy, Inc.",Energy,Oil & Gas Drilling,NASDAQ,1011856943.0,2021-01-04,2021-01-04,active_screener
+CTBB,Qwest Corp. NT,Communication Services,Telecommunications Services,NYSE,3527347863.0,2021-01-04,2021-01-04,active_screener
+JOE,The St. Joe Company,Real Estate,Real Estate - Diversified,NYSE,2450102863.0,2021-01-04,2021-01-04,active_screener
+USLM,"United States Lime & Minerals, Inc.",Basic Materials,Construction Materials,NASDAQ,653202570.0,2021-01-04,2021-01-04,active_screener
+OTTR,Otter Tail Corporation,Utilities,Diversified Utilities,NASDAQ,1729502600.0,2021-01-04,2021-01-04,active_screener
+SKE,Skeena Resources Limited,Basic Materials,Industrial Materials,NYSE,586092630.0,2021-01-04,2021-01-04,active_screener
+CGAU,Centerra Gold Inc.,Basic Materials,Gold,NYSE,3554803870.0,2021-01-04,2021-01-04,active_screener
+CUZ,Cousins Properties Incorporated,Real Estate,REIT - Office,NYSE,4848114880.0,2021-01-04,2021-01-04,active_screener
+HHH,Howard Hughes Holdings Inc.,Real Estate,Real Estate - Diversified,NYSE,4318942460.0,2021-01-04,2021-01-04,active_screener
+INSW,"International Seaways, Inc.",Energy,Oil & Gas Midstream,NYSE,483198506.0,2021-01-04,2021-01-04,active_screener
+BNL,"Broadstone Net Lease, Inc.",Real Estate,REIT - Diversified,NYSE,2799209880.0,2021-01-04,2021-01-04,active_screener
+DTW,DTE Energy Company JR SUB DB 2017 E,Utilities,Regulated Electric,NYSE,19706520000.0,2021-01-04,2021-01-04,active_screener
+SMG,The Scotts Miracle-Gro Company,Basic Materials,Agricultural Inputs,NYSE,11180104000.0,2021-01-04,2021-01-04,active_screener
+ELF,"e.l.f. Beauty, Inc.",Consumer Defensive,Household & Personal Products,NYSE,1254656029.0,2021-01-04,2021-01-04,active_screener
+BTU,Peabody Energy Corporation,Energy,Coal,NYSE,296704417.0,2021-01-04,2021-01-04,active_screener
+CALM,"Cal-Maine Foods, Inc.",Consumer Defensive,Agricultural Farm Products,NASDAQ,1807742500.0,2021-01-04,2021-01-04,active_screener
+WPP,WPP plc,Communication Services,Advertising Agencies,NYSE,13059434400.0,2021-01-04,2021-01-04,active_screener
+IRDM,Iridium Communications Inc.,Communication Services,Telecommunications Services,NASDAQ,5022327000.0,2021-01-04,2021-01-04,active_screener
+IRT,"Independence Realty Trust, Inc.",Real Estate,REIT - Residential,NYSE,1326909188.0,2021-01-04,2021-01-04,active_screener
+CDP,COPT Defense Properties,Real Estate,REIT - Office,NYSE,2840425200.0,2021-01-04,2021-01-04,active_screener
+OPEN,Opendoor Technologies Inc.,Real Estate,Real Estate - Services,NASDAQ,13505625000.0,2021-01-04,2021-01-04,active_screener
+CNK,"Cinemark Holdings, Inc.",Communication Services,Entertainment,NYSE,1893580320.0,2021-01-04,2021-01-04,active_screener
+DTB,DTE Energy Company 2020 Series,Utilities,Regulated Electric,NYSE,5160400000.0,2021-01-04,2021-01-04,active_screener
+VEON,VEON Ltd.,Communication Services,Telecommunications Services,NASDAQ,2915725500.0,2021-01-04,2021-01-04,active_screener
+RYN,Rayonier Inc.,Real Estate,REIT - Specialty,NYSE,4012046100.0,2021-01-04,2021-01-04,active_screener
+AVA,Avista Corporation,Utilities,Diversified Utilities,NYSE,2734994710.0,2021-01-04,2021-01-04,active_screener
+FUL,H.B. Fuller Company,Basic Materials,Chemicals - Specialty,NYSE,2755830000.0,2021-01-04,2021-01-04,active_screener
+COLD,"Americold Realty Trust, Inc.",Real Estate,REIT - Industrial,NYSE,9029886600.0,2021-01-04,2021-01-04,active_screener
+AVNT,Avient Corporation,Basic Materials,Chemicals - Specialty,NYSE,3601785000.0,2021-01-04,2021-01-04,active_screener
+SA,Seabridge Gold Inc.,Basic Materials,Gold,NYSE,1660295520.0,2021-01-04,2021-01-04,active_screener
+MTRN,Materion Corporation,Basic Materials,Industrial Materials,NYSE,1275616140.0,2021-01-04,2021-01-04,active_screener
+HYMC,Hycroft Mining Holding Corporation,Basic Materials,Gold,NASDAQ,479798999.0,2021-01-04,2021-01-04,active_screener
+KRC,Kilroy Realty Corporation,Real Estate,REIT - Office,NYSE,6424536387.0,2021-01-04,2021-01-04,active_screener
+TR,"Tootsie Roll Industries, Inc.",Consumer Defensive,Food Confectioners,NYSE,1747046227.0,2021-01-04,2021-01-04,active_screener
+BXMT,"Blackstone Mortgage Trust, Inc.",Real Estate,REIT - Mortgage,NYSE,3854335920.0,2021-01-04,2021-01-04,active_screener
+TGNA,TEGNA Inc.,Communication Services,Broadcasting,NYSE,3081809940.0,2021-01-04,2021-01-04,active_screener
+FIZZ,National Beverage Corp.,Consumer Defensive,Beverages - Non-Alcoholic,NASDAQ,3952951519.0,2021-01-04,2021-01-04,active_screener
+JOYY,"JOYY, Inc. Sponsored ADR Class A",Communication Services,Internet Content & Information,NASDAQ,6228492935.0,2021-01-04,2021-01-04,active_screener
+FRPT,"Freshpet, Inc.",Consumer Defensive,Packaged Foods,NASDAQ,5752018860.0,2021-01-04,2021-01-04,active_screener
+RCD,Ready Capital Corporation Notes -15.12.29,Real Estate,REIT - Mortgage,NYSE,678970702.0,2021-01-04,2021-01-04,active_screener
+CPK,Chesapeake Utilities Corporation,Utilities,Regulated Gas,NYSE,1847381742.0,2021-01-04,2021-01-04,active_screener
+CWK,Cushman & Wakefield plc,Real Estate,Real Estate - Services,NYSE,3050850000.0,2021-01-04,2021-01-04,active_screener
+NSA,National Storage Affiliates Trust,Real Estate,REIT - Industrial,NYSE,2471149480.0,2021-01-04,2021-01-04,active_screener
+BATRA,"Atlanta Braves Holdings, Inc.",Communication Services,Entertainment,NASDAQ,1315080429.0,2021-01-04,2021-01-04,active_screener
+MANU,Manchester United plc,Communication Services,Entertainment,NYSE,2683605330.0,2021-01-04,2021-01-04,active_screener
+AWR,American States Water Company,Utilities,Regulated Water,NYSE,2885054620.0,2021-01-04,2021-01-04,active_screener
+SMR,NuScale Power Corporation,Utilities,Renewable Utilities,NYSE,979922611.0,2021-01-04,2021-01-04,active_screener
+LXP,LXP Industrial Trust,Real Estate,REIT - Industrial,NYSE,2803738188.0,2021-01-04,2021-01-04,active_screener
+MGEE,"MGE Energy, Inc.",Utilities,Diversified Utilities,NASDAQ,2456552590.0,2021-01-04,2021-01-04,active_screener
+IPAR,"Inter Parfums, Inc.",Consumer Defensive,Household & Personal Products,NASDAQ,1873820440.0,2021-01-04,2021-01-04,active_screener
+MSGE,Madison Square Garden Entertainment Corp.,Communication Services,Entertainment,NYSE,2422700560.0,2021-01-04,2021-01-04,active_screener
+DBRG,"DigitalBridge Group, Inc.",Real Estate,REIT - Diversified,NYSE,2198782370.0,2021-01-04,2021-01-04,active_screener
+UNFI,"United Natural Foods, Inc.",Consumer Defensive,Food Distribution,NYSE,946968000.0,2021-01-04,2021-01-04,active_screener
+APLE,"Apple Hospitality REIT, Inc.",Real Estate,REIT - Hotel & Motel,NYSE,2807849150.0,2021-01-04,2021-01-04,active_screener
+BATRK,"Atlanta Braves Holdings, Inc.",Communication Services,Entertainment,NASDAQ,1314040000.0,2021-01-04,2021-01-04,active_screener
+NMRK,"Newmark Group, Inc.",Real Estate,Real Estate - Services,NASDAQ,1262620060.0,2021-01-04,2021-01-04,active_screener
+SLG,SL Green Realty Corp.,Real Estate,REIT - Office,NYSE,4193047600.0,2021-01-04,2021-01-04,active_screener
+SAM,"The Boston Beer Company, Inc.",Consumer Defensive,Beverages - Alcoholic,NYSE,11685427880.0,2021-01-04,2021-01-04,active_screener
+CWT,California Water Service Group,Utilities,Regulated Water,NYSE,2696018000.0,2021-01-04,2021-01-04,active_screener
+HE,"Hawaiian Electric Industries, Inc.",Utilities,Diversified Utilities,NYSE,3789968700.0,2021-01-04,2021-01-04,active_screener
+FCPT,"Four Corners Property Trust, Inc.",Real Estate,REIT - Retail,NYSE,2162102984.0,2021-01-04,2021-01-04,active_screener
+AKR,Acadia Realty Trust,Real Estate,REIT - Retail,NYSE,1182628757.0,2021-01-04,2021-01-04,active_screener
+UE,Urban Edge Properties,Real Estate,REIT - Diversified,NYSE,1474815160.0,2021-01-04,2021-01-04,active_screener
+CHEF,"The Chefs' Warehouse, Inc.",Consumer Defensive,Food Distribution,NASDAQ,907859595.0,2021-01-04,2021-01-04,active_screener
+ANDE,"The Andersons, Inc.",Consumer Defensive,Food Distribution,NASDAQ,802817720.0,2021-01-04,2021-01-04,active_screener
+CEPU,Central Puerto S.A.,Utilities,Regulated Electric,NYSE,403385667.0,2021-01-04,2021-01-04,active_screener
+PRDO,Perdoceo Education Corporation,Consumer Defensive,Education & Training Services,NASDAQ,878265480.0,2021-01-04,2021-01-04,active_screener
+CENT,Central Garden & Pet Company,Consumer Defensive,Packaged Foods,NASDAQ,1630069770.0,2021-01-04,2021-01-04,active_screener
+CCU,Compañía Cervecerías Unidas S.A.,Consumer Defensive,Beverages - Alcoholic,NYSE,1369931897.0,2021-01-04,2021-01-04,active_screener
+NWN,Northwest Natural Holding Company,Utilities,Regulated Gas,NYSE,1397835240.0,2021-01-04,2021-01-04,active_screener
+IMAX,IMAX Corporation,Communication Services,Entertainment,NYSE,1038611200.0,2021-01-04,2021-01-04,active_screener
+WLYB,"John Wiley & Sons, Inc.",Communication Services,Publishing,NYSE,2542233440.0,2021-01-04,2021-01-04,active_screener
+HTO,H2O America,Utilities,Regulated Water,NASDAQ,1971046211.0,2021-01-04,2021-01-04,active_screener
+FDP,Fresh Del Monte Produce Inc.,Consumer Defensive,Agricultural Farm Products,NYSE,1147756680.0,2021-01-04,2021-01-04,active_screener
+NN,NextNav Inc.,Communication Services,Internet Content & Information,NASDAQ,965255626.0,2021-01-04,2021-01-04,active_screener
+CMPR,Cimpress plc,Communication Services,Advertising Agencies,NASDAQ,2216033183.0,2021-01-04,2021-01-04,active_screener
+UTI,"Universal Technical Institute, Inc.",Consumer Defensive,Education & Training Services,NYSE,201082995.0,2021-01-04,2021-01-04,active_screener
+WLY,"John Wiley & Sons, Inc.",Communication Services,Publishing,NYSE,2557349120.0,2021-01-04,2021-01-04,active_screener
+STRA,"Strategic Education, Inc.",Consumer Defensive,Education & Training Services,NASDAQ,2201772160.0,2021-01-04,2021-01-04,active_screener
+BRBR,"BellRing Brands, Inc.",Consumer Defensive,Packaged Foods,NYSE,937729999.0,2021-01-04,2021-01-04,active_screener
+COTY,Coty Inc.,Consumer Defensive,Household & Personal Products,NYSE,5174104000.0,2021-01-04,2021-01-04,active_screener
+SPB,"Spectrum Brands Holdings, Inc.",Consumer Defensive,Household & Personal Products,NYSE,3327059999.0,2021-01-04,2021-01-04,active_screener
+WB,Weibo Corporation,Communication Services,Internet Content & Information,NASDAQ,9261168860.0,2021-01-04,2021-01-04,active_screener
+IMKTA,"Ingles Markets, Incorporated",Consumer Defensive,Grocery Stores,NASDAQ,840718898.0,2021-01-04,2021-01-04,active_screener
+MGNI,"Magnite, Inc.",Communication Services,Advertising Agencies,NASDAQ,3183322560.0,2021-01-04,2021-01-04,active_screener
+WMK,"Weis Markets, Inc.",Consumer Defensive,Grocery Stores,NYSE,1304574485.0,2021-01-04,2021-01-04,active_screener
+FLO,"Flowers Foods, Inc.",Consumer Defensive,Packaged Foods,NYSE,4854376990.0,2021-01-04,2021-01-04,active_screener
+STGW,Stagwell Inc.,Communication Services,Advertising Agencies,NASDAQ,184610954.0,2021-01-04,2021-01-04,active_screener
+LILA,Liberty Latin America Ltd.,Communication Services,Telecommunications Services,NASDAQ,2575108495.0,2021-01-04,2021-01-04,active_screener
+ZD,"Ziff Davis, Inc.",Communication Services,Advertising Agencies,NASDAQ,3678952113.0,2021-01-04,2021-01-04,active_screener
+WTTR,"Select Water Solutions, Inc.",Utilities,Regulated Water,NYSE,356957769.0,2021-01-04,2021-01-04,active_screener
+YELP,Yelp Inc.,Communication Services,Internet Content & Information,NYSE,2158285500.0,2021-01-04,2021-01-04,active_screener
+XTKG,"X3 Holdings Co., Ltd.",Technology,Software - Application,NASDAQ,294561235.0,2021-01-04,2021-01-04,post_2021_delisted
+TV,"Grupo Televisa, S.A.B.",Communication Services,Telecommunications Services,NYSE,4631259260.0,2021-01-04,2021-01-04,active_screener
+NWL,Newell Brands Inc.,Consumer Defensive,Household & Personal Products,NASDAQ,9224579000.0,2021-01-04,2021-01-04,active_screener
+UBFO,United Security Bancshares,Financial Services,Banks - Regional,NASDAQ,115838992.0,2021-01-04,2021-01-04,post_2021_delisted
+BITF,Bitfarms Ltd.,Financial Services,Financial - Capital Markets,NASDAQ,230411285.0,2021-01-04,2021-01-04,post_2021_delisted
+SEE,Sealed Air Corporation,Consumer Cyclical,Packaging & Containers,NYSE,6978169035.0,2021-01-04,2021-01-04,post_2021_delisted
+GLDD,Great Lakes Dredge & Dock Corporation,Industrials,Engineering & Construction,NASDAQ,845886240.0,2021-01-04,2021-01-04,post_2021_delisted
+QH,Quhuo Limited,Technology,Software - Application,NASDAQ,5057643402.0,2021-01-04,2021-01-04,post_2021_delisted
+ITRM,Iterum Therapeutics plc,Healthcare,Biotechnology,NASDAQ,121549080.0,2021-01-04,2021-01-04,post_2021_delisted
+SWKH,SWK Holdings Corporation,Financial Services,Asset Management,NASDAQ,176799260.0,2021-01-04,2021-01-04,post_2021_delisted
+FFWM,First Foundation Inc.,Financial Services,Banks - Regional,NYSE,885212816.0,2021-01-04,2021-01-04,post_2021_delisted
+TBHC,"The Brand House Collective, Inc.",Consumer Cyclical,Specialty Retail,NASDAQ,237074530.0,2021-01-04,2021-01-04,post_2021_delisted
+CMBM,Cambium Networks Corporation,Technology,Communication Equipment,NASDAQ,614761577.0,2021-01-04,2021-01-04,post_2021_delisted
+NEOVW,NeoVolta Inc.,Industrials,Electrical Equipment & Parts,NASDAQ,77289746.0,2021-01-04,2021-01-04,post_2021_delisted
+QIPT,Quipt Home Medical Corp.,Healthcare,Medical - Devices,NASDAQ,146762940.0,2021-01-04,2021-01-04,post_2021_delisted
+BHAT,Fujian Blue Hat Interactive Entertainment Technology Ltd.,Technology,Electronic Gaming & Multimedia,NASDAQ,21065858400.0,2021-01-04,2021-01-04,post_2021_delisted
+CTHR,"Charles & Colvard, Ltd.",Consumer Cyclical,Luxury Goods,NASDAQ,43176262.0,2021-01-04,2021-01-04,post_2021_delisted
+BBU,Brookfield Business Partners L.P.,Industrials,Conglomerates,NYSE,1916416000.0,2021-01-04,2021-01-04,post_2021_delisted
+LYRA,"Lyra Therapeutics, Inc.",Healthcare,Biotechnology,NASDAQ,7275396852.0,2021-01-04,2021-01-04,post_2021_delisted
+TSE,Trinseo PLC,Basic Materials,Chemicals - Specialty,NYSE,1915760000.0,2021-01-04,2021-01-04,post_2021_delisted
+GMGI,"Golden Matrix Group, Inc.",Technology,Electronic Gaming & Multimedia,NASDAQ,21913868394.0,2021-01-04,2021-01-04,post_2021_delisted

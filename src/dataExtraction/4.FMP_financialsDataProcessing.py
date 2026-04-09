@@ -17,10 +17,13 @@ import config as cfg
 REDOWNLOAD_RAW_FMP_DATA = False
 
 # Input/output paths used by the processing step.
+ENTERPRISES_FILE = cfg.ENT
 RAW_INPUT_FILE = cfg.FMP_RAW_FINANCIALS
 OUTPUT_FILE = cfg.FMP_FINANCIALS
 SINGLE_COMPANY_OUTPUT_DIR = cfg.SINGLE_COMPANY_FINANCIALS
 FINAL_OUTPUT_START_DATE = pd.Timestamp("2021-01-01")
+DATE_COLUMN = "WeekEndingFriday"
+EXPECTED_COMPANY_FINANCIAL_COLUMNS = [DATE_COLUMN, "symbol"]
 
 # Raw columns that must be parsed as dates before alignment.
 DATE_COLUMNS = ["date", "filingDate", "acceptedDate"]
@@ -100,6 +103,55 @@ def get_numeric_series(dataframe: pd.DataFrame, column: str) -> pd.Series:
     return pd.to_numeric(dataframe[column], errors="coerce")
 
 
+def load_valid_tickers() -> list[str]:
+    # Leggo il perimetro aziende corrente da enterprises.csv.
+    if not ENTERPRISES_FILE.exists():
+        raise FileNotFoundError(f"Company file not found: {ENTERPRISES_FILE}")
+
+    enterprises_df = pd.read_csv(ENTERPRISES_FILE, usecols=["Ticker"])
+    tickers = enterprises_df["Ticker"].dropna().astype(str).str.strip()
+    tickers = tickers[tickers.ne("")].drop_duplicates().tolist()
+    return tickers
+
+
+def company_financial_file_is_usable(file_path: Path) -> bool:
+    # Considero valido solo un file finanziario aziendale leggibile e coerente.
+    if not file_path.exists():
+        return False
+
+    try:
+        company_df = pd.read_csv(file_path, nrows=5)
+    except Exception:
+        return False
+
+    missing_columns = [
+        column for column in EXPECTED_COMPANY_FINANCIAL_COLUMNS if column not in company_df.columns
+    ]
+    return not missing_columns
+
+
+def rebuild_combined_financial_output(valid_tickers: list[str]) -> pd.DataFrame:
+    # Ricostruisco financialsData.csv dai file aziendali validi, cosi l'output
+    # aggregato resta completo anche quando in questo run processo solo pochi ticker.
+    combined_frames = []
+
+    for ticker in valid_tickers:
+        company_output_file = SINGLE_COMPANY_OUTPUT_DIR / f"{ticker}Financials.csv"
+        if not company_financial_file_is_usable(company_output_file):
+            continue
+
+        company_df = pd.read_csv(company_output_file, parse_dates=[DATE_COLUMN])
+        combined_frames.append(company_df)
+
+    if not combined_frames:
+        return pd.DataFrame()
+
+    combined_df = pd.concat(combined_frames, ignore_index=True, sort=False)
+    combined_df = combined_df.sort_values(["symbol", DATE_COLUMN]).reset_index(drop=True)
+    combined_df.to_csv(OUTPUT_FILE, index=False)
+    return combined_df
+
+
 # ---------------------------------------------------------------------------
 # Optional Raw FMP Download
 # ---------------------------------------------------------------------------
@@ -116,20 +168,28 @@ if REDOWNLOAD_RAW_FMP_DATA:
 # Load Raw FMP Data
 # ---------------------------------------------------------------------------
 
-# Stop immediately if the raw FMP dataset has not been created yet.
-if not RAW_INPUT_FILE.exists():
-    raise FileNotFoundError(f"Raw financials file not found: {RAW_INPUT_FILE}")
+# Load the valid ticker universe first so every downstream step stays aligned.
+valid_tickers = load_valid_tickers()
+valid_ticker_set = set(valid_tickers)
 
-# Load the raw quarterly financial statements downloaded from FMP.
-raw_df = pd.read_csv(RAW_INPUT_FILE)
-# The raw file must contain the ticker used for grouping company by company.
-if "requested_symbol" not in raw_df.columns:
-    raise KeyError("The raw financials file must contain a 'requested_symbol' column.")
+# The raw file is useful for building missing company financial files, but the
+# script can still rebuild the aggregated output from existing company files
+# even when no new raw download is available.
+if RAW_INPUT_FILE.exists():
+    raw_df = pd.read_csv(RAW_INPUT_FILE)
 
-# Convert available date columns to pandas datetime.
-for column in DATE_COLUMNS:
-    if column in raw_df.columns:
-        raw_df[column] = pd.to_datetime(raw_df[column], errors="coerce")
+    if not raw_df.empty and "requested_symbol" not in raw_df.columns:
+        raise KeyError("The raw financials file must contain a 'requested_symbol' column.")
+
+    if "requested_symbol" in raw_df.columns:
+        raw_df["requested_symbol"] = raw_df["requested_symbol"].astype(str).str.strip().str.upper()
+        raw_df = raw_df[raw_df["requested_symbol"].isin(valid_ticker_set)].copy()
+
+    for column in DATE_COLUMNS:
+        if column in raw_df.columns:
+            raw_df[column] = pd.to_datetime(raw_df[column], errors="coerce")
+else:
+    raw_df = pd.DataFrame(columns=["requested_symbol"])
 
 
 # ---------------------------------------------------------------------------
@@ -140,16 +200,22 @@ for column in DATE_COLUMNS:
 OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 SINGLE_COMPANY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Collect all aligned company DataFrames to build the final aggregated dataset.
-combined_frames: list[pd.DataFrame] = []
-
 
 # ---------------------------------------------------------------------------
 # Process Each Company
 # ---------------------------------------------------------------------------
 
-# Process one ticker at a time.
+# Process one ticker at a time, but skip the companies that already have a
+# processed Financials.csv file.
+processed_tickers: list[str] = []
+
 for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
+    company_output_file = SINGLE_COMPANY_OUTPUT_DIR / f"{ticker}Financials.csv"
+
+    if company_financial_file_is_usable(company_output_file):
+        print(f"Processed financial file already available for {ticker}, skipping.")
+        continue
+
     print(f"Aligning financial statements for {ticker}")
 
     # -----------------------------------------------------------------------
@@ -698,27 +764,25 @@ for ticker, company_df in raw_df.groupby("requested_symbol", sort=True):
     # -----------------------------------------------------------------------
 
     # Save the processed company-level file.
-    company_output_file = SINGLE_COMPANY_OUTPUT_DIR / f"{ticker}Financials.csv"
     aligned_df.to_csv(company_output_file, index=True)
-    combined_frames.append(aligned_df)
+    processed_tickers.append(ticker)
 
 
 # ---------------------------------------------------------------------------
 # Save Final Aggregated Output
 # ---------------------------------------------------------------------------
 
-# If nothing was processed successfully, report it and stop.
-if not combined_frames:
-    print("Processing completed, but no aligned records were saved.")
+# Ricostruisco sempre l'output aggregato dai file aziendali validi.
+combined_df = rebuild_combined_financial_output(valid_tickers)
+
+if combined_df.empty:
+    print("Processing completed, but no aligned financial records were available.")
 else:
-    # Merge all processed company files into one final dataset.
-    combined_df = pd.concat(combined_frames).sort_index()
-    combined_df.to_csv(OUTPUT_FILE, index=True)
-    # Print a compact summary of the processing step.
     print(
         "Processing completed: "
-        f"{raw_df['requested_symbol'].nunique()} ticker, "
-        f"{len(combined_df)} total rows."
+        f"{combined_df['symbol'].nunique()} ticker, "
+        f"{len(combined_df)} total rows, "
+        f"{len(processed_tickers)} ticker processed in this run."
     )
 
 
