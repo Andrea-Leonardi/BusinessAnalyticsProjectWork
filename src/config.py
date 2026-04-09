@@ -38,6 +38,7 @@ VECTORIZATION_TFIDF_FINANCIAL_PHRASEBANK = NEWS_EXTRACTION / "vectorizationTfidf
 VECTORIZATION_BAG_OF_WORDS_ARTICLES = NEWS_EXTRACTION / "vectorizationBagOfWordsArticles.csv"
 VECTORIZATION_TFIDF_ARTICLES = NEWS_EXTRACTION / "vectorizationTfidfArticles.csv"
 FULL_DATA_WITH_NEWS = DATA_EXTRACTION / "fulldata_with_news.csv"
+MODELING_DATASET = MODELING / "modeling.csv"
 # ---------------------------------------------------------------------------
 # Company-Level Output Folders
 # ---------------------------------------------------------------------------

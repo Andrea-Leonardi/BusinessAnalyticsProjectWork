@@ -6,6 +6,7 @@ Scopo del file:
 - trasformarlo in feature settimanali per Ticker e WeekEndingFriday
 - allineare queste feature al calendario settimanale gia presente in fullData.csv
 - salvare sia il file news aggregato sia una versione di fullData gia arricchita
+- creare anche modeling.csv gia pulito dai missing per i modelli ML
 
 Idea generale del flusso:
 1. legge textAnalysis.csv e fullData.csv
@@ -14,7 +15,7 @@ Idea generale del flusso:
 4. deduplica gli articoli ripetuti per Ticker + WeekEndingFriday + Headline
 5. calcola la media settimanale delle metriche di sentiment per Ticker
 4. riallinea il risultato alle chiavi Ticker + WeekEndingFriday di fullData
-5. salva il file aggregato e il merge finale senza toccare fullData.csv originale
+5. salva il file aggregato, il merge finale e il dataset modeling senza toccare fullData.csv originale
 """
 
 import sys
@@ -198,6 +199,20 @@ def build_weekly_news_features(text_analysis_df: pd.DataFrame) -> pd.DataFrame:
     return weekly_metrics.sort_values(KEY_COLUMNS).reset_index(drop=True)
 
 
+def build_modeling_dataset(full_data_with_news_df: pd.DataFrame) -> pd.DataFrame:
+    # Creo il dataset modeling partendo dal merge finale fullData + news.
+    # Per richiesta del progetto:
+    # 1. tolgo le ultime due colonne del file arricchito;
+    # 2. elimino tutte le righe con almeno un missing;
+    modeling_df = full_data_with_news_df.copy()
+
+    if modeling_df.shape[1] >= 2:
+        modeling_df = modeling_df.iloc[:, :-2].copy()
+
+    modeling_df = modeling_df.dropna().reset_index(drop=True)
+    return modeling_df
+
+
 # ---------------------------------------------------------------------------
 # FLUSSO PRINCIPALE
 # ---------------------------------------------------------------------------
@@ -256,10 +271,12 @@ def main():
     # 5. SALVATAGGIO DEI FILE DI OUTPUT
     # -----------------------------------------------------------------------
 
-    # Mantengo un file intermedio solo-news gia allineato a fullData e un file
-    # finale completo con le colonne news gia aggiunte.
+    # Mantengo un file intermedio solo-news gia allineato a fullData, un file
+    # finale completo con le colonne news gia aggiunte e un file modeling gia
+    # ripulito dai missing.
     aligned_weekly_news_to_save = aligned_weekly_news_df.copy()
     full_data_with_news_to_save = full_data_with_news_df.copy()
+    modeling_df_to_save = build_modeling_dataset(full_data_with_news_to_save)
 
     aligned_weekly_news_to_save["WeekEndingFriday"] = aligned_weekly_news_to_save[
         "WeekEndingFriday"
@@ -268,6 +285,8 @@ def main():
         "WeekEndingFriday"
     ].dt.strftime("%Y-%m-%d")
 
+    cfg.MODELING.mkdir(parents=True, exist_ok=True)
+
     aligned_weekly_news_to_save.to_csv(
         cfg.ANALYSIS_TEXT_WEEKLY,
         index=False,
@@ -275,6 +294,11 @@ def main():
     )
     full_data_with_news_to_save.to_csv(
         cfg.FULL_DATA_WITH_NEWS,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    modeling_df_to_save.to_csv(
+        cfg.MODELING_DATASET,
         index=False,
         encoding="utf-8-sig",
     )
@@ -302,6 +326,9 @@ def main():
             "deduplicated_article_count_sum": int(aligned_weekly_news_to_save["NEWS_ArticleCount"].fillna(0).sum()),
             "weekly_output": str(cfg.ANALYSIS_TEXT_WEEKLY),
             "merged_output": str(cfg.FULL_DATA_WITH_NEWS),
+            "modeling_rows": len(modeling_df_to_save),
+            "modeling_columns": len(modeling_df_to_save.columns),
+            "modeling_output": str(cfg.MODELING_DATASET),
         },
     )
 
