@@ -29,19 +29,24 @@ results = pd.DataFrame({
 })
 
 
-# filtro variabili sopravvissute alla LASSO e ordino per imposrtanza assoluta
-selected_variables = results[results["coefficient"] != 0]
-selected_variables = selected_variables.reindex(
-    selected_variables["coefficient"].abs().sort_values(ascending=False).index
+# porto a zero i coefficienti con valore assoluto minore di 0.05
+results["coefficient"] = results["coefficient"].where(
+    results["coefficient"].abs() >= 0.05, #0.05 
+    0
 )
 
-# filtro variabili escluse dalla LASSO
-excluded_variables = results[results["coefficient"] == 0]
-
-
+# variabili sopravvissute
+selected_variables = results[results["coefficient"] != 0].copy()
 
 
 print(selected_variables)
-print(excluded_variables)
+print("Numero variabili selezionate:", len(selected_variables))
+
+#salvo su csv
+selected_variables[["variable"]].to_csv(
+    "src/modeling/classic_ML_model/lasso_model/selected_variables.csv",
+    index=False
+)
+
 """
 """

@@ -20,7 +20,6 @@ HD,"The Home Depot, Inc.",Consumer Cyclical,Home Improvement,283450080000.0,2021
 PYPL,"PayPal Holdings, Inc.",Financial Services,Financial - Credit Services,272042160000.0,2021-01-04,2021-01-04,active_screener
 AZN,AstraZeneca PLC,Healthcare,Drug Manufacturers - General,268304000000.0,2021-01-04,2021-01-04,active_screener
 VZ,Verizon Communications Inc.,Communication Services,Telecommunications Services,243697850000.0,2021-01-04,2021-01-04,active_screener
-BBDO,Banco Bradesco S.A.,Financial Services,Banks - Regional,233511969600.0,2021-01-04,2021-01-04,active_screener
 ADBE,Adobe Inc.,Technology,Software - Infrastructure,232477860000.0,2021-01-04,2021-01-04,active_screener
 CMCSA,Comcast Corporation,Communication Services,Telecommunications Services,231891410000.0,2021-01-04,2021-01-04,active_screener
 NFLX,"Netflix, Inc.",Communication Services,Entertainment,231761829600.0,2021-01-04,2021-01-04,active_screener
@@ -41,10 +40,9 @@ TMO,Thermo Fisher Scientific Inc.,Healthcare,Medical - Diagnostics & Research,18
 ORCL,Oracle Corporation,Technology,Software - Infrastructure,185703750000.0,2021-01-04,2021-01-04,active_screener
 CSCO,"Cisco Systems, Inc.",Technology,Communication Equipment,185643080000.0,2021-01-04,2021-01-04,active_screener
 UL,Unilever PLC,Consumer Defensive,Household & Personal Products,178762487352.0,2021-01-04,2021-01-04,active_screener
-PUK,Prudential plc,Financial Services,Insurance - Life,178134787425.0,2021-01-04,2021-01-04,active_screener
 XOM,Exxon Mobil Corporation,Energy,Oil & Gas Integrated,177023437500.0,2021-01-04,2021-01-04,active_screener
 COST,Costco Wholesale Corporation,Consumer Defensive,Discount Stores,168457390100.0,2021-01-04,2021-01-04,active_screener
-NVO,Novo Nordisk A/S,Healthcare,Drug Manufacturers - General,165426464000.0,2021-01-04,2021-01-04,active_screener
+NVO,Novo Nordisk A/S,Healthcare,Drug Manufacturers - General,164997824000.0,2021-01-04,2021-01-04,active_screener
 TMUS,"T-Mobile US, Inc.",Communication Services,Telecommunications Services,164679357043.0,2021-01-04,2021-01-04,active_screener
 CVX,Chevron Corporation,Energy,Oil & Gas Integrated,162043876750.0,2021-01-04,2021-01-04,active_screener
 T,AT&T Inc.,Communication Services,Telecommunications Services,159117420000.0,2021-01-04,2021-01-04,active_screener
@@ -58,6 +56,7 @@ BUD,Anheuser-Busch InBev SA/NV,Consumer Defensive,Beverages - Alcoholic,13988885
 UNP,Union Pacific Corporation,Industrials,Railroads,135529476000.0,2021-01-04,2021-01-04,active_screener
 LIN,Linde plc,Basic Materials,Chemicals - Specialty,135217613790.0,2021-01-04,2021-01-04,active_screener
 JD,"JD.com, Inc.",Consumer Cyclical,Specialty Retail,134113655000.0,2021-01-04,2021-01-04,active_screener
+FUBO,fuboTV Inc.,Communication Services,Broadcasting,128155433587.0,2021-01-04,2021-01-04,active_screener
 PM,Philip Morris International Inc.,Consumer Defensive,Tobacco,126977000000.0,2021-01-04,2021-01-04,active_screener
 RIO,Rio Tinto Group,Basic Materials,Industrial Materials,125224759000.0,2021-01-04,2021-01-04,active_screener
 C,Citigroup Inc.,Financial Services,Banks - Diversified,125211480000.0,2021-01-04,2021-01-04,active_screener
@@ -68,8 +67,10 @@ BA,The Boeing Company,Industrials,Aerospace & Defense,118591200000.0,2021-01-04,
 RY,Royal Bank of Canada,Financial Services,Banks - Diversified,116529664500.0,2021-01-04,2021-01-04,active_screener
 TTE,TotalEnergies SE,Energy,Oil & Gas Integrated,111445191087.0,2021-01-04,2021-01-04,active_screener
 BLK,"BlackRock, Inc.",Financial Services,Asset Management,108883529861.0,2021-01-04,2021-01-04,active_screener
+TD,The Toronto-Dominion Bank,Financial Services,Banks - Diversified,104160463255.0,2021-01-04,2021-01-04,active_screener
 RTX,RTX Corporation,Industrials,Aerospace & Defense,103404573000.0,2021-01-04,2021-01-04,active_screener
 CAT,Caterpillar Inc.,Industrials,Agricultural - Machinery,99526760000.0,2021-01-04,2021-01-04,active_screener
+SCHW,The Charles Schwab Corporation,Financial Services,Financial - Capital Markets,99294320000.0,2021-01-04,2021-01-04,active_screener
 AMT,American Tower Corporation,Real Estate,REIT - Specialty,97609126258.0,2021-01-04,2021-01-04,active_screener
 LMT,Lockheed Martin Corporation,Industrials,Aerospace & Defense,96154560000.0,2021-01-04,2021-01-04,active_screener
 DEO,Diageo plc,Consumer Defensive,Beverages - Wineries & Distilleries,93415810853.0,2021-01-04,2021-01-04,active_screener
@@ -78,7 +79,6 @@ VALE,Vale S.A.,Basic Materials,Industrial Materials,89265271200.0,2021-01-04,202
 DE,Deere & Company,Industrials,Agricultural - Machinery,83905140000.0,2021-01-04,2021-01-04,active_screener
 MMM,3M Company,Industrials,Conglomerates,83417850000.0,2021-01-04,2021-01-04,active_screener
 CNI,Canadian National Railway Company,Industrials,Railroads,77911380000.0,2021-01-04,2021-01-04,active_screener
-SNAP,Snap Inc.,Communication Services,Internet Content & Information,74466129240.0,2021-01-04,2021-01-04,active_screener
 PBR,Petróleo Brasileiro S.A. - Petrobras,Energy,Oil & Gas Integrated,72982306049.0,2021-01-04,2021-01-04,active_screener
 PLD,"Prologis, Inc.",Real Estate,REIT - Industrial,70973367920.0,2021-01-04,2021-01-04,active_screener
 BP,BP p.l.c.,Energy,Oil & Gas Integrated,70466452709.0,2021-01-04,2021-01-04,active_screener
@@ -87,8 +87,8 @@ DUK,Duke Energy Corporation,Utilities,Regulated Electric,68986990000.0,2021-01-0
 CCI,Crown Castle Inc.,Real Estate,REIT - Specialty,66960000000.0,2021-01-04,2021-01-04,active_screener
 ENB,Enbridge Inc.,Energy,Oil & Gas Midstream,64643340000.0,2021-01-04,2021-01-04,active_screener
 SHW,The Sherwin-Williams Company,Basic Materials,Chemicals - Specialty,64100328000.0,2021-01-04,2021-01-04,active_screener
-SO,The Southern Company,Utilities,Regulated Electric,62921600000.0,2021-01-04,2021-01-04,active_screener
 SOJE,Southern Company (The) Series 2,Utilities,Regulated Electric,62921600000.0,2021-01-04,2021-01-04,active_screener
+SO,The Southern Company,Utilities,Regulated Electric,62921600000.0,2021-01-04,2021-01-04,active_screener
 EQIX,"Equinix, Inc.",Real Estate,REIT - Specialty,61866384799.0,2021-01-04,2021-01-04,active_screener
 ECL,Ecolab Inc.,Basic Materials,Chemicals - Specialty,61292660000.0,2021-01-04,2021-01-04,active_screener
 D,"Dominion Energy, Inc.",Utilities,Regulated Electric,59547951000.0,2021-01-04,2021-01-04,active_screener
@@ -97,7 +97,6 @@ EQNR,Equinor ASA,Energy,Oil & Gas Integrated,54793760000.0,2021-01-04,2021-01-04
 COP,ConocoPhillips,Energy,Oil & Gas Exploration & Production,51455838750.0,2021-01-04,2021-01-04,active_screener
 NEM,Newmont Corporation,Basic Materials,Gold,50583150000.0,2021-01-04,2021-01-04,active_screener
 SCCO,Southern Copper Corporation,Basic Materials,Copper,50004108000.0,2021-01-04,2021-01-04,active_screener
-NGG,National Grid plc,Utilities,Regulated Electric,45857322349.0,2021-01-04,2021-01-04,active_screener
 B,Barrick Mining Corporation,Basic Materials,Gold,42635553135.0,2021-01-04,2021-01-04,active_screener
 EPD,Enterprise Products Partners L.P.,Energy,Oil & Gas Midstream,42110070000.0,2021-01-04,2021-01-04,active_screener
 AEP,"American Electric Power Company, Inc.",Utilities,Regulated Electric,40530161097.0,2021-01-04,2021-01-04,active_screener
@@ -108,4 +107,5 @@ XEL,Xcel Energy Inc.,Utilities,Regulated Electric,35325080000.0,2021-01-04,2021-
 CSGP,"CoStar Group, Inc.",Real Estate,Real Estate - Services,35057978340.0,2021-01-04,2021-01-04,active_screener
 SBAC,SBA Communications Corporation,Real Estate,REIT - Specialty,29429766743.0,2021-01-04,2021-01-04,active_screener
 ES,Eversource Energy,Utilities,Regulated Electric,29044248315.0,2021-01-04,2021-01-04,active_screener
+EXC,Exelon Corporation,Utilities,Regulated Electric,28684720000.0,2021-01-04,2021-01-04,active_screener
 SPG,"Simon Property Group, Inc.",Real Estate,REIT - Retail,27204285496.0,2021-01-04,2021-01-04,active_screener

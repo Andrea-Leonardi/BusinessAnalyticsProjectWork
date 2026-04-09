@@ -23,8 +23,8 @@ pipeline = Pipeline([
     ("model", SGDClassifier(
         loss="log_loss",      
         penalty="l1",                  
-        max_iter=5000,
-        tol=1e-3,
+        max_iter=10000,
+        #tol=1e-3,
         random_state=42
     ))
 ])
@@ -32,7 +32,14 @@ pipeline = Pipeline([
 
 
 param_grid = {
-    "model__alpha": [1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2]
+    "model__alpha": [
+        1e-5, 3e-5,
+        1e-4, 3e-4,
+        1e-3, 3e-3,
+        1e-2, 3e-2,
+        1e-1, 3e-1,
+        1, 10, 100
+    ]
 }
 
 best_score = -1
@@ -59,10 +66,12 @@ for alpha in param_grid["model__alpha"]:
 
 
 
-"""
+
 print(scores)
 print(best_alpha, best_score)
-"""
+
+
+
 
 
 
