@@ -75,21 +75,39 @@ HIGH_TITLE_SIMILARITY = 0.92
 
 def normalize_text(text):
     # Pulisce il testo senza alterarne il significato di base.
-    if pd.isna(text):
+    if pd.isna(text) or not isinstance(text, str):
         return ""
 
-    cleaned = html.unescape(str(text))
+    cleaned = html.unescape(text)
     cleaned = cleaned.replace("\xa0", " ")
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned
+
+
+def normalize_text_for_comparison(text):
+    # Produce una normalizzazione piu aggressiva per confronti e controlli
+    # di qualita, senza peggiorare il testo finale salvato nel CSV.
+    cleaned = normalize_text(text)
+    if not cleaned:
+        return ""
+
+    # 1. Rimuove link espliciti.
+    cleaned = re.sub(r"http\S+|www\S+|https\S+", "", cleaned, flags=re.MULTILINE)
+
+    # 2. Rimuove menzioni e marker di hashtag.
+    cleaned = re.sub(r"\@\w+|\#", "", cleaned)
+
+    # 3. Rimuove punteggiatura e numeri, lasciando solo lettere e spazi.
+    cleaned = re.sub(r"[^a-zA-Z\s]", " ", cleaned)
+
+    cleaned = cleaned.lower()
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
     return cleaned
 
 
 def canonical_text(text):
     # Produce una versione standardizzata utile per confronti robusti.
-    cleaned = normalize_text(text).lower()
-    cleaned = re.sub(r"[^a-z0-9\s]", " ", cleaned)
-    cleaned = re.sub(r"\s+", " ", cleaned).strip()
-    return cleaned
+    return normalize_text_for_comparison(text)
 
 
 # ---------------------------------------------------------------------------
