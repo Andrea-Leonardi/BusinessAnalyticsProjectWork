@@ -107,15 +107,23 @@ def fill_missing_summaries(df):
 
 
 def deduplicate_news_df(df):
-    # Se gli ID sono presenti uso la chiave forte ID + Ticker.
-    # Altrimenti uso un fallback testuale per i file storici.
+    # Separo le righe con ID valido da quelle senza ID.
+    # Le prime si deduplicano su ID + Ticker, le seconde sul fallback testuale.
+    # Questo evita che tutti gli articoli con ID mancante collassino in una sola
+    # riga per ticker durante il merge o durante i refresh mirati.
     if df.empty:
         return df
 
-    if "ID" in df.columns and df["ID"].notna().any():
-        return df.drop_duplicates(subset=PRIMARY_DEDUP_COLUMNS)
+    if "ID" not in df.columns:
+        return df.drop_duplicates(subset=FALLBACK_DEDUP_COLUMNS)
 
-    return df.drop_duplicates(subset=FALLBACK_DEDUP_COLUMNS)
+    id_as_text = df["ID"].astype(str).str.strip().str.lower()
+    valid_id_mask = df["ID"].notna() & ~id_as_text.isin({"", "nan", "none", "<na>"})
+
+    with_id_df = df.loc[valid_id_mask].drop_duplicates(subset=PRIMARY_DEDUP_COLUMNS)
+    without_id_df = df.loc[~valid_id_mask].drop_duplicates(subset=FALLBACK_DEDUP_COLUMNS)
+
+    return pd.concat([with_id_df, without_id_df], ignore_index=True, sort=False)
 
 
 # ---------------------------------------------------------------------------
