@@ -11,7 +11,6 @@ from split_data import X_train_full, y_train_full
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
 
 
 selected_variables = pd.read_csv(
