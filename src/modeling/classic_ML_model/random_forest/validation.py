@@ -36,6 +36,15 @@ best_model = None
 scores = {}
 
 
+#definizione training set e validation set  <--- variabili scelte
+selected_variables = pd.read_csv(
+    "src/modeling/classic_ML_model/lasso_model/selected_variables.csv"
+).iloc[:, 0].tolist()
+
+X_train_selected = X_train[selected_variables]
+X_validation_selected = X_validation[selected_variables]
+
+
 # loop su tutte le combinazioni
 
 for n_estimators, max_depth,min_samples_leaf, max_features in itertools.product(
