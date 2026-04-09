@@ -46,7 +46,8 @@ variabili =[
     "BookToMarket",
     "MarketCap",
     "EarningsYield",
-    "EarningsYield_TTM",
+    "EarningsYield_TTM"]
+"""
     "BookToMarket_L1W",
     "MarketCap_L1W",
     "EarningsYield_L1W",
@@ -69,7 +70,7 @@ variabili =[
     "DebtToAssets_L2Q",
     "WorkingCapitalScaled_L2Q"
 ]
-
+"""
 # 1. Trasformiamo le etichette
 # df['Direction'] = df['Direction'].map({'Down': 0, 'Up': 1})
 # Seleziona le colonne per indice e le elimina
@@ -172,12 +173,12 @@ def objective(trial):
     # h4 = trial.suggest_int('units_l4', 10, 40) # Quarto strato nascosto
     
     # Suggerimento per il Learning Rate (passo di apprendimento)
-    lr = trial.suggest_float('learning_rate', 1e-3, 1e-1, log=True)
+    lr = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
     # --- 2. COSTRUZIONE DELLA RETE PROFONDA ---
     # Usiamo nn.Sequential per impilare i 4 blocchi di calcolo (3 nascosti + 1 output)
     model = nn.Sequential(
         # Strato 1: Da 1000 ingressi a h1 neuroni
-        nn.Linear(28, h1),
+        nn.Linear(7, h1),
         nn.BatchNorm1d(h1), # Normalizza l'output di questo strato per stabilizzare l'apprendimento
         nn.LeakyReLU(0.1), # Meglio di ReLU
         nn.Dropout(0.2),   # Spegne il 20% dei neuroni a caso per forzare l'apprendimento        
@@ -269,5 +270,94 @@ print(final_model)
 # Se vuoi vedere anche il numero di parametri (installa torchsummary se non l'hai)
 summary(final_model, (63,))
 # %%
+#%%
+# ... (tutta la tua parte di import e preparazione dei tensori rimane uguale) ...
+
+# Controlliamo il bilanciamento delle classi nel test set
+class_1_ratio = (y_test == 1).sum() / len(y_test)
+print(f"Percentuale della classe 1 nel test set: {class_1_ratio:.2%}")
+print(f"Percentuale della classe 0 nel test set: {1 - class_1_ratio:.2%}")
+print("Se l'accuratezza rimane bloccata su uno di questi due numeri, la rete sta prevedendo una sola classe.")
+
+def accuratezza_test(model, x_test_tensor, y_test_tensor, silenzioso=False):
+    model.eval()
+    with torch.no_grad():
+        outputs_test = model(x_test_tensor)
+        _, predicted = torch.max(outputs_test, 1)
+        accuratezza = (predicted == y_test_tensor).sum().item() / len(y_test_tensor)
+    
+    if not silenzioso:
+        print(f"Accuratezza sul test set: {accuratezza:.2%}")
+    return accuratezza 
+
+def objective(trial):
+    h1 = trial.suggest_int('units_l1', 16, 64) 
+    h2 = trial.suggest_int('units_l2', 8, 32)  
+    
+    # ATTENZIONE 1: Learning rate abbassato. Adam lavora bene tra 1e-4 e 1e-2.
+    lr = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
+    
+    # ATTENZIONE 2: Usiamo input_dim (che nel tuo caso è 7) invece di hardcodare il numero
+    model = nn.Sequential(
+        nn.Linear(input_dim, h1),
+        nn.ReLU(),        
+        nn.Linear(h1, h2),
+        nn.ReLU(),
+        
+        nn.Linear(h2, 2)
+    )
+
+    # Se le classi sono sbilanciate, potresti dover aggiungere dei pesi qui:
+    # criterion = nn.CrossEntropyLoss(weight=torch.tensor([peso_0, peso_1]))
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5) # weight_decay è una L2 regularization
+    
+    train_loader = DataLoader(TensorDataset(x_train_tensor, y_train_tensor), batch_size=64, shuffle=True)
+    
+    for epoch in range(150): # 150 epoche sono sufficienti per iniziare
+        model.train() 
+        for inputs, labels in train_loader:
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+    
+    # ATTENZIONE 3: Calcoliamo l'accuratezza SOLO alla fine di tutte le epoche per questo trial
+    acc = accuratezza_test(model, x_test_tensor, y_test_tensor, silenzioso=True) 
+    
+    return acc
+
+study = optuna.create_study(direction='maximize') 
+study.optimize(objective, n_trials=30) 
+
+print("Migliori parametri trovati:", study.best_params)
+print("Migliore accuratezza:", study.best_value)
+
+#%%
+# --- ATTENZIONE 4: CORREZIONE DEL MODELLO FINALE ---
+best_p = study.best_params
+
+# Deve rispecchiare esattamente la struttura che avevi dentro 'objective'
+final_model = nn.Sequential(
+    nn.Linear(input_dim, best_p['units_l1']), # input_dim = 7 (le tue variabili)
+    nn.BatchNorm1d(best_p['units_l1']),
+    nn.LeakyReLU(0.1),
+    nn.Dropout(0.2),
+    
+    nn.Linear(best_p['units_l1'], best_p['units_l2']),
+    nn.BatchNorm1d(best_p['units_l2']),
+    nn.LeakyReLU(0.1),
+    nn.Dropout(0.2),
+    
+    nn.Linear(best_p['units_l2'], 2)
+)
+
+print("--- STRUTTURA DELLA RETE ---")
+print(final_model)
+
+# La summary richiede il numero di input corretto (es: 7, non 63)
+summary(final_model, (input_dim,))
 
 
+# %%
