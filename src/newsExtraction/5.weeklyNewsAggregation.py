@@ -9,8 +9,10 @@ Scopo del file:
 
 Idea generale del flusso:
 1. legge textAnalysis.csv e fullData.csv
-2. converte ogni data articolo nel suo WeekEndingFriday
-3. calcola la media settimanale delle metriche di sentiment per Ticker
+2. ricostruisce anche l'Headline articolo per articolo
+3. converte ogni data articolo nel suo WeekEndingFriday in ottica market-close
+4. deduplica gli articoli ripetuti per Ticker + WeekEndingFriday + Headline
+5. calcola la media settimanale delle metriche di sentiment per Ticker
 4. riallinea il risultato alle chiavi Ticker + WeekEndingFriday di fullData
 5. salva il file aggregato e il merge finale senza toccare fullData.csv originale
 """
@@ -33,14 +35,20 @@ import config as cfg
 KEY_COLUMNS = ["WeekEndingFriday", "Ticker"]
 
 # Le prime tre colonne di textAnalysis identificano l'articolo.
-# Tutto il resto viene trattato come metrica numerica da aggregare.
+# Headline viene ricostruita da newsArticles.csv per poter fare deduplica
+# a livello contenutistico prima dell'aggregazione.
 ARTICLE_ID_COLUMNS = ["ID", "Ticker", "Date"]
-NON_METRIC_COLUMNS = set(ARTICLE_ID_COLUMNS + ["WeekEndingFriday"])
+NON_METRIC_COLUMNS = set(ARTICLE_ID_COLUMNS + ["Headline", "WeekEndingFriday"])
+HEADLINE_DEDUP_COLUMNS = ["Ticker", "WeekEndingFriday", "Headline"]
+ARTICLE_MATCH_GROUP_COLUMNS = ["Ticker", "Date", "ArticleIdKey"]
+ARTICLE_MATCH_COLUMNS = ARTICLE_MATCH_GROUP_COLUMNS + ["ArticleDuplicateIndex"]
 
 # Prefisso e suffisso chiari per distinguere le feature aggregate news
 # dal resto delle colonne gia presenti in fullData.csv.
 NEWS_FEATURE_PREFIX = "NEWS_"
 NEWS_FEATURE_SUFFIX = "_Mean"
+MARKET_TIMEZONE = "America/New_York"
+FRIDAY_MARKET_CLOSE_HOUR = 16
 
 
 # ---------------------------------------------------------------------------
@@ -48,18 +56,81 @@ NEWS_FEATURE_SUFFIX = "_Mean"
 # ---------------------------------------------------------------------------
 
 def to_week_ending_friday(date_series: pd.Series) -> pd.Series:
-    # Converte una data articolo nel venerdi di chiusura della sua settimana.
+    # Converte la data articolo nel calendario di mercato USA.
+    # Gli articoli del venerdi dopo la chiusura e quelli del weekend vengono
+    # spostati alla settimana successiva per evitare timing leakage.
     parsed_dates = pd.to_datetime(date_series, errors="coerce", utc=True)
-    parsed_dates = parsed_dates.dt.tz_convert(None)
-    return (
-        parsed_dates.dt.to_period("W-FRI").dt.to_timestamp(how="end").dt.normalize()
+    market_dates = parsed_dates.dt.tz_convert(MARKET_TIMEZONE).dt.tz_localize(None)
+    week_ending = (
+        market_dates.dt.to_period("W-FRI").dt.to_timestamp(how="end").dt.normalize()
     )
+
+    after_friday_close_mask = (
+        market_dates.dt.weekday.eq(4) & market_dates.dt.hour.ge(FRIDAY_MARKET_CLOSE_HOUR)
+    )
+    weekend_mask = market_dates.dt.weekday.ge(5)
+    shift_to_next_week_mask = after_friday_close_mask | weekend_mask
+
+    return week_ending.mask(shift_to_next_week_mask, week_ending + pd.Timedelta(days=7))
 
 
 def normalize_full_data_dates(date_series: pd.Series) -> pd.Series:
     # Normalizza la colonna WeekEndingFriday del fullData per avere lo stesso
     # formato temporale usato dalle feature news aggregate.
     return pd.to_datetime(date_series, errors="coerce").dt.normalize()
+
+
+def normalize_text_for_key(text_series: pd.Series) -> pd.Series:
+    # Normalizzo il testo per i match e per la deduplica headline.
+    cleaned = text_series.fillna("").astype(str).str.replace(r"\s+", " ", regex=True).str.strip()
+    return cleaned
+
+
+def normalize_id_for_key(id_series: pd.Series) -> pd.Series:
+    # Porto gli ID in forma testuale stabile, trattando i missing in modo coerente.
+    normalized = id_series.fillna("").astype(str).str.strip()
+    invalid_mask = normalized.str.lower().isin({"", "nan", "none", "<na>"})
+    return normalized.mask(invalid_mask, "")
+
+
+def build_article_match_frame(df: pd.DataFrame) -> pd.DataFrame:
+    # Creo chiavi di matching robuste per riallineare textAnalysis con newsArticles.
+    working_df = df.copy()
+    working_df["Ticker"] = normalize_text_for_key(working_df["Ticker"])
+    working_df["Date"] = normalize_text_for_key(working_df["Date"])
+    working_df["ArticleIdKey"] = normalize_id_for_key(working_df["ID"])
+
+    sort_columns = ARTICLE_MATCH_GROUP_COLUMNS.copy()
+    if "Headline" in working_df.columns:
+        working_df["Headline"] = normalize_text_for_key(working_df["Headline"])
+        sort_columns.append("Headline")
+
+    working_df = working_df.sort_values(sort_columns, kind="mergesort").copy()
+    working_df["ArticleDuplicateIndex"] = (
+        working_df.groupby(ARTICLE_MATCH_GROUP_COLUMNS).cumcount()
+    )
+    return working_df
+
+
+def attach_headline_column(text_analysis_df: pd.DataFrame) -> pd.DataFrame:
+    # textAnalysis.csv non contiene Headline, ma per deduplicare i boilerplate
+    # settimanali serve recuperarla dal dataset news articolo-per-articolo.
+    if "Headline" in text_analysis_df.columns:
+        enriched_df = text_analysis_df.copy()
+        enriched_df["Headline"] = normalize_text_for_key(enriched_df["Headline"])
+        return enriched_df
+
+    news_articles_df = pd.read_csv(cfg.NEWS_ARTICLES, usecols=["ID", "Ticker", "Date", "Headline"])
+    text_match_df = build_article_match_frame(text_analysis_df)
+    news_match_df = build_article_match_frame(news_articles_df)
+
+    enriched_df = text_match_df.merge(
+        news_match_df[ARTICLE_MATCH_COLUMNS + ["Headline"]],
+        on=ARTICLE_MATCH_COLUMNS,
+        how="left",
+    )
+    enriched_df["Headline"] = normalize_text_for_key(enriched_df["Headline"])
+    return enriched_df.drop(columns=["ArticleIdKey", "ArticleDuplicateIndex"])
 
 
 # ---------------------------------------------------------------------------
@@ -78,24 +149,36 @@ def build_weekly_news_features(text_analysis_df: pd.DataFrame) -> pd.DataFrame:
     # 2. Porto ogni articolo nel calendario settimanale usato dal progetto.
     working_df["WeekEndingFriday"] = to_week_ending_friday(working_df["Date"])
 
-    # 3. Elimino le righe senza ticker o senza data interpretabile.
-    working_df["Ticker"] = working_df["Ticker"].astype(str).str.strip()
+    # 3. Elimino le righe senza ticker, senza headline o senza data interpretabile.
+    working_df["Ticker"] = normalize_text_for_key(working_df["Ticker"])
+    working_df["Headline"] = normalize_text_for_key(working_df["Headline"])
     working_df = working_df.dropna(subset=["WeekEndingFriday"])
     working_df = working_df[working_df["Ticker"].ne("")]
+    working_df = working_df[working_df["Headline"].ne("")]
 
-    # 4. Individuo le colonne metriche e le forzo a numerico.
+    # 4. Tengo traccia del numero di articoli grezzi prima della deduplica.
+    raw_article_counts = (
+        working_df.groupby(KEY_COLUMNS, as_index=False)
+        .size()
+        .rename(columns={"size": "NEWS_RawArticleCount"})
+    )
+
+    # 5. Deduplico headline identiche nello stesso ticker-week.
+    working_df = working_df.drop_duplicates(subset=HEADLINE_DEDUP_COLUMNS, keep="first")
+
+    # 6. Individuo le colonne metriche e le forzo a numerico.
     metric_columns = get_metric_columns(working_df)
     working_df[metric_columns] = working_df[metric_columns].apply(
         pd.to_numeric, errors="coerce"
     )
 
-    # 5. Calcolo la media settimanale per azienda su tutte le metriche disponibili.
+    # 7. Calcolo la media settimanale per azienda su tutte le metriche disponibili.
     weekly_metrics = (
         working_df.groupby(KEY_COLUMNS, as_index=False)[metric_columns].mean()
     )
 
-    # 6. Aggiungo un conteggio articoli utile per controllare quanto e denso
-    # il segnale news in ciascuna settimana.
+    # 8. Aggiungo un conteggio articoli utile per controllare quanto e denso
+    # il segnale news in ciascuna settimana dopo la deduplica per headline.
     article_counts = (
         working_df.groupby(KEY_COLUMNS, as_index=False)
         .size()
@@ -103,8 +186,9 @@ def build_weekly_news_features(text_analysis_df: pd.DataFrame) -> pd.DataFrame:
     )
 
     weekly_metrics = weekly_metrics.merge(article_counts, on=KEY_COLUMNS, how="left")
+    weekly_metrics = weekly_metrics.merge(raw_article_counts, on=KEY_COLUMNS, how="left")
 
-    # 7. Rinomino le metriche aggregate con un prefisso esplicito.
+    # 9. Rinomino le metriche aggregate con un prefisso esplicito.
     rename_map = {
         column: f"{NEWS_FEATURE_PREFIX}{column}{NEWS_FEATURE_SUFFIX}"
         for column in metric_columns
@@ -125,6 +209,7 @@ def main():
 
     text_analysis_df = pd.read_csv(cfg.ANALYSIS_TEXT)
     full_data_df = pd.read_csv(cfg.FULL_DATA)
+    text_analysis_df = attach_headline_column(text_analysis_df)
 
     # -----------------------------------------------------------------------
     # 2. COSTRUZIONE DELLE FEATURE NEWS SETTIMANALI
@@ -213,6 +298,8 @@ def main():
             "full_data_rows": len(full_data_with_news_to_save),
             "news_feature_columns": len(news_feature_columns),
             "rows_with_news": int(covered_rows),
+            "raw_article_count_sum": int(aligned_weekly_news_to_save["NEWS_RawArticleCount"].fillna(0).sum()),
+            "deduplicated_article_count_sum": int(aligned_weekly_news_to_save["NEWS_ArticleCount"].fillna(0).sum()),
             "weekly_output": str(cfg.ANALYSIS_TEXT_WEEKLY),
             "merged_output": str(cfg.FULL_DATA_WITH_NEWS),
         },
