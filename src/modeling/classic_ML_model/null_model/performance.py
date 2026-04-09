@@ -12,7 +12,7 @@ from training_model import null_model
 # predizioni sul test set
 y_pred_test = null_model.predict(X_test)
 
-# calcolo balanced accuracy
+# calcolo accuracy
 accuracy = accuracy_score(y_test, y_pred_test)
 
 print("Test accuracy:", accuracy)
