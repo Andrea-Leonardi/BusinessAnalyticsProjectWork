@@ -26,8 +26,8 @@ lasso_logistic_model = Pipeline([
         penalty="l1",
         C=1/best_alpha,  
         solver="saga",
-        max_iter=50,            # tra 5000 e 10000
-        tol=1e-3,
+        max_iter=7000,            # tra 5000 e 10000
+        #tol=1e-3,
         random_state=42
     ))
 ])
