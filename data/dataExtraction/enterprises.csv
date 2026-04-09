@@ -2,7 +2,7 @@ Ticker,companyName,sector,industry,marketCap,historicalMarketCapDate,selectionRe
 AAPL,Apple Inc.,Technology,Consumer Electronics,2168067329160.0,2021-01-04,2021-01-04,active_screener
 MSFT,Microsoft Corporation,Technology,Software - Infrastructure,1641164910000.0,2021-01-04,2021-01-04,active_screener
 AMZN,"Amazon.com, Inc.",Consumer Cyclical,Specialty Retail,1606046400000.0,2021-01-04,2021-01-04,active_screener
-GOOG,Alphabet Inc.,Communication Services,Internet Content & Information,1162111841047.0,2021-01-04,2021-01-04,active_screener
+GOOGL,Alphabet Inc.,Communication Services,Internet Content & Information,1162111841047.0,2021-01-04,2021-01-04,active_screener
 META,"Meta Platforms, Inc.",Communication Services,Internet Content & Information,773976778260.0,2021-01-04,2021-01-04,active_screener
 TSLA,"Tesla, Inc.",Consumer Cyclical,Auto - Manufacturers,701318580000.0,2021-01-04,2021-01-04,active_screener
 BABA,Alibaba Group Holding Limited,Consumer Cyclical,Specialty Retail,616676025000.0,2021-01-04,2021-01-04,active_screener
@@ -56,7 +56,6 @@ BUD,Anheuser-Busch InBev SA/NV,Consumer Defensive,Beverages - Alcoholic,13988885
 UNP,Union Pacific Corporation,Industrials,Railroads,135529476000.0,2021-01-04,2021-01-04,active_screener
 LIN,Linde plc,Basic Materials,Chemicals - Specialty,135217613790.0,2021-01-04,2021-01-04,active_screener
 JD,"JD.com, Inc.",Consumer Cyclical,Specialty Retail,134113655000.0,2021-01-04,2021-01-04,active_screener
-FUBO,fuboTV Inc.,Communication Services,Broadcasting,128155433587.0,2021-01-04,2021-01-04,active_screener
 PM,Philip Morris International Inc.,Consumer Defensive,Tobacco,126977000000.0,2021-01-04,2021-01-04,active_screener
 RIO,Rio Tinto Group,Basic Materials,Industrial Materials,125224759000.0,2021-01-04,2021-01-04,active_screener
 C,Citigroup Inc.,Financial Services,Banks - Diversified,125211480000.0,2021-01-04,2021-01-04,active_screener
@@ -79,6 +78,7 @@ VALE,Vale S.A.,Basic Materials,Industrial Materials,89265271200.0,2021-01-04,202
 DE,Deere & Company,Industrials,Agricultural - Machinery,83905140000.0,2021-01-04,2021-01-04,active_screener
 MMM,3M Company,Industrials,Conglomerates,83417850000.0,2021-01-04,2021-01-04,active_screener
 CNI,Canadian National Railway Company,Industrials,Railroads,77911380000.0,2021-01-04,2021-01-04,active_screener
+SNAP,Snap Inc.,Communication Services,Internet Content & Information,74466129240.0,2021-01-04,2021-01-04,active_screener
 PBR,Petróleo Brasileiro S.A. - Petrobras,Energy,Oil & Gas Integrated,72982306049.0,2021-01-04,2021-01-04,active_screener
 PLD,"Prologis, Inc.",Real Estate,REIT - Industrial,70973367920.0,2021-01-04,2021-01-04,active_screener
 BP,BP p.l.c.,Energy,Oil & Gas Integrated,70466452709.0,2021-01-04,2021-01-04,active_screener

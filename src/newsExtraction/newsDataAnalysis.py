@@ -97,3 +97,124 @@ plt.grid(axis="y", linestyle="--", alpha=0.7)
 
 plt.tight_layout()
 plt.show()
+
+
+# ---------------------------------------------------------------------------
+# ANALISI MISSING SU FULLDATA_WITH_NEWS
+# ---------------------------------------------------------------------------
+
+# In questa sezione controllo, per ogni ticker del dataset finale arricchito
+# con le news, quante righe hanno almeno un valore mancante in qualsiasi colonna.
+full_data_with_news_df = pd.read_csv(cfg.FULL_DATA_WITH_NEWS)
+
+# Una riga viene considerata problematica se contiene almeno un missing.
+row_has_any_missing = full_data_with_news_df.isna().any(axis=1)
+full_data_with_news_df["RowHasAnyMissing"] = row_has_any_missing
+
+# Raggruppo per ticker e calcolo:
+# - quante righe totali ha il ticker
+# - quante di queste hanno almeno un missing
+# - la percentuale di righe incomplete sul totale del ticker
+missing_rows_by_ticker = (
+    full_data_with_news_df.groupby("Ticker", as_index=False)
+    .agg(
+        TotalRows=("Ticker", "size"),
+        RowsWithAnyMissing=("RowHasAnyMissing", "sum"),
+    )
+)
+missing_rows_by_ticker["PctRowsWithAnyMissing"] = (
+    missing_rows_by_ticker["RowsWithAnyMissing"]
+    .divide(missing_rows_by_ticker["TotalRows"])
+    .mul(100)
+    .round(2)
+)
+missing_rows_by_ticker = missing_rows_by_ticker.sort_values(
+    by=["RowsWithAnyMissing", "PctRowsWithAnyMissing", "Ticker"],
+    ascending=[False, False, True],
+)
+
+print("\nRighe con almeno un missing per ticker in fulldata_with_news.csv:")
+print(f"{'TICKER':<15} | {'RIGHE_MISSING':<15} | {'RIGHE_TOTALI':<15} | {'PCT_MISSING':<12}")
+print("-" * 70)
+
+for _, row in missing_rows_by_ticker.iterrows():
+    print(
+        f"{row['Ticker']:<15} | "
+        f"{int(row['RowsWithAnyMissing']):<15} | "
+        f"{int(row['TotalRows']):<15} | "
+        f"{row['PctRowsWithAnyMissing']:<12.2f}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# ANALISI DISTINTA TRA MISSING NEWS E MISSING NON-NEWS
+# ---------------------------------------------------------------------------
+
+# Distinguo le colonne derivate dalle news dal resto del dataset, cosi posso
+# capire se i missing arrivano davvero dal merge news oppure da altre feature.
+news_columns = [column for column in full_data_with_news_df.columns if column.startswith("NEWS_")]
+non_news_columns = [
+    column
+    for column in full_data_with_news_df.columns
+    if column not in news_columns + ["RowHasAnyMissing"]
+]
+
+# Calcolo tre indicatori riga per riga:
+# - almeno un missing nelle sole colonne news
+# - tutte le colonne news mancanti
+# - almeno un missing nelle colonne non-news
+full_data_with_news_df["RowHasAnyNewsMissing"] = full_data_with_news_df[news_columns].isna().any(axis=1)
+full_data_with_news_df["RowHasAllNewsMissing"] = full_data_with_news_df[news_columns].isna().all(axis=1)
+full_data_with_news_df["RowHasAnyNonNewsMissing"] = full_data_with_news_df[non_news_columns].isna().any(axis=1)
+
+missing_source_by_ticker = (
+    full_data_with_news_df.groupby("Ticker", as_index=False)
+    .agg(
+        TotalRows=("Ticker", "size"),
+        RowsWithAnyNewsMissing=("RowHasAnyNewsMissing", "sum"),
+        RowsWithAllNewsMissing=("RowHasAllNewsMissing", "sum"),
+        RowsWithAnyNonNewsMissing=("RowHasAnyNonNewsMissing", "sum"),
+    )
+)
+
+missing_source_by_ticker["PctAnyNewsMissing"] = (
+    missing_source_by_ticker["RowsWithAnyNewsMissing"]
+    .divide(missing_source_by_ticker["TotalRows"])
+    .mul(100)
+    .round(2)
+)
+missing_source_by_ticker["PctAllNewsMissing"] = (
+    missing_source_by_ticker["RowsWithAllNewsMissing"]
+    .divide(missing_source_by_ticker["TotalRows"])
+    .mul(100)
+    .round(2)
+)
+missing_source_by_ticker["PctAnyNonNewsMissing"] = (
+    missing_source_by_ticker["RowsWithAnyNonNewsMissing"]
+    .divide(missing_source_by_ticker["TotalRows"])
+    .mul(100)
+    .round(2)
+)
+
+missing_source_by_ticker = missing_source_by_ticker.sort_values(
+    by=["RowsWithAllNewsMissing", "RowsWithAnyNewsMissing", "Ticker"],
+    ascending=[False, False, True],
+)
+
+print("\nDettaglio missing per ticker in fulldata_with_news.csv:")
+print(
+    f"{'TICKER':<15} | {'ALL_NEWS_MISS':<14} | {'ANY_NEWS_MISS':<14} | "
+    f"{'ANY_NONNEWS_MISS':<17} | {'PCT_ALL_NEWS':<13} | {'PCT_ANY_NEWS':<13} | {'PCT_ANY_NONNEWS':<16}"
+)
+print("-" * 120)
+
+for _, row in missing_source_by_ticker.iterrows():
+    print(
+        f"{row['Ticker']:<15} | "
+        f"{int(row['RowsWithAllNewsMissing']):<14} | "
+        f"{int(row['RowsWithAnyNewsMissing']):<14} | "
+        f"{int(row['RowsWithAnyNonNewsMissing']):<17} | "
+        f"{row['PctAllNewsMissing']:<13.2f} | "
+        f"{row['PctAnyNewsMissing']:<13.2f} | "
+        f"{row['PctAnyNonNewsMissing']:<16.2f}"
+    )
