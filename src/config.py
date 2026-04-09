@@ -23,6 +23,7 @@ NEWS_EXTRACTION = DATA / "newsExtraction"
 
 # Define the common file paths used across the full analytics pipeline.
 ENT = DATA_EXTRACTION / "enterprises.csv"
+COMPANY_SELECTION_UNIVERSE = DATA_EXTRACTION / "companySelectionUniverse.csv"
 FMP_RAW_FINANCIALS = DATA_EXTRACTION / "financialsDataRaw.csv"
 FMP_FINANCIALS = DATA_EXTRACTION / "financialsData.csv"
 ALL_PRICE_DATA = DATA_EXTRACTION / "allPriceData.csv"

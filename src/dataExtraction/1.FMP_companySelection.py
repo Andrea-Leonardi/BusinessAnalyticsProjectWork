@@ -2,20 +2,15 @@
 """
 Selezione dell'universo aziende a partire da FMP.
 
-Logica economica del file:
-1. scarico un universo ampio di aziende USA attive;
-2. aggiungo, quando disponibili sul piano FMP, anche le aziende delistate dopo
-   l'inizio del campione, per ridurre survivorship bias;
-3. sostituisco la market cap corrente con la market cap storica osservata
-   vicino all'inizio del campione;
-4. scelgo le top aziende per settore usando quella market cap storica.
+Struttura del file:
+1. opzionalmente aggiorna un CSV cache con tutto l'universo candidabile;
+2. usa quel CSV locale per applicare esclusioni e selezione finale;
+3. salva enterprises.csv senza dover riscaricare i dati ogni volta.
 
-Ottimizzazione principale:
-- le chiamate piu costose verso FMP non vengono piu fatte tutte in serie;
-- i download di profili delisted e historical market cap ora girano in
-  parallelo;
-- un rate limiter globale condiviso garantisce comunque il rispetto del limite
-  di 300 richieste al minuto.
+Questa struttura serve a evitare download inutili quando vuoi solo:
+- aggiungere o togliere ticker da EXCLUDED_TICKERS;
+- cambiare il numero di aziende per settore;
+- rigenerare enterprises.csv dopo piccole modifiche di selezione.
 """
 
 import sys
@@ -44,6 +39,10 @@ HISTORICAL_MARKET_CAP_URL = f"{FMP_API_BASE_URL}/historical-market-capitalizatio
 
 FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
 US_EXCHANGES = ["NASDAQ", "NYSE"]
+
+# Se False e il CSV cache esiste gia, il codice non riscarica l'universo
+# completo da FMP e rifa solo la selezione finale locale.
+REFRESH_COMPANY_SELECTION_UNIVERSE = False
 
 # Use the first trading week of the sample as the reference point for company
 # ranking, so the universe is selected with information available at the
@@ -87,8 +86,13 @@ EXCLUDED_TICKERS = {
     "PUK",
     "NGG",
     "BBDO",
-    "SOJE"
+    "SOJE",
+    "SOJD",
+    "SOJC",
 }
+
+UNIVERSE_OUTPUT_FILE = cfg.COMPANY_SELECTION_UNIVERSE
+ENTERPRISES_OUTPUT_FILE = cfg.ENT
 
 
 # ---------------------------------------------------------------------------
@@ -131,7 +135,7 @@ thread_local = threading.local()
 
 def get_thread_session() -> requests.Session:
     # Creo una sessione requests per thread cosi da riusare la connessione senza
-    # condividere in modo rischioso la stessa Session tra thread diversi.
+    # condividere la stessa Session tra thread diversi.
     session = getattr(thread_local, "session", None)
     if session is None:
         session = requests.Session()
@@ -181,7 +185,7 @@ def fetch_json(
 # Delisted Profile Helpers
 # ---------------------------------------------------------------------------
 
-def load_delisted_profile(row: pd.Series | object) -> dict[str, object] | None:
+def load_delisted_profile(row: object) -> dict[str, object] | None:
     # Recupero il profilo di una singola azienda delisted per completare il
     # settore e filtrare ETF/funds.
     payload = fetch_json(
@@ -214,8 +218,7 @@ def load_delisted_profile(row: pd.Series | object) -> dict[str, object] | None:
 
 
 def load_delisted_profiles_parallel(delisted_df: pd.DataFrame) -> pd.DataFrame:
-    # Scarico i profili delle delisted in parallelo per saturare il limite API
-    # senza farne una coda completamente seriale.
+    # Scarico i profili delle delisted in parallelo per evitare una lunga coda seriale.
     if delisted_df.empty:
         return pd.DataFrame(
             columns=[
@@ -301,8 +304,6 @@ def load_historical_market_cap_row(row: object) -> dict[str, object] | None:
     if market_cap_df.empty:
         return None
 
-    # Prefer the first market-cap observation on or after the reference
-    # date. If it does not exist, use the closest observation before it.
     on_or_after = market_cap_df[
         market_cap_df["date"] >= REFERENCE_MARKET_CAP_DATE
     ].sort_values("date", ascending=True)
@@ -373,123 +374,115 @@ def load_historical_market_caps_parallel(candidate_df: pd.DataFrame) -> pd.DataF
 
 
 # ---------------------------------------------------------------------------
-# Download A Broad Active US Universe
+# Download And Cache Helpers
 # ---------------------------------------------------------------------------
 
-active_frames: list[pd.DataFrame] = []
+def download_active_candidates() -> pd.DataFrame:
+    # Scarico un universo ampio di aziende USA attive.
+    active_frames: list[pd.DataFrame] = []
 
-for exchange in US_EXCHANGES:
-    print(f"Downloading active screener universe for {exchange}...")
+    for exchange in US_EXCHANGES:
+        print(f"Downloading active screener universe for {exchange}...")
 
-    payload = fetch_json(
-        url=COMPANY_SCREENER_URL,
-        params={
-            "apikey": FMP_API_KEY,
-            "exchange": exchange,
-            "isEtf": False,
-            "isFund": False,
-            "isActivelyTrading": True,
-            "includeAllShareClasses": False,
-            "limit": 5000,
-        },
-        context=f"active company screener ({exchange})",
-    )
-
-    exchange_df = pd.DataFrame(payload)
-    if exchange_df.empty:
-        continue
-
-    active_frames.append(exchange_df)
-
-if not active_frames:
-    raise ValueError("No active company universe was downloaded from FMP.")
-
-active_candidates = pd.concat(active_frames, ignore_index=True)
-active_candidates = active_candidates.dropna(
-    subset=["symbol", "companyName", "sector"]
-).copy()
-active_candidates = active_candidates[
-    active_candidates["symbol"].astype(str).str.strip() != ""
-]
-active_candidates = active_candidates[
-    ~active_candidates["symbol"].isin(EXCLUDED_TICKERS)
-]
-active_candidates = active_candidates.sort_values(
-    "marketCap",
-    ascending=False,
-)
-
-# Keep a large sector-level buffer here, because the final ranking will use
-# historical market cap rather than the current market cap from the screener.
-active_candidates = (
-    active_candidates.groupby("sector", group_keys=False)
-    .head(ACTIVE_CANDIDATE_BUFFER_PER_SECTOR)
-    .copy()
-)
-active_candidates["universeSource"] = "active_screener"
-
-active_candidates = active_candidates[
-    [
-        "symbol",
-        "companyName",
-        "sector",
-        "industry",
-        "exchangeShortName",
-        "universeSource",
-    ]
-]
-
-
-# ---------------------------------------------------------------------------
-# Add Delisted US Companies When The API Plan Allows It
-# ---------------------------------------------------------------------------
-
-delisted_pages: list[pd.DataFrame] = []
-
-for page in range(MAX_DELISTED_PAGES):
-    try:
         payload = fetch_json(
-            url=DELISTED_COMPANIES_URL,
+            url=COMPANY_SCREENER_URL,
             params={
                 "apikey": FMP_API_KEY,
-                "from": REFERENCE_MARKET_CAP_DATE.strftime("%Y-%m-%d"),
-                "to": "2026-12-31",
-                "page": page,
-                "limit": DELISTED_PAGE_SIZE,
+                "exchange": exchange,
+                "isEtf": False,
+                "isFund": False,
+                "isActivelyTrading": True,
+                "includeAllShareClasses": False,
+                "limit": 5000,
             },
-            context=f"delisted companies page {page}",
+            context=f"active company screener ({exchange})",
         )
-    except requests.HTTPError as exc:
-        status_code = exc.response.status_code if exc.response is not None else None
-        if status_code == 402 and page > 0:
-            print(
-                "FMP delisted pagination is not fully available on the current plan. "
-                "Using the delisted rows that were accessible and continuing."
-            )
-            break
-        raise
 
-    page_df = pd.DataFrame(payload)
-    if page_df.empty:
-        break
+        exchange_df = pd.DataFrame(payload)
+        if exchange_df.empty:
+            continue
 
-    delisted_pages.append(page_df)
+        active_frames.append(exchange_df)
 
-    if len(page_df) < DELISTED_PAGE_SIZE:
-        break
+    if not active_frames:
+        raise ValueError("No active company universe was downloaded from FMP.")
 
-delisted_candidates = pd.DataFrame(
-    columns=[
-        "symbol",
-        "companyName",
-        "sector",
-        "industry",
-        "exchangeShortName",
-        "universeSource",
+    active_candidates = pd.concat(active_frames, ignore_index=True)
+    active_candidates = active_candidates.dropna(
+        subset=["symbol", "companyName", "sector"]
+    ).copy()
+    active_candidates = active_candidates[
+        active_candidates["symbol"].astype(str).str.strip() != ""
     ]
-)
+    active_candidates = active_candidates.sort_values("marketCap", ascending=False)
 
-if delisted_pages:
+    active_candidates = (
+        active_candidates.groupby("sector", group_keys=False)
+        .head(ACTIVE_CANDIDATE_BUFFER_PER_SECTOR)
+        .copy()
+    )
+    active_candidates["universeSource"] = "active_screener"
+
+    return active_candidates[
+        [
+            "symbol",
+            "companyName",
+            "sector",
+            "industry",
+            "exchangeShortName",
+            "universeSource",
+        ]
+    ]
+
+
+def download_delisted_candidates() -> pd.DataFrame:
+    # Scarico le aziende delisted rilevanti per ridurre survivorship bias.
+    delisted_pages: list[pd.DataFrame] = []
+
+    for page in range(MAX_DELISTED_PAGES):
+        try:
+            payload = fetch_json(
+                url=DELISTED_COMPANIES_URL,
+                params={
+                    "apikey": FMP_API_KEY,
+                    "from": REFERENCE_MARKET_CAP_DATE.strftime("%Y-%m-%d"),
+                    "to": "2026-12-31",
+                    "page": page,
+                    "limit": DELISTED_PAGE_SIZE,
+                },
+                context=f"delisted companies page {page}",
+            )
+        except requests.HTTPError as exc:
+            status_code = exc.response.status_code if exc.response is not None else None
+            if status_code == 402 and page > 0:
+                print(
+                    "FMP delisted pagination is not fully available on the current plan. "
+                    "Using the delisted rows that were accessible and continuing."
+                )
+                break
+            raise
+
+        page_df = pd.DataFrame(payload)
+        if page_df.empty:
+            break
+
+        delisted_pages.append(page_df)
+
+        if len(page_df) < DELISTED_PAGE_SIZE:
+            break
+
+    if not delisted_pages:
+        return pd.DataFrame(
+            columns=[
+                "symbol",
+                "companyName",
+                "sector",
+                "industry",
+                "exchangeShortName",
+                "universeSource",
+            ]
+        )
+
     delisted_df = pd.concat(delisted_pages, ignore_index=True)
     delisted_df["ipoDate"] = pd.to_datetime(delisted_df["ipoDate"], errors="coerce")
     delisted_df["delistedDate"] = pd.to_datetime(
@@ -503,74 +496,115 @@ if delisted_pages:
         & delisted_df["delistedDate"].ge(REFERENCE_MARKET_CAP_DATE)
     ].copy()
     delisted_df = delisted_df.dropna(subset=["symbol", "companyName"])
-    delisted_df = delisted_df[~delisted_df["symbol"].isin(EXCLUDED_TICKERS)]
     delisted_df = delisted_df.drop_duplicates(subset=["symbol"], keep="first")
 
-    delisted_candidates = load_delisted_profiles_parallel(delisted_df)
+    return load_delisted_profiles_parallel(delisted_df)
 
 
-# ---------------------------------------------------------------------------
-# Combine Candidates Before Historical Reranking
-# ---------------------------------------------------------------------------
+def build_and_save_company_selection_universe() -> pd.DataFrame:
+    # Questa e la fase costosa: scarico tutto l'universo completo, calcolo la
+    # market cap storica e salvo il risultato su CSV locale.
+    active_candidates = download_active_candidates()
+    delisted_candidates = download_delisted_candidates()
 
-candidate_frames = [
-    frame for frame in [active_candidates, delisted_candidates] if not frame.empty
-]
-candidate_df = pd.concat(candidate_frames, ignore_index=True)
-candidate_df = candidate_df.drop_duplicates(subset=["symbol"], keep="first")
-
-
-# ---------------------------------------------------------------------------
-# Replace Current Market Cap With Historical Market Cap At Sample Start
-# ---------------------------------------------------------------------------
-
-historical_candidates = load_historical_market_caps_parallel(candidate_df)
-if historical_candidates.empty:
-    raise ValueError("No historical market-cap observations were available.")
-
-
-# ---------------------------------------------------------------------------
-# Apply The Final Sector Ranking
-# ---------------------------------------------------------------------------
-
-# Keep one line per company name using the largest sample-start market cap.
-selected_df = (
-    historical_candidates.sort_values(by="marketCap", ascending=False)
-    .drop_duplicates(subset=["companyName"], keep="first")
-    .copy()
-)
-
-# Keep the final top companies per sector using the historical market cap.
-selected_df = (
-    selected_df.sort_values(by="marketCap", ascending=False)
-    .groupby("sector", group_keys=False)
-    .head(FINAL_COMPANIES_PER_SECTOR)
-    .copy()
-)
-
-selected_df = selected_df[
-    [
-        "symbol",
-        "companyName",
-        "sector",
-        "industry",
-        "marketCap",
-        "historicalMarketCapDate",
-        "selectionReferenceDate",
-        "universeSource",
+    candidate_frames = [
+        frame for frame in [active_candidates, delisted_candidates] if not frame.empty
     ]
-]
-selected_df = selected_df.rename(columns={"symbol": "Ticker"})
+    candidate_df = pd.concat(candidate_frames, ignore_index=True)
+    candidate_df = candidate_df.drop_duplicates(subset=["symbol"], keep="first")
+
+    historical_candidates = load_historical_market_caps_parallel(candidate_df)
+    if historical_candidates.empty:
+        raise ValueError("No historical market-cap observations were available.")
+
+    UNIVERSE_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    historical_candidates.to_csv(UNIVERSE_OUTPUT_FILE, index=False)
+
+    print(f"Saved company selection universe: {UNIVERSE_OUTPUT_FILE}")
+    print(
+        "Company selection universe refreshed: "
+        f"{historical_candidates['symbol'].nunique()} ticker."
+    )
+
+    return historical_candidates
+
+
+def load_company_selection_universe() -> pd.DataFrame:
+    # Se il cache esiste e non e richiesto il refresh, uso quello.
+    if not REFRESH_COMPANY_SELECTION_UNIVERSE and UNIVERSE_OUTPUT_FILE.exists():
+        print(f"Loading company selection universe from cache: {UNIVERSE_OUTPUT_FILE}")
+        return pd.read_csv(UNIVERSE_OUTPUT_FILE)
+
+    print("Refreshing full company selection universe from FMP...")
+    return build_and_save_company_selection_universe()
+
+
+# ---------------------------------------------------------------------------
+# Final Selection Helpers
+# ---------------------------------------------------------------------------
+
+def build_enterprises_from_universe(historical_candidates: pd.DataFrame) -> pd.DataFrame:
+    # Da qui in poi lavoro solo in locale: applico esclusioni e ranking finale.
+    working_df = historical_candidates.copy()
+
+    if "symbol" not in working_df.columns:
+        raise KeyError("The cached universe must contain a 'symbol' column.")
+    if "marketCap" not in working_df.columns:
+        raise KeyError("The cached universe must contain a 'marketCap' column.")
+    if "sector" not in working_df.columns:
+        raise KeyError("The cached universe must contain a 'sector' column.")
+    if "companyName" not in working_df.columns:
+        raise KeyError("The cached universe must contain a 'companyName' column.")
+
+    working_df["symbol"] = working_df["symbol"].astype(str).str.strip().str.upper()
+    working_df = working_df[working_df["symbol"].ne("")]
+    working_df = working_df[~working_df["symbol"].isin(EXCLUDED_TICKERS)].copy()
+
+    selected_df = (
+        working_df.sort_values(by="marketCap", ascending=False)
+        .drop_duplicates(subset=["companyName"], keep="first")
+        .copy()
+    )
+
+    selected_df = (
+        selected_df.sort_values(by="marketCap", ascending=False)
+        .groupby("sector", group_keys=False)
+        .head(FINAL_COMPANIES_PER_SECTOR)
+        .copy()
+    )
+
+    selected_df = selected_df[
+        [
+            "symbol",
+            "companyName",
+            "sector",
+            "industry",
+            "marketCap",
+            "historicalMarketCapDate",
+            "selectionReferenceDate",
+            "universeSource",
+        ]
+    ]
+    selected_df = selected_df.rename(columns={"symbol": "Ticker"})
+    return selected_df
+
+
+# ---------------------------------------------------------------------------
+# Main Execution
+# ---------------------------------------------------------------------------
+
+historical_candidates = load_company_selection_universe()
+selected_df = build_enterprises_from_universe(historical_candidates)
 
 
 # ---------------------------------------------------------------------------
 # Save Output
 # ---------------------------------------------------------------------------
 
-cfg.ENT.parent.mkdir(parents=True, exist_ok=True)
-selected_df.to_csv(cfg.ENT, index=False)
+ENTERPRISES_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+selected_df.to_csv(ENTERPRISES_OUTPUT_FILE, index=False)
 
-print(f"Saved file: {cfg.ENT}")
+print(f"Saved file: {ENTERPRISES_OUTPUT_FILE}")
 print(
     "Historical company selection completed: "
     f"{selected_df['Ticker'].nunique()} ticker across "

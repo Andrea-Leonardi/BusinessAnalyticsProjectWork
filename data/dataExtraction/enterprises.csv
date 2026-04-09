@@ -87,7 +87,6 @@ DUK,Duke Energy Corporation,Utilities,Regulated Electric,68986990000.0,2021-01-0
 CCI,Crown Castle Inc.,Real Estate,REIT - Specialty,66960000000.0,2021-01-04,2021-01-04,active_screener
 ENB,Enbridge Inc.,Energy,Oil & Gas Midstream,64643340000.0,2021-01-04,2021-01-04,active_screener
 SHW,The Sherwin-Williams Company,Basic Materials,Chemicals - Specialty,64100328000.0,2021-01-04,2021-01-04,active_screener
-SOJE,Southern Company (The) Series 2,Utilities,Regulated Electric,62921600000.0,2021-01-04,2021-01-04,active_screener
 SO,The Southern Company,Utilities,Regulated Electric,62921600000.0,2021-01-04,2021-01-04,active_screener
 EQIX,"Equinix, Inc.",Real Estate,REIT - Specialty,61866384799.0,2021-01-04,2021-01-04,active_screener
 ECL,Ecolab Inc.,Basic Materials,Chemicals - Specialty,61292660000.0,2021-01-04,2021-01-04,active_screener
@@ -108,4 +107,5 @@ CSGP,"CoStar Group, Inc.",Real Estate,Real Estate - Services,35057978340.0,2021-
 SBAC,SBA Communications Corporation,Real Estate,REIT - Specialty,29429766743.0,2021-01-04,2021-01-04,active_screener
 ES,Eversource Energy,Utilities,Regulated Electric,29044248315.0,2021-01-04,2021-01-04,active_screener
 EXC,Exelon Corporation,Utilities,Regulated Electric,28684720000.0,2021-01-04,2021-01-04,active_screener
+WEC,"WEC Energy Group, Inc.",Utilities,Regulated Electric,28505852000.0,2021-01-04,2021-01-04,active_screener
 SPG,"Simon Property Group, Inc.",Real Estate,REIT - Retail,27204285496.0,2021-01-04,2021-01-04,active_screener
