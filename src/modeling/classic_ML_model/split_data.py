@@ -14,7 +14,7 @@ import pandas as pd
 
 
 
-X_train, y_train, X_validation, y_validation, X_test, y_test = split_data_by_date(cfg.FULL_DATA, "AdjClosePrice_t+1_Up", ["WeekEndingFriday","Ticker","AdjClosePrice_t+1"], "WeekEndingFriday")
+X_train, y_train, X_validation, y_validation, X_test, y_test = split_data_by_date(cfg.MODELING_DATASET , "AdjClosePrice_t+1_Up", ["WeekEndingFriday","Ticker","AdjClosePrice_t+1"], "WeekEndingFriday")
 
 
 # unione training_set e validation_set

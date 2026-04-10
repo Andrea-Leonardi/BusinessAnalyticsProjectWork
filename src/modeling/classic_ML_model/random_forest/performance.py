@@ -25,4 +25,4 @@ test_accuracy = accuracy_score(y_test, y_pred_test)
 
 print("Random Forest test accuracy:", test_accuracy)
 
-#pareggiato/leggermente superiore al null model
+#pareggiato al null model
