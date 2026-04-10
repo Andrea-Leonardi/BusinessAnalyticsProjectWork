@@ -89,6 +89,11 @@ EXCLUDED_TICKERS = {
     "SOJE",
     "SOJD",
     "SOJC",
+    "GOOGL",
+    "PDD",
+    "SNAP",
+    "BEKE",
+    "WEC",
 }
 
 UNIVERSE_OUTPUT_FILE = cfg.COMPANY_SELECTION_UNIVERSE

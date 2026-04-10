@@ -218,3 +218,16 @@ for _, row in missing_source_by_ticker.iterrows():
         f"{row['PctAnyNewsMissing']:<13.2f} | "
         f"{row['PctAnyNonNewsMissing']:<16.2f}"
     )
+
+
+#stampo il numero di righe per ogni ticker presenti nel file modeling.csv
+modeling_df = pd.read_csv(cfg.MODELING_DATASET)
+enterprises = pd.read_csv(cfg.ENT)
+modeling_counts = modeling_df["Ticker"].value_counts().reset_index()
+modeling_counts.columns = ["Ticker", "Count"]  
+
+modeling_counts = modeling_counts.merge(enterprises[["Ticker"]], on="Ticker", how="right").sort_values(by="Count", ascending=False).fillna(0).reset_index()
+
+for _, row in modeling_counts.iterrows():
+    print(f"{row['Ticker']}: {int(row['Count'])} righe")
+
