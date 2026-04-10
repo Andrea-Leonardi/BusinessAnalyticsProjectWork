@@ -22,12 +22,12 @@ USATE TUTTE LE VARIABILI NON SOLO QUELLE SELEZIONATE
 # griglia iperparametri
 
 param_grid = {
-    "n_estimators": [200, 300],
-    "learning_rate": [0.0001 ,0.0005, 0.001],
-    "max_depth": [3],
-    "min_child_weight": [20],
+    "n_estimators": [100, 200],
+    "learning_rate": [0.0001 ,0.0005],
+    "max_depth": [8],
+    "min_child_weight": [5],
     "subsample": [0.7, 1.0],
-    "colsample_bytree": [0.1, 0.3],
+    "colsample_bytree": [0.3, 0.5],
 }
 
 
@@ -99,7 +99,7 @@ for (
 
 scores_df = pd.DataFrame(
     [
-        {"params": k, "balanced_accuracy": v}
+        {"params": k, "accuracy": v}
         for k, v in scores.items()
     ]
 ).sort_values("balanced_accuracy", ascending=False)
