@@ -7,7 +7,12 @@ from split_data import X_test, y_test
 
 from sklearn.metrics import accuracy_score
 
-from training_model import lasso_logistic_model 
+import joblib
+
+current_dir = Path(__file__).resolve().parent
+
+# carico il modello già addestrato
+lasso_logistic_model = joblib.load(current_dir / "lasso_logistic_model.pkl")
 
 # predizioni sul test set
 y_pred_test = lasso_logistic_model.predict(X_test)
