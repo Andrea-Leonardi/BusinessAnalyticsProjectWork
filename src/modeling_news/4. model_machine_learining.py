@@ -2,9 +2,65 @@
 import pandas as pd
 import numpy as np 
 import sys 
+import shutil
+import subprocess
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import config as cfg 
+
+PROJECT_ROOT = cfg.ROOT
+VECTORIZATION_INPUTS = [
+    cfg.VECTORIZATION_TFIDF_FINANCIAL_PHRASEBANK,
+    cfg.VECTORIZATION_BAG_OF_WORDS_FINANCIAL_PHRASEBANK,
+    cfg.VECTORIZATION_TFIDF_ARTICLES,
+    cfg.VECTORIZATION_BAG_OF_WORDS_ARTICLES,
+]
+
+
+def resolve_dvc_command() -> list[str]:
+    candidates = [
+        Path(sys.executable).with_name("dvc.exe"),
+        Path(sys.executable).with_name("dvc"),
+        PROJECT_ROOT / ".venv" / "Scripts" / "dvc.exe",
+    ]
+
+    for candidate in candidates:
+        if candidate.exists():
+            return [str(candidate)]
+
+    dvc_on_path = shutil.which("dvc") or shutil.which("dvc.exe")
+    if dvc_on_path:
+        return [dvc_on_path]
+
+    raise FileNotFoundError(
+        "DVC non trovato. Installa DVC nella .venv oppure aggiungilo al PATH."
+    )
+
+
+def ensure_vectorization_inputs_available() -> None:
+    missing_files = [Path(path) for path in VECTORIZATION_INPUTS if not Path(path).exists()]
+    if not missing_files:
+        return
+
+    dvc_command = resolve_dvc_command()
+    relative_targets = [str(path.relative_to(PROJECT_ROOT)) for path in missing_files]
+
+    print("File di vettorizzazione mancanti in locale. Eseguo 'dvc pull'...")
+    subprocess.run(
+        dvc_command + ["pull", *relative_targets],
+        cwd=PROJECT_ROOT,
+        check=True,
+    )
+
+    still_missing = [str(path) for path in missing_files if not path.exists()]
+    if still_missing:
+        raise FileNotFoundError(
+            "Download DVC completato ma questi file sono ancora assenti:\n"
+            + "\n".join(still_missing)
+        )
+
+
+ensure_vectorization_inputs_available()
 
 training_tf_idf_df = pd.read_csv(cfg.VECTORIZATION_TFIDF_FINANCIAL_PHRASEBANK)
 training_bag_of_words_df = pd.read_csv(cfg.VECTORIZATION_BAG_OF_WORDS_FINANCIAL_PHRASEBANK)
@@ -638,11 +694,6 @@ bag_of_words_df = pd.read_csv(cfg.VECTORIZATION_BAG_OF_WORDS_ARTICLES)
 
 
 
-"""
-
-
-
-
 #%%
 import pandas as pd
 import numpy as np 
@@ -714,7 +765,6 @@ variabili =[
     "Accruals_TTM_L2Q",
     "DebtToAssets_L2Q",
     "WorkingCapitalScaled_L2Q"
-]
 """
 # 1. Trasformiamo le etichette
 # df['Direction'] = df['Direction'].map({'Down': 0, 'Up': 1})
@@ -1003,7 +1053,4 @@ print(final_model)
 
 # La summary richiede il numero di input corretto (es: 7, non 63)
 summary(final_model, (input_dim,))
-
-
 # %%
-"""
