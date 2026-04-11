@@ -93,6 +93,7 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 # Importa GaussianNB (Naive Bayes Gaussiano - modello probabilistico)
 from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 # Importa metriche di valutazione: accuracy_score per calcolare l'accuratezza
 # classification_report per stampare metriche dettagliate (precision, recall, f1-score)
 # confusion_matrix per calcolare la matrice di confusione
@@ -162,6 +163,12 @@ models_config = {
         'alpha': np.logspace(-3, 0, num=50).tolist(),
         # norm=True è specifico per ComplementNB e spesso aiuta con TF-IDF
         'norm': [True, False] 
+        }
+    },
+    'LDA': {
+        'model': LinearDiscriminantAnalysis(),
+        'params': {
+            'solver': ['svd', 'lsqr']
         }
     }
 } 
@@ -394,7 +401,7 @@ for idx, model_name in enumerate(model_names):
 # Regola lo spazio tra i subplot
 plt.tight_layout()
 # Salva il grafico come file PNG
-plt.savefig(cfg.PROJECT_ROOT / 'reports' / 'error_analysis_bow.png', dpi=300, bbox_inches='tight')
+# plt.savefig(cfg.PROJECT_ROOT / 'reports' / 'error_analysis_bow.png', dpi=300, bbox_inches='tight')
 # Mostra il grafico
 plt.show()
 
@@ -631,7 +638,7 @@ bag_of_words_df = pd.read_csv(cfg.VECTORIZATION_BAG_OF_WORDS_ARTICLES)
 
 
 
-
+"""
 
 
 
@@ -999,3 +1006,4 @@ summary(final_model, (input_dim,))
 
 
 # %%
+"""
