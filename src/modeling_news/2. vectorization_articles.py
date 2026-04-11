@@ -207,7 +207,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 # min_df=3: ignora le parole che compaiono in meno di 3 frasi
 # max_df=0.85: ignora le parole che compaiono in più dell'90% delle frasi
-tfidf_vectorizer = TfidfVectorizer(min_df=3, max_df=0.90)
+tfidf_vectorizer = TfidfVectorizer(min_df=3, max_df=0.9)
 
 # Trasforma la colonna 'sentence' in una matrice numerica
 training_tfidf_matrix = tfidf_vectorizer.fit_transform(training_df['sentence'])
@@ -228,7 +228,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 # Inizializza il vettorizzatore
 # max_features limita il numero di colonne (parole) per non appesantire il modello
-bow_vectorizer = CountVectorizer(max_features=10000)
+bow_vectorizer = CountVectorizer(min_df=3, max_df=0.90)
 
 # Trasforma la colonna 'sentence' in una matrice numerica
 training_bow_matrix = bow_vectorizer.fit_transform(training_df['sentence'])
@@ -242,42 +242,15 @@ training_bag_of_words_df = pd.DataFrame(
 )
 
 
+# Aggiungi label_id come prima colonna
+training_tf_idf_df = pd.concat([training_df[['label_id']], training_tf_idf_df], axis=1)
+training_tf_idf_df.to_csv(cfg.VECTORIZATION_TFIDF_FINANCIAL_PHRASEBANK, index=False, encoding='utf-8-sig')
+
+training_bag_of_words_df = pd.concat([training_df[['label_id']], training_bag_of_words_df], axis=1)
+training_bag_of_words_df.to_csv(cfg.VECTORIZATION_BAG_OF_WORDS_FINANCIAL_PHRASEBANK, index=False, encoding='utf-8-sig')
 # %%
-df = pd.read_csv(cfg.NEWS_ARTICLES)[["ID","Ticker","Date","Summary"]]
-
-"""
-da eliminare serve solo per una prova, per vedere se il codice funziona
-"""
-df = df.iloc[0:10, :]
-
-stemmer = PorterStemmer() 
-
-def clean_text(text):
-    # Gestione valori nulli (se un Summary è vuoto)
-    if not isinstance(text, str):
-        return ""
-
-    # 1. Rimuove Link (URL)
-    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
-    
-    # 2. Rimuove menzioni (@user) e hashtag (#)
-    text = re.sub(r'\@\w+|\#','', text)
-    
-    # 3. Rimuove punteggiatura e numeri (tiene solo le lettere)
-    text = re.sub(r'[^a-zA-Z\s]', '', text)
-    
-    # 4. Converte in minuscolo e Tokenizzazione
-    tokens = word_tokenize(text.lower())
-    
-    # 5. Rimuove le Stopwords (usando il set filtrato)
-    # 6. Stemming (riduce alla radice)
-    # Facciamo entrambi in un unico passaggio per efficienza
-    stemmed_tokens = [stemmer.stem(w) for w in tokens if w in tokens and w not in stop_words]
-    
-    # Ricompone i token in una stringa
-    return " ".join(stemmed_tokens)
-
 # --- APPLICAZIONE AL DATAFRAME ---
+df = pd.read_csv(cfg.NEWS_ARTICLES)[["ID","Ticker","Date","Summary"]]
 
 # Creiamo una nuova colonna 'Summary_Clean' mantenendo le altre colonne chiave.
 df['Summary'] = df['Summary'].apply(clean_text)
@@ -287,51 +260,46 @@ print(df[['ID', 'Ticker', 'Date', 'Summary']].head())
 
 # %%
 # Vettorizzazione con TF-IDF
-from sklearn.feature_extraction.text import TfidfVectorizer
+# -------------------------------------------------------------------------
+# VETTORIZZAZIONE DELLE NEWS (INFERENCE)
+# -------------------------------------------------------------------------
+# IMPORTANTE: NON re-inizializzare TfidfVectorizer o CountVectorizer qui!
+# Usiamo le variabili 'tfidf_vectorizer' e 'bow_vectorizer' che hai 
+# addestrato sulle 4846 righe del Financial PhraseBank nei passaggi prima.
 
-# Inizializza il vettorizzatore
-# max_features limita il numero di colonne (parole) per non appesantire il modello
-tfidf_vectorizer = TfidfVectorizer(max_features=1000) 
-
-# Trasforma la colonna 'Summary' in una matrice numerica
-tfidf_matrix = tfidf_vectorizer.fit_transform(df['Summary'])
+# Trasforma le news usando IL VOCABOLARIO IMPARATO DAL PHRASEBANK (le tue 2464 parole)
+tfidf_matrix = tfidf_vectorizer.transform(df['Summary'])
 
 # Converti la matrice in un DataFrame
-# Le colonne avranno i nomi delle parole (es. 'bank', 'profit', 'loss')
 tf_idf_df = pd.DataFrame(
     tfidf_matrix.toarray(), 
-    columns=tfidf_vectorizer.get_feature_names_out(),
-    index=df.index  # Molto importante per far combaciare le righe!
+    columns=tfidf_vectorizer.get_feature_names_out(), # Saranno magicamente le 2464 parole!
+    index=df.index
 )
 
 # Seleziona le colonne anagrafiche e concatena con i vettori
 tf_idf_df = pd.concat([df[['ID', 'Ticker', 'Date']], tf_idf_df], axis=1)
 
-print("Dimensioni matrice TF-IDF:", tf_idf_df.shape)
+print("Dimensioni matrice TF-IDF News:", tf_idf_df.shape)
 print(tf_idf_df.head())
 
-# Vettorizzazione con Bag of Words
-from sklearn.feature_extraction.text import CountVectorizer
 
-# Inizializza il vettorizzatore
-# max_features limita il numero di colonne (parole) per non appesantire il modello
-bow_vectorizer = CountVectorizer(max_features=1000)
+# --- Stessa cosa per il Bag of Words ---
 
-# Trasforma la colonna 'Summary' in una matrice numerica
-bow_matrix = bow_vectorizer.fit_transform(df['Summary'])
+# Trasforma le news usando IL VOCABOLARIO IMPARATO DAL PHRASEBANK
+bow_matrix = bow_vectorizer.transform(df['Summary'])
 
 # Converti la matrice in un DataFrame
-# Le colonne avranno i nomi delle parole (es. 'bank', 'profit', 'loss')
 bag_of_words_df = pd.DataFrame(
     bow_matrix.toarray(), 
-    columns=bow_vectorizer.get_feature_names_out(),
-    index=df.index  # Molto importante per far combaciare le righe!
+    columns=bow_vectorizer.get_feature_names_out(), # Saranno le stesse 2464 parole!
+    index=df.index
 )
 
 # Seleziona le colonne anagrafiche e concatena con i vettori
 bag_of_words_df = pd.concat([df[['ID', 'Ticker', 'Date']], bag_of_words_df], axis=1)
 
-print("Dimensioni matrice Bag of Words:", bag_of_words_df.shape)
+print("Dimensioni matrice Bag of Words News:", bag_of_words_df.shape)
 print(bag_of_words_df.head())
 
 
@@ -341,3 +309,4 @@ tf_idf_df.to_csv(cfg.VECTORIZATION_TFIDF_ARTICLES, index=False, encoding='utf-8-
 
 bag_of_words_df.sort_values(by=["Ticker", "Date"], ascending=[False, True], inplace=True)
 bag_of_words_df.to_csv(cfg.VECTORIZATION_BAG_OF_WORDS_ARTICLES, index=False, encoding='utf-8-sig')
+# %%
