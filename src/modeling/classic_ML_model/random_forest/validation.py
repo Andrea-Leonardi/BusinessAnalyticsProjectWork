@@ -12,21 +12,25 @@ from split_data import X_train, y_train, X_validation, y_validation
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
+import json
+import copy
+
 
 
 
 # griglia iperparametri
 
-param_grid = { 
+param_grid = {
 
-    "n_estimators": [500],
-    "max_depth":  [3], #, 5, 8], 
-    "min_samples_leaf" : [20], #[5], , None
-    "max_features":["sqrt", 0.3, 0.5] #["sqrt"] 
+    "n_estimators": [200, 300, 500],
 
-}   
+    "max_depth": [2, 3, 4, 5, 6],
 
+    "min_samples_leaf": [10, 20, 30],
 
+    "max_features": [0.1,"sqrt", 0.8]
+
+}
 
 # inizializzazione
 
@@ -95,8 +99,33 @@ scores_df = pd.DataFrame(
     ]
 ).sort_values("balanced_accuracy", ascending=False)
 
+
+
+
+
+# salvataggio risultati
+
+output_dir = Path(__file__).resolve().parent
+
+with open(output_dir / "best_params.json", "w") as f:
+    json.dump(
+        {
+            "best_params": best_params,
+            "best_score": best_score,
+            "scores": scores,
+            "selected_variables": selected_variables
+        },
+        f,
+        indent=4
+    )
+
+
+
+
 print(scores_df)
 print("\nBest params:", best_params)
 print("Best validation accuracy:", best_score)
+
+
 """
 """
