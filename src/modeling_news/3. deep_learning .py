@@ -118,3 +118,55 @@ print(f"Nuovo numero di frasi: {len(df_random)}")
 print(df_random.head())
 
 # %%
+""" 
+Avendo eseguito il codice in Colab, per non dover ripetere l'adattamento ogni volta da capo, 
+cosa che ha impiegato circa 8 ore, ho salvato i risultati in un file JSON. 
+Il codice qui sotto serve a caricare quei risultati e visualizzarli in modo leggibile, 
+ricostruendo anche il modello ottimale trovato durante la ricerca degli iperparametri.
+"""
+# CARICAMENTO E VISUALIZZAZIONE RISULTATI
+import json
+import torch
+import torch.nn as nn
+import sys 
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+SCRIPT_DIR = Path(__file__).resolve().parent
+from torchsummary import summary
+
+# 1. Carica i dati dal file JSON
+JSON_PATH = SCRIPT_DIR / 'migliori_parametri.json'
+with open(JSON_PATH, 'r') as f:
+    dati_caricati = json.load(f)
+
+best_p = dati_caricati['best_params']
+best_val = dati_caricati['best_value']
+
+# 2. Mappatura funzione di attivazione
+act_map = {
+    'ReLU': nn.ReLU(),
+    'LeakyReLU': nn.LeakyReLU(),
+    'ELU': nn.ELU(),
+    'GELU': nn.GELU()
+}
+best_act = act_map[best_p['activation']]
+
+# 3. Ricostruzione del Modello Ottimale
+final_model = nn.Sequential(
+    nn.Linear(2464, best_p['units_l1']), best_act,
+    nn.Linear(best_p['units_l1'], best_p['units_l2']), best_act,
+    nn.Linear(best_p['units_l2'], best_p['units_l3']), best_act,
+    nn.Linear(best_p['units_l3'], best_p['units_l4']), best_act,
+    nn.Linear(best_p['units_l4'], 3)
+)
+
+# 4. Mostra i Risultati
+print(f"--- RISULTATI CARICATI ---")
+print(f"Migliore Accuratezza Ottenuta: {best_val:.2%}")
+print(f"Parametri Ottimi: {best_p}")
+
+print("\n--- RIEPILOGO ARCHITETTURA ---")
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+final_model.to(device)
+summary(final_model, (2464,))
+# %%
