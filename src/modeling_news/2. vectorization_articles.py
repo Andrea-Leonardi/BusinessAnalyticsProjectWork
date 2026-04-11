@@ -1,22 +1,24 @@
 #%%
 """
-Carica il dataset Financial PhraseBank da Hugging Face senza usare
-`datasets.load_dataset(...)`, che non supporta piu` i dataset basati su
-script di caricamento come questo.
+Carica il dataset Financial PhraseBank da Hugging Face 
 """
 
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 from zipfile import ZipFile
 
 import pandas as pd
 from huggingface_hub import hf_hub_download
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import config as cfg
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-HF_CACHE_DIR = PROJECT_ROOT / "data" / "hf_cache"
+
+PROJECT_ROOT = cfg.ROOT
+HF_CACHE_DIR = cfg.DATA / "hf_cache"
 DATASET_REPO_ID = "financial_phrasebank"
 DATASET_FILENAME = "data/FinancialPhraseBank-v1.0.zip"
 DATASET_CONFIG = "sentences_50agree"
@@ -121,35 +123,24 @@ print(df_random.head())
 
 #%%
 import re
-import nltk
-from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 import pandas as pd
 import numpy as np 
-import sys 
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import config as cfg 
 
 """
 non tutte le stop words sono da rimuovere, ad esempio "not", "no", "nor", "n't" sono parole che indicano negazione e possono essere importanti per il significato del testo, quindi le escludiamo dalla lista delle stop words da rimuovere.
 """
 
-# Scarica le risorse necessarie 
-# nltk.download('punkt')
-# nltk.download('stopwords')
-
 #qui possiamo vedere la lista delle stop words, che sono parole comuni che non aggiungono molto significato al testo e spesso vengono rimosse durante la pulizia del testo per migliorare le prestazioni dei modelli di machine learning.
 
-# Carica la lista delle stopwords inglesi
-stop_words = stopwords.words('english')
+# Carica la lista delle stopwords inglesi integrata in scikit-learn
+stop_words = sorted(ENGLISH_STOP_WORDS)
 
 # Ordinale alfabeticamente per leggerle meglio
-stop_words.sort()
 stop_words = pd.DataFrame(stop_words, columns=["Stop Words"])
 
-print(f"Ci sono {len(stop_words)} stop words nella lista NLTK:\n")
+print(f"Ci sono {len(stop_words)} stop words nella lista:\n")
 print(stop_words)
 
 parola_da_non_rimuovere = ["not", "no", "nor", "n't"]  # Parole che indicano negazione
@@ -157,7 +148,7 @@ posizioni = np.where(stop_words["Stop Words"].isin(parola_da_non_rimuovere))[0]
 print(posizioni)
 
 stop_words = stop_words.drop(posizioni).reset_index(drop=True)
-print(f"Ci sono {len(stop_words)} stop words nella lista NLTK:\n")
+print(f"Ci sono {len(stop_words)} stop words nella lista:\n")
 print(stop_words)
 
 # TRASFORMAZIONE: Converti la colonna del DF in un set per la funzione
@@ -182,8 +173,8 @@ def clean_text(text):
     # 3. Rimuove punteggiatura e numeri (tiene solo le lettere)
     text = re.sub(r'[^a-zA-Z\s]', '', text)
     
-    # 4. Converte in minuscolo e Tokenizzazione
-    tokens = word_tokenize(text.lower())
+    # 4. Converte in minuscolo e tokenizza separando sugli spazi
+    tokens = text.lower().split()
     
     # 5. Rimuove le Stopwords (usando il set filtrato)
     # 6. Stemming (riduce alla radice)
