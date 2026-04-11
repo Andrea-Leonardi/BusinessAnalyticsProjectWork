@@ -17,3 +17,5 @@ accuracy = accuracy_score(y_test, y_pred_test)
 
 print("Test accuracy:", accuracy)
 
+import numpy as np
+print(np.mean(y_pred_test))

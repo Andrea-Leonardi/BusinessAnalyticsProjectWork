@@ -40,9 +40,10 @@ results = pd.DataFrame({
 
 # porto a zero i coefficienti con valore assoluto minore di 0.05
 results["coefficient"] = results["coefficient"].where(
-    results["coefficient"].abs() >= 0.05, #0.05 
+    results["coefficient"].abs() >= 0.2, #0.05 
     0
 )
+
 
 
 # variabili sopravvissute

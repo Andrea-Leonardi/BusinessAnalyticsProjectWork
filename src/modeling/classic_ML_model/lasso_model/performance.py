@@ -21,3 +21,10 @@ y_pred_test = lasso_logistic_model.predict(X_test)
 test_accuracy = accuracy_score(y_test, y_pred_test)
 
 print("Test accuracy:", test_accuracy)
+
+
+
+print(lasso_logistic_model.named_steps["model"].intercept_)
+
+import numpy as np
+print(np.mean(y_pred_test))

@@ -21,19 +21,19 @@ from sklearn.linear_model import LogisticRegression
 
 current_dir = Path(__file__).resolve().parent
 
-# carico best_alpha salvato da validation.py
+# carico best_C salvato da validation.py
 
-with open(current_dir / "best_alpha.json", "r") as f:
+with open(current_dir / "best_C.json", "r") as f:
     validation_results = json.load(f)
 
-best_alpha = validation_results["best_alpha"]
+best_C = validation_results["best_C"]
 
 
 lasso_logistic_model = Pipeline([
     ("scaler", StandardScaler()),
     ("model", LogisticRegression(
         penalty="l1",
-        C=1/best_alpha,  
+        C=1/best_C, #best_alpha,  
         solver="saga",
         max_iter=7000,            # tra 5000 e 10000
         #tol=1e-3,

@@ -1,6 +1,6 @@
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import LogisticRegression
 
 
 import numpy as np
@@ -21,63 +21,74 @@ import json
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
-    ("model", SGDClassifier(
-        loss="log_loss",      
-        penalty="l1",                  
-        max_iter=10000,
-        #tol=1e-3,
+    ("model", LogisticRegression(
+        penalty="l1",
+        solver="saga",
+        max_iter=7000,
         random_state=42
     ))
 ])
 
 
+"""
+param_grid = {
+    "model__C": [
+        1e5, 3e4,
+        1e4, 3e3,
+        1e3, 3e2,
+        1e2, 3e1,
+        1e1, 3,
+        1, 0.5, 0.45, 0.4, 0.37, 0.35, 0.34, 0.33, 0.32, 0.3,
+        0.1, 0.01
+    ]
+}
+"""
 
 param_grid = {
-    "model__alpha": [
-        1e-5, 3e-5,
-        1e-4, 3e-4,
-        1e-3, 3e-3,
-        1e-2, 3e-2,
-        1e-1, 3e-1,
-        1, 2 ,2.1, 2.2, 2.5, 2.7, 2.8, 2.9, 3, 10, 100
+    "model__C": [
+        1,
+        0.3, 0.1, 0.05, 0.03, 0.02, 0.015, 0.01,
+        0.007, 0.005, 0.003, 0.002, 0.001,
+        0.0007, 0.0005, 0.0003, 0.0001
     ]
 }
 
+
 best_score = -1
-best_alpha = None
+best_C = None
 
 
 scores = {}
 
-for alpha in param_grid["model__alpha"]:
+for C in param_grid["model__C"]:
 
-    pipeline.set_params(model__alpha=alpha)
+    pipeline.set_params(model__C = C)
 
     pipeline.fit(X_train, y_train)
 
     y_pred = pipeline.predict(X_validation)
 
     score = accuracy_score(y_validation, y_pred)
-    scores[alpha] = score
+    scores[C] = score
         
-    if (score > best_score) or (score == best_score and (best_alpha is None or alpha > best_alpha)):
-     best_score = score
-     best_alpha = alpha
+    if(score > best_score) or (score == best_score and (best_C is None or C > best_C)):
+        best_score = score
+        best_C = C
 
 
 
 print(scores)
-print(best_alpha, best_score)
+print(best_C, best_score)
 
 
 
 
 # salvataggio risultati
 output_dir = Path(__file__).resolve().parent
-with open(output_dir / "best_alpha.json", "w") as f:
+with open(output_dir / "best_C.json", "w") as f:
     json.dump(
         {
-            "best_alpha": best_alpha,
+            "best_C": best_C,
             "best_score": best_score,
             "scores": scores
         },
