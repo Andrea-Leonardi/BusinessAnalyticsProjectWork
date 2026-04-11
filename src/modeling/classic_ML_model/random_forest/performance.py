@@ -1,6 +1,6 @@
 from sklearn.metrics import accuracy_score
 
-from training_model import random_forest_model
+#from training_model import random_forest_model
 
 from pathlib import Path
 import sys
