@@ -1,0 +1,4 @@
+[core]
+    remote = gcs_storage
+['remote "gcs_storage"']
+    url = gs://business_analytics454545/dvc-storage

@@ -1,0 +1,13 @@
+stages:
+  vectorize_articles:
+    cmd: '".\.venv\Scripts\python.exe" "src/modeling_news/2. vectorization_articles.py"'
+    deps:
+      - "src/modeling_news/2. vectorization_articles.py"
+      - "src/config.py"
+      - "data/newsExtraction/newsArticles.csv"
+      - "requirements.txt"
+    outs:
+      - "data/newsExtraction/vectorizationTfidfFinancialPhrasebank.csv"
+      - "data/newsExtraction/vectorizationBagOfWordsFinancialPhrasebank.csv"
+      - "data/newsExtraction/vectorizationTfidfArticles.csv"
+      - "data/newsExtraction/vectorizationBagOfWordsArticles.csv"

@@ -31,6 +31,12 @@ CONFIG_TO_FILENAME = {
 }
 
 LABEL_TO_ID = {"negative": 0, "neutral": 1, "positive": 2}
+VECTORIZATION_OUTPUTS = [
+    cfg.VECTORIZATION_TFIDF_FINANCIAL_PHRASEBANK,
+    cfg.VECTORIZATION_BAG_OF_WORDS_FINANCIAL_PHRASEBANK,
+    cfg.VECTORIZATION_TFIDF_ARTICLES,
+    cfg.VECTORIZATION_BAG_OF_WORDS_ARTICLES,
+]
 
 
 def configure_huggingface_cache() -> None:
@@ -38,6 +44,11 @@ def configure_huggingface_cache() -> None:
     os.environ.setdefault("HF_HOME", str(HF_CACHE_DIR))
     os.environ.setdefault("HUGGINGFACE_HUB_CACHE", str(HF_CACHE_DIR))
     os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
+
+
+def ensure_vectorization_output_dirs() -> None:
+    for output_path in VECTORIZATION_OUTPUTS:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
 
 def download_phrasebank_zip() -> Path:
@@ -135,6 +146,7 @@ non tutte le stop words sono da rimuovere, ad esempio "not", "no", "nor", "n't" 
 #qui possiamo vedere la lista delle stop words, che sono parole comuni che non aggiungono molto significato al testo e spesso vengono rimosse durante la pulizia del testo per migliorare le prestazioni dei modelli di machine learning.
 
 # Carica la lista delle stopwords inglesi integrata in scikit-learn
+ensure_vectorization_output_dirs()
 stop_words = sorted(ENGLISH_STOP_WORDS)
 
 # Ordinale alfabeticamente per leggerle meglio

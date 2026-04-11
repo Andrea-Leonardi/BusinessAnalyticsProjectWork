@@ -24,6 +24,8 @@ tqdm
 transformers
 
 # Utilities
+dvc
+dvc-gs
 python-dotenv
 setuptools
 wheel

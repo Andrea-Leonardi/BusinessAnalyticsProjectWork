@@ -5,6 +5,10 @@ env/
 .env/
 .tmp/
 data/hf_cache/
+data/newsExtraction/vectorizationBagOfWordsFinancialPhrasebank.csv
+data/newsExtraction/vectorizationTfidfFinancialPhrasebank.csv
+data/newsExtraction/vectorizationBagOfWordsArticles.csv
+data/newsExtraction/vectorizationTfidfArticles.csv
 
 __pycache__/
 *.py[cod]
@@ -12,6 +16,8 @@ __pycache__/
 
 .pytest_cache/
 .mypy_cache/
+.dvc/config.local
+.dvc/tmp/
 
 .vscode/*.code-workspace
 

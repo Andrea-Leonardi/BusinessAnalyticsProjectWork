@@ -62,6 +62,7 @@ Project documentation and CRISP-DM deliverables.
 ### `data/`
 
 Raw and processed datasets used by the project.
+Large generated artifacts such as vectorized news matrices should stay out of Git and be versioned with DVC.
 
 ### `notebooks/`
 
@@ -72,3 +73,48 @@ Some exported notebook code also references legacy packages that are intentional
 ### `src/`
 
 Reusable project scripts for data extraction, news processing, and modeling.
+
+## Data Versioning With DVC
+
+Heavy generated CSV files are not meant to be committed directly to GitHub.
+The repository is prepared to version those artifacts with DVC and store them on Google Cloud Storage.
+
+The first stage configured in [dvc.yaml](/c:/Users/leoan/OneDrive/All/Andrea/Documenti/GitHub/BusinessAnalyticsProjectWork/dvc.yaml) is `vectorize_articles`, which tracks the CSV outputs produced by [2. vectorization_articles.py](/c:/Users/leoan/OneDrive/All/Andrea/Documenti/GitHub/BusinessAnalyticsProjectWork/src/modeling_news/2.%20vectorization_articles.py).
+
+### One-time setup
+
+```powershell
+.\scripts\setup_dvc_gcs.ps1 -BucketName "<YOUR_GCS_BUCKET>" -BucketPath "dvc-storage"
+```
+
+This script:
+
+1. installs `dvc` and `dvc-gs` into `.venv` if needed
+2. runs `dvc init` if the repository is not initialized yet
+3. configures a default Google Cloud Storage remote
+
+### Rebuild and push the vectorization outputs
+
+```powershell
+.\scripts\setup_dvc_gcs.ps1 -BucketName "<YOUR_GCS_BUCKET>" -BucketPath "dvc-storage" -RunVectorizationStage -PushAfterRepro
+```
+
+If you prefer a service account instead of `gcloud auth application-default login`:
+
+```powershell
+.\scripts\setup_dvc_gcs.ps1 -BucketName "<YOUR_GCS_BUCKET>" -BucketPath "dvc-storage" -ServiceAccountJsonPath "C:\path\service-account.json"
+```
+
+You can also run the DVC commands manually:
+
+```powershell
+.\.venv\Scripts\dvc.exe repro vectorize_articles
+.\.venv\Scripts\dvc.exe push
+.\.venv\Scripts\dvc.exe pull
+```
+
+Or use the wrapper script:
+
+```powershell
+.\scripts\run_vectorization_and_push.cmd
+```
