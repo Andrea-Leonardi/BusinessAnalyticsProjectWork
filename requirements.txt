@@ -6,6 +6,7 @@ yfinance
 matplotlib
 seaborn
 scikit-learn
+xgboost
 
 # Jupyter / VS Code notebooks
 ipykernel

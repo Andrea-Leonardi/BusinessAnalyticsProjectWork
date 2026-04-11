@@ -7,8 +7,15 @@ import subprocess
 import time
 from pathlib import Path
 from scipy import sparse
+import torch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import config as cfg 
+import config as cfg
+
+try:
+    from xgboost import XGBClassifier, XGBRFClassifier
+except ImportError:
+    XGBClassifier = None
+    XGBRFClassifier = None
 
 PROJECT_ROOT = cfg.ROOT
 VECTORIZATION_INPUTS = [
@@ -185,82 +192,179 @@ def count_param_combinations(param_grid):
         total *= len(values)
     return total
 
+NUM_CLASSES = len(np.unique(y_tfidf))
+CLASSICAL_GPU_AVAILABLE = (
+    XGBClassifier is not None
+    and XGBRFClassifier is not None
+    and torch.cuda.is_available()
+)
+
+
+def make_xgb_classifier(num_classes, **overrides):
+    base_params = {
+        'device': 'cuda',
+        'tree_method': 'hist',
+        'objective': 'multi:softprob',
+        'num_class': num_classes,
+        'eval_metric': 'mlogloss',
+        'random_state': 42,
+        'verbosity': 0,
+        'n_jobs': 1,
+    }
+    base_params.update(overrides)
+    return XGBClassifier(**base_params)
+
+
+def make_xgbrf_classifier(num_classes, **overrides):
+    base_params = {
+        'device': 'cuda',
+        'tree_method': 'hist',
+        'objective': 'multi:softprob',
+        'num_class': num_classes,
+        'eval_metric': 'mlogloss',
+        'random_state': 42,
+        'verbosity': 0,
+        'n_jobs': 1,
+    }
+    base_params.update(overrides)
+    return XGBRFClassifier(**base_params)
+
+
+def build_models_config(num_classes):
+    baseline_models = {
+        'KNN': {
+            'model': KNeighborsClassifier(),
+            'params': {'n_neighbors': list(range(1, 70, 2))},
+            'input_kind': 'sparse',
+            'uses_gpu': False,
+        },
+        'Naive Bayes Gaussiano': {
+            'model': GaussianNB(),
+            'params': {'var_smoothing': np.logspace(-10, -5, num=50).tolist()},
+            'input_kind': 'dense',
+            'uses_gpu': False,
+        },
+        'Naive Bayes ComplementNB': {
+            'model': ComplementNB(),
+            'params': {
+                'alpha': np.logspace(-3, 0, num=50).tolist(),
+                'norm': [True, False]
+            },
+            'input_kind': 'sparse',
+            'uses_gpu': False,
+        },
+        'LDA': {
+            'model': LinearDiscriminantAnalysis(),
+            'params': {'solver': ['svd', 'lsqr']},
+            'input_kind': 'dense',
+            'uses_gpu': False,
+        },
+    }
+
+    if CLASSICAL_GPU_AVAILABLE:
+        gpu_models = {
+            'XGBoost Lineare (GPU)': {
+                'model': make_xgb_classifier(
+                    num_classes,
+                    booster='gblinear',
+                    n_estimators=200,
+                    learning_rate=0.1,
+                    reg_alpha=0.0,
+                ),
+                'params': {
+                    'reg_lambda': np.logspace(-5, 5, 30).tolist(),
+                },
+                'input_kind': 'sparse',
+                'uses_gpu': True,
+            },
+            'XGBoost Alberi (GPU)': {
+                'model': make_xgb_classifier(
+                    num_classes,
+                    booster='gbtree',
+                    n_estimators=200,
+                    max_depth=6,
+                    subsample=0.9,
+                    colsample_bytree=0.9,
+                ),
+                'params': {
+                    'reg_lambda': np.logspace(-3, 5, 20).tolist(),
+                    'gamma': np.logspace(-6, 1, 20).tolist(),
+                },
+                'input_kind': 'sparse',
+                'uses_gpu': True,
+            },
+            'XGBoost Alberi Profondi (GPU)': {
+                'model': make_xgb_classifier(
+                    num_classes,
+                    booster='gbtree',
+                    n_estimators=200,
+                    subsample=0.9,
+                    colsample_bytree=0.9,
+                ),
+                'params': {
+                    'reg_lambda': np.logspace(-3, 5, 15).tolist(),
+                    'max_depth': [2, 3, 4, 5],
+                    'min_child_weight': [1, 3],
+                    'gamma': [0, 0.1, 0.5, 1],
+                },
+                'input_kind': 'sparse',
+                'uses_gpu': True,
+            },
+            'Random Forest GPU (XGBRF)': {
+                'model': make_xgbrf_classifier(num_classes),
+                'params': {
+                    'n_estimators': list(range(1, 500, 20)),
+                    'max_depth': list(range(5, 150, 5)) + [0],
+                },
+                'input_kind': 'sparse',
+                'uses_gpu': True,
+            },
+        }
+        return {**gpu_models, **baseline_models}
+
+    cpu_models = {
+        'SVM_linear': {
+            'model': SVC(kernel='linear', random_state=42),
+            'params': {'C': np.logspace(-5, 5, 30).tolist()},
+            'input_kind': 'sparse',
+            'uses_gpu': False,
+        },
+        'SVM_rbf': {
+            'model': SVC(kernel='rbf', random_state=42),
+            'params': {
+                'C': np.logspace(-3, 5, 20).tolist(),
+                'gamma': np.logspace(-6, 1, 20).tolist(),
+            },
+            'input_kind': 'sparse',
+            'uses_gpu': False,
+        },
+        'SVM_poly': {
+            'model': SVC(kernel='poly', random_state=42),
+            'params': {
+                'C': np.logspace(-3, 5, 15).tolist(),
+                'degree': [2, 3, 4, 5],
+                'gamma': ['scale', 'auto'],
+                'coef0': [0, 0.1, 0.5, 1],
+            },
+            'input_kind': 'sparse',
+            'uses_gpu': False,
+        },
+        'Random Forest': {
+            'model': RandomForestClassifier(random_state=42, n_jobs=-1),
+            'params': {
+                'n_estimators': list(range(1, 500, 20)),
+                'max_depth': list(range(5, 150, 5)) + [None],
+            },
+            'input_kind': 'sparse',
+            'uses_gpu': False,
+        },
+    }
+    return {**cpu_models, **baseline_models}
+
+
 # ===== DEFINIZIONE DEI MODELLI E IPERPARAMETRI =====
 # Questo dizionario contiene la configurazione di tutti i modelli da testare
-models_config = {
-    # Configurazione per il modello KNN (K-Nearest Neighbors)
-    'KNN': {
-        # Istanza del modello KNN
-        'model': KNeighborsClassifier(),
-        # Griglia di iperparametri da testare
-        # n_neighbors: numero di vicini più prossimi da considerare (da 3 a 20)
-        'params': {'n_neighbors': list(range(1, 70, 2))},
-        'input_kind': 'sparse'
-    },
-    # Configurazione per il modello SVM (Support Vector Machine)
-    'SVM_linear': {
-    'model': SVC(kernel='linear', random_state=42),
-    'params': {
-        'C': np.logspace(-5, 5, 30).tolist()},
-    'input_kind': 'sparse'
-    },
-    'SVM_rbf': {
-    'model': SVC(kernel='rbf', random_state=42),
-    'params': {
-        'C': np.logspace(-3, 5, 20).tolist(),
-        'gamma': np.logspace(-6, 1, 20).tolist()},
-    'input_kind': 'sparse'
-    },
-    'SVM_poly': {
-    'model': SVC(kernel='poly', random_state=42),
-    'params': {
-        'C': np.logspace(-3, 5, 15).tolist(),
-        'degree': [2, 3, 4, 5],
-        'gamma': ['scale', 'auto'],
-        'coef0': [0, 0.1, 0.5, 1]},
-    'input_kind': 'sparse'
-    },
-    # Configurazione per il modello Random Forest
-    'Random Forest': {
-        # Istanza del modello Random Forest
-        # random_state=42: seed per riproducibilità
-        # n_jobs=-1: usa tutti i processori disponibili per parallelizzare il calcolo
-        'model': RandomForestClassifier(random_state=42, n_jobs=-1),
-        # Griglia di iperparametri da testare
-        # n_estimators: numero di alberi nella foresta
-        # max_depth: profondità massima di ogni albero (None = no limit)
-        'params': {'n_estimators': list(range(1, 500, 20)), 'max_depth': [list(range(0, 150, 5)), None]},
-        'input_kind': 'sparse'
-    },
-    # Configurazione per il modello Naive Bayes Gaussiano
-    # Genera 20 valori distribuiti logaritmicamente tra 1e-10 e 1e-5
-    'Naive Bayes Gaussiano': {
-        # Istanza del modello Naive Bayes Gaussiano
-        'model': GaussianNB(),
-        # Griglia di iperparametri da testare
-        # var_smoothing: termine di smorzamento per la varianza (evita divisioni per zero)
-        'params': {'var_smoothing': np.logspace(-10, -5, num=50).tolist()},
-        'input_kind': 'dense'
-    },
-    'Naive Bayes ComplementNB': {
-        'model': ComplementNB(), 
-        'params': {
-        # Alpha controlla quanto "spalmare" la probabilità sui termini rari
-        # Una griglia fitta tra 0.001 e 1.0 è l'ideale
-        'alpha': np.logspace(-3, 0, num=50).tolist(),
-        # norm=True è specifico per ComplementNB e spesso aiuta con TF-IDF
-        'norm': [True, False] 
-        },
-        'input_kind': 'sparse'
-    },
-    'LDA': {
-        'model': LinearDiscriminantAnalysis(),
-        'params': {
-            'solver': ['svd', 'lsqr']
-        },
-        'input_kind': 'dense'
-    }
-} 
+models_config = build_models_config(NUM_CLASSES)
 
 
 for model_name, config in models_config.items():
@@ -268,8 +372,12 @@ for model_name, config in models_config.items():
     print(f"{model_name}: {combinations} combinazioni ({combinations * 5} fit con cv=5)")
 
 print(
-    "Nota: la grid search classica usa modelli scikit-learn e resta su CPU. "
-    "Per GPU servirebbe un backend dedicato come cuML, che in questo ambiente non è installato."
+    "Backend modelli classici: "
+    + (
+        "GPU con XGBoost (i modelli più pesanti usano CUDA)."
+        if CLASSICAL_GPU_AVAILABLE
+        else "CPU fallback sklearn (XGBoost/CUDA non disponibile in questo ambiente)."
+    )
 )
 
 
@@ -302,6 +410,9 @@ def perform_grid_search(feature_views, y_train, y_test, dataset_name, models_con
     for model_name, config in models_config.items():
         input_kind = config.get('input_kind', 'dense')
         X_train, X_test = feature_views[input_kind]
+        uses_gpu = config.get('uses_gpu', False)
+        search_n_jobs = 1 if uses_gpu else -1
+        pre_dispatch = 1 if uses_gpu else 'n_jobs'
         # Stampa una riga di separazione per leggibilità
         print(f"\n{'='*60}")
         # Stampa il nome del dataset e del modello che sta processando
@@ -309,6 +420,7 @@ def perform_grid_search(feature_views, y_train, y_test, dataset_name, models_con
         # Stampa un'altra riga di separazione
         print(f"{'='*60}")
         print(f"Input usato: {input_kind}")
+        print(f"Backend: {'GPU' if uses_gpu else 'CPU'}")
         start_time = time.perf_counter()
         
         # ===== CREAZIONE E CONFIGURAZIONE GRID SEARCH =====
@@ -323,8 +435,8 @@ def perform_grid_search(feature_views, y_train, y_test, dataset_name, models_con
             # scoring='accuracy': usa l'accuratezza come metrica di valutazione
             scoring='accuracy',
             # n_jobs=-1: parallelizza il calcolo su tutti i processori disponibili
-            n_jobs=-1,
-            pre_dispatch='n_jobs',
+            n_jobs=search_n_jobs,
+            pre_dispatch=pre_dispatch,
             # verbose=1: stampa il progresso durante l'esecuzione
             verbose=1
         )
@@ -402,113 +514,51 @@ results_bow = perform_grid_search(feature_views_bow, y_train_bow, y_test_bow,
 # ===== VISUALIZZAZIONE DELLA VARIAZIONE DELL'ERRORE =====
 # Questo blocco crea grafici per mostrare come l'errore varia al variare degli iperparametri
 
-# ===== GRAFICO PER TF-IDF DATASET =====
-# Crea una figura con 6 subplot (3x2) per i 6 modelli
-# figsize=(15, 18) specifica le dimensioni della figura in pollici (più grande per 6 subplot)
-fig, axes = plt.subplots(3, 2, figsize=(15, 18))
-# Imposta il titolo della figura
-fig.suptitle('Variazione dell\'Errore al Variare degli Iperparametri - TF-IDF', fontsize=16)
+def plot_error_analysis(results, title, color, save_path=None):
+    model_names = list(results.keys())
+    n_cols = 2
+    n_rows = int(np.ceil(len(model_names) / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 6 * n_rows))
+    axes = np.atleast_1d(axes).flatten()
+    fig.suptitle(title, fontsize=16)
 
-# Estrae una lista con i nomi di tutti i modelli
-model_names = list(models_config.keys())
+    for idx, model_name in enumerate(model_names):
+        ax = axes[idx]
+        cv_results = results[model_name]['cv_results']
+        mean_test_errors = 1 - cv_results['mean_test_score']
+        std_test_scores = cv_results['std_test_score']
+        x_pos = np.arange(len(mean_test_errors))
 
-# Itera su ogni modello e crea un grafico
-for idx, model_name in enumerate(model_names):
-    # Seleziona il subplot corretto (idx // 2 = riga, idx % 2 = colonna)
-    ax = axes[idx // 2, idx % 2]
-    
-    # Estrae i risultati della cross-validation per questo modello dal dataset TF-IDF
-    cv_results = results_tfidf[model_name]['cv_results']
-    # Estrae l'accuratezza media per ogni combinazione di iperparametri
-    mean_test_scores = cv_results['mean_test_score']
-    # Estrae la deviazione standard dell'accuratezza (utile per le barre di errore)
-    std_test_scores = cv_results['std_test_score']
-    # Estrae la lista di tutti i parametri testati (non usato direttamente nel grafico)
-    params = cv_results['params']
-    
-    # Converte l'accuratezza in errore (errore = 1 - accuracy)
-    # Questo permette di visualizzare l'errore anziché l'accuratezza
-    mean_test_errors = 1 - mean_test_scores
-    
-    # Crea una lista di posizioni x per posizionare le barre (0, 1, 2, ...)
-    x_pos = np.arange(len(mean_test_errors))
-    
-    # ===== CREAZIONE DEL GRAFICO A BARRE =====
-    # Crea un grafico a barre con:
-    # x_pos: posizioni delle barre sull'asse x
-    # mean_test_errors: altezza delle barre (errore medio)
-    # yerr=std_test_scores: deviazione standard (barre di errore verticali)
-    # capsize=5: lunghezza dei cappelli delle barre di errore
-    # alpha=0.7: trasparenza delle barre (0=trasparente, 1=opaco)
-    # color='steelblue': colore delle barre per TF-IDF
-    ax.bar(x_pos, mean_test_errors, yerr=std_test_scores, capsize=5, alpha=0.7, color='steelblue')
-    # Etichetta dell'asse x (combinazioni di iperparametri)
-    ax.set_xlabel('Combinazione di Iperparametri')
-    # Etichetta dell'asse y (errore)
-    ax.set_ylabel('Errore (1 - Accuracy)')
-    # Titolo del subplot (nome del modello)
-    ax.set_title(f'{model_name}')
-    # Posiziona i tick dell'asse x
-    ax.set_xticks(x_pos)
-    # Etichette dei tick (numeri da 1 a n combinazioni)
-    ax.set_xticklabels(range(1, len(mean_test_errors) + 1), fontsize=8)
-    # Aggiunge una griglia sull'asse y per leggibilità
-    ax.grid(axis='y', alpha=0.3)
+        ax.bar(x_pos, mean_test_errors, yerr=std_test_scores, capsize=5, alpha=0.7, color=color)
+        ax.set_xlabel('Combinazione di Iperparametri')
+        ax.set_ylabel('Errore (1 - Accuracy)')
+        ax.set_title(model_name)
+        ax.set_xticks(x_pos)
+        ax.set_xticklabels(range(1, len(mean_test_errors) + 1), fontsize=8)
+        ax.grid(axis='y', alpha=0.3)
 
-# Regola lo spazio tra i subplot
-plt.tight_layout()
-# Salva la figura come file PNG con alta risoluzione (300 dpi)
-plt.savefig(cfg.PROJECT_ROOT / 'reports' / 'error_analysis_tfidf.png', dpi=300, bbox_inches='tight')
-# Mostra il grafico nella finestra
-plt.show()
+    for ax in axes[len(model_names):]:
+        ax.set_visible(False)
 
-# ===== GRAFICO PER BAG OF WORDS DATASET =====
-# Crea una figura con 6 subplot (3x2) per i 6 modelli
-fig, axes = plt.subplots(3, 2, figsize=(15, 18))
-# Imposta il titolo della figura
-fig.suptitle('Variazione dell\'Errore al Variare degli Iperparametri - Bag of Words', fontsize=16)
+    plt.tight_layout(rect=(0, 0, 1, 0.97))
+    if save_path is not None:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.show()
 
-# Itera su ogni modello e crea un grafico
-for idx, model_name in enumerate(model_names):
-    # Seleziona il subplot corretto
-    ax = axes[idx // 2, idx % 2]
-    
-    # Estrae i risultati della cross-validation per questo modello dal dataset Bag of Words
-    cv_results = results_bow[model_name]['cv_results']
-    # Estrae l'accuratezza media per ogni combinazione di iperparametri
-    mean_test_scores = cv_results['mean_test_score']
-    # Estrae la deviazione standard dell'accuratezza
-    std_test_scores = cv_results['std_test_score']
-    # Estrae la lista di parametri testati
-    params = cv_results['params']
-    
-    # Converte l'accuratezza in errore
-    mean_test_errors = 1 - mean_test_scores
-    
-    # Crea liste di posizioni x per le barre
-    x_pos = np.arange(len(mean_test_errors))
-    
-    # Crea il grafico a barre con colore 'coral' per Bag of Words (diverso da TF-IDF)
-    ax.bar(x_pos, mean_test_errors, yerr=std_test_scores, capsize=5, alpha=0.7, color='coral')
-    # Etichetta dell'asse x
-    ax.set_xlabel('Combinazione di Iperparametri')
-    # Etichetta dell'asse y
-    ax.set_ylabel('Errore (1 - Accuracy)')
-    # Titolo del subplot
-    ax.set_title(f'{model_name}')
-    # Posiziona i tick
-    ax.set_xticks(x_pos)
-    # Etichette dei tick
-    ax.set_xticklabels(range(1, len(mean_test_errors) + 1), fontsize=8)
-    # Aggiunge griglia per leggibilità
-    ax.grid(axis='y', alpha=0.3)
 
-# Regola lo spazio tra i subplot
-plt.tight_layout()
-# Salva il grafico come file PNG
-# plt.savefig(cfg.PROJECT_ROOT / 'reports' / 'error_analysis_bow.png', dpi=300, bbox_inches='tight')
-# Mostra il grafico
-plt.show()
+plot_error_analysis(
+    results_tfidf,
+    "Variazione dell'Errore al Variare degli Iperparametri - TF-IDF",
+    color='steelblue',
+    save_path=cfg.PROJECT_ROOT / 'reports' / 'error_analysis_tfidf.png',
+)
+
+plot_error_analysis(
+    results_bow,
+    "Variazione dell'Errore al Variare degli Iperparametri - Bag of Words",
+    color='coral',
+    save_path=cfg.PROJECT_ROOT / 'reports' / 'error_analysis_bow.png',
+)
 
 # %%
 # ===== RIEPILOGO ACCURATEZZA MIGLIOR MODELLI =====
