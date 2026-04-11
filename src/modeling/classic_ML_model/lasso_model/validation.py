@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from split_data import X_train, y_train, X_validation, y_validation
 from sklearn.metrics import accuracy_score
 
+import json
 
 
 
@@ -38,7 +39,7 @@ param_grid = {
         1e-3, 3e-3,
         1e-2, 3e-2,
         1e-1, 3e-1,
-        1, 10, 100
+        1, 2 ,2.1, 2.2, 2.5, 2.7, 2.8, 2.9, 3, 10, 100
     ]
 }
 
@@ -58,12 +59,10 @@ for alpha in param_grid["model__alpha"]:
 
     score = accuracy_score(y_validation, y_pred)
     scores[alpha] = score
-
-    if score > best_score:
-        best_score = score
-        best_alpha = alpha
         
-
+    if (score > best_score) or (score == best_score and (best_alpha is None or alpha > best_alpha)):
+     best_score = score
+     best_alpha = alpha
 
 
 
@@ -71,6 +70,20 @@ print(scores)
 print(best_alpha, best_score)
 
 
+
+
+# salvataggio risultati
+output_dir = Path(__file__).resolve().parent
+with open(output_dir / "best_alpha.json", "w") as f:
+    json.dump(
+        {
+            "best_alpha": best_alpha,
+            "best_score": best_score,
+            "scores": scores
+        },
+        f,
+        indent=4
+    )
 
 
 

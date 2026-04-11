@@ -7,8 +7,17 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from training_model import lasso_logistic_model
+import joblib
+
 from split_data import X_train_full
+
+
+
+
+current_dir = Path(__file__).resolve().parent
+
+# carico il modello già addestrato
+lasso_logistic_model = joblib.load(current_dir / "lasso_logistic_model.pkl")
 
 
 # estrazione  modello logistico dalla pipeline
@@ -34,6 +43,7 @@ results["coefficient"] = results["coefficient"].where(
     results["coefficient"].abs() >= 0.05, #0.05 
     0
 )
+
 
 # variabili sopravvissute
 selected_variables = results[results["coefficient"] != 0].copy()

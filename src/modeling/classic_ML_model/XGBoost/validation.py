@@ -102,7 +102,7 @@ scores_df = pd.DataFrame(
         {"params": k, "accuracy": v}
         for k, v in scores.items()
     ]
-).sort_values("balanced_accuracy", ascending=False)
+).sort_values("accuracy", ascending=False)
 
 print(scores_df)
 print("\nBest params:", best_params)
