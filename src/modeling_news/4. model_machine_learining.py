@@ -4,7 +4,9 @@ import numpy as np
 import sys 
 import shutil
 import subprocess
+import time
 from pathlib import Path
+from scipy import sparse
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import config as cfg 
 
@@ -122,6 +124,22 @@ X_train_bow, X_test_bow, y_train_bow, y_test_bow = train_test_split(
     X_bow, y_bow, test_size=n_test_bow, random_state=42, stratify=y_bow
 )
 
+
+def build_feature_views(X_train_df, X_test_df):
+    X_train_dense = X_train_df.to_numpy(dtype=np.float32, copy=False)
+    X_test_dense = X_test_df.to_numpy(dtype=np.float32, copy=False)
+    return {
+        "dense": (X_train_dense, X_test_dense),
+        "sparse": (
+            sparse.csr_matrix(X_train_dense),
+            sparse.csr_matrix(X_test_dense),
+        ),
+    }
+
+
+feature_views_tfidf = build_feature_views(X_train_tfidf, X_test_tfidf)
+feature_views_bow = build_feature_views(X_train_bow, X_test_bow)
+
 # ===== STAMPA RIEPILOGO DIMENSIONI DATASET =====
 # Stampa il numero di righe nel training set TF-IDF
 print(f"TF-IDF Dataset:")
@@ -160,6 +178,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.naive_bayes import ComplementNB # o MultinomialNB
 
+
+def count_param_combinations(param_grid):
+    total = 1
+    for values in param_grid.values():
+        total *= len(values)
+    return total
+
 # ===== DEFINIZIONE DEI MODELLI E IPERPARAMETRI =====
 # Questo dizionario contiene la configurazione di tutti i modelli da testare
 models_config = {
@@ -169,27 +194,31 @@ models_config = {
         'model': KNeighborsClassifier(),
         # Griglia di iperparametri da testare
         # n_neighbors: numero di vicini più prossimi da considerare (da 3 a 20)
-        'params': {'n_neighbors': list(range(1, 70, 2))}
+        'params': {'n_neighbors': list(range(1, 70, 2))},
+        'input_kind': 'sparse'
     },
     # Configurazione per il modello SVM (Support Vector Machine)
     'SVM_linear': {
-    'model': SVC(kernel='linear', random_state=42, probability=True),
+    'model': SVC(kernel='linear', random_state=42),
     'params': {
-        'C': np.logspace(-5, 5, 30).tolist()}
+        'C': np.logspace(-5, 5, 30).tolist()},
+    'input_kind': 'sparse'
     },
     'SVM_rbf': {
-    'model': SVC(kernel='rbf', random_state=42, probability=True),
+    'model': SVC(kernel='rbf', random_state=42),
     'params': {
         'C': np.logspace(-3, 5, 20).tolist(),
-        'gamma': np.logspace(-6, 1, 20).tolist()}
+        'gamma': np.logspace(-6, 1, 20).tolist()},
+    'input_kind': 'sparse'
     },
     'SVM_poly': {
-    'model': SVC(kernel='poly', random_state=42, probability=True),
+    'model': SVC(kernel='poly', random_state=42),
     'params': {
         'C': np.logspace(-3, 5, 15).tolist(),
         'degree': [2, 3, 4, 5],
         'gamma': ['scale', 'auto'],
-        'coef0': [0, 0.1, 0.5, 1]}
+        'coef0': [0, 0.1, 0.5, 1]},
+    'input_kind': 'sparse'
     },
     # Configurazione per il modello Random Forest
     'Random Forest': {
@@ -200,7 +229,8 @@ models_config = {
         # Griglia di iperparametri da testare
         # n_estimators: numero di alberi nella foresta
         # max_depth: profondità massima di ogni albero (None = no limit)
-        'params': {'n_estimators': list(range(1, 500, 20)), 'max_depth': [list(range(0, 150, 5)), None]}
+        'params': {'n_estimators': list(range(1, 500, 20)), 'max_depth': [list(range(0, 150, 5)), None]},
+        'input_kind': 'sparse'
     },
     # Configurazione per il modello Naive Bayes Gaussiano
     # Genera 20 valori distribuiti logaritmicamente tra 1e-10 e 1e-5
@@ -209,7 +239,8 @@ models_config = {
         'model': GaussianNB(),
         # Griglia di iperparametri da testare
         # var_smoothing: termine di smorzamento per la varianza (evita divisioni per zero)
-        'params': {'var_smoothing': np.logspace(-10, -5, num=50).tolist()}
+        'params': {'var_smoothing': np.logspace(-10, -5, num=50).tolist()},
+        'input_kind': 'dense'
     },
     'Naive Bayes ComplementNB': {
         'model': ComplementNB(), 
@@ -219,15 +250,27 @@ models_config = {
         'alpha': np.logspace(-3, 0, num=50).tolist(),
         # norm=True è specifico per ComplementNB e spesso aiuta con TF-IDF
         'norm': [True, False] 
-        }
+        },
+        'input_kind': 'sparse'
     },
     'LDA': {
         'model': LinearDiscriminantAnalysis(),
         'params': {
             'solver': ['svd', 'lsqr']
-        }
+        },
+        'input_kind': 'dense'
     }
 } 
+
+
+for model_name, config in models_config.items():
+    combinations = count_param_combinations(config['params'])
+    print(f"{model_name}: {combinations} combinazioni ({combinations * 5} fit con cv=5)")
+
+print(
+    "Nota: la grid search classica usa modelli scikit-learn e resta su CPU. "
+    "Per GPU servirebbe un backend dedicato come cuML, che in questo ambiente non è installato."
+)
 
 
 # Dizionario per salvare i migliori modelli (non usato in questo codice ma utile per usi futuri)
@@ -237,7 +280,7 @@ cv_results_all = {}
 
 # ===== DEFINIZIONE DELLA FUNZIONE PER GRID SEARCH =====
 # Questa funzione esegue Grid Search con 10-fold cross-validation per tutti i modelli
-def perform_grid_search(X_train, y_train, X_test, y_test, dataset_name, models_config):
+def perform_grid_search(feature_views, y_train, y_test, dataset_name, models_config):
     """
     Esegue Grid Search e Cross-Validation per tutti i modelli configurati.
     
@@ -257,12 +300,16 @@ def perform_grid_search(X_train, y_train, X_test, y_test, dataset_name, models_c
     
     # Itera su ogni modello nella configurazione
     for model_name, config in models_config.items():
+        input_kind = config.get('input_kind', 'dense')
+        X_train, X_test = feature_views[input_kind]
         # Stampa una riga di separazione per leggibilità
         print(f"\n{'='*60}")
         # Stampa il nome del dataset e del modello che sta processando
         print(f"{dataset_name} - {model_name}")
         # Stampa un'altra riga di separazione
         print(f"{'='*60}")
+        print(f"Input usato: {input_kind}")
+        start_time = time.perf_counter()
         
         # ===== CREAZIONE E CONFIGURAZIONE GRID SEARCH =====
         # GridSearchCV esegue la ricerca sistematica dei migliori iperparametri
@@ -277,6 +324,7 @@ def perform_grid_search(X_train, y_train, X_test, y_test, dataset_name, models_c
             scoring='accuracy',
             # n_jobs=-1: parallelizza il calcolo su tutti i processori disponibili
             n_jobs=-1,
+            pre_dispatch='n_jobs',
             # verbose=1: stampa il progresso durante l'esecuzione
             verbose=1
         )
@@ -325,6 +373,7 @@ def perform_grid_search(X_train, y_train, X_test, y_test, dataset_name, models_c
         print(f"Cross-validation accuracy (10-fold): {best_cv_score:.4f}")
         # Stampa l'accuratezza ottenuta sul test set (4 decimali)
         print(f"Test set accuracy: {test_accuracy:.4f}")
+        print(f"Tempo modello: {time.perf_counter() - start_time:.1f} secondi")
         
     # Ritorna il dizionario completo con tutti i risultati
     return results
@@ -336,7 +385,7 @@ print("GRID SEARCH SU TF-IDF DATASET")
 print("="*80)
 # Esegue il Grid Search sul dataset TF-IDF
 # Lo train su X_train_tfidf e y_train_tfidf, valuta su X_test_tfidf e y_test_tfidf
-results_tfidf = perform_grid_search(X_train_tfidf, y_train_tfidf, X_test_tfidf, y_test_tfidf, 
+results_tfidf = perform_grid_search(feature_views_tfidf, y_train_tfidf, y_test_tfidf, 
                                     "TF-IDF", models_config)
 
 # ===== ESECUZIONE GRID SEARCH SU BAG OF WORDS =====
@@ -346,7 +395,7 @@ print("GRID SEARCH SU BAG OF WORDS DATASET")
 print("="*80)
 # Esegue il Grid Search sul dataset Bag of Words
 # Lo train su X_train_bow e y_train_bow, valuta su X_test_bow e y_test_bow
-results_bow = perform_grid_search(X_train_bow, y_train_bow, X_test_bow, y_test_bow, 
+results_bow = perform_grid_search(feature_views_bow, y_train_bow, y_test_bow, 
                                   "Bag of Words", models_config)
 
 # %%
@@ -574,8 +623,7 @@ for model_name, result in results_bow.items():
 
 
 #%%
-tf_idf_df = pd.read_csv(cfg.VECTORIZATION_TFIDF_ARTICLES)
-bag_of_words_df = pd.read_csv(cfg.VECTORIZATION_BAG_OF_WORDS_ARTICLES)
+
 
 
 
@@ -733,6 +781,9 @@ if False:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     import config as cfg 
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Dispositivo PyTorch: {device}")
+
 
     df = pd.read_csv(cfg.FULL_DATA)
     variabili =[
@@ -831,6 +882,8 @@ if False:
 
     x_test_tensor = torch.tensor(X_test_scaled, dtype=torch.float32)
     y_test_tensor = torch.tensor(y_test, dtype=torch.long)
+    x_test_tensor_device = x_test_tensor.to(device)
+    y_test_tensor_device = y_test_tensor.to(device)
 
     # Controlla quante colonne di input hai davvero
     input_dim = x_train_tensor.shape[1]
@@ -846,13 +899,13 @@ if False:
         with torch.no_grad():
 
             # 3. Ottieni le previsioni del modello sui dati di test
-            outputs_test = model(x_test_tensor)
+            outputs_test = model(x_test_tensor_device)
 
             # 4. Trova quale classe ha il valore più alto (0 o 1)
             _, predicted = torch.max(outputs_test, 1)
 
             # 5. Confronta con le etichette reali e fai la media
-            accuratezza = (predicted == y_test_tensor).sum().item() / len(y_test_tensor)
+            accuratezza = (predicted == y_test_tensor_device).sum().item() / len(y_test_tensor_device)
 
         print(f"Accuratezza sul test set: {accuratezza:.2%}")
         
@@ -896,7 +949,7 @@ if False:
             # Strato 4 (Output): Da h4 neuroni alle 10 classi finali
             # nn.Linear(h4, 2)
             
-        )
+        ).to(device)
 
         # --- 3. CONFIGURAZIONE MATEMATICA ---
         # Funzione di perdita per classificazione (include la Softmax internamente)
@@ -906,7 +959,12 @@ if False:
         optimizer = optim.Adam(model.parameters(), lr=lr)
         
         # faccimao lo shuffle e il batch dei dati di training 
-        train_loader = DataLoader(TensorDataset(x_train_tensor, y_train_tensor), batch_size=50, shuffle=True)
+        train_loader = DataLoader(
+            TensorDataset(x_train_tensor, y_train_tensor),
+            batch_size=50,
+            shuffle=True,
+            pin_memory=(device.type == "cuda"),
+        )
         
         
         
@@ -915,6 +973,8 @@ if False:
             model.train() # <--- AGGIUNTO: Mette il modello in modalità addestramento 
             
             for inputs, labels in train_loader:
+                inputs = inputs.to(device, non_blocking=(device.type == "cuda"))
+                labels = labels.to(device, non_blocking=(device.type == "cuda"))
 
                 # A) Reset: pulisce i gradienti del giro precedente
                 optimizer.zero_grad()
@@ -977,9 +1037,9 @@ if False:
     def accuratezza_test(model, x_test_tensor, y_test_tensor, silenzioso=False):
         model.eval()
         with torch.no_grad():
-            outputs_test = model(x_test_tensor)
+            outputs_test = model(x_test_tensor_device)
             _, predicted = torch.max(outputs_test, 1)
-            accuratezza = (predicted == y_test_tensor).sum().item() / len(y_test_tensor)
+            accuratezza = (predicted == y_test_tensor_device).sum().item() / len(y_test_tensor_device)
         
         if not silenzioso:
             print(f"Accuratezza sul test set: {accuratezza:.2%}")
@@ -1000,18 +1060,25 @@ if False:
             nn.ReLU(),
             
             nn.Linear(h2, 2)
-        )
+        ).to(device)
 
         # Se le classi sono sbilanciate, potresti dover aggiungere dei pesi qui:
         # criterion = nn.CrossEntropyLoss(weight=torch.tensor([peso_0, peso_1]))
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5) # weight_decay è una L2 regularization
         
-        train_loader = DataLoader(TensorDataset(x_train_tensor, y_train_tensor), batch_size=64, shuffle=True)
+        train_loader = DataLoader(
+            TensorDataset(x_train_tensor, y_train_tensor),
+            batch_size=64,
+            shuffle=True,
+            pin_memory=(device.type == "cuda"),
+        )
         
         for epoch in range(150): # 150 epoche sono sufficienti per iniziare
             model.train() 
             for inputs, labels in train_loader:
+                inputs = inputs.to(device, non_blocking=(device.type == "cuda"))
+                labels = labels.to(device, non_blocking=(device.type == "cuda"))
                 optimizer.zero_grad()
                 outputs = model(inputs)
                 loss = criterion(outputs, labels)
