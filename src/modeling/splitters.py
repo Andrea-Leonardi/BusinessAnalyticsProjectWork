@@ -49,6 +49,3 @@ def split_data_by_date(
 
     return X_train, y_train, X_validation, y_validation, X_test, y_test
 
-
-#togliere ticker e date (ANCORA NON FATTO !!!!!!!!!!)
-#flessibilizzare le date?

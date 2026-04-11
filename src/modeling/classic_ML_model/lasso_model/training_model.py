@@ -24,7 +24,7 @@ lasso_logistic_model = Pipeline([
     ("scaler", StandardScaler()),
     ("model", LogisticRegression(
         penalty="l1",
-        C=1/best_alpha,  
+        C=1/2.7, #best_alpha,  
         solver="saga",
         max_iter=7000,            # tra 5000 e 10000
         #tol=1e-3,
