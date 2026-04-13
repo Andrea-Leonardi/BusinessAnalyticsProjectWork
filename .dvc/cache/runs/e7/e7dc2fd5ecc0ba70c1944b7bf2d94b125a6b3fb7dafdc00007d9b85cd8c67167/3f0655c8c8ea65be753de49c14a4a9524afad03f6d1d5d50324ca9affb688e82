@@ -1,0 +1,35 @@
+cmd: '".\.venv\Scripts\python.exe" "src/modeling_news/2. vectorization_articles.py"'
+deps:
+- path: data/newsExtraction/newsArticles.csv
+  hash: md5
+  md5: 426f63b2335f1ad064a0725a39aaeb18
+  size: 70061474
+- path: requirements.txt
+  hash: md5
+  md5: 2a54e82fb114c7988e3cf778c12f91c9
+  size: 350
+- path: src/config.py
+  hash: md5
+  md5: f5f3d1ffaf1973cf3497c8b3182d3658
+  size: 2517
+- path: src/modeling_news/2. vectorization_articles.py
+  hash: md5
+  md5: 1ef1d0c36acc3d64cb55b48b36962ae9
+  size: 11244
+outs:
+- path: data/newsExtraction/vectorizationBagOfWordsArticles.csv
+  hash: md5
+  md5: c5411f95dd2e83e7fda0f7aa441aaa70
+  size: 1291305737
+- path: data/newsExtraction/vectorizationBagOfWordsFinancialPhrasebank.csv
+  hash: md5
+  md5: 573563a9cea151158c18db96eeafb5ca
+  size: 23146327
+- path: data/newsExtraction/vectorizationTfidfArticles.csv
+  hash: md5
+  md5: 69ab635ede5ec0b0b4a5273fbfa2612c
+  size: 2605209135
+- path: data/newsExtraction/vectorizationTfidfFinancialPhrasebank.csv
+  hash: md5
+  md5: 14825ee0b1401eadeda6188f20033a22
+  size: 46971734
