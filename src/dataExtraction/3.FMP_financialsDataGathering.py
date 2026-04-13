@@ -74,6 +74,14 @@ OUTPUT_METADATA_COLUMNS = [
 ]
 
 EXPECTED_COMPANY_FINANCIAL_COLUMNS = ["WeekEndingFriday", "symbol"]
+MIN_VALID_QUARTERLY_RELEASES = 4
+KEY_FINANCIAL_SIGNAL_COLUMNS = [
+    "MarketCap",
+    "BookToMarket",
+    "GrossProfitability",
+    "OperatingMargin",
+    "ROA",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -148,14 +156,56 @@ def company_financial_file_is_usable(file_path: Path) -> bool:
         return False
 
     try:
-        company_df = pd.read_csv(file_path, nrows=5)
+        company_df = pd.read_csv(file_path)
     except Exception:
+        return False
+
+    if company_df.empty:
         return False
 
     missing_columns = [
         column for column in EXPECTED_COMPANY_FINANCIAL_COLUMNS if column not in company_df.columns
     ]
-    return not missing_columns
+    if missing_columns:
+        return False
+
+    if "QuarterlyReleased" in company_df.columns:
+        quarterly_releases = pd.to_numeric(
+            company_df["QuarterlyReleased"],
+            errors="coerce",
+        ).fillna(0).sum()
+        if quarterly_releases < MIN_VALID_QUARTERLY_RELEASES:
+            return False
+
+    available_signal_columns = [
+        column for column in KEY_FINANCIAL_SIGNAL_COLUMNS if column in company_df.columns
+    ]
+    if available_signal_columns and company_df[available_signal_columns].isna().all().all():
+        return False
+
+    return True
+
+
+def parse_datetime_mixed(series: pd.Series) -> pd.Series:
+    # Gestisco colonne con timestamp misti, ad esempio date-only e datetime.
+    parsed = pd.to_datetime(series, errors="coerce")
+    remaining_mask = series.notna() & parsed.isna()
+    if not remaining_mask.any():
+        return parsed
+
+    try:
+        reparsed = pd.to_datetime(
+            series.loc[remaining_mask],
+            errors="coerce",
+            format="mixed",
+        )
+    except TypeError:
+        reparsed = series.loc[remaining_mask].apply(
+            lambda value: pd.to_datetime(value, errors="coerce")
+        )
+
+    parsed.loc[remaining_mask] = reparsed
+    return parsed
 
 
 def load_existing_raw_financials(valid_ticker_set: set[str]) -> pd.DataFrame:
@@ -266,7 +316,7 @@ def download_statement_payload(
 
     for date_col in ("date", "filingDate", "acceptedDate", "fillingDate"):
         if date_col in statement_df.columns:
-            statement_df[date_col] = pd.to_datetime(statement_df[date_col], errors="coerce")
+            statement_df[date_col] = parse_datetime_mixed(statement_df[date_col])
 
     if "date" in statement_df.columns:
         statement_df = statement_df.sort_values("date", ascending=False).reset_index(drop=True)

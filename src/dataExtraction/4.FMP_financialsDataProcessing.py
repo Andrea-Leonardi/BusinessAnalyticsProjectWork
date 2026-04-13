@@ -24,6 +24,14 @@ SINGLE_COMPANY_OUTPUT_DIR = cfg.SINGLE_COMPANY_FINANCIALS
 FINAL_OUTPUT_START_DATE = pd.Timestamp("2021-01-01")
 DATE_COLUMN = "WeekEndingFriday"
 EXPECTED_COMPANY_FINANCIAL_COLUMNS = [DATE_COLUMN, "symbol"]
+MIN_VALID_QUARTERLY_RELEASES = 4
+KEY_FINANCIAL_SIGNAL_COLUMNS = [
+    "MarketCap",
+    "BookToMarket",
+    "GrossProfitability",
+    "OperatingMargin",
+    "ROA",
+]
 
 # Raw columns that must be parsed as dates before alignment.
 DATE_COLUMNS = ["date", "filingDate", "acceptedDate"]
@@ -103,6 +111,28 @@ def get_numeric_series(dataframe: pd.DataFrame, column: str) -> pd.Series:
     return pd.to_numeric(dataframe[column], errors="coerce")
 
 
+def parse_datetime_mixed(series: pd.Series) -> pd.Series:
+    # Gestisco colonne con formati data misti, ad esempio date-only e datetime.
+    parsed = pd.to_datetime(series, errors="coerce")
+    remaining_mask = series.notna() & parsed.isna()
+    if not remaining_mask.any():
+        return parsed
+
+    try:
+        reparsed = pd.to_datetime(
+            series.loc[remaining_mask],
+            errors="coerce",
+            format="mixed",
+        )
+    except TypeError:
+        reparsed = series.loc[remaining_mask].apply(
+            lambda value: pd.to_datetime(value, errors="coerce")
+        )
+
+    parsed.loc[remaining_mask] = reparsed
+    return parsed
+
+
 def load_valid_tickers() -> list[str]:
     # Leggo il perimetro aziende corrente da enterprises.csv.
     if not ENTERPRISES_FILE.exists():
@@ -120,14 +150,34 @@ def company_financial_file_is_usable(file_path: Path) -> bool:
         return False
 
     try:
-        company_df = pd.read_csv(file_path, nrows=5)
+        company_df = pd.read_csv(file_path)
     except Exception:
+        return False
+
+    if company_df.empty:
         return False
 
     missing_columns = [
         column for column in EXPECTED_COMPANY_FINANCIAL_COLUMNS if column not in company_df.columns
     ]
-    return not missing_columns
+    if missing_columns:
+        return False
+
+    if "QuarterlyReleased" in company_df.columns:
+        quarterly_releases = pd.to_numeric(
+            company_df["QuarterlyReleased"],
+            errors="coerce",
+        ).fillna(0).sum()
+        if quarterly_releases < MIN_VALID_QUARTERLY_RELEASES:
+            return False
+
+    available_signal_columns = [
+        column for column in KEY_FINANCIAL_SIGNAL_COLUMNS if column in company_df.columns
+    ]
+    if available_signal_columns and company_df[available_signal_columns].isna().all().all():
+        return False
+
+    return True
 
 
 def rebuild_combined_financial_output(valid_tickers: list[str]) -> pd.DataFrame:
@@ -187,7 +237,7 @@ if RAW_INPUT_FILE.exists():
 
     for column in DATE_COLUMNS:
         if column in raw_df.columns:
-            raw_df[column] = pd.to_datetime(raw_df[column], errors="coerce")
+            raw_df[column] = parse_datetime_mixed(raw_df[column])
 else:
     raw_df = pd.DataFrame(columns=["requested_symbol"])
 
