@@ -1,4 +1,5 @@
-1. alcune aziende escono con 0 righe in modeling.csv scopri il perchè 
-2. aggiungi LDA a model_machine_learning
-4. gestione file grandi
-5. provare modelli settore per settore
+- aggiungi LDA a model_machine_learning
+- gestione file grandi
+- modificare text analysis per avere solo le 6 emozioni di zero shot
+
+
