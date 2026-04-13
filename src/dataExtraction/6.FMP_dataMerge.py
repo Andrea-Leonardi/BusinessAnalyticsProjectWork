@@ -15,6 +15,7 @@ import config as cfg
 
 DATE_COLUMN = "WeekEndingFriday"
 TICKER_COLUMN = "Ticker"
+ENTERPRISE_METADATA_COLUMNS = ["SectorCode"]
 
 ENTERPRISES_FILE = cfg.ENT
 PRICE_INPUT_DIR = cfg.SINGLE_COMPANY_PRICES
@@ -35,6 +36,15 @@ companies = pd.read_csv(ENTERPRISES_FILE)
 if TICKER_COLUMN not in companies.columns:
     raise KeyError("The 'Ticker' column does not exist in enterprises.csv")
 
+missing_enterprise_metadata_columns = [
+    column for column in ENTERPRISE_METADATA_COLUMNS if column not in companies.columns
+]
+if missing_enterprise_metadata_columns:
+    raise KeyError(
+        "The following enterprise metadata columns are missing from enterprises.csv: "
+        f"{missing_enterprise_metadata_columns}"
+    )
+
 tickers = (
     companies[TICKER_COLUMN]
     .dropna()
@@ -42,6 +52,11 @@ tickers = (
     .str.strip()
 )
 tickers = tickers[tickers != ""].unique()
+enterprise_metadata_df = (
+    companies[[TICKER_COLUMN] + ENTERPRISE_METADATA_COLUMNS]
+    .drop_duplicates(subset=[TICKER_COLUMN], keep="first")
+    .copy()
+)
 
 
 # ---------------------------------------------------------------------------
@@ -128,6 +143,12 @@ for ticker in tickers:
         financial_df,
         on=[DATE_COLUMN, TICKER_COLUMN],
         how="inner",
+    )
+
+    full_df = full_df.merge(
+        enterprise_metadata_df,
+        on=TICKER_COLUMN,
+        how="left",
     )
 
     if full_df.empty:

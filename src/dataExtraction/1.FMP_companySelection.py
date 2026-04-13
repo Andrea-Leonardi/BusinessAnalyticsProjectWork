@@ -54,6 +54,20 @@ MARKET_CAP_LOOKFORWARD_DATE = "2021-01-15"
 # Pull a broad active universe first, then rerank it with historical market cap.
 ACTIVE_CANDIDATE_BUFFER_PER_SECTOR = 100
 FINAL_COMPANIES_PER_SECTOR = 10
+SECTOR_CODE_COLUMN = "SectorCode"
+SECTOR_CODE_MAP = {
+    "Basic Materials": 1,
+    "Communication Services": 2,
+    "Consumer Cyclical": 3,
+    "Consumer Defensive": 4,
+    "Energy": 5,
+    "Financial Services": 6,
+    "Healthcare": 7,
+    "Industrials": 8,
+    "Real Estate": 9,
+    "Technology": 10,
+    "Utilities": 11,
+}
 
 DELISTED_PAGE_SIZE = 100
 MAX_DELISTED_PAGES = 100
@@ -522,6 +536,8 @@ def build_and_save_company_selection_universe() -> pd.DataFrame:
     if historical_candidates.empty:
         raise ValueError("No historical market-cap observations were available.")
 
+    historical_candidates = attach_sector_codes(historical_candidates)
+
     UNIVERSE_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     historical_candidates.to_csv(UNIVERSE_OUTPUT_FILE, index=False)
 
@@ -538,7 +554,17 @@ def load_company_selection_universe() -> pd.DataFrame:
     # Se il cache esiste e non e richiesto il refresh, uso quello.
     if not REFRESH_COMPANY_SELECTION_UNIVERSE and UNIVERSE_OUTPUT_FILE.exists():
         print(f"Loading company selection universe from cache: {UNIVERSE_OUTPUT_FILE}")
-        return pd.read_csv(UNIVERSE_OUTPUT_FILE)
+        cached_universe_df = pd.read_csv(UNIVERSE_OUTPUT_FILE)
+        universe_with_sector_codes = attach_sector_codes(cached_universe_df)
+
+        if SECTOR_CODE_COLUMN not in cached_universe_df.columns:
+            universe_with_sector_codes.to_csv(UNIVERSE_OUTPUT_FILE, index=False)
+            print(
+                "Updated cached company selection universe with sector codes: "
+                f"{UNIVERSE_OUTPUT_FILE}"
+            )
+
+        return universe_with_sector_codes
 
     print("Refreshing full company selection universe from FMP...")
     return build_and_save_company_selection_universe()
@@ -548,9 +574,34 @@ def load_company_selection_universe() -> pd.DataFrame:
 # Final Selection Helpers
 # ---------------------------------------------------------------------------
 
+def attach_sector_codes(dataframe: pd.DataFrame) -> pd.DataFrame:
+    # Mantengo un mapping settore -> codice stabile e valido in tutta la pipeline.
+    working_df = dataframe.copy()
+
+    if "sector" not in working_df.columns:
+        raise KeyError("The dataframe must contain a 'sector' column.")
+
+    working_df["sector"] = working_df["sector"].astype(str).str.strip()
+    working_df[SECTOR_CODE_COLUMN] = working_df["sector"].map(SECTOR_CODE_MAP)
+
+    unknown_sector_mask = working_df["sector"].ne("") & working_df[SECTOR_CODE_COLUMN].isna()
+    if unknown_sector_mask.any():
+        unknown_sectors = sorted(working_df.loc[unknown_sector_mask, "sector"].unique().tolist())
+        raise ValueError(
+            "Unknown sectors found while assigning sector codes: "
+            f"{unknown_sectors}"
+        )
+
+    working_df[SECTOR_CODE_COLUMN] = (
+        pd.to_numeric(working_df[SECTOR_CODE_COLUMN], errors="raise")
+        .astype("Int64")
+    )
+    return working_df
+
+
 def build_enterprises_from_universe(historical_candidates: pd.DataFrame) -> pd.DataFrame:
     # Da qui in poi lavoro solo in locale: applico esclusioni e ranking finale.
-    working_df = historical_candidates.copy()
+    working_df = attach_sector_codes(historical_candidates)
 
     if "symbol" not in working_df.columns:
         raise KeyError("The cached universe must contain a 'symbol' column.")
@@ -583,6 +634,7 @@ def build_enterprises_from_universe(historical_candidates: pd.DataFrame) -> pd.D
             "symbol",
             "companyName",
             "sector",
+            SECTOR_CODE_COLUMN,
             "industry",
             "marketCap",
             "historicalMarketCapDate",
