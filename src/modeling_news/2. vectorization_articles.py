@@ -10,9 +10,11 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from zipfile import ZipFile
-
+import sys 
 import pandas as pd
 from huggingface_hub import hf_hub_download
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import config as cfg
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -102,6 +104,8 @@ training_df = load_phrasebank_dataframe()
 
 # Ora puoi vederlo!
 print(training_df[['sentence', 'label', 'label_id']].head(10))
+
+training_df.to_csv(cfg.TRAINING_ARTICLES, index=False, encoding='utf-8-sig')
 
 # %%
 """ 

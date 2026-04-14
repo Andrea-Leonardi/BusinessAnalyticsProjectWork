@@ -40,6 +40,8 @@ VECTORIZATION_TFIDF_ARTICLES = NEWS_EXTRACTION / "vectorizationTfidfArticles.csv
 DATA_GRANGER = NEWS_EXTRACTION / "dataGranger.csv"
 FULL_DATA_WITH_NEWS = DATA_EXTRACTION / "fulldata_with_news.csv"
 MODELING_DATASET = MODELING / "modeling.csv"
+TRAINING_ARTICLES = NEWS_EXTRACTION / "trainingArticles.csv"
+
 # ---------------------------------------------------------------------------
 # Company-Level Output Folders
 # ---------------------------------------------------------------------------
