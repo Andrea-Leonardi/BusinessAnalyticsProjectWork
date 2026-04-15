@@ -1,5 +1,2 @@
-- aggiungi LDA a model_machine_learning
-- gestione file grandi
-- modificare text analysis per avere solo le 6 emozioni di zero shot
-
-
+- eliminare modelli inutili per news e lasciare solo FinBert
+- 

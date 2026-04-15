@@ -12,6 +12,18 @@ from splitters import split_data_by_date
 
 import pandas as pd
 
+Unusefull_Variables = ["WeekEndingFriday",
+                       "Ticker",
+                       "AdjClosePrice_t+1"]
+
+#appendo a unusefull_variables tutte le variabili di modeling che hanno EMO nel nome
+for col in cfg.MODELING_DATASET.columns:
+    if "EMO" in col:
+        Unusefull_Variables.append(col) 
+
+for col in cfg.MODELING_DATASET.columns:
+    if "TEXTBLOB" in col:
+        Unusefull_Variables.append(col) 
 
 
 X_train, y_train, X_validation, y_validation, X_test, y_test = split_data_by_date(cfg.MODELING_DATASET , "AdjClosePrice_t+1_Up", ["WeekEndingFriday","Ticker","AdjClosePrice_t+1"], "WeekEndingFriday")
