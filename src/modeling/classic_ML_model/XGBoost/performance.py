@@ -1,4 +1,4 @@
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, balanced_accuracy_score
 
 
 from pathlib import Path
@@ -15,6 +15,7 @@ import joblib
 
 
 input_dir = Path(__file__).resolve().parent
+selected_variables_path = input_dir.parent / "lasso_model" / "selected_variables.csv"
 
 xgboost_model = joblib.load(
     input_dir / "xgboost_model.joblib"
@@ -22,15 +23,7 @@ xgboost_model = joblib.load(
 
 #adattamento covariate set alle variabili scelte
 
-with open(input_dir / "best_params.json", "r") as f:
-    results = json.load(f)
-
-selected_variables = results.get("selected_variables")
-
-if selected_variables is None:
-    selected_variables = pd.read_csv(
-        input_dir.parent / "lasso_model" / "selected_variables.csv"
-    ).iloc[:, 0].tolist()
+selected_variables = pd.read_csv(selected_variables_path).iloc[:, 0].tolist()
 
 X_test_selected = X_test[selected_variables]
 
@@ -40,5 +33,7 @@ y_pred_test = xgboost_model.predict(X_test_selected)
 
 # performance
 test_accuracy = accuracy_score(y_test, y_pred_test)
+test_balanced_accuracy = balanced_accuracy_score(y_test, y_pred_test)
 
 print("XGBoost test accuracy:", test_accuracy)
+print("XGBoost test balanced accuracy:", test_balanced_accuracy)

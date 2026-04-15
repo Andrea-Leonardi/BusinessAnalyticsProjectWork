@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import balanced_accuracy_score
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -31,9 +31,7 @@ print("Device usato:", DEVICE)
 OUTPUT_DIR = Path(__file__).resolve().parent
 
 USE_SELECTED_VARIABLES = True
-SELECTED_VARIABLES_PATH = Path(
-    "src/modeling/classic_ML_model/lasso_model/selected_variables.csv"
-)
+SELECTED_VARIABLES_PATH = OUTPUT_DIR.parent / "lasso_model" / "selected_variables.csv"
 
 N_EPOCHS = 100
 PATIENCE = 10
@@ -178,7 +176,7 @@ def train_and_validate(params):
         logits = model(X_validation_tensor.to(DEVICE))
         y_pred = torch.argmax(logits, dim=1).cpu().numpy()
 
-    val_accuracy = accuracy_score(y_validation, y_pred)
+    val_accuracy = balanced_accuracy_score(y_validation, y_pred)
 
     return model, best_val_loss, val_accuracy
 
@@ -225,13 +223,13 @@ for hidden_dim_1 in param_grid["hidden_dim_1"]:
                         model, val_loss, val_accuracy = train_and_validate(params)
 
                         scores[str(params)] = {
-                            "validation_accuracy": val_accuracy,
+                            "validation_balanced_accuracy": val_accuracy,
                             "validation_loss": val_loss,
                         }
 
                         print(
                             f"Params: {params} | "
-                            f"Validation accuracy: {val_accuracy:.6f} | "
+                            f"Validation balanced accuracy: {val_accuracy:.6f} | "
                             f"Validation loss: {val_loss:.6f}"
                         )
 
@@ -250,6 +248,7 @@ with open(OUTPUT_DIR / "best_params.json", "w") as f:
         {
             "best_params": best_params,
             "best_score": best_score,
+            "metric": "balanced_accuracy",
             "scores": scores,
             "selected_variables": selected_variables,
             "input_dim": input_dim,
@@ -261,7 +260,7 @@ with open(OUTPUT_DIR / "best_params.json", "w") as f:
 torch.save(best_model, OUTPUT_DIR / "best_model_state.pt")
 
 print("\nBest params:", best_params)
-print("Best validation accuracy:", best_score)
+print("Best validation balanced accuracy:", best_score)
 print("Risultati salvati correttamente.")
 
 """

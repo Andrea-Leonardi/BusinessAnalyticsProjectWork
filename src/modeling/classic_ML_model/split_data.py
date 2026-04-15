@@ -1,14 +1,14 @@
 from pathlib import Path
 import sys
 
+import numpy as np
+import pandas as pd
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import config as cfg
-from splitters import split_data_by_date
-
-import numpy as np
-import pandas as pd
+from splitters import split_temporal_dataframes
 
 
 TARGET_COL = "AdjClosePrice_t+1_Up"
@@ -16,7 +16,6 @@ DATE_COL = "WeekEndingFriday"
 
 
 def _largest_remainder_allocation(weights: pd.Series, total: int) -> pd.Series:
-    """Allocate an integer quota proportionally and deterministically."""
     if total <= 0 or weights.empty:
         return pd.Series(0, index=weights.index, dtype=int)
 
@@ -39,7 +38,6 @@ def _largest_remainder_allocation(weights: pd.Series, total: int) -> pd.Series:
 
 
 def _select_evenly_spaced_rows(group: pd.DataFrame, quota: int, date_col: str) -> pd.DataFrame:
-    """Pick representative rows spread across time instead of random rows."""
     if quota <= 0:
         return group.iloc[0:0]
     if quota >= len(group):
@@ -82,95 +80,106 @@ def _balanced_majority_sample(
     return pd.concat(selected_groups, axis=0, ignore_index=True)
 
 
-def balance_binary_target_by_time(
+def balance_binary_training_dataframe(
     df: pd.DataFrame,
     target_col: str,
     date_col: str,
-    split_years: dict[str, list[int]],
 ) -> pd.DataFrame:
-    """Balance each temporal split while preserving ticker-year coverage."""
-    balanced_parts = []
+    if df.empty:
+        return df.copy()
 
-    for years in split_years.values():
-        split_df = df[df[date_col].dt.year.isin(years)].copy()
-        if split_df.empty:
-            continue
+    class_counts = df[target_col].value_counts()
+    if len(class_counts) != 2 or class_counts.nunique() == 1:
+        return df.copy()
 
-        class_counts = split_df[target_col].value_counts()
-        if len(class_counts) != 2 or class_counts.nunique() == 1:
-            balanced_parts.append(split_df)
-            continue
+    working_df = df.copy()
+    working_df[date_col] = pd.to_datetime(working_df[date_col])
+    working_df["__original_order"] = np.arange(len(working_df))
+    working_df["__year"] = working_df[date_col].dt.year
 
-        minority_class = class_counts.idxmin()
-        majority_class = class_counts.idxmax()
-        minority_df = split_df[split_df[target_col] == minority_class].copy()
-        majority_df = split_df[split_df[target_col] == majority_class].copy()
+    minority_class = class_counts.idxmin()
+    majority_class = class_counts.idxmax()
+    minority_df = working_df[working_df[target_col] == minority_class].copy()
+    majority_df = working_df[working_df[target_col] == majority_class].copy()
 
-        majority_sample = _balanced_majority_sample(
-            majority_df=majority_df,
-            total_to_keep=len(minority_df),
-            date_col=date_col,
-            group_cols=["Ticker", "__year"],
-        )
+    group_cols = [column for column in ["Ticker", "__year"] if column in majority_df.columns]
+    if not group_cols:
+        group_cols = ["__year"]
 
-        balanced_parts.append(pd.concat([minority_df, majority_sample], axis=0, ignore_index=True))
+    majority_sample = _balanced_majority_sample(
+        majority_df=majority_df,
+        total_to_keep=len(minority_df),
+        date_col=date_col,
+        group_cols=group_cols,
+    )
 
-    balanced_df = pd.concat(balanced_parts, axis=0, ignore_index=True)
+    balanced_df = pd.concat([minority_df, majority_sample], axis=0, ignore_index=True)
     balanced_df = balanced_df.sort_values([date_col, "Ticker", "__original_order"], kind="stable")
     return balanced_df.drop(columns=["__original_order", "__year"], errors="ignore").reset_index(drop=True)
 
 
-modeling_df = pd.read_csv(cfg.MODELING_DATASET).copy()
-parsed_dates = pd.to_datetime(modeling_df[DATE_COL])
-modeling_df[DATE_COL] = parsed_dates
-modeling_df["__original_order"] = np.arange(len(modeling_df))
-modeling_df["__year"] = parsed_dates.dt.year
-
-split_years = {
-    "train": [2021, 2022, 2023, 2024],
-    "validation": [2025],
-    "test": [2026],
-}
-
-balanced_modeling_df = balance_binary_target_by_time(
-    df=modeling_df,
-    target_col=TARGET_COL,
-    date_col=DATE_COL,
-    split_years=split_years,
-)
-
-balanced_modeling_df.to_csv(cfg.MODELING_DATASET, index=False)
-
-Unusefull_Variables = ["WeekEndingFriday",
-                       "Ticker",
-                       "AdjClosePrice_t+1"]
-Unusefull_Variables.extend(
-    col
-    for col in modeling_df.columns
-    if any(tag in str(col) for tag in ("EMO", "TEXTBLOB"))
-)
-X_train, y_train, X_validation, y_validation, X_test, y_test = split_data_by_date(
-    cfg.MODELING_DATASET,
-    TARGET_COL,
-    Unusefull_Variables,
-    DATE_COL,
-)
+def _to_xy(df: pd.DataFrame, response_var: str, exclude_vars: list[str]):
+    X = df.drop(columns=[response_var] + exclude_vars, errors="ignore").reset_index(drop=True)
+    y = df[response_var].reset_index(drop=True)
+    return X, y
 
 
-# unione training_set e validation_set
-X_train_full = pd.concat([X_train, X_validation], axis=0).reset_index(drop=True)
-y_train_full = pd.concat([y_train, y_validation], axis=0).reset_index(drop=True)
+def load_modeling_dataframe() -> pd.DataFrame:
+    modeling_df = pd.read_csv(cfg.MODELING_DATASET).copy()
+    modeling_df[DATE_COL] = pd.to_datetime(modeling_df[DATE_COL])
+    modeling_df = modeling_df.dropna().reset_index(drop=True)
+    return modeling_df
 
 
-"""
-#MODIFICHE MOMENTANEE
-include_vars = ["AdjClosePrice","AdjClosePrice_t-1","AdjClosePrice_t-2"]
+def build_datasets():
+    modeling_df = load_modeling_dataframe()
+    train_df, validation_df, test_df = split_temporal_dataframes(modeling_df, date_col=DATE_COL)
 
-X_train = X_train[include_vars]
-X_validation = X_validation[include_vars]
-X_train_full = X_train_full[include_vars]
-X_test = X_test[include_vars]
+    train_df_balanced = balance_binary_training_dataframe(train_df, TARGET_COL, DATE_COL)
+    train_full_df = pd.concat([train_df, validation_df], axis=0, ignore_index=True)
+    train_full_df_balanced = balance_binary_training_dataframe(train_full_df, TARGET_COL, DATE_COL)
 
-print(X_test.head(5))
+    unused_variables = [
+        DATE_COL,
+        "Ticker",
+        "AdjClosePrice_t+1",
+    ]
+    unused_variables.extend(
+        column
+        for column in modeling_df.columns
+        if any(tag in str(column) for tag in ("EMO", "TEXTBLOB"))
+    )
 
-"""
+    X_train, y_train = _to_xy(train_df_balanced, TARGET_COL, unused_variables)
+    X_validation, y_validation = _to_xy(validation_df, TARGET_COL, unused_variables)
+    X_test, y_test = _to_xy(test_df, TARGET_COL, unused_variables)
+    X_train_full, y_train_full = _to_xy(train_full_df_balanced, TARGET_COL, unused_variables)
+
+    return {
+        "X_train": X_train,
+        "y_train": y_train,
+        "X_validation": X_validation,
+        "y_validation": y_validation,
+        "X_test": X_test,
+        "y_test": y_test,
+        "X_train_full": X_train_full,
+        "y_train_full": y_train_full,
+        "modeling_df": modeling_df,
+        "train_df": train_df,
+        "train_df_balanced": train_df_balanced,
+        "validation_df": validation_df,
+        "test_df": test_df,
+        "train_full_df_balanced": train_full_df_balanced,
+    }
+
+
+DATASETS = build_datasets()
+
+X_train = DATASETS["X_train"]
+y_train = DATASETS["y_train"]
+X_validation = DATASETS["X_validation"]
+y_validation = DATASETS["y_validation"]
+X_test = DATASETS["X_test"]
+y_test = DATASETS["y_test"]
+X_train_full = DATASETS["X_train_full"]
+y_train_full = DATASETS["y_train_full"]

@@ -2,27 +2,23 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 
-
-import numpy as np
-from sklearn.model_selection import GridSearchCV
-
-
 from pathlib import Path
 import sys
+import json
+
+from sklearn.metrics import balanced_accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from split_data import X_train, y_train, X_validation, y_validation
-from sklearn.metrics import accuracy_score
-
-import json
 
 
+current_dir = Path(__file__).resolve().parent
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
     ("model", LogisticRegression(
-        l1_ratio=1,
+        l1_ratio=1.0,
         solver="saga",
         max_iter=7000,
         random_state=42
@@ -56,6 +52,7 @@ param_grid = {
 
 best_score = -1
 best_C = None
+best_nonzero_count = None
 
 
 scores = {}
@@ -68,28 +65,43 @@ for C in param_grid["model__C"]:
 
     y_pred = pipeline.predict(X_validation)
 
-    score = accuracy_score(y_validation, y_pred)
+    score = balanced_accuracy_score(y_validation, y_pred)
+    nonzero_count = int((pipeline.named_steps["model"].coef_.ravel() != 0).sum())
     scores[C] = score
-        
-    if(score > best_score) or (score == best_score and (best_C is None or C > best_C)):
+
+    is_better_model = False
+    if best_nonzero_count is None:
+        is_better_model = True
+    elif nonzero_count > 0 and best_nonzero_count == 0:
+        is_better_model = True
+    elif nonzero_count == 0 and best_nonzero_count > 0:
+        is_better_model = False
+    elif score > best_score:
+        is_better_model = True
+    elif score == best_score and best_C is not None and C < best_C:
+        is_better_model = True
+
+    if is_better_model:
         best_score = score
         best_C = C
+        best_nonzero_count = nonzero_count
 
 
 
 print(scores)
-print(best_C, best_score)
+print(best_C, best_score, best_nonzero_count)
 
 
 
 
 # salvataggio risultati
-output_dir = Path(__file__).resolve().parent
-with open(output_dir / "best_C.json", "w") as f:
+with open(current_dir / "best_C.json", "w") as f:
     json.dump(
         {
             "best_C": best_C,
             "best_score": best_score,
+            "best_nonzero_count": best_nonzero_count,
+            "metric": "balanced_accuracy",
             "scores": scores
         },
         f,

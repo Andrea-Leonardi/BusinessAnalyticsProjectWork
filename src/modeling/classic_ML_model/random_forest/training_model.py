@@ -10,16 +10,18 @@ from split_data import X_train_full, y_train_full
 
 import json
 import joblib
+import pandas as pd
 
 
 output_dir = Path(__file__).resolve().parent
+selected_variables_path = output_dir.parent / "lasso_model" / "selected_variables.csv"
 
 # carico best_params salvato da validation.py 
 with open(output_dir / "best_params.json", "r") as f: results = json.load(f)
 
 
 best_params = results["best_params"]
-selected_variables = results["selected_variables"]
+selected_variables = pd.read_csv(selected_variables_path).iloc[:, 0].tolist()
 
 
 #inizializzazione modello con i migliori iperparametri trovati
@@ -27,7 +29,7 @@ selected_variables = results["selected_variables"]
 random_forest_model = RandomForestClassifier(
     **best_params,
     random_state=42,
-    n_jobs=-1,
+    n_jobs=1,
 )
 
 #adattamento covariate set alle variabili scelte

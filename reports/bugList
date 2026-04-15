@@ -1,5 +1,1 @@
-- eliminare modelli inutili per news e lasciare solo FinBert
-
-
-Logica delle variabili:
-adjclose price lagged: è normale che i prezzi siano autocorrelati 
+- crea dataset "risultati" con up down osservati|predetti|probabilità delle due classi

@@ -17,17 +17,13 @@ import joblib
 
 
 output_dir = Path(__file__).resolve().parent
+selected_variables_path = output_dir.parent / "lasso_model" / "selected_variables.csv"
 
 # carico best_params salvato da validation.py 
 with open(output_dir / "best_params.json", "r") as f: results = json.load(f)
 
 best_params = results["best_params"]
-selected_variables = results.get("selected_variables")
-
-if selected_variables is None:
-    selected_variables = pd.read_csv(
-        output_dir.parent / "lasso_model" / "selected_variables.csv"
-    ).iloc[:, 0].tolist()
+selected_variables = pd.read_csv(selected_variables_path).iloc[:, 0].tolist()
 
 
 

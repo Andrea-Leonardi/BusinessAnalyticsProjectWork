@@ -51,12 +51,6 @@ results = pd.DataFrame({
 })
 
 
-results["coefficient"] = results["coefficient"].where(
-    results["coefficient"].abs() >= 0.05,
-    0
-)
-
-
 selected_variables = results[results["coefficient"] != 0].copy()
 
 

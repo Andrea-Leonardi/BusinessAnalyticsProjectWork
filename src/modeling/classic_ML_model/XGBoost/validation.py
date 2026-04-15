@@ -2,18 +2,19 @@ from pathlib import Path
 import sys
 import itertools
 import copy
+import json
 
 import pandas as pd
+
+from xgboost import XGBClassifier
+from sklearn.metrics import balanced_accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from split_data import X_train, y_train, X_validation, y_validation
 
-from xgboost import XGBClassifier
-from sklearn.metrics import accuracy_score
-
-import json
-import copy
+output_dir = Path(__file__).resolve().parent
+selected_variables_path = output_dir.parent / "lasso_model" / "selected_variables.csv"
 
 
 """
@@ -50,9 +51,7 @@ scores = {}
 
 
 #definizione training set e validation set  <--- variabili scelte
-selected_variables = pd.read_csv(
-    "src/modeling/classic_ML_model/lasso_model/selected_variables.csv"
-).iloc[:, 0].tolist()
+selected_variables = pd.read_csv(selected_variables_path).iloc[:, 0].tolist()
 
 X_train_selected = X_train[selected_variables]
 X_validation_selected = X_validation[selected_variables]
@@ -92,7 +91,7 @@ for (
 
     y_pred_validation = xgboost_model.predict(X_validation_selected)
 
-    score = accuracy_score(y_validation, y_pred_validation)
+    score = balanced_accuracy_score(y_validation, y_pred_validation)
 
     params = {
         "n_estimators": n_estimators,
@@ -117,23 +116,22 @@ for (
 
 scores_df = pd.DataFrame(
     [
-        {"params": k, "accuracy": v}
+        {"params": k, "balanced_accuracy": v}
         for k, v in scores.items()
     ]
-).sort_values("accuracy", ascending=False)
+).sort_values("balanced_accuracy", ascending=False)
 
 
 
 
 # salvataggio risultati
 
-output_dir = Path(__file__).resolve().parent
-
 with open(output_dir / "best_params.json", "w") as f:
     json.dump(
         {
             "best_params": best_params,
             "best_score": best_score,
+            "metric": "balanced_accuracy",
             "scores": scores,
             "selected_variables": selected_variables
         },
@@ -143,4 +141,4 @@ with open(output_dir / "best_params.json", "w") as f:
 
 print(scores_df)
 print("\nBest params:", best_params)
-print("Best validation accuracy:", best_score)
+print("Best validation balanced accuracy:", best_score)

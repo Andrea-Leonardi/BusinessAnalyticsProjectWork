@@ -5,7 +5,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from split_data import X_test, y_test
 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, balanced_accuracy_score
 
 import joblib
 
@@ -17,10 +17,12 @@ lasso_logistic_model = joblib.load(current_dir / "lasso_logistic_model.pkl")
 # predizioni sul test set
 y_pred_test = lasso_logistic_model.predict(X_test)
 
-# accuracy
+# performance
 test_accuracy = accuracy_score(y_test, y_pred_test)
+test_balanced_accuracy = balanced_accuracy_score(y_test, y_pred_test)
 
 print("Test accuracy:", test_accuracy)
+print("Test balanced accuracy:", test_balanced_accuracy)
 
 
 

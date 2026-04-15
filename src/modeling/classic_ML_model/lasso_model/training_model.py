@@ -26,8 +26,8 @@ def build_lasso_logistic_model(best_c):
     return Pipeline([
         ("scaler", StandardScaler()),
         ("model", LogisticRegression(
-            l1_ratio=1,
-            C=1 / best_c,
+            l1_ratio=1.0,
+            C=best_c,
             solver="saga",
             max_iter=7000,
             random_state=42
