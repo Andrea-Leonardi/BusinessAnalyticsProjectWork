@@ -32,7 +32,7 @@ best_C = validation_results["best_C"]
 lasso_logistic_model = Pipeline([
     ("scaler", StandardScaler()),
     ("model", LogisticRegression(
-        penalty="l1",
+        l1_ratio=1,
         C=1/best_C, #best_alpha,  
         solver="saga",
         max_iter=7000,            # tra 5000 e 10000

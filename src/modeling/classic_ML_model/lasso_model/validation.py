@@ -22,7 +22,7 @@ import json
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
     ("model", LogisticRegression(
-        penalty="l1",
+        l1_ratio=1,
         solver="saga",
         max_iter=7000,
         random_state=42
