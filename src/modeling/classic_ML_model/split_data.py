@@ -13,6 +13,11 @@ from splitters import split_temporal_dataframes
 
 TARGET_COL = "AdjClosePrice_t+1_Up"
 DATE_COL = "WeekEndingFriday"
+SECTOR_FILTER_COLUMN = "SectorCode"
+SECTOR_FILTER = 10
+# Esempi:
+# SECTOR_FILTER = 10          -> usa solo il settore con codice 10
+# SECTOR_FILTER = [3, 10, 11] -> usa solo questi settori
 
 
 def _largest_remainder_allocation(weights: pd.Series, total: int) -> pd.Series:
@@ -124,9 +129,36 @@ def _to_xy(df: pd.DataFrame, response_var: str, exclude_vars: list[str]):
     return X, y
 
 
+def apply_sector_filter(
+    df: pd.DataFrame,
+    sector_filter,
+    sector_column: str,
+) -> pd.DataFrame:
+    if sector_filter is None:
+        return df.copy()
+
+    if sector_column not in df.columns:
+        raise KeyError(
+            f"Column `{sector_column}` not found in modeling dataset, "
+            "so the sector filter cannot be applied."
+        )
+
+    if isinstance(sector_filter, (list, tuple, set, np.ndarray, pd.Series)):
+        allowed_sectors = list(sector_filter)
+    else:
+        allowed_sectors = [sector_filter]
+
+    return df[df[sector_column].isin(allowed_sectors)].copy()
+
+
 def load_modeling_dataframe() -> pd.DataFrame:
     modeling_df = pd.read_csv(cfg.MODELING_DATASET).copy()
     modeling_df[DATE_COL] = pd.to_datetime(modeling_df[DATE_COL])
+    modeling_df = apply_sector_filter(
+        df=modeling_df,
+        sector_filter=SECTOR_FILTER,
+        sector_column=SECTOR_FILTER_COLUMN,
+    )
     modeling_df = modeling_df.dropna().reset_index(drop=True)
     return modeling_df
 

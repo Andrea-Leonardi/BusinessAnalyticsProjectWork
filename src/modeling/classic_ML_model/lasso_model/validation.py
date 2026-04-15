@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import json
 
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -65,7 +65,7 @@ for C in param_grid["model__C"]:
 
     y_pred = pipeline.predict(X_validation)
 
-    score = balanced_accuracy_score(y_validation, y_pred)
+    score = accuracy_score(y_validation, y_pred)
     nonzero_count = int((pipeline.named_steps["model"].coef_.ravel() != 0).sum())
     scores[C] = score
 
@@ -101,7 +101,7 @@ with open(current_dir / "best_C.json", "w") as f:
             "best_C": best_C,
             "best_score": best_score,
             "best_nonzero_count": best_nonzero_count,
-            "metric": "balanced_accuracy",
+            "metric": "accuracy",
             "scores": scores
         },
         f,

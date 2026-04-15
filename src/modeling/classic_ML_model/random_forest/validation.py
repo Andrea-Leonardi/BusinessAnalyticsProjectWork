@@ -7,7 +7,7 @@ import json
 import pandas as pd
 
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -22,13 +22,13 @@ selected_variables_path = current_dir.parent / "lasso_model" / "selected_variabl
 
 param_grid = {
 
-    "n_estimators": [200, 300, 500],
+    "n_estimators": [200, 300],
 
-    "max_depth": [2, 3, 4, 5, 6],
+    "max_depth": [ 3, 4, 5],
 
     "min_samples_leaf": [10, 20, 30],
 
-    "max_features": [0.1,"sqrt", 0.8]
+    "max_features": ["sqrt"]
 
 }
 
@@ -68,7 +68,7 @@ for n_estimators, max_depth,min_samples_leaf, max_features in itertools.product(
 
     y_pred_validation = random_forest_model.predict(X_validation_selected)
 
-    score = balanced_accuracy_score(y_validation, y_pred_validation)
+    score = accuracy_score(y_validation, y_pred_validation)
 
     params = {
         "n_estimators": n_estimators,

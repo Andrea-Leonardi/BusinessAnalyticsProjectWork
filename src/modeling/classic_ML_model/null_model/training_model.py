@@ -14,7 +14,7 @@ model_path = current_dir / "null_model.joblib"
 
 
 def build_null_model():
-    return DummyClassifier(strategy="constant", constant=1)
+    return DummyClassifier(strategy="most_frequent")
 
 
 def train_and_save_model():
