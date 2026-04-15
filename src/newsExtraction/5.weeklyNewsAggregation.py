@@ -50,6 +50,10 @@ NEWS_FEATURE_PREFIX = "NEWS_"
 NEWS_FEATURE_SUFFIX = "_Mean"
 MARKET_TIMEZONE = "America/New_York"
 FRIDAY_MARKET_CLOSE_HOUR = 16
+FINBERT_NEGATIVE_COL = "FINBERT_Negative"
+FINBERT_NEUTRAL_COL = "FINBERT_Neutral"
+FINBERT_POSITIVE_COL = "FINBERT_Positive"
+FINBERT_SENTIMENT_COL = "Sentiment"
 
 
 # ---------------------------------------------------------------------------
@@ -143,9 +147,35 @@ def get_metric_columns(text_analysis_df: pd.DataFrame) -> list[str]:
     return [column for column in text_analysis_df.columns if column not in NON_METRIC_COLUMNS]
 
 
+def add_finbert_sentiment_column(text_analysis_df: pd.DataFrame) -> pd.DataFrame:
+    # Costruisco un indicatore sintetico articolo-per-articolo partendo dai tre
+    # score FinBERT, cosi la successiva media settimanale lo aggrega insieme
+    # a tutte le altre metriche news senza sostituirle.
+    working_df = text_analysis_df.copy()
+    finbert_cols = [FINBERT_NEGATIVE_COL, FINBERT_NEUTRAL_COL, FINBERT_POSITIVE_COL]
+
+    has_finbert = all(column in working_df.columns for column in finbert_cols)
+    if not has_finbert:
+        if FINBERT_SENTIMENT_COL in working_df.columns:
+            return working_df
+        missing = ", ".join(finbert_cols)
+        raise KeyError(
+            "Missing FinBERT columns required to build article sentiment: "
+            f"{missing}"
+        )
+
+    working_df[finbert_cols] = working_df[finbert_cols].apply(pd.to_numeric, errors="coerce")
+    working_df[FINBERT_SENTIMENT_COL] = (
+        (-1 * working_df[FINBERT_NEGATIVE_COL])
+        + (0 * working_df[FINBERT_NEUTRAL_COL])
+        + (1 * working_df[FINBERT_POSITIVE_COL])
+    )
+    return working_df
+
+
 def build_weekly_news_features(text_analysis_df: pd.DataFrame) -> pd.DataFrame:
     # 1. Copio il dataframe per non modificare quello letto da CSV.
-    working_df = text_analysis_df.copy()
+    working_df = add_finbert_sentiment_column(text_analysis_df)
 
     # 2. Porto ogni articolo nel calendario settimanale usato dal progetto.
     working_df["WeekEndingFriday"] = to_week_ending_friday(working_df["Date"])

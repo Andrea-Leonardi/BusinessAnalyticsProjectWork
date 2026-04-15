@@ -1,2 +1,5 @@
 - eliminare modelli inutili per news e lasciare solo FinBert
-- 
+
+
+Logica delle variabili:
+adjclose price lagged: è normale che i prezzi siano autocorrelati 
