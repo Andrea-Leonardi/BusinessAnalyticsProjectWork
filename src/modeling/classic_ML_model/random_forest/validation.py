@@ -92,10 +92,10 @@ for n_estimators, max_depth,min_samples_leaf, max_features in itertools.product(
 
 scores_df = pd.DataFrame(
     [
-        {"params": k, "balanced_accuracy": v}
+        {"params": k, "accuracy": v}
         for k, v in scores.items()
     ]
-).sort_values("balanced_accuracy", ascending=False)
+).sort_values("accuracy", ascending=False)
 
 
 
@@ -108,7 +108,7 @@ with open(current_dir / "best_params.json", "w") as f:
         {
             "best_params": best_params,
             "best_score": best_score,
-            "metric": "balanced_accuracy",
+            "metric": "accuracy",
             "scores": scores,
             "selected_variables": selected_variables
         },
@@ -121,7 +121,7 @@ with open(current_dir / "best_params.json", "w") as f:
 
 print(scores_df)
 print("\nBest params:", best_params)
-print("Best validation balanced accuracy:", best_score)
+print("Best validation accuracy:", best_score)
 
 
 """

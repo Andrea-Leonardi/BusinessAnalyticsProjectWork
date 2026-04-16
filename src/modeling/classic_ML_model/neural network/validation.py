@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import accuracy_score
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -136,6 +136,7 @@ def train_and_validate(params):
 
     best_model_state = None
     best_val_loss = float("inf")
+    best_epoch = 1
     patience_counter = 0
 
     for epoch in range(N_EPOCHS):
@@ -161,6 +162,7 @@ def train_and_validate(params):
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             best_model_state = copy.deepcopy(model.state_dict())
+            best_epoch = epoch + 1
             patience_counter = 0
         else:
             patience_counter += 1
@@ -176,9 +178,9 @@ def train_and_validate(params):
         logits = model(X_validation_tensor.to(DEVICE))
         y_pred = torch.argmax(logits, dim=1).cpu().numpy()
 
-    val_accuracy = balanced_accuracy_score(y_validation, y_pred)
+    val_accuracy = accuracy_score(y_validation, y_pred)
 
-    return model, best_val_loss, val_accuracy
+    return model, best_val_loss, val_accuracy, best_epoch
 
 
 # --------------------------------------------------
@@ -202,6 +204,7 @@ param_grid = {
 best_score = -1
 best_params = None
 best_model = None
+best_epoch_overall = 1
 scores = {}
 
 for hidden_dim_1 in param_grid["hidden_dim_1"]:
@@ -220,16 +223,17 @@ for hidden_dim_1 in param_grid["hidden_dim_1"]:
                             "batch_size": batch_size,
                         }
 
-                        model, val_loss, val_accuracy = train_and_validate(params)
+                        model, val_loss, val_accuracy, best_epoch = train_and_validate(params)
 
                         scores[str(params)] = {
-                            "validation_balanced_accuracy": val_accuracy,
+                            "validation_accuracy": val_accuracy,
                             "validation_loss": val_loss,
+                            "best_epoch": best_epoch,
                         }
 
                         print(
                             f"Params: {params} | "
-                            f"Validation balanced accuracy: {val_accuracy:.6f} | "
+                            f"Validation accuracy: {val_accuracy:.6f} | "
                             f"Validation loss: {val_loss:.6f}"
                         )
 
@@ -237,6 +241,7 @@ for hidden_dim_1 in param_grid["hidden_dim_1"]:
                             best_score = val_accuracy
                             best_params = params
                             best_model = copy.deepcopy(model.state_dict())
+                            best_epoch_overall = best_epoch
 
 
 # --------------------------------------------------
@@ -248,10 +253,11 @@ with open(OUTPUT_DIR / "best_params.json", "w") as f:
         {
             "best_params": best_params,
             "best_score": best_score,
-            "metric": "balanced_accuracy",
+            "metric": "accuracy",
             "scores": scores,
             "selected_variables": selected_variables,
             "input_dim": input_dim,
+            "best_epoch": best_epoch_overall,
         },
         f,
         indent=4
@@ -260,7 +266,7 @@ with open(OUTPUT_DIR / "best_params.json", "w") as f:
 torch.save(best_model, OUTPUT_DIR / "best_model_state.pt")
 
 print("\nBest params:", best_params)
-print("Best validation balanced accuracy:", best_score)
+print("Best validation accuracy:", best_score)
 print("Risultati salvati correttamente.")
 
 """

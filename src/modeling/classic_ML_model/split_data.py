@@ -186,6 +186,9 @@ def build_datasets():
     X_validation, y_validation = _to_xy(validation_df, TARGET_COL, unused_variables)
     X_test, y_test = _to_xy(test_df, TARGET_COL, unused_variables)
     X_train_full, y_train_full = _to_xy(train_full_df_balanced, TARGET_COL, unused_variables)
+    X_train_full_unbalanced, y_train_full_unbalanced = _to_xy(
+        train_full_df, TARGET_COL, unused_variables
+    )
 
     return {
         "X_train": X_train,
@@ -196,11 +199,14 @@ def build_datasets():
         "y_test": y_test,
         "X_train_full": X_train_full,
         "y_train_full": y_train_full,
+        "X_train_full_unbalanced": X_train_full_unbalanced,
+        "y_train_full_unbalanced": y_train_full_unbalanced,
         "modeling_df": modeling_df,
         "train_df": train_df,
         "train_df_balanced": train_df_balanced,
         "validation_df": validation_df,
         "test_df": test_df,
+        "train_full_df": train_full_df,
         "train_full_df_balanced": train_full_df_balanced,
     }
 
@@ -215,3 +221,5 @@ X_test = DATASETS["X_test"]
 y_test = DATASETS["y_test"]
 X_train_full = DATASETS["X_train_full"]
 y_train_full = DATASETS["y_train_full"]
+X_train_full_unbalanced = DATASETS["X_train_full_unbalanced"]
+y_train_full_unbalanced = DATASETS["y_train_full_unbalanced"]

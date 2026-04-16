@@ -6,7 +6,7 @@ from sklearn.dummy import DummyClassifier
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train_full, y_train_full
+from split_data import X_train_full_unbalanced, y_train_full_unbalanced
 
 
 current_dir = Path(__file__).resolve().parent
@@ -19,7 +19,7 @@ def build_null_model():
 
 def train_and_save_model():
     null_model = build_null_model()
-    null_model.fit(X_train_full, y_train_full)
+    null_model.fit(X_train_full_unbalanced, y_train_full_unbalanced)
     joblib.dump(null_model, model_path)
     return null_model
 
