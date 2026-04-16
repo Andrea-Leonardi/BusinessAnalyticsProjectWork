@@ -14,7 +14,7 @@ from splitters import split_temporal_dataframes
 TARGET_COL = "AdjClosePrice_t+1_Up"
 DATE_COL = "WeekEndingFriday"
 SECTOR_FILTER_COLUMN = "SectorCode"
-SECTOR_FILTER = 10
+SECTOR_FILTER = 7
 # Esempi:
 # SECTOR_FILTER = 10          -> usa solo il settore con codice 10
 # SECTOR_FILTER = [3, 10, 11] -> usa solo questi settori

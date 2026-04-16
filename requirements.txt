@@ -13,7 +13,9 @@ requests==2.33.1
 scikit-learn==1.7.1
 seaborn==0.13.2
 textblob==0.20.0
-torch==2.2.2
+# For GPU support on Windows, install torch from the official CUDA wheel index:
+# .\.venv\Scripts\python.exe -m pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cu124
+torch==2.4.1
 torchsummary==1.5.1
 tqdm==4.67.3
 transformers==5.5.4
