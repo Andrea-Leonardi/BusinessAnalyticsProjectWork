@@ -23,7 +23,7 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import config as cfg
 
 
@@ -372,8 +372,8 @@ def build_modeling_dataset(full_data_with_news_df: pd.DataFrame) -> pd.DataFrame
     # Creo il dataset modeling partendo dal merge finale fullData + news.
     # Per richiesta del progetto:
     # 1. tolgo le colonne diagnostiche di conteggio articoli;
-    # 2. tengo solo il sentiment Granger finale, senza le colonne intermedie;
-    # 2. elimino tutte le righe con almeno un missing;
+    # 2. tengo solo le feature news FinBERT richieste per il modeling;
+    # 3. elimino tutte le righe con almeno un missing;
     modeling_df = full_data_with_news_df.copy()
 
     modeling_df = modeling_df.drop(
@@ -381,12 +381,20 @@ def build_modeling_dataset(full_data_with_news_df: pd.DataFrame) -> pd.DataFrame
         errors="ignore",
     )
 
-    intermediate_granger_columns = [
+    allowed_news_columns = {
+        "NEWS_FINBERT_Negative_Mean",
+        "NEWS_FINBERT_Neutral_Mean",
+        "NEWS_FINBERT_Positive_Mean",
+        "NEWS_Sentiment_Mean",
+        GRANGER_FINAL_SCORE_COLUMN,
+    }
+
+    removable_news_columns = [
         column
         for column in modeling_df.columns
-        if "Granger" in column and column != GRANGER_FINAL_SCORE_COLUMN
+        if column.startswith("NEWS_") and column not in allowed_news_columns
     ]
-    modeling_df = modeling_df.drop(columns=intermediate_granger_columns, errors="ignore")
+    modeling_df = modeling_df.drop(columns=removable_news_columns, errors="ignore")
 
     modeling_df = modeling_df.dropna().reset_index(drop=True)
     return modeling_df
