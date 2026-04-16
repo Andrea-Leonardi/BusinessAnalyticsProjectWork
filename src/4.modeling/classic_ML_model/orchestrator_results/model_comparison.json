@@ -1,0 +1,102 @@
+{
+    "metric": "accuracy",
+    "generated_at_utc": "2026-04-16T10:04:04.168676+00:00",
+    "dataset_sizes": {
+        "training": 1884,
+        "validation": 498,
+        "test": 127
+    },
+    "execution_order": [
+        "null_model",
+        "always_zero",
+        "always_one",
+        "lasso_logistic",
+        "logistic_regression",
+        "random_forest",
+        "xgboost",
+        "neural_network"
+    ],
+    "ranking": [
+        {
+            "model": "lasso_logistic",
+            "metric": "accuracy",
+            "validation_accuracy": 0.5301204819277109,
+            "best_C": 0.02,
+            "selected_variables": 2,
+            "test_accuracy": 0.6062992125984252
+        },
+        {
+            "model": "logistic_regression",
+            "metric": "accuracy",
+            "selected_variables": 2,
+            "test_accuracy": 0.5984251968503937
+        },
+        {
+            "model": "random_forest",
+            "metric": "accuracy",
+            "validation_accuracy": 0.5421686746987951,
+            "best_params": {
+                "n_estimators": 300,
+                "max_depth": 4,
+                "min_samples_leaf": 20,
+                "max_features": "sqrt"
+            },
+            "selected_variables": 2,
+            "test_accuracy": 0.5826771653543307
+        },
+        {
+            "model": "xgboost",
+            "metric": "accuracy",
+            "validation_accuracy": 0.5401606425702812,
+            "best_params": {
+                "n_estimators": 75,
+                "learning_rate": 0.004,
+                "max_depth": 5,
+                "min_child_weight": 7,
+                "subsample": 0.1,
+                "colsample_bytree": 1
+            },
+            "selected_variables": 2,
+            "test_accuracy": 0.5748031496062992
+        },
+        {
+            "model": "neural_network",
+            "metric": "accuracy",
+            "validation_accuracy": 0.5682730923694779,
+            "best_params": {
+                "hidden_dim_1": 64,
+                "hidden_dim_2": 32,
+                "dropout": 0.0,
+                "learning_rate": 0.0001,
+                "weight_decay": 0.0,
+                "batch_size": 32
+            },
+            "best_epoch": 2,
+            "selected_variables": 2,
+            "test_accuracy": 0.5590551181102362
+        },
+        {
+            "model": "null_model",
+            "metric": "accuracy",
+            "predicted_class": 1,
+            "test_accuracy": 0.5354330708661418
+        },
+        {
+            "model": "always_one",
+            "metric": "accuracy",
+            "predicted_class": 1,
+            "test_accuracy": 0.5354330708661418
+        },
+        {
+            "model": "always_zero",
+            "metric": "accuracy",
+            "predicted_class": 0,
+            "test_accuracy": 0.4645669291338583
+        }
+    ],
+    "best_model": "lasso_logistic",
+    "best_accuracy": 0.6062992125984252,
+    "tied_best_models": [
+        "lasso_logistic"
+    ]
+}
