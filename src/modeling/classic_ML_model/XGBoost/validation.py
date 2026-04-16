@@ -2,18 +2,19 @@ from pathlib import Path
 import sys
 import itertools
 import copy
+import json
 
 import pandas as pd
+
+from xgboost import XGBClassifier
+from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from split_data import X_train, y_train, X_validation, y_validation
 
-from xgboost import XGBClassifier
-from sklearn.metrics import accuracy_score
-
-import json
-import copy
+output_dir = Path(__file__).resolve().parent
+selected_variables_path = output_dir.parent / "lasso_model" / "selected_variables.csv"
 
 
 """
@@ -24,17 +25,17 @@ import copy
 
 param_grid = {
 
-    "n_estimators": [50, 75, 100],
+    "n_estimators": [ 75, 100],
 
-    "learning_rate": [0.004, 0.005, 0.006, 0.007],
+    "learning_rate": [0.004, 0.007],
 
-    "max_depth": [5, 6, 7, 8, 9],
+    "max_depth": [5, 8,],
 
-    "min_child_weight": [4, 5, 6, 7],
+    "min_child_weight": [ 5, 6, 7],
 
-    "subsample": [0.1, 0.2, 0.3, 0.4, 0.5], 
+    "subsample": [0.1,  0.3, 0.5], 
 
-    "colsample_bytree": [0.7, 0.8, 0.9, 1],
+    "colsample_bytree": [0.7, 1],
 
 }
 
@@ -50,9 +51,7 @@ scores = {}
 
 
 #definizione training set e validation set  <--- variabili scelte
-selected_variables = pd.read_csv(
-    "src/modeling/classic_ML_model/lasso_model/selected_variables.csv"
-).iloc[:, 0].tolist()
+selected_variables = pd.read_csv(selected_variables_path).iloc[:, 0].tolist()
 
 X_train_selected = X_train[selected_variables]
 X_validation_selected = X_validation[selected_variables]
@@ -127,13 +126,12 @@ scores_df = pd.DataFrame(
 
 # salvataggio risultati
 
-output_dir = Path(__file__).resolve().parent
-
 with open(output_dir / "best_params.json", "w") as f:
     json.dump(
         {
             "best_params": best_params,
             "best_score": best_score,
+            "metric": "accuracy",
             "scores": scores,
             "selected_variables": selected_variables
         },

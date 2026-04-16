@@ -2,19 +2,19 @@ from pathlib import Path
 import sys
 import itertools
 import copy
+import json
 
 import pandas as pd
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from split_data import X_train, y_train, X_validation, y_validation
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-
-import json
-import copy
-
+current_dir = Path(__file__).resolve().parent
+selected_variables_path = current_dir.parent / "lasso_model" / "selected_variables.csv"
 
 
 
@@ -22,13 +22,13 @@ import copy
 
 param_grid = {
 
-    "n_estimators": [200, 300, 500],
+    "n_estimators": [200, 300],
 
-    "max_depth": [2, 3, 4, 5, 6],
+    "max_depth": [ 3, 4, 5],
 
     "min_samples_leaf": [10, 20, 30],
 
-    "max_features": [0.1,"sqrt", 0.8]
+    "max_features": ["sqrt"]
 
 }
 
@@ -41,9 +41,7 @@ scores = {}
 
 
 #definizione training set e validation set  <--- variabili scelte
-selected_variables = pd.read_csv(
-    "src/modeling/classic_ML_model/lasso_model/selected_variables.csv"
-).iloc[:, 0].tolist()
+selected_variables = pd.read_csv(selected_variables_path).iloc[:, 0].tolist()
 
 X_train_selected = X_train[selected_variables]
 X_validation_selected = X_validation[selected_variables]
@@ -63,7 +61,7 @@ for n_estimators, max_depth,min_samples_leaf, max_features in itertools.product(
         min_samples_leaf=min_samples_leaf,
         max_features=max_features,
         random_state=42,
-        n_jobs=-1,
+        n_jobs=1,
     )
 
     random_forest_model.fit(X_train_selected, y_train)
@@ -94,10 +92,10 @@ for n_estimators, max_depth,min_samples_leaf, max_features in itertools.product(
 
 scores_df = pd.DataFrame(
     [
-        {"params": k, "balanced_accuracy": v}
+        {"params": k, "accuracy": v}
         for k, v in scores.items()
     ]
-).sort_values("balanced_accuracy", ascending=False)
+).sort_values("accuracy", ascending=False)
 
 
 
@@ -105,13 +103,12 @@ scores_df = pd.DataFrame(
 
 # salvataggio risultati
 
-output_dir = Path(__file__).resolve().parent
-
-with open(output_dir / "best_params.json", "w") as f:
+with open(current_dir / "best_params.json", "w") as f:
     json.dump(
         {
             "best_params": best_params,
             "best_score": best_score,
+            "metric": "accuracy",
             "scores": scores,
             "selected_variables": selected_variables
         },

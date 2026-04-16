@@ -1,21 +1,29 @@
-import numpy as np
 from pathlib import Path
 import sys
 
+import joblib
 from sklearn.dummy import DummyClassifier
-
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train_full, y_train_full
+from split_data import X_train_full_unbalanced, y_train_full_unbalanced
 
 
-
-# modello nullo
-null_model = DummyClassifier(
-    strategy="most_frequent"
-)
+current_dir = Path(__file__).resolve().parent
+model_path = current_dir / "null_model.joblib"
 
 
-# addestramento
-null_model.fit(X_train_full, y_train_full)
+def build_null_model():
+    return DummyClassifier(strategy="most_frequent")
+
+
+def train_and_save_model():
+    null_model = build_null_model()
+    null_model.fit(X_train_full_unbalanced, y_train_full_unbalanced)
+    joblib.dump(null_model, model_path)
+    return null_model
+
+
+if __name__ == "__main__":
+    train_and_save_model()
+    print("Model saved successfully.")

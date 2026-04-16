@@ -1,6 +1,12 @@
-from training_model import logistic_model, selected_variables
 import pandas as pd
+import joblib
+from pathlib import Path
 
+current_dir = Path(__file__).resolve().parent
+logistic_model = joblib.load(current_dir / "logistic_model.joblib")
+selected_variables = pd.read_csv(
+    current_dir.parent / "lasso_model" / "selected_variables.csv"
+).iloc[:, 0].tolist()
 
 coefficients = logistic_model.named_steps["model"].coef_[0]
 

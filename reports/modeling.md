@@ -95,3 +95,58 @@ assegna lo stesso peso alle due classi e consente di:
 
     variabili standardizzate ----> usare funzione apposita
     2 parametri da ottimizzare: parametro di penalità e tipo di penalità
+
+---
+
+# BILANCIAMENTO DELLA VARIABILE TARGET
+
+La variabile target del progetto è `AdjClosePrice_t+1_Up`, cioè una variabile binaria che vale:
+- `1` se il prezzo adjusted della settimana successiva sale
+- `0` se il prezzo adjusted della settimana successiva non sale
+
+Nel file `data/modeling/modeling.csv` il dataset rimane nella sua forma originale ed è sbilanciato a favore della classe `1`.
+Per evitare che i modelli imparino una preferenza eccessiva per la classe dominante, il bilanciamento viene applicato solo in memoria dentro `src/modeling/classic_ML_model/split_data.py`, senza riscrivere il file su disco.
+
+## Criterio usato
+
+Il riequilibrio non è stato fatto eliminando osservazioni casualmente.
+È stato invece adottato un sottocampionamento deterministico della classe maggioritaria con tre vincoli:
+- il bilanciamento viene fatto solo sui dataset usati per addestrare i modelli: `training 2021-2024` e `training full 2021-2025`
+- `validation 2025` e `test 2026` restano nella distribuzione originale, così la valutazione finale resta realistica
+- si mantiene la copertura per `Ticker` e anno, così da non concentrare la riduzione solo su alcune imprese o su pochi periodi
+- all'interno di ogni gruppo `Ticker`-anno, le osservazioni della classe maggioritaria vengono scelte in modo distribuito nel tempo, prendendo righe equispaziate dopo ordinamento per data
+
+## Logica implementata in split_data.py
+
+La procedura è la seguente:
+1. si carica `modeling.csv` e si converte `WeekEndingFriday` in formato data
+2. si divide il dataset nei tre periodi già usati per lo split del progetto
+3. il `training set` viene riequilibrato con sottocampionamento deterministico della classe maggioritaria
+4. il `validation set` e il `test set` non vengono modificati
+5. per il retraining finale, anche `train + validation` viene riequilibrato in memoria prima dell'addestramento del modello definitivo
+
+Questa scelta rende il dataset più coerente con la struttura panel-temporale del progetto rispetto a un semplice random undersampling e mantiene valida la valutazione out-of-sample.
+
+## Risultato finale
+
+Distribuzioni attuali:
+- `modeling.csv` originale: `0 = 11530`, `1 = 12843`
+- training bilanciato `2021-2024`: `0 = 8884`, `1 = 8884`
+- validation originale `2025`: `0 = 2126`, `1 = 2594`
+- test originale `2026`: `0 = 520`, `1 = 661`
+- training full bilanciato `2021-2025`: `0 = 11010`, `1 = 11010`
+
+## Metriche di valutazione
+
+Per la scelta degli iperparametri e per la lettura delle performance viene usata la `Balanced Accuracy`, non la sola accuracy.
+In questo modo ogni classe pesa allo stesso modo anche quando `validation` e `test` restano sbilanciati.
+
+## Correzioni implementative nella cartella classic_ML_model
+
+Le principali correzioni applicate sono:
+- il modello `lasso_model` usa davvero una logistic con penalizzazione L1 (`l1_ratio = 1.0`) e usa in training lo stesso `C` selezionato in validation
+- la scelta del `best_C` evita la soluzione degenere con tutti i coefficienti nulli quando esistono modelli con score simile ma almeno una variabile selezionata
+- la selezione variabili LASSO usa i coefficienti non nulli del modello, senza una soglia manuale arbitraria aggiuntiva
+- `logistic_regression`, `null_model`, `random_forest` e `XGBoost` leggono o salvano gli artefatti in modo coerente con file `.joblib`
+- il `null_model` è ora una baseline esplicita `sempre up` (`constant = 1`)
+- gli script di validation e performance riportano anche la `Balanced Accuracy`

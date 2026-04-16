@@ -2,22 +2,18 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 
-
-import numpy as np
-from sklearn.model_selection import GridSearchCV
-
-
 from pathlib import Path
 import sys
+import json
+
+from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from split_data import X_train, y_train, X_validation, y_validation
-from sklearn.metrics import accuracy_score
-
-import json
 
 
+current_dir = Path(__file__).resolve().parent
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
@@ -56,9 +52,32 @@ param_grid = {
 
 best_score = -1
 best_C = None
+best_nonzero_count = None
 
 
 scores = {}
+
+
+def is_better_candidate(score, nonzero_count, c_value, best_score, best_nonzero_count, best_c):
+    if best_nonzero_count is None:
+        return True
+
+    current_has_variables = nonzero_count > 0
+    best_has_variables = best_nonzero_count > 0
+
+    if current_has_variables and not best_has_variables:
+        return True
+    if not current_has_variables and best_has_variables:
+        return False
+    if score > best_score:
+        return True
+    if score < best_score:
+        return False
+    if nonzero_count < best_nonzero_count:
+        return True
+    if nonzero_count > best_nonzero_count:
+        return False
+    return best_c is None or c_value < best_c
 
 for C in param_grid["model__C"]:
 
@@ -69,27 +88,30 @@ for C in param_grid["model__C"]:
     y_pred = pipeline.predict(X_validation)
 
     score = accuracy_score(y_validation, y_pred)
+    nonzero_count = int((pipeline.named_steps["model"].coef_.ravel() != 0).sum())
     scores[C] = score
-        
-    if(score > best_score) or (score == best_score and (best_C is None or C > best_C)):
+
+    if is_better_candidate(score, nonzero_count, C, best_score, best_nonzero_count, best_C):
         best_score = score
         best_C = C
+        best_nonzero_count = nonzero_count
 
 
 
 print(scores)
-print(best_C, best_score)
+print(best_C, best_score, best_nonzero_count)
 
 
 
 
 # salvataggio risultati
-output_dir = Path(__file__).resolve().parent
-with open(output_dir / "best_C.json", "w") as f:
+with open(current_dir / "best_C.json", "w") as f:
     json.dump(
         {
             "best_C": best_C,
             "best_score": best_score,
+            "best_nonzero_count": best_nonzero_count,
+            "metric": "accuracy",
             "scores": scores
         },
         f,

@@ -7,7 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1VXXkhWD0gHwjswb0C5IGGkFUnvyMKW9D
 """
 
-!pip install alpaca-trade-api nltk pandas requests
 
 """1. I tried VADER first ⬇️
 
@@ -20,6 +19,97 @@ Time span: **2026 January**
 import pandas as pd
 import requests
 import time
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _empty_weekly_bars():
+    return pd.DataFrame({
+        "timestamp": pd.Series(dtype="datetime64[ns]"),
+        "close": pd.Series(dtype="float64"),
+    })
+
+
+def _normalize_weekly_bars(bars):
+    if bars is None or bars.empty:
+        return _empty_weekly_bars()
+
+    if isinstance(bars.columns, pd.MultiIndex):
+        bars.columns = [
+            col[0] if isinstance(col, tuple) else col
+            for col in bars.columns.to_list()
+        ]
+
+    bars = bars.reset_index()
+
+    date_col = next((col for col in ["timestamp", "Datetime", "Date"] if col in bars.columns), None)
+    close_col = next((col for col in ["Adj Close", "Close", "close"] if col in bars.columns), None)
+
+    if date_col is None or close_col is None:
+        return _empty_weekly_bars()
+
+    bars = bars.rename(columns={date_col: "timestamp", close_col: "close"})
+    bars["timestamp"] = pd.to_datetime(bars["timestamp"], errors="coerce")
+    bars["close"] = pd.to_numeric(bars["close"], errors="coerce")
+    bars = bars[["timestamp", "close"]].dropna().reset_index(drop=True)
+
+    if bars.empty:
+        return _empty_weekly_bars()
+
+    return bars
+
+
+def get_weekly_bars(symbol, start, end, api_key=None, secret_key=None):
+    try:
+        from alpaca_trade_api.rest import REST
+
+        api = REST(api_key, secret_key, base_url='https://paper-api.alpaca.markets')
+        return _normalize_weekly_bars(api.get_bars(symbol, '1Week', start=start, end=end).df)
+    except ImportError:
+        pass
+    except Exception:
+        pass
+
+    try:
+        import yfinance as yf
+
+        bars = yf.download(
+            symbol,
+            start=start,
+            end=end,
+            interval="1wk",
+            auto_adjust=False,
+            progress=False,
+            threads=False,
+        )
+        normalized = _normalize_weekly_bars(bars)
+        if not normalized.empty:
+            return normalized
+
+        daily_bars = yf.download(
+            symbol,
+            start=start,
+            end=end,
+            interval="1d",
+            auto_adjust=False,
+            progress=False,
+            threads=False,
+        )
+        daily_bars = _normalize_weekly_bars(daily_bars)
+        if daily_bars.empty:
+            return _empty_weekly_bars()
+
+        weekly_bars = (
+            daily_bars.set_index("timestamp")["close"]
+            .resample("W-FRI")
+            .last()
+            .dropna()
+            .reset_index()
+        )
+        return _normalize_weekly_bars(weekly_bars)
+    except Exception:
+        return _empty_weekly_bars()
 
 # 1. API Configuration
 API_KEY = "PKVESCM6H235I3XWBT25AYP7JC"
@@ -87,7 +177,7 @@ while len(all_news) < LIMIT:
 if all_news:
     df_aapl = pd.DataFrame(all_news)
     # Save the raw data for January 2026
-    df_aapl.to_csv("aapl_jan_2026.csv", index=False)
+    df_aapl.to_csv(PROJECT_ROOT / "aapl_jan_2026.csv", index=False)
     print(f"\n\n🎉 Success! AAPL news for January has been saved to 'aapl_jan_2026.csv'")
 else:
     print("\n💀 No data found. Please verify your API Key permissions or date range.")
@@ -178,17 +268,11 @@ print(aapl_weekly_sentiment)
 
 # Get the real return of T+1 week based on the news time
 
-from alpaca_trade_api.rest import REST
 import pandas as pd
 
-# 1. Initialize Alpaca REST API
-# Using the Paper Trading endpoint for simulated backtesting
-api = REST(API_KEY, SECRET_KEY, base_url='https://paper-api.alpaca.markets')
-
-# 2. Historical Market Data Acquisition (Weekly Candles)
+# 1. Historical Market Data Acquisition (Weekly Candles)
 # Fetching an extended range to ensure T+1 alignment (Jan to mid-Feb 2026)
-bars = api.get_bars("AAPL", '1Week', start="2026-01-01", end="2026-02-15").df
-bars = bars.reset_index()
+bars = get_weekly_bars("AAPL", "2026-01-01", "2026-02-15", API_KEY, SECRET_KEY)
 
 # 3. Calculate Target Variable: Next Week's Percentage Return (T+1)
 # .pct_change() calculates the return between consecutive weeks
@@ -377,17 +461,11 @@ weekly_sentiment = df.groupby('Year_Week')['sentiment_score'].mean().reset_index
 print(f"\n\n✅ Step 1 Complete: Processed {len(df)} unique headlines.")
 print(f"✅ Generated {len(weekly_sentiment)} weekly sentiment signals.")
 
-from alpaca_trade_api.rest import REST
 import pandas as pd
-
-# 1. Initialize Alpaca REST API
-# Using the Paper Trading endpoint for data consistency
-api = REST(API_KEY, SECRET_KEY, base_url='https://paper-api.alpaca.markets')
 
 # 2. Historical Market Data Acquisition (Weekly Candles)
 # Fetching an extended range through March to ensure T+1 alignment for the Feb data
-bars = api.get_bars("AAPL", "1Week", start="2025-09-01", end="2026-03-07").df
-bars = bars.reset_index()
+bars = get_weekly_bars("AAPL", "2025-09-01", "2026-03-07", API_KEY, SECRET_KEY)
 
 # 3. Core Predictive Logic: Target Variable Synchronization
 # We calculate the weekly percentage change and apply a negative shift (-1).
@@ -470,8 +548,6 @@ To capture more nuanced financial context, we are upgrading the sentiment engine
 """
 
 # Install the necessary Deep Learning libraries
-!pip install transformers torch
-
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import pandas as pd
@@ -563,7 +639,7 @@ while len(all_news) < LIMIT:
 # 3. Data Persistence & Deduplication
 # Removing identical headlines to prevent sentiment bias and signal skewing
 df_6m = pd.DataFrame(all_news).drop_duplicates(subset=['Headline'])
-df_6m.to_csv("aapl_6_months.csv", index=False)
+df_6m.to_csv(PROJECT_ROOT / "aapl_6_months.csv", index=False)
 
 print(f"\n\n✅ Success! Dataset generated: 'aapl_6_months.csv'")
 print(f"✅ Final count: {len(df_6m)} unique records successfully saved.")
@@ -582,7 +658,7 @@ print("🧠 FinBERT Deep Scoring Engine Activated (Hardware Acceleration: GPU)..
 
 # 2. Data Loading
 # Loading the 6-month longitudinal dataset (AAPL)
-df = pd.read_csv("aapl_6_months.csv")
+df = pd.read_csv(PROJECT_ROOT / "aapl_6_months.csv")
 
 # 3. Sentiment Inference Logic
 def get_finbert_sentiment(text, index):
@@ -630,8 +706,7 @@ print(weekly_sentiment_finbert.head())
 # --- STEP 2: Market Data & Alignment ---
 
 # Fetch 1Week bars for AAPL (Extended range for T+1)
-bars = api.get_bars("AAPL", '1Week', start="2025-09-01", end="2026-03-07").df
-bars = bars.reset_index()
+bars = get_weekly_bars("AAPL", "2025-09-01", "2026-03-07", API_KEY, SECRET_KEY)
 
 # Align 'Next Week Return' with 'Current Signal' (T+1)
 bars['next_week_ret'] = bars['close'].pct_change().shift(-1)
@@ -726,7 +801,8 @@ HEADERS = {
 
 # 2. Ticker Universe Ingestion
 # Loading 110 tickers from a CSV configuration file
-df_tickers = pd.read_csv("enterprises.csv")
+enterprises_path = PROJECT_ROOT / "data" / "dataExtraction" / "enterprises.csv"
+df_tickers = pd.read_csv(enterprises_path)
 tickers = df_tickers['Ticker'].unique().tolist()
 
 print(f"✅ Loaded {len(tickers)} tickers from universe.")
@@ -735,15 +811,15 @@ print(f"✅ Loaded {len(tickers)} tickers from universe.")
 years = [2023, 2024, 2025]
 monthly_limit = 40  # Ensures uniform data distribution across time
 
-output_dir = 'raw_news_data'
-if not os.path.exists(output_dir): os.makedirs(output_dir)
+output_dir = PROJECT_ROOT / "raw_news_data"
+output_dir.mkdir(parents=True, exist_ok=True)
 
 # 4. Monthly Sharding Execution Loop
 for ticker in tickers:
-    file_path = f"{output_dir}/{ticker}_3y.parquet"
+    file_path = output_dir / f"{ticker}_3y.parquet"
 
     # Checkpoint logic: Skip if shard already exists
-    if os.path.exists(file_path):
+    if file_path.exists():
         print(f"⏭️  {ticker} data exists. Skipping...")
         continue
 
@@ -792,20 +868,27 @@ for ticker in tickers:
 print("\n🎉 Pipeline Complete! Data archived in 'raw_news_data'.")
 
 import shutil
-from google.colab import files
+
+try:
+    from google.colab import files
+except ImportError:
+    files = None
 
 # 1. Define the directory to be zipped and the output filename
 # This matches the folder name 'raw_news_data' from your previous script
-dir_to_zip = 'raw_news_data'
-output_filename = 'raw_news_data_backup.zip'
+dir_to_zip = output_dir
+output_filename = PROJECT_ROOT / "raw_news_data_backup.zip"
 
 # 2. Execute the compression (shutil handles the zipping logic)
 print(f"📦 Compressing {dir_to_zip}... Please wait.")
-shutil.make_archive(output_filename.replace('.zip', ''), 'zip', dir_to_zip)
+shutil.make_archive(str(output_filename).replace('.zip', ''), 'zip', str(dir_to_zip))
 
 # 3. Trigger the browser download
-print(f"🚀 Starting download: {output_filename}")
-files.download(output_filename)
+if files is not None:
+    print(f"🚀 Starting download: {output_filename.name}")
+    files.download(str(output_filename))
+else:
+    print(f"💾 Archive saved locally at: {output_filename}")
 
 import pandas as pd
 import glob
@@ -823,7 +906,9 @@ model.eval()
 
 # 2. Merge all 110 ticker shards into one processing queue
 print("📂 Loading raw data shards...")
-all_files = glob.glob("raw_news_data/*.parquet")
+all_files = glob.glob(str(output_dir / "*.parquet"))
+if not all_files:
+    raise FileNotFoundError(f"No parquet files found in {output_dir}")
 df_all = pd.concat([pd.read_parquet(f) for f in all_files], ignore_index=True)
 df_all = df_all.drop_duplicates(subset=['Headline']).reset_index(drop=True)
 
@@ -856,7 +941,7 @@ with torch.no_grad():
 
 # 5. Export Processed Master File
 df_all['sentiment_score'] = all_scores
-df_all.to_parquet("finbert_sentiment_master_3y.parquet", index=False)
+df_all.to_parquet(PROJECT_ROOT / "finbert_sentiment_master_3y.parquet", index=False)
 print("✅ Phase 2 Complete: Master sentiment file generated.")
 
 # Aggregation & Normalization
@@ -864,7 +949,7 @@ print("✅ Phase 2 Complete: Master sentiment file generated.")
 import pandas as pd
 
 # 1. Load the Master Sentiment File
-df = pd.read_parquet("finbert_sentiment_master_3y.parquet")
+df = pd.read_parquet(PROJECT_ROOT / "finbert_sentiment_master_3y.parquet")
 
 # 2. Convert Date to Year_Week format
 df['Date'] = pd.to_datetime(df['Date'])
@@ -879,21 +964,21 @@ weekly_factor.columns = ['Ticker', 'Year_Week', 'raw_sentiment', 'news_count']
 # 4. Cross-sectional Z-Score Normalization
 # This compares tickers against each other WITHIN the same week
 def calculate_zscore(group):
-    if len(group) > 1:
+    if len(group) > 1 and group.std() > 0:
         return (group - group.mean()) / group.std()
-    return 0
+    return pd.Series(0.0, index=group.index)
 
 weekly_factor['sentiment_zscore'] = weekly_factor.groupby('Year_Week')['raw_sentiment'].transform(calculate_zscore)
 
 # 5. Export the Final Feature Set for the group
-weekly_factor.to_parquet("final_sentiment_factor_3y.parquet", index=False)
+weekly_factor.to_parquet(PROJECT_ROOT / "final_sentiment_factor_3y.parquet", index=False)
 print("✅ Final Deliverable Ready: 'final_sentiment_factor_3y.parquet'")
 print(f"📊 Total Data Points: {len(weekly_factor)} company-weeks.")
 
 import pandas as pd
 
 # 1. Read the file
-df = pd.read_parquet('final_sentiment_factor_3y.parquet')
+df = pd.read_parquet(PROJECT_ROOT / 'final_sentiment_factor_3y.parquet')
 
 # 2. View the first 10 rows
 print(df.head(10))

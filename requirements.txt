@@ -1,29 +1,26 @@
-# Core analytics
-numpy
-pandas>=3.0
-requests
-yfinance
-matplotlib
-seaborn
-scikit-learn
+# Dependencies used across the project
+beautifulsoup4==4.14.3
+certifi==2026.2.25
+huggingface-hub==1.10.2
+joblib==1.5.3
+matplotlib==3.10.8
+newspaper3k==0.2.8
+nltk==3.9.4
+numpy==1.26.4
+optuna==4.6.0
+pandas==2.3.3
+requests==2.33.1
+scikit-learn==1.7.1
+seaborn==0.13.2
+textblob==0.20.0
+torch==2.2.2
+torchsummary==1.5.1
+tqdm==4.67.3
+transformers==5.5.4
+xgboost==3.2.0
+yfinance==1.2.0
 
-# Jupyter / VS Code notebooks
-ipykernel
-
-# News extraction and NLP
-beautifulsoup4
-certifi
-datasets
-huggingface-hub
-lxml
-lxml_html_clean
-newspaper3k
-nltk
-textblob
-tqdm
-transformers
-
-# Utilities
-python-dotenv
-setuptools
-wheel
+# Used in the repository but not installed in the current environment,
+# so their versions could not be verified automatically:
+# alpaca-trade-api
+# statsmodels
