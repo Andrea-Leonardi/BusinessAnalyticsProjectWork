@@ -54,6 +54,14 @@ FINBERT_NEGATIVE_COL = "FINBERT_Negative"
 FINBERT_NEUTRAL_COL = "FINBERT_Neutral"
 FINBERT_POSITIVE_COL = "FINBERT_Positive"
 FINBERT_SENTIMENT_COL = "Sentiment"
+GRANGER_FINBERT_COEFFICIENTS_FILE = cfg.NEWS_EXTRACTION / "granger_finbert_coefficients.csv"
+GRANGER_LAG_COLUMN = "lag"
+GRANGER_BETA_NEGATIVE_COL = "beta_negative"
+GRANGER_BETA_NEUTRAL_COL = "beta_neutral"
+GRANGER_BETA_POSITIVE_COL = "beta_positive"
+GRANGER_ARTICLE_SCORE_TEMPLATE = "FINBERT_GrangerArticleScore_Lag{lag}"
+GRANGER_WEEKLY_SHIFTED_SCORE_TEMPLATE = "NEWS_FINBERT_GrangerArticleScore_Lag{lag}_Shifted"
+GRANGER_FINAL_SCORE_COLUMN = "NEWS_FINBERT_Granger_Score"
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +155,58 @@ def get_metric_columns(text_analysis_df: pd.DataFrame) -> list[str]:
     return [column for column in text_analysis_df.columns if column not in NON_METRIC_COLUMNS]
 
 
+def load_granger_finbert_coefficients() -> pd.DataFrame:
+    # Leggo i coefficienti FinBERT del VAR Granger prodotti a livello ticker-lag.
+    if not GRANGER_FINBERT_COEFFICIENTS_FILE.exists():
+        raise FileNotFoundError(
+            "Missing FinBERT Granger coefficients file: "
+            f"{GRANGER_FINBERT_COEFFICIENTS_FILE}"
+        )
+
+    coefficients_df = pd.read_csv(GRANGER_FINBERT_COEFFICIENTS_FILE)
+    required_columns = {
+        "Ticker",
+        GRANGER_LAG_COLUMN,
+        GRANGER_BETA_NEGATIVE_COL,
+        GRANGER_BETA_NEUTRAL_COL,
+        GRANGER_BETA_POSITIVE_COL,
+    }
+    missing_columns = required_columns.difference(coefficients_df.columns)
+    if missing_columns:
+        raise KeyError(
+            "Missing required columns in FinBERT Granger coefficients file: "
+            f"{sorted(missing_columns)}"
+        )
+
+    coefficients_df["Ticker"] = normalize_text_for_key(coefficients_df["Ticker"])
+    coefficients_df[GRANGER_LAG_COLUMN] = pd.to_numeric(
+        coefficients_df[GRANGER_LAG_COLUMN], errors="coerce"
+    ).astype("Int64")
+    coefficients_df = coefficients_df.dropna(subset=[GRANGER_LAG_COLUMN]).copy()
+    coefficients_df = coefficients_df.drop_duplicates(
+        subset=["Ticker", GRANGER_LAG_COLUMN], keep="last"
+    )
+    return coefficients_df
+
+
+def build_granger_finbert_coefficient_map(coefficients_df: pd.DataFrame) -> pd.DataFrame:
+    # Porto i coefficienti in wide per fare un merge semplice su ogni articolo.
+    wide_df = coefficients_df.pivot(
+        index="Ticker",
+        columns=GRANGER_LAG_COLUMN,
+        values=[
+            GRANGER_BETA_NEGATIVE_COL,
+            GRANGER_BETA_NEUTRAL_COL,
+            GRANGER_BETA_POSITIVE_COL,
+        ],
+    )
+    wide_df.columns = [
+        f"{metric}_lag_{lag}"
+        for metric, lag in wide_df.columns.to_flat_index()
+    ]
+    return wide_df.reset_index()
+
+
 def add_finbert_sentiment_column(text_analysis_df: pd.DataFrame) -> pd.DataFrame:
     # Costruisco un indicatore sintetico articolo-per-articolo partendo dai tre
     # score FinBERT, cosi la successiva media settimanale lo aggrega insieme
@@ -170,6 +230,33 @@ def add_finbert_sentiment_column(text_analysis_df: pd.DataFrame) -> pd.DataFrame
         + (0 * working_df[FINBERT_NEUTRAL_COL])
         + (1 * working_df[FINBERT_POSITIVE_COL])
     )
+
+    coefficients_df = load_granger_finbert_coefficients()
+    coefficient_map_df = build_granger_finbert_coefficient_map(coefficients_df)
+    working_df["Ticker"] = normalize_text_for_key(working_df["Ticker"])
+    working_df = working_df.merge(coefficient_map_df, on="Ticker", how="left")
+
+    available_lags = sorted(coefficients_df[GRANGER_LAG_COLUMN].dropna().unique().tolist())
+    for lag in available_lags:
+        beta_negative_col = f"{GRANGER_BETA_NEGATIVE_COL}_lag_{lag}"
+        beta_neutral_col = f"{GRANGER_BETA_NEUTRAL_COL}_lag_{lag}"
+        beta_positive_col = f"{GRANGER_BETA_POSITIVE_COL}_lag_{lag}"
+        article_score_col = GRANGER_ARTICLE_SCORE_TEMPLATE.format(lag=lag)
+
+        working_df[article_score_col] = (
+            working_df[beta_negative_col] * working_df[FINBERT_NEGATIVE_COL]
+            + working_df[beta_neutral_col] * working_df[FINBERT_NEUTRAL_COL]
+            + working_df[beta_positive_col] * working_df[FINBERT_POSITIVE_COL]
+        )
+
+    coefficient_columns = [
+        column
+        for column in working_df.columns
+        if column.startswith(f"{GRANGER_BETA_NEGATIVE_COL}_lag_")
+        or column.startswith(f"{GRANGER_BETA_NEUTRAL_COL}_lag_")
+        or column.startswith(f"{GRANGER_BETA_POSITIVE_COL}_lag_")
+    ]
+    working_df = working_df.drop(columns=coefficient_columns, errors="ignore")
     return working_df
 
 
@@ -229,15 +316,77 @@ def build_weekly_news_features(text_analysis_df: pd.DataFrame) -> pd.DataFrame:
     return weekly_metrics.sort_values(KEY_COLUMNS).reset_index(drop=True)
 
 
+def add_granger_finbert_lagged_score(aligned_weekly_news_df: pd.DataFrame) -> pd.DataFrame:
+    # Il punteggio Granger finale va costruito a livello settimanale:
+    # 1. ogni articolo usa i beta del proprio ticker e lag;
+    # 2. gli score articolo vengono mediati per settimana;
+    # 3. la feature finale per la settimana t usa gli shift di 1, 2 e 3 settimane.
+    working_df = aligned_weekly_news_df.sort_values(KEY_COLUMNS).copy()
+
+    source_columns = [
+        column
+        for column in working_df.columns
+        if column.startswith(f"{NEWS_FEATURE_PREFIX}FINBERT_GrangerArticleScore_Lag")
+        and column.endswith(NEWS_FEATURE_SUFFIX)
+    ]
+    if not source_columns:
+        return working_df
+
+    shifted_columns: list[str] = []
+    for source_column in sorted(source_columns):
+        lag = int(source_column.split("Lag", 1)[1].split("_", 1)[0])
+        shifted_column = GRANGER_WEEKLY_SHIFTED_SCORE_TEMPLATE.format(lag=lag)
+        working_df[shifted_column] = (
+            working_df.groupby("Ticker", sort=False)[source_column].shift(lag)
+        )
+        shifted_columns.append(shifted_column)
+
+    working_df[GRANGER_FINAL_SCORE_COLUMN] = working_df[shifted_columns].sum(
+        axis=1,
+        min_count=len(shifted_columns),
+    )
+
+    def standardize_by_ticker(score_series: pd.Series) -> pd.Series:
+        # Standardizzo il segnale finale all'interno del ticker per renderlo
+        # confrontabile nel modeling mantenendo i missing dove il punteggio
+        # Granger non e definito.
+        valid_scores = score_series.dropna()
+        if valid_scores.empty:
+            return score_series
+
+        std = valid_scores.std()
+        if pd.isna(std) or std == 0:
+            return score_series.where(score_series.isna(), 0.0)
+
+        mean = valid_scores.mean()
+        return (score_series - mean) / std
+
+    working_df[GRANGER_FINAL_SCORE_COLUMN] = (
+        working_df.groupby("Ticker", sort=False)[GRANGER_FINAL_SCORE_COLUMN]
+        .transform(standardize_by_ticker)
+    )
+    return working_df
+
+
 def build_modeling_dataset(full_data_with_news_df: pd.DataFrame) -> pd.DataFrame:
     # Creo il dataset modeling partendo dal merge finale fullData + news.
     # Per richiesta del progetto:
-    # 1. tolgo le ultime due colonne del file arricchito;
+    # 1. tolgo le colonne diagnostiche di conteggio articoli;
+    # 2. tengo solo il sentiment Granger finale, senza le colonne intermedie;
     # 2. elimino tutte le righe con almeno un missing;
     modeling_df = full_data_with_news_df.copy()
 
-    if modeling_df.shape[1] >= 2:
-        modeling_df = modeling_df.iloc[:, :-2].copy()
+    modeling_df = modeling_df.drop(
+        columns=["NEWS_ArticleCount", "NEWS_RawArticleCount"],
+        errors="ignore",
+    )
+
+    intermediate_granger_columns = [
+        column
+        for column in modeling_df.columns
+        if "Granger" in column and column != GRANGER_FINAL_SCORE_COLUMN
+    ]
+    modeling_df = modeling_df.drop(columns=intermediate_granger_columns, errors="ignore")
 
     modeling_df = modeling_df.dropna().reset_index(drop=True)
     return modeling_df
@@ -280,6 +429,7 @@ def main():
         on=KEY_COLUMNS,
         how="left",
     )
+    aligned_weekly_news_df = add_granger_finbert_lagged_score(aligned_weekly_news_df)
 
     # -----------------------------------------------------------------------
     # 4. MERGE CON IL DATASET FINALE COMPLETO
