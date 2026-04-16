@@ -18,7 +18,7 @@ current_dir = Path(__file__).resolve().parent
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
     ("model", LogisticRegression(
-        l1_ratio=1.0,
+        penalty="l1",
         solver="saga",
         max_iter=7000,
         random_state=42
@@ -57,6 +57,28 @@ best_nonzero_count = None
 
 scores = {}
 
+
+def is_better_candidate(score, nonzero_count, c_value, best_score, best_nonzero_count, best_c):
+    if best_nonzero_count is None:
+        return True
+
+    current_has_variables = nonzero_count > 0
+    best_has_variables = best_nonzero_count > 0
+
+    if current_has_variables and not best_has_variables:
+        return True
+    if not current_has_variables and best_has_variables:
+        return False
+    if score > best_score:
+        return True
+    if score < best_score:
+        return False
+    if nonzero_count < best_nonzero_count:
+        return True
+    if nonzero_count > best_nonzero_count:
+        return False
+    return best_c is None or c_value < best_c
+
 for C in param_grid["model__C"]:
 
     pipeline.set_params(model__C = C)
@@ -69,19 +91,7 @@ for C in param_grid["model__C"]:
     nonzero_count = int((pipeline.named_steps["model"].coef_.ravel() != 0).sum())
     scores[C] = score
 
-    is_better_model = False
-    if best_nonzero_count is None:
-        is_better_model = True
-    elif nonzero_count > 0 and best_nonzero_count == 0:
-        is_better_model = True
-    elif nonzero_count == 0 and best_nonzero_count > 0:
-        is_better_model = False
-    elif score > best_score:
-        is_better_model = True
-    elif score == best_score and best_C is not None and C < best_C:
-        is_better_model = True
-
-    if is_better_model:
+    if is_better_candidate(score, nonzero_count, C, best_score, best_nonzero_count, best_C):
         best_score = score
         best_C = C
         best_nonzero_count = nonzero_count

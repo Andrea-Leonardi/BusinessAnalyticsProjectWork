@@ -1,15 +1,12 @@
 from pathlib import Path
-import sys
 import json
 import copy
+import importlib.util
 import random
 
 import joblib
 import numpy as np
 import pandas as pd
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, TensorDataset
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -28,9 +25,21 @@ NULL_DIR = CLASSIC_DIR / "null_model"
 RF_DIR = CLASSIC_DIR / "random_forest"
 XGB_DIR = CLASSIC_DIR / "XGBoost"
 NN_DIR = CLASSIC_DIR / "neural network"
+RESULTS_DIR = CLASSIC_DIR / "orchestrator_results"
 
-sys.path.insert(0, str(CLASSIC_DIR))
-import split_data
+
+def load_split_data_module():
+    split_data_path = CLASSIC_DIR / "split_data.py"
+    spec = importlib.util.spec_from_file_location("classic_ml_split_data", split_data_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load split_data module from {split_data_path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+split_data = load_split_data_module()
 
 
 RANDOM_SEED = 42
@@ -73,7 +82,7 @@ NN_PATIENCE = 10
 
 
 def ensure_directories() -> None:
-    for directory in [LASSO_DIR, LOGIT_DIR, NULL_DIR, RF_DIR, XGB_DIR, NN_DIR]:
+    for directory in [LASSO_DIR, LOGIT_DIR, NULL_DIR, RF_DIR, XGB_DIR, NN_DIR, RESULTS_DIR]:
         directory.mkdir(parents=True, exist_ok=True)
 
 
@@ -81,11 +90,72 @@ def save_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, indent=4), encoding="utf-8")
 
 
+def save_dataframe(df: pd.DataFrame, path: Path) -> None:
+    df.to_csv(path, index=False)
+
+
+def count_classes(target: pd.Series) -> dict:
+    return {str(key): int(value) for key, value in target.value_counts().sort_index().to_dict().items()}
+
+
+def save_split_summary() -> None:
+    payload = {
+        "train": count_classes(split_data.y_train),
+        "validation": count_classes(split_data.y_validation),
+        "test": count_classes(split_data.y_test),
+        "train_full": count_classes(split_data.y_train_full),
+        "n_features_train": int(split_data.X_train.shape[1]),
+        "n_features_train_full": int(split_data.X_train_full.shape[1]),
+    }
+    save_json(RESULTS_DIR / "split_summary.json", payload)
+
+
+def ensure_selected_variables(selected_variables: list[str]) -> list[str]:
+    if selected_variables:
+        return selected_variables
+
+    fallback_variables = split_data.X_train_full.columns.tolist()
+    print(
+        "No variables were selected by the lasso model. "
+        "Falling back to all available features for the downstream models."
+    )
+    return fallback_variables
+
+
+def is_better_lasso_candidate(
+    score: float,
+    nonzero_count: int,
+    c_value: float,
+    best_score: float,
+    best_nonzero_count: int | None,
+    best_c: float | None,
+) -> bool:
+    if best_nonzero_count is None:
+        return True
+
+    current_has_variables = nonzero_count > 0
+    best_has_variables = best_nonzero_count > 0
+
+    if current_has_variables and not best_has_variables:
+        return True
+    if not current_has_variables and best_has_variables:
+        return False
+    if score > best_score:
+        return True
+    if score < best_score:
+        return False
+    if nonzero_count < best_nonzero_count:
+        return True
+    if nonzero_count > best_nonzero_count:
+        return False
+    return best_c is None or c_value < best_c
+
+
 def build_lasso_model(C: float) -> Pipeline:
     return Pipeline([
         ("scaler", StandardScaler()),
         ("model", LogisticRegression(
-            l1_ratio=1.0,
+            penalty="l1",
             C=C,
             solver="saga",
             max_iter=7000,
@@ -124,11 +194,13 @@ def run_null_model() -> dict:
     predicted_class = int(y_pred_test[0]) if len(y_pred_test) > 0 else None
     test_accuracy = accuracy_score(split_data.y_test, y_pred_test)
 
-    return {
+    result = {
         "model": "null_model",
         "predicted_class": predicted_class,
         "test_accuracy": test_accuracy,
     }
+    save_json(NULL_DIR / "performance.json", result)
+    return result
 
 
 def run_lasso_pipeline() -> tuple[dict, list[str]]:
@@ -146,7 +218,14 @@ def run_lasso_pipeline() -> tuple[dict, list[str]]:
         nonzero_count = int((lasso_model.named_steps["model"].coef_.ravel() != 0).sum())
         scores[C] = score
 
-        if score > best_score or (score == best_score and (best_C is None or C > best_C)):
+        if is_better_lasso_candidate(
+            score=score,
+            nonzero_count=nonzero_count,
+            c_value=C,
+            best_score=best_score,
+            best_nonzero_count=best_nonzero_count,
+            best_c=best_C,
+        ):
             best_score = score
             best_C = C
             best_nonzero_count = nonzero_count
@@ -167,22 +246,23 @@ def run_lasso_pipeline() -> tuple[dict, list[str]]:
     joblib.dump(final_lasso_model, LASSO_DIR / "lasso_logistic_model.pkl")
 
     selected_variables_df = select_variables_from_lasso_model(final_lasso_model)
-    selected_variables_df[["variable"]].to_csv(LASSO_DIR / "selected_variables.csv", index=False)
-    selected_variables = selected_variables_df["variable"].tolist()
+    selected_variables = ensure_selected_variables(selected_variables_df["variable"].tolist())
+    if len(selected_variables) != len(selected_variables_df):
+        selected_variables_df = pd.DataFrame({"variable": selected_variables})
+    save_dataframe(selected_variables_df[["variable"]], LASSO_DIR / "selected_variables.csv")
 
     y_pred_test = final_lasso_model.predict(split_data.X_test)
     test_accuracy = accuracy_score(split_data.y_test, y_pred_test)
 
-    return (
-        {
-            "model": "lasso_logistic",
-            "validation_accuracy": best_score,
-            "best_C": best_C,
-            "selected_variables": len(selected_variables),
-            "test_accuracy": test_accuracy,
-        },
-        selected_variables,
-    )
+    result = {
+        "model": "lasso_logistic",
+        "validation_accuracy": best_score,
+        "best_C": best_C,
+        "selected_variables": len(selected_variables),
+        "test_accuracy": test_accuracy,
+    }
+    save_json(LASSO_DIR / "performance.json", result)
+    return result, selected_variables
 
 
 def run_logistic_pipeline(selected_variables: list[str]) -> dict:
@@ -200,14 +280,26 @@ def run_logistic_pipeline(selected_variables: list[str]) -> dict:
     logistic_model.fit(X_train_selected_full, split_data.y_train_full)
     joblib.dump(logistic_model, LOGIT_DIR / "logistic_model.joblib")
 
+    coefficients = pd.DataFrame(
+        {
+            "variable": selected_variables,
+            "coefficient": logistic_model.named_steps["model"].coef_.ravel(),
+        }
+    )
+    coefficients["abs_coefficient"] = coefficients["coefficient"].abs()
+    coefficients = coefficients.sort_values("abs_coefficient", ascending=False, kind="stable")
+    save_dataframe(coefficients, LOGIT_DIR / "coefficients.csv")
+
     y_pred_test = logistic_model.predict(X_test_selected)
     test_accuracy = accuracy_score(split_data.y_test, y_pred_test)
 
-    return {
+    result = {
         "model": "logistic_regression",
         "selected_variables": len(selected_variables),
         "test_accuracy": test_accuracy,
     }
+    save_json(LOGIT_DIR / "performance.json", result)
+    return result
 
 
 def run_random_forest_pipeline(selected_variables: list[str]) -> dict:
@@ -265,16 +357,26 @@ def run_random_forest_pipeline(selected_variables: list[str]) -> dict:
     random_forest_model.fit(X_train_selected_full, split_data.y_train_full)
     joblib.dump(random_forest_model, RF_DIR / "random_forest_model.joblib")
 
+    importances_df = pd.DataFrame(
+        {
+            "variable": selected_variables,
+            "importance": random_forest_model.feature_importances_,
+        }
+    ).sort_values("importance", ascending=False, kind="stable")
+    save_dataframe(importances_df, RF_DIR / "feature_importances.csv")
+
     y_pred_test = random_forest_model.predict(X_test_selected)
     test_accuracy = accuracy_score(split_data.y_test, y_pred_test)
 
-    return {
+    result = {
         "model": "random_forest",
         "validation_accuracy": best_score,
         "best_params": json.dumps(best_params),
         "selected_variables": len(selected_variables),
         "test_accuracy": test_accuracy,
     }
+    save_json(RF_DIR / "performance.json", result)
+    return result
 
 
 def run_xgboost_pipeline(selected_variables: list[str]) -> dict:
@@ -304,7 +406,7 @@ def run_xgboost_pipeline(selected_variables: list[str]) -> dict:
                                 objective="binary:logistic",
                                 eval_metric="logloss",
                                 random_state=RANDOM_SEED,
-                                n_jobs=1,
+                                n_jobs=-1,
                             )
                             xgboost_model.fit(X_train_selected, split_data.y_train)
 
@@ -335,41 +437,54 @@ def run_xgboost_pipeline(selected_variables: list[str]) -> dict:
         objective="binary:logistic",
         eval_metric="logloss",
         random_state=RANDOM_SEED,
-        n_jobs=1,
+        n_jobs=-1,
     )
     xgboost_model.fit(X_train_selected_full, split_data.y_train_full)
     joblib.dump(xgboost_model, XGB_DIR / "xgboost_model.joblib")
 
+    importances_df = pd.DataFrame(
+        {
+            "variable": selected_variables,
+            "importance": xgboost_model.feature_importances_,
+        }
+    ).sort_values("importance", ascending=False, kind="stable")
+    save_dataframe(importances_df, XGB_DIR / "feature_importances.csv")
+
     y_pred_test = xgboost_model.predict(X_test_selected)
     test_accuracy = accuracy_score(split_data.y_test, y_pred_test)
 
-    return {
+    result = {
         "model": "xgboost",
         "validation_accuracy": best_score,
         "best_params": json.dumps(best_params),
         "selected_variables": len(selected_variables),
         "test_accuracy": test_accuracy,
     }
-
-
-class NeuralNet(nn.Module):
-    def __init__(self, input_dim, hidden_dim_1, hidden_dim_2, dropout):
-        super().__init__()
-        self.model = nn.Sequential(
-            nn.Linear(input_dim, hidden_dim_1),
-            nn.ReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dim_1, hidden_dim_2),
-            nn.ReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dim_2, 2),
-        )
-
-    def forward(self, x):
-        return self.model(x)
+    save_json(XGB_DIR / "performance.json", result)
+    return result
 
 
 def run_neural_network_pipeline(selected_variables: list[str]) -> dict:
+    import torch
+    import torch.nn as nn
+    from torch.utils.data import DataLoader, TensorDataset
+
+    class NeuralNet(nn.Module):
+        def __init__(self, input_dim, hidden_dim_1, hidden_dim_2, dropout):
+            super().__init__()
+            self.model = nn.Sequential(
+                nn.Linear(input_dim, hidden_dim_1),
+                nn.ReLU(),
+                nn.Dropout(dropout),
+                nn.Linear(hidden_dim_1, hidden_dim_2),
+                nn.ReLU(),
+                nn.Dropout(dropout),
+                nn.Linear(hidden_dim_2, 2),
+            )
+
+        def forward(self, x):
+            return self.model(x)
+
     random.seed(RANDOM_SEED)
     np.random.seed(RANDOM_SEED)
     torch.manual_seed(RANDOM_SEED)
@@ -543,21 +658,23 @@ def run_neural_network_pipeline(selected_variables: list[str]) -> dict:
 
     test_accuracy = accuracy_score(split_data.y_test, y_pred_test)
 
-    return {
+    result = {
         "model": "neural_network",
         "validation_accuracy": best_score,
         "best_params": json.dumps(best_params),
         "selected_variables": len(selected_variables),
         "test_accuracy": test_accuracy,
     }
+    save_json(NN_DIR / "performance.json", result)
+    return result
 
 
 def print_split_summary() -> None:
     print("Split summary:")
-    print("  train:", split_data.y_train.value_counts().sort_index().to_dict())
-    print("  validation:", split_data.y_validation.value_counts().sort_index().to_dict())
-    print("  test:", split_data.y_test.value_counts().sort_index().to_dict())
-    print("  train_full:", split_data.y_train_full.value_counts().sort_index().to_dict())
+    print("  train:", count_classes(split_data.y_train))
+    print("  validation:", count_classes(split_data.y_validation))
+    print("  test:", count_classes(split_data.y_test))
+    print("  train_full:", count_classes(split_data.y_train_full))
     print()
 
 
@@ -568,6 +685,12 @@ def print_summary(results: list[dict]) -> None:
     if "selected_variables" not in summary_df.columns:
         summary_df["selected_variables"] = np.nan
     summary_df = summary_df.sort_values("test_accuracy", ascending=False).reset_index(drop=True)
+    summary_df["test_accuracy"] = summary_df["test_accuracy"].round(4)
+    if "validation_accuracy" in summary_df.columns:
+        summary_df["validation_accuracy"] = summary_df["validation_accuracy"].round(4)
+
+    save_dataframe(summary_df, RESULTS_DIR / "model_summary.csv")
+    save_json(RESULTS_DIR / "model_summary.json", summary_df.to_dict(orient="records"))
 
     print("\nSummary:")
     print(summary_df.to_string(index=False))
@@ -575,6 +698,7 @@ def print_summary(results: list[dict]) -> None:
 
 def main():
     ensure_directories()
+    save_split_summary()
     print_split_summary()
 
     results = []

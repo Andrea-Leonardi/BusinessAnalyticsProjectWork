@@ -25,17 +25,17 @@ selected_variables_path = output_dir.parent / "lasso_model" / "selected_variable
 
 param_grid = {
 
-    "n_estimators": [50, 75, 100],
+    "n_estimators": [ 75, 100],
 
-    "learning_rate": [0.004, 0.005, 0.006, 0.007],
+    "learning_rate": [0.004, 0.007],
 
-    "max_depth": [5, 6, 7, 8, 9],
+    "max_depth": [5, 8,],
 
-    "min_child_weight": [4, 5, 6, 7],
+    "min_child_weight": [ 5, 6, 7],
 
-    "subsample": [0.1, 0.2, 0.3, 0.4, 0.5], 
+    "subsample": [0.1,  0.3, 0.5], 
 
-    "colsample_bytree": [0.7, 0.8, 0.9, 1],
+    "colsample_bytree": [0.7, 1],
 
 }
 

@@ -1,0 +1,20 @@
+{
+    "train": {
+        "0": 942,
+        "1": 942
+    },
+    "validation": {
+        "0": 243,
+        "1": 270
+    },
+    "test": {
+        "0": 71,
+        "1": 62
+    },
+    "train_full": {
+        "0": 1185,
+        "1": 1185
+    },
+    "n_features_train": 69,
+    "n_features_train_full": 69
+}
