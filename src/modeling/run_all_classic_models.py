@@ -9,34 +9,48 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent / "classic_ML_model"
 RESULTS_DIR = BASE_DIR / "orchestrator_results"
 
+# Set to False to exclude a model from the run.
+INCLUDE_NULL_MODEL = True
+INCLUDE_LASSO_LOGISTIC = True
+INCLUDE_LOGISTIC_REGRESSION = True
+INCLUDE_RANDOM_FOREST = True
+INCLUDE_XGBOOST = True
+INCLUDE_NEURAL_NETWORK = True
+
 MODEL_RUNS = [
     {
         "name": "null_model",
+        "enabled": INCLUDE_NULL_MODEL,
         "directory": BASE_DIR / "null_model",
         "steps": ["training_model.py", "performance.py"],
     },
     {
         "name": "lasso_logistic",
+        "enabled": INCLUDE_LASSO_LOGISTIC,
         "directory": BASE_DIR / "lasso_model",
         "steps": ["validation.py", "training_model.py", "variable_selection.py", "performance.py"],
     },
     {
         "name": "logistic_regression",
+        "enabled": INCLUDE_LOGISTIC_REGRESSION,
         "directory": BASE_DIR / "logistic_regression",
         "steps": ["training_model.py", "performance.py"],
     },
     {
         "name": "random_forest",
+        "enabled": INCLUDE_RANDOM_FOREST,
         "directory": BASE_DIR / "random_forest",
         "steps": ["validation.py", "training_model.py", "performance.py"],
     },
     {
         "name": "xgboost",
+        "enabled": INCLUDE_XGBOOST,
         "directory": BASE_DIR / "XGBoost",
         "steps": ["validation.py", "training_model.py", "performance.py"],
     },
     {
         "name": "neural_network",
+        "enabled": INCLUDE_NEURAL_NETWORK,
         "directory": BASE_DIR / "neural network",
         "steps": ["validation.py", "training_model.py", "performance.py"],
     },
@@ -126,8 +140,12 @@ def print_summary(summary: dict):
 
 def main():
     results = []
+    enabled_model_runs = [model_run for model_run in MODEL_RUNS if model_run["enabled"]]
 
-    for model_run in MODEL_RUNS:
+    if not enabled_model_runs:
+        raise ValueError("No models enabled. Set at least one INCLUDE_* flag to True.")
+
+    for model_run in enabled_model_runs:
         for step_name in model_run["steps"]:
             run_python_script(model_run["directory"] / step_name)
         results.append(read_performance_file(model_run["directory"]))
