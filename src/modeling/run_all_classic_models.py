@@ -9,13 +9,20 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent / "classic_ML_model"
 RESULTS_DIR = BASE_DIR / "orchestrator_results"
 
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
+import split_data as split_data_module
+
 # Set to False to exclude a model from the run.
 INCLUDE_NULL_MODEL = True
+INCLUDE_ALWAYS_ZERO = True
+INCLUDE_ALWAYS_ONE = True
 INCLUDE_LASSO_LOGISTIC = True
 INCLUDE_LOGISTIC_REGRESSION = True
 INCLUDE_RANDOM_FOREST = True
-INCLUDE_XGBOOST = True
-INCLUDE_NEURAL_NETWORK = True
+INCLUDE_XGBOOST = False
+INCLUDE_NEURAL_NETWORK = False
 
 MODEL_RUNS = [
     {
@@ -23,6 +30,18 @@ MODEL_RUNS = [
         "enabled": INCLUDE_NULL_MODEL,
         "directory": BASE_DIR / "null_model",
         "steps": ["training_model.py", "performance.py"],
+    },
+    {
+        "name": "always_zero",
+        "enabled": INCLUDE_ALWAYS_ZERO,
+        "directory": BASE_DIR / "always_zero_model",
+        "steps": ["performance.py"],
+    },
+    {
+        "name": "always_one",
+        "enabled": INCLUDE_ALWAYS_ONE,
+        "directory": BASE_DIR / "always_one_model",
+        "steps": ["performance.py"],
     },
     {
         "name": "lasso_logistic",
@@ -73,16 +92,26 @@ def read_performance_file(model_directory: Path) -> dict:
         return json.load(f)
 
 
+def get_dataset_sizes() -> dict:
+    return {
+        "training": len(split_data_module.X_train),
+        "validation": len(split_data_module.X_validation),
+        "test": len(split_data_module.X_test),
+    }
+
+
 def save_summary(results: list[dict]):
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     ranking = sorted(results, key=lambda item: item["test_accuracy"], reverse=True)
     best_accuracy = ranking[0]["test_accuracy"]
     tied_best_models = [item["model"] for item in ranking if item["test_accuracy"] == best_accuracy]
+    dataset_sizes = get_dataset_sizes()
 
     summary = {
         "metric": "accuracy",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "dataset_sizes": dataset_sizes,
         "execution_order": [item["model"] for item in results],
         "ranking": ranking,
         "best_model": ranking[0]["model"],
@@ -112,6 +141,13 @@ def save_summary(results: list[dict]):
 
 
 def print_summary(summary: dict):
+    dataset_sizes = summary["dataset_sizes"]
+    print(
+        "\nDataset sizes | "
+        f"training={dataset_sizes['training']} | "
+        f"validation={dataset_sizes['validation']} | "
+        f"test={dataset_sizes['test']}"
+    )
     print("\n=== Accuracy Summary ===")
     for index, item in enumerate(summary["ranking"], start=1):
         validation_accuracy = item.get("validation_accuracy")
