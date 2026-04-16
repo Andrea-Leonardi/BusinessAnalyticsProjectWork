@@ -61,22 +61,29 @@ ticker_aziende = ticker_aziende[['Id_ticker_aziende', 'Ticker']]
 """
 # creiamo la tabella in cui mettiamo i nomi del settore, con un id progressivo che ci servirà poi per popolare le tabelle del dataset relazionale 
 # Aggiungi la colonna progressiva (partendo da 1)
-nomi_settori['Id_nomi_settori'] = range(1, len(nomi_settori) + 1)
+nomi_industie['id_nomi_industie'] = range(1, len(nomi_industie) + 1)
 
 # Riordina le colonne per avere l'ID all'inizio
-nomi_settori = nomi_settori[['Id_nomi_settori', 'sector', 'SectorCode']]
+nomi_industie = nomi_industie[['id_nomi_industie', 'industry']]
+
+# creiamo la tabella in cui mettiamo i nomi del settore, con un id progressivo che ci servirà poi per popolare le tabelle del dataset relazionale 
+# Aggiungi la colonna progressiva (partendo da 1)
+nomi_settori['id_nomi_settori'] = range(1, len(nomi_settori) + 1)
+
+# Riordina le colonne per avere l'ID all'inizio
+nomi_settori = nomi_settori[['id_nomi_settori', 'sector', 'SectorCode']]
 
 # creiamo la tabella in cui mettiamo i nomi dei risultati, con un id progressivo che ci servirà poi per popolare le tabelle del dataset relazionale
 # Aggiungi la colonna progressiva (partendo da 1)
-nomi_risultati['Id_nomi_risultati'] = range(1, len(nomi_risultati) + 1)
+nomi_risultati['id_nomi_risultati'] = range(1, len(nomi_risultati) + 1)
 
 # Riordina le colonne per avere l'ID all'inizio
-nomi_risultati = nomi_risultati[['Id_nomi_risultati', 'result', 'label']]
+nomi_risultati = nomi_risultati[['id_nomi_risultati', 'result', 'label']]
 
 
-# definiamo un calendario con tutte le date comprese tra il 1 gennaio 2020 e oggi, in modo da poter poi andare a popolare la tabella delle date del database relazionale.
+# definiamo un calendario con tutte le date comprese tra il 1 gennaio 2010 e oggi, in modo da poter poi andare a popolare la tabella delle date del database relazionale.
 # Definiamo l'intervallo temporale
-data_inizio = date(2020, 1, 1)
+data_inizio = date(2010, 1, 1)
 data_fine = date.today()
 
 # Calcoliamo il numero di giorni totali
@@ -90,8 +97,8 @@ calendario = pd.DataFrame({
     ]
 })
 # creiamo la tabella con le date, con un id progressivo che ci servirà poi per popolare le tabelle del dataset relazionale
-calendario['Id_calendario'] = range(1, len(calendario) + 1)
-calendario = calendario[['Id_calendario', 'date']]
+calendario['id_calendario'] = range(1, len(calendario) + 1)
+calendario = calendario[['id_calendario', 'date']]
 calendario['date'] = pd.to_datetime(calendario['date'], format='%Y-%d-%m').dt.date
 
 # %%
@@ -167,7 +174,14 @@ mercato['id_azienda'] = mercato.apply(chiave_esterna_mercato, axis=1)
 articoli['id_azienda'] = articoli.apply(chiave_esterna_articoli, axis=1)
 indicatori['id_azienda'] = indicatori.apply(chiave_esterna_indicatori, axis=1)
 risultati['id_azienda'] = risultati.apply(chiave_esterna_risultati, axis=1)
+possibbili_risultati = nomi_risultati 
 
+
+# dopo aver creato le chiavi esterne, possiamo eliminare le colonne che contengono i nomi delle aziende, dei ticker, dei settori e delle date, in quanto non ci serviranno più per popolare le tabelle del database relazionale.
+mercato.drop(columns=['Ticker'], inplace=True)
+articoli.drop(columns=['Ticker'], inplace=True)
+indicatori.drop(columns=['symbol'], inplace=True)
+risultati.drop(columns=['Ticker'], inplace=True)
 # %%
 # qui creiamo una serie di funzioni che ci permettono di andare a popolare le tabelle del database relazionale, andando a sostituire i nomi delle aziende, dei ticker, dei settori e delle date con i rispettivi id che abbiamo creato nelle tabelle che abbiamo appena creato.
 
@@ -177,22 +191,23 @@ def tabella_aziende(x):
     x['Ticker'] = ticker_aziende['Id_ticker_aziende'][ticker_aziende['Ticker'] == x['Ticker']].item()
     x['companyName'] = nomi_aziende['Id_nomi_aziende'][nomi_aziende['companyName'] == x['companyName']].item()
     """ 
-    x['sector'] = nomi_settori['Id_nomi_settori'][nomi_settori['sector'] == x['sector']].item()
-    x['selectionReferenceDate'] = calendario['Id_calendario'][calendario['date'] == x['selectionReferenceDate']].item()
+    x['sector'] = nomi_settori['id_nomi_settori'][nomi_settori['sector'] == x['sector']].item()
+    # x['selectionReferenceDate'] = calendario['id_calendario'][calendario['date'] == x['selectionReferenceDate']].item()
+    x['industry'] = nomi_industie['id_nomi_industie'][nomi_industie['industry'] == x['industry']].item()
     return x
 
 def tabella_mercato(x):
     """
     x['Ticker'] = ticker_aziende['Id_ticker_aziende'][ticker_aziende['Ticker'] == x['Ticker']].item()
     """
-    x['WeekEndingFriday'] = calendario['Id_calendario'][calendario['date'] == x['WeekEndingFriday']].item()
+    x['WeekEndingFriday'] = calendario['id_calendario'][calendario['date'] == x['WeekEndingFriday']].item()
     return x
 
 def tabella_articoli(x):
     """
     x['Ticker'] = ticker_aziende['Id_ticker_aziende'][ticker_aziende['Ticker'] == x['Ticker']].item()
     """
-    x['Date'] = calendario['Id_calendario'][calendario['date'] == x['Date']].item()
+    x['Date'] = calendario['id_calendario'][calendario['date'] == x['Date']].item()
     return x
 
 def tabella_indicatori(x):
@@ -200,15 +215,15 @@ def tabella_indicatori(x):
     """
     x['symbol'] = ticker_aziende['Id_ticker_aziende'][ticker_aziende['Ticker'] == x['symbol']].item()
     """
-    x['WeekEndingFriday'] = calendario['Id_calendario'][calendario['date'] == x['WeekEndingFriday']].item()
+    x['WeekEndingFriday'] = calendario['id_calendario'][calendario['date'] == x['WeekEndingFriday']].item()
     return x
 def tabella_risultati(x):
     """
     x['Ticker'] = ticker_aziende['Id_ticker_aziende'][ticker_aziende['Ticker'] == x['Ticker']].item()
     """
-    x['WeekEndingFriday'] = calendario['Id_calendario'][calendario['date'] == x['WeekEndingFriday']].item()
-    x['result'] = nomi_risultati['Id_nomi_risultati'][nomi_risultati['result'] == x['result']].item()
-    x['prediction'] = nomi_risultati['Id_nomi_risultati'][nomi_risultati['result'] == x['prediction']].item()
+    x['WeekEndingFriday'] = calendario['id_calendario'][calendario['date'] == x['WeekEndingFriday']].item()
+    x['result'] = nomi_risultati['id_nomi_risultati'][nomi_risultati['result'] == x['result']].item()
+    x['prediction'] = nomi_risultati['id_nomi_risultati'][nomi_risultati['result'] == x['prediction']].item()
     return x
 
 # Applicazione (questo richiederà un po' di tempo se i dataset sono grandi)
@@ -217,10 +232,177 @@ mercato = mercato.apply(tabella_mercato, axis=1)
 articoli = articoli.apply(tabella_articoli, axis=1)
 indicatori = indicatori.apply(tabella_indicatori, axis=1)
 risultati = risultati.apply(tabella_risultati, axis=1)
-# %%
-print(aziende.head())
-print(mercato.head())
-print(articoli.head())
-print(indicatori.head())
 
+#%% 
+# dopo aver creato le chiavi esterne, possiamo rinominare le colonne per riflettere i nuovi nomi degli ID
+aziende.rename(columns={'sector': 'id_settore', 'selectionReferenceDate': 'id_calendario', 'industry': 'id_industry'}, inplace=True)
+mercato.rename(columns={'WeekEndingFriday': 'id_calendario'}, inplace=True)
+articoli.rename(columns={'Date': 'id_calendario', 'ID': 'id_articoli_originali'}, inplace=True)
+indicatori.rename(columns={'WeekEndingFriday': 'id_calendario'}, inplace=True)
+risultati.rename(columns={'WeekEndingFriday': 'id_calendario'}, inplace=True)
+possibbili_risultati.rename(columns={'id_nomi_risultati': 'id_result'}, inplace=True)
+
+# riordiniamo le colonne per avere come prima cosa la chiave interna, poi la chiave esterna, e poi le altre colonne
+# Riordino Tabella Aziende
+aziende = aziende[['id_azienda', 'id_settore', 'id_industry', 'Ticker', 'companyName', 'SectorCode', 'marketCap', 'historicalMarketCapDate', 'universeSource']]
+
+# Riordino Tabella Mercato
+mercato = mercato[['id_mercato', 'id_azienda', 'id_calendario', 'ClosePrice', 'ClosePrice_t-1', 'ClosePrice_t-2', 'ClosePrice_t+1', 'AdjClosePrice', 'AdjClosePrice_t-1', 'AdjClosePrice_t-2', 'AdjClosePrice_t+1', 'AdjClosePrice_t+1_Up', 'WeeklyReturn_1W', 'WeeklyReturn_4W', 'Momentum_12W', 'Volatility_4W', 'Volatility_12W', 'Drawdown_12W']]
+
+# Riordino Tabella Articoli
+# Nota: id_calendario non era presente nei tuoi dati originali, assicurati di averlo creato prima di questa riga
+articoli = articoli[['id_articoli', 'id_articoli_originali', 'id_azienda', 'id_calendario', 'Headline', 'Summary']]
+
+# Riordino Tabella Indicatori
+indicatori = indicatori[['id_indicatori', 'id_azienda', 'id_calendario', 'company_name', 'QuarterlyReleased', 'BookToMarket', 'MarketCap', 'FreeCashFlowYield', 'FreeCashFlowYield_TTM', 'EarningsYield', 'EarningsYield_TTM', 'BookToMarket_L1W', 'MarketCap_L1W', 'FreeCashFlowYield_L1W', 'FreeCashFlowYield_TTM_L1W', 'EarningsYield_L1W', 'EarningsYield_TTM_L1W', 'BookToMarket_L2W', 'MarketCap_L2W', 'FreeCashFlowYield_L2W', 'FreeCashFlowYield_TTM_L2W', 'EarningsYield_L2W', 'EarningsYield_TTM_L2W', 'GrossProfitability', 'GrossProfitability_TTM', 'OperatingMargin', 'OperatingMargin_TTM', 'ROA', 'ROA_TTM', 'AssetGrowth', 'InvestmentIntensity', 'Accruals', 'Accruals_TTM', 'DebtToAssets', 'WorkingCapitalScaled', 'GrossProfitability_L1Q', 'GrossProfitability_TTM_L1Q', 'OperatingMargin_L1Q', 'OperatingMargin_TTM_L1Q', 'ROA_L1Q', 'ROA_TTM_L1Q', 'AssetGrowth_L1Q', 'InvestmentIntensity_L1Q', 'Accruals_L1Q', 'Accruals_TTM_L1Q', 'DebtToAssets_L1Q', 'WorkingCapitalScaled_L1Q', 'GrossProfitability_L2Q', 'GrossProfitability_TTM_L2Q', 'OperatingMargin_L2Q', 'OperatingMargin_TTM_L2Q', 'ROA_L2Q', 'ROA_TTM_L2Q', 'AssetGrowth_L2Q', 'InvestmentIntensity_L2Q', 'Accruals_L2Q', 'Accruals_TTM_L2Q', 'DebtToAssets_L2Q', 'WorkingCapitalScaled_L2Q']]
+
+# Riordino Tabella Risultati
+risultati = risultati[['id_risultati', 'id_azienda', 'id_calendario', 'result', 'prediction', 'probability_up', 'probability_down']]
+
+# eliminiamo le colonne che contengono i nomi delle aziende, dei ticker, dei settori e delle date, in quanto non ci serviranno più per popolare le tabelle del database relazionale.
+aziende.drop(columns=['SectorCode', 'marketCap', 'historicalMarketCapDate', 'universeSource'], inplace=True)
+indicatori.drop(columns=['company_name'], inplace=True)
+
+# %%
+print("Colonne Aziende:", aziende.columns.tolist())
+print("Colonne Mercato:", mercato.columns.tolist())
+print("Colonne Articoli:", articoli.columns.tolist())
+print("Colonne Indicatori:", indicatori.columns.tolist())
+print("Colonne Risultati:", risultati.columns.tolist())
+print("Colonne Calendario:", calendario.columns.tolist())
+print("Colonne Possibili Risultati:", possibbili_risultati.columns.tolist())
+
+# %%
+import pandas as pd
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Float, Date, ForeignKey, Text
+
+# ==========================================
+# 1. CONFIGURAZIONE CONNESSIONE
+# ==========================================
+# Sostituisci 'latuapassword' con quella scelta durante l'installazione
+# Sostituisci 'db_progetto' con il nome che hai dato al database in pgAdmin
+USER = 'postgres'
+PASSWORD = 'Gorilla2026!' 
+HOST = 'localhost'
+PORT = '5432'
+DB_NAME = 'db_progetto'
+
+# Creazione della stringa di connessione
+DATABASE_URI = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}'
+
+# Creazione dell'engine
+engine = create_engine(DATABASE_URI)
+metadata = MetaData()
+
+# ==========================================
+# 2. DEFINIZIONE DELLO SCHEMA DELLE TABELLE
+# ==========================================
+
+# Tabelle Dimensionali (Tabelle di Lookup, senza chiavi esterne)
+calendario_db = Table('calendario', metadata,
+    Column('id_calendario', Integer, primary_key=True),
+    Column('date', Date)
+)
+
+settori_db = Table('settori', metadata,
+    Column('id_settore', Integer, primary_key=True),
+    Column('sector', String(100)),
+    Column('SectorCode', String(50))
+)
+
+industrie_db = Table('industrie', metadata,
+    Column('id_industry', Integer, primary_key=True),
+    Column('industry', String(100))
+)
+
+possibili_risultati_db = Table('possibili_risultati', metadata,
+    Column('id_result', Integer, primary_key=True),
+    Column('result', String(50)),
+    Column('label', Integer)
+)
+
+# Tabella Aziende (Contiene chiavi esterne verso settori e industrie)
+aziende_db = Table('aziende', metadata,
+    Column('id_azienda', Integer, primary_key=True),
+    Column('id_settore', Integer, ForeignKey('settori.id_settore')),
+    Column('id_industry', Integer, ForeignKey('industrie.id_industry')),
+    Column('Ticker', String(10)),
+    Column('companyName', String(200))
+)
+
+# Tabelle dei Dati (Fatti) che puntano ad Azienda e Calendario
+mercato_db = Table('mercato', metadata,
+    Column('id_mercato', Integer, primary_key=True),
+    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
+    Column('id_calendario', Integer, ForeignKey('calendario.id_calendario')),
+    # Tutte le altre colonne numeriche come Float (Decimali)
+    Column('ClosePrice', Float), Column('ClosePrice_t-1', Float), Column('ClosePrice_t-2', Float), 
+    Column('ClosePrice_t+1', Float), Column('AdjClosePrice', Float), Column('AdjClosePrice_t-1', Float), 
+    Column('AdjClosePrice_t-2', Float), Column('AdjClosePrice_t+1', Float), Column('AdjClosePrice_t+1_Up', Float), 
+    Column('WeeklyReturn_1W', Float), Column('WeeklyReturn_4W', Float), Column('Momentum_12W', Float), 
+    Column('Volatility_4W', Float), Column('Volatility_12W', Float), Column('Drawdown_12W', Float)
+)
+
+articoli_db = Table('articoli', metadata,
+    Column('id_articoli', Integer, primary_key=True),
+    Column('id_articoli_originali', String(100)), # Testo o numero in base al dataset originale
+    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
+    Column('id_calendario', Integer, ForeignKey('calendario.id_calendario')),
+    Column('Headline', Text), # Text per stringhe molto lunghe
+    Column('Summary', Text)
+)
+
+# Aggiungo la definizione dinamica delle colonne per Indicatori (sono tantissime, tutte float tranne le chiavi)
+colonne_indicatori = [
+    Column('id_indicatori', Integer, primary_key=True),
+    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
+    Column('id_calendario', Integer, ForeignKey('calendario.id_calendario'))
+]
+# Prendo i nomi delle metriche dalla tua lista ignorando i primi 3 campi che ho già definito
+nomi_metriche_ind = ['QuarterlyReleased', 'BookToMarket', 'MarketCap', 'FreeCashFlowYield', 'FreeCashFlowYield_TTM', 'EarningsYield', 'EarningsYield_TTM', 'BookToMarket_L1W', 'MarketCap_L1W', 'FreeCashFlowYield_L1W', 'FreeCashFlowYield_TTM_L1W', 'EarningsYield_L1W', 'EarningsYield_TTM_L1W', 'BookToMarket_L2W', 'MarketCap_L2W', 'FreeCashFlowYield_L2W', 'FreeCashFlowYield_TTM_L2W', 'EarningsYield_L2W', 'EarningsYield_TTM_L2W', 'GrossProfitability', 'GrossProfitability_TTM', 'OperatingMargin', 'OperatingMargin_TTM', 'ROA', 'ROA_TTM', 'AssetGrowth', 'InvestmentIntensity', 'Accruals', 'Accruals_TTM', 'DebtToAssets', 'WorkingCapitalScaled', 'GrossProfitability_L1Q', 'GrossProfitability_TTM_L1Q', 'OperatingMargin_L1Q', 'OperatingMargin_TTM_L1Q', 'ROA_L1Q', 'ROA_TTM_L1Q', 'AssetGrowth_L1Q', 'InvestmentIntensity_L1Q', 'Accruals_L1Q', 'Accruals_TTM_L1Q', 'DebtToAssets_L1Q', 'WorkingCapitalScaled_L1Q', 'GrossProfitability_L2Q', 'GrossProfitability_TTM_L2Q', 'OperatingMargin_L2Q', 'OperatingMargin_TTM_L2Q', 'ROA_L2Q', 'ROA_TTM_L2Q', 'AssetGrowth_L2Q', 'InvestmentIntensity_L2Q', 'Accruals_L2Q', 'Accruals_TTM_L2Q', 'DebtToAssets_L2Q', 'WorkingCapitalScaled_L2Q']
+for col in nomi_metriche_ind:
+    colonne_indicatori.append(Column(col, Float))
+indicatori_db = Table('indicatori', metadata, *colonne_indicatori)
+
+# Tabella Risultati (Ha due chiavi esterne che puntano entrambe a possibili_risultati)
+risultati_db = Table('risultati', metadata,
+    Column('id_risultati', Integer, primary_key=True),
+    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
+    Column('id_calendario', Integer, ForeignKey('calendario.id_calendario')),
+    Column('result', Integer, ForeignKey('possibili_risultati.id_result')), # FK su possibili_risultati
+    Column('prediction', Integer, ForeignKey('possibili_risultati.id_result')), # FK su possibili_risultati
+    Column('probability_up', Float),
+    Column('probability_down', Float)
+)
+
+# ==========================================
+# 3. CREAZIONE TABELLE NEL DATABASE
+# ==========================================
+# Questo comando invia fisicamente le query CREATE TABLE a Postgres
+metadata.create_all(engine)
+print("Tabelle create con successo nel database PostgreSQL.")
+
+# ==========================================
+# 4. POPOLAMENTO DELLE TABELLE (L'ordine è fondamentale per le Foreign Keys!)
+# ==========================================
+# ATTENZIONE: Assicurati che i nomi dei tuoi DataFrame e delle colonne siano ESATTAMENTE quelli dichiarati.
+# (nomi_risultati nel tuo codice aveva 'id_nomi_risultati', lo rinominiamo per far match con il DB)
+nomi_risultati.rename(columns={'id_nomi_risultati': 'id_result'}, inplace=True)
+
+# 4.1 Tabelle indipendenti (Genitori)
+calendario.to_sql('calendario', engine, if_exists='append', index=False)
+nomi_settori.rename(columns={'id_nomi_settori': 'id_settore'}).to_sql('settori', engine, if_exists='append', index=False)
+nomi_industie.rename(columns={'id_nomi_industie': 'id_industry'}).to_sql('industrie', engine, if_exists='append', index=False)
+nomi_risultati.to_sql('possibili_risultati', engine, if_exists='append', index=False)
+
+# 4.2 Tabella Intermedia
+aziende.to_sql('aziende', engine, if_exists='append', index=False)
+
+# 4.3 Tabelle dipendenti (Figli)
+mercato.to_sql('mercato', engine, if_exists='append', index=False)
+indicatori.to_sql('indicatori', engine, if_exists='append', index=False)
+articoli.to_sql('articoli', engine, if_exists='append', index=False)
+risultati.to_sql('risultati', engine, if_exists='append', index=False)
+
+print("Caricamento dei dati nel database relazionale completato!")
 # %%
