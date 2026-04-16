@@ -67,7 +67,7 @@ OUTPUT_COLUMNS = ["ID", "Ticker", "Date", "Headline", "Summary"]
 PRIMARY_DEDUP_COLUMNS = ["ID", "Ticker"]
 FALLBACK_DEDUP_COLUMNS = ["Ticker", "Date", "Headline", "Summary"]
 
-RAW_OUTPUT_DIR = cfg.NEWS_EXTRACTION / "raw_news_data"
+RAW_OUTPUT_DIR = cfg.RAW_NEWS_DATA
 RAW_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 cfg.NEWS_EXTRACTION.mkdir(parents=True, exist_ok=True)
 

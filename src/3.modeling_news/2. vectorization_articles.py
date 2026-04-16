@@ -16,11 +16,8 @@ from huggingface_hub import hf_hub_download
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import config as cfg
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-HF_CACHE_DIR = PROJECT_ROOT / "data" / "hf_cache"
 DATASET_REPO_ID = "financial_phrasebank"
-DATASET_FILENAME = "data/FinancialPhraseBank-v1.0.zip"
+DATASET_FILENAME = cfg.HF_FINANCIAL_PHRASEBANK_DATASET_FILENAME
 DATASET_CONFIG = "sentences_50agree"
 
 CONFIG_TO_FILENAME = {
@@ -34,15 +31,15 @@ LABEL_TO_ID = {"negative": 0, "neutral": 1, "positive": 2}
 
 
 def configure_huggingface_cache() -> None:
-    HF_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    os.environ.setdefault("HF_HOME", str(HF_CACHE_DIR))
-    os.environ.setdefault("HUGGINGFACE_HUB_CACHE", str(HF_CACHE_DIR))
+    cfg.HF_CACHE.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("HF_HOME", str(cfg.HF_CACHE))
+    os.environ.setdefault("HUGGINGFACE_HUB_CACHE", str(cfg.HF_CACHE))
     os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
 
 def download_phrasebank_zip() -> Path:
     configure_huggingface_cache()
-    local_dir = HF_CACHE_DIR / "financial_phrasebank"
+    local_dir = cfg.HF_FINANCIAL_PHRASEBANK_LOCAL_DIR
     local_dir.mkdir(parents=True, exist_ok=True)
 
     return Path(

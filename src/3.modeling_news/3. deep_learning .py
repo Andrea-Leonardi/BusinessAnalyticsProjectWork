@@ -13,12 +13,13 @@ from zipfile import ZipFile
 
 import pandas as pd
 from huggingface_hub import hf_hub_download
+import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import config as cfg
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-HF_CACHE_DIR = PROJECT_ROOT / "data" / "hf_cache"
 DATASET_REPO_ID = "financial_phrasebank"
-DATASET_FILENAME = "data/FinancialPhraseBank-v1.0.zip"
+DATASET_FILENAME = cfg.HF_FINANCIAL_PHRASEBANK_DATASET_FILENAME
 DATASET_CONFIG = "sentences_50agree"
 
 CONFIG_TO_FILENAME = {
@@ -32,15 +33,15 @@ LABEL_TO_ID = {"negative": 0, "neutral": 1, "positive": 2}
 
 
 def configure_huggingface_cache() -> None:
-    HF_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    os.environ.setdefault("HF_HOME", str(HF_CACHE_DIR))
-    os.environ.setdefault("HUGGINGFACE_HUB_CACHE", str(HF_CACHE_DIR))
+    cfg.HF_CACHE.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("HF_HOME", str(cfg.HF_CACHE))
+    os.environ.setdefault("HUGGINGFACE_HUB_CACHE", str(cfg.HF_CACHE))
     os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
 
 def download_phrasebank_zip() -> Path:
     configure_huggingface_cache()
-    local_dir = HF_CACHE_DIR / "financial_phrasebank"
+    local_dir = cfg.HF_FINANCIAL_PHRASEBANK_LOCAL_DIR
     local_dir.mkdir(parents=True, exist_ok=True)
 
     return Path(
@@ -128,14 +129,10 @@ ricostruendo anche il modello ottimale trovato durante la ricerca degli iperpara
 import json
 import torch
 import torch.nn as nn
-import sys 
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-SCRIPT_DIR = Path(__file__).resolve().parent
 from torchsummary import summary
 
 # 1. Carica i dati dal file JSON
-JSON_PATH = SCRIPT_DIR / 'migliori_parametri.json'
+JSON_PATH = cfg.MODELING_NEWS_BEST_PARAMS / "migliori_parametri_rete_non_lineare.json"
 with open(JSON_PATH, 'r') as f:
     dati_caricati = json.load(f)
 

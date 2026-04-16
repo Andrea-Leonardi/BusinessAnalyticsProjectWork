@@ -346,7 +346,7 @@ for idx, model_name in enumerate(model_names):
 # Regola lo spazio tra i subplot
 plt.tight_layout()
 # Salva la figura come file PNG con alta risoluzione (300 dpi)
-plt.savefig(cfg.PROJECT_ROOT / 'reports' / 'error_analysis_tfidf.png', dpi=300, bbox_inches='tight')
+plt.savefig(cfg.REPORTS / 'error_analysis_tfidf.png', dpi=300, bbox_inches='tight')
 # Mostra il grafico nella finestra
 plt.show()
 
@@ -394,7 +394,7 @@ for idx, model_name in enumerate(model_names):
 # Regola lo spazio tra i subplot
 plt.tight_layout()
 # Salva il grafico come file PNG
-plt.savefig(cfg.PROJECT_ROOT / 'reports' / 'error_analysis_bow.png', dpi=300, bbox_inches='tight')
+plt.savefig(cfg.REPORTS / 'error_analysis_bow.png', dpi=300, bbox_inches='tight')
 # Mostra il grafico
 plt.show()
 

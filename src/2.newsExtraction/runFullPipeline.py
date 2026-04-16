@@ -17,15 +17,15 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import config as cfg
+
 
 # ---------------------------------------------------------------------------
 # PATH DI PROGETTO
 # ---------------------------------------------------------------------------
 
-# Partendo da src/newsExtraction, risalgo alla root del repository.
-SCRIPT_DIR = Path(__file__).resolve().parent
-SRC_DIR = SCRIPT_DIR.parent
-ROOT_DIR = SRC_DIR.parent
+ROOT_DIR = cfg.PROJECT_ROOT
 
 
 # ---------------------------------------------------------------------------
@@ -40,19 +40,19 @@ ROOT_DIR = SRC_DIR.parent
 PIPELINE_STEPS = [
     {
         "name": "Data extraction completa",
-        "path": SRC_DIR / "dataExtraction" / "rundataExtraction.py",
+        "path": cfg.DATA_EXTRACTION_RUNNER,
     },
     {
         "name": "Manutenzione news",
-        "path": SCRIPT_DIR / "3.newsMaintenance.py",
+        "path": cfg.NEWS_MAINTENANCE_SCRIPT,
     },
     {
         "name": "Text analysis news",
-        "path": SCRIPT_DIR / "4.textAnalysis.py",
+        "path": cfg.NEWS_TEXT_ANALYSIS_SCRIPT,
     },
     {
         "name": "Aggregazione news settimanale",
-        "path": SCRIPT_DIR / "5.weeklyNewsAggregation.py",
+        "path": cfg.NEWS_WEEKLY_AGGREGATION_SCRIPT,
     },
 ]
 

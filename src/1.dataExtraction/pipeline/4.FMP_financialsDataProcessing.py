@@ -209,7 +209,7 @@ def rebuild_combined_financial_output(valid_tickers: list[str]) -> pd.DataFrame:
 # Re-run the raw download script before processing when explicitly requested.
 if REDOWNLOAD_RAW_FMP_DATA:
     subprocess.run(
-        [sys.executable, str(cfg.DATA_EXTRACTION_SRC / "3.FMP_financialsDataGathering.py")],
+        [sys.executable, str(cfg.DATA_EXTRACTION_FINANCIALS_GATHERING_SCRIPT)],
         check=True,
     )
 

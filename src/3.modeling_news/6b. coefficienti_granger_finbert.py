@@ -11,7 +11,7 @@ import config as cfg
 
 MAX_LAG = 3
 MIN_EXTRA_OBS = 2
-OUTPUT_PATH = cfg.NEWS_EXTRACTION / "granger_finbert_coefficients.csv"
+OUTPUT_PATH = cfg.GRANGER_FINBERT_COEFFICIENTS
 
 FINBERT_COLUMNS = [
     "AdjClosePrice",

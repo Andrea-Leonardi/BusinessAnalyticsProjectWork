@@ -58,7 +58,7 @@ REQUEST_TIMEOUT_SECONDS = int(os.getenv("NEWS_IMPORT_TIMEOUT_SECONDS", "20"))
 OUTPUT_COLUMNS = ["ID", "Ticker", "Date", "Headline", "Summary"]
 PRIMARY_DEDUP_COLUMNS = ["ID", "Ticker"]
 FALLBACK_DEDUP_COLUMNS = ["Ticker", "Date", "Headline", "Summary"]
-RAW_OUTPUT_DIR = cfg.NEWS_EXTRACTION / "raw_news_data"
+RAW_OUTPUT_DIR = cfg.RAW_NEWS_DATA
 
 
 # ---------------------------------------------------------------------------
