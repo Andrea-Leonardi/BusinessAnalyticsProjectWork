@@ -1,3 +1,11 @@
 variable
-FreeCashFlowYield
-FreeCashFlowYield_L2W
+AssetGrowth_L2Q
+FreeCashFlowYield_TTM_L2W
+EarningsYield
+DebtToAssets_L2Q
+Accruals_L1Q
+Accruals_TTM
+FreeCashFlowYield_TTM
+FreeCashFlowYield_TTM_L1W
+Momentum_12W
+Volatility_4W

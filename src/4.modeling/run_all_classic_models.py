@@ -12,7 +12,7 @@ RESULTS_DIR = BASE_DIR / "orchestrator_results"
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-import split_data as split_data_module
+import split_data as split_data_module # type: ignore
 
 # Set to False to exclude a model from the run.
 INCLUDE_NULL_MODEL = True
@@ -22,7 +22,7 @@ INCLUDE_LASSO_LOGISTIC = True
 INCLUDE_LOGISTIC_REGRESSION = True
 INCLUDE_RANDOM_FOREST = True
 INCLUDE_XGBOOST = True
-INCLUDE_NEURAL_NETWORK = True
+INCLUDE_NEURAL_NETWORK = False
 
 MODEL_RUNS = [
     {
