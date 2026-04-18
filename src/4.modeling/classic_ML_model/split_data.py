@@ -27,7 +27,7 @@ SECTOR_CODE_TO_NAME = {
     10: "Technology",
     11: "Utilities",
 }
-SECTOR_FILTER = 10
+SECTOR_FILTER = 1
 # Esempi:
 # SECTOR_FILTER = 10          -> usa solo il settore con codice 10
 # SECTOR_FILTER = [3, 10, 11] -> usa solo questi settori

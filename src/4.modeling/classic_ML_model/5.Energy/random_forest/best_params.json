@@ -1,0 +1,39 @@
+{
+    "best_params": {
+        "n_estimators": 200,
+        "max_depth": 3,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt"
+    },
+    "best_score": 0.5577689243027888,
+    "metric": "accuracy",
+    "scores": {
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5577689243027888,
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5378486055776892,
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5378486055776892,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5537848605577689,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5378486055776892,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.545816733067729,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.549800796812749,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5537848605577689,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5537848605577689,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5537848605577689,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.545816733067729,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5418326693227091,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.549800796812749,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.545816733067729,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.545816733067729,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5537848605577689,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.545816733067729,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5418326693227091
+    },
+    "selected_variables": [
+        "Drawdown_12W",
+        "NEWS_FINBERT_Positive_Mean",
+        "WorkingCapitalScaled_L2Q",
+        "Momentum_12W",
+        "QuarterlyReleased",
+        "EarningsYield_L2W",
+        "WeeklyReturn_1W"
+    ]
+}

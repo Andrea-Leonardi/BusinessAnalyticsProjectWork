@@ -1,0 +1,42 @@
+{
+    "best_params": {
+        "n_estimators": 200,
+        "max_depth": 3,
+        "min_samples_leaf": 30,
+        "max_features": "sqrt"
+    },
+    "best_score": 0.5091324200913242,
+    "metric": "accuracy",
+    "scores": {
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.4977168949771689,
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5045662100456622,
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5091324200913242,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.4931506849315068,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4908675799086758,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5068493150684932,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.4885844748858447,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4954337899543379,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.4977168949771689,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5045662100456622,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4977168949771689,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5068493150684932,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.4954337899543379,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4885844748858447,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5068493150684932,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.4885844748858447,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5
+    },
+    "selected_variables": [
+        "Accruals_TTM_L1Q",
+        "OperatingMargin_L1Q",
+        "FreeCashFlowYield",
+        "AssetGrowth",
+        "Momentum_12W",
+        "AdjClosePrice_t-1",
+        "FreeCashFlowYield_L2W",
+        "FreeCashFlowYield_TTM",
+        "NEWS_FINBERT_Granger_Score",
+        "QuarterlyReleased"
+    ]
+}

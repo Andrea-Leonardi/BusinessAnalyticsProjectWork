@@ -1,0 +1,103 @@
+{
+    "metric": "accuracy",
+    "generated_at_utc": "2026-04-18T10:48:59.880227+00:00",
+    "dataset_sizes": {
+        "training": 916,
+        "validation": 286,
+        "test": 58
+    },
+    "execution_order": [
+        "null_model",
+        "always_zero",
+        "always_one",
+        "lasso_logistic",
+        "logistic_regression",
+        "random_forest",
+        "xgboost",
+        "neural_network"
+    ],
+    "ranking": [
+        {
+            "model": "null_model",
+            "metric": "accuracy",
+            "predicted_class": 1,
+            "test_accuracy": 0.6551724137931034
+        },
+        {
+            "model": "always_one",
+            "metric": "accuracy",
+            "predicted_class": 1,
+            "test_accuracy": 0.6551724137931034
+        },
+        {
+            "model": "xgboost",
+            "metric": "accuracy",
+            "validation_accuracy": 0.541958041958042,
+            "best_params": {
+                "n_estimators": 75,
+                "learning_rate": 0.007,
+                "max_depth": 5,
+                "min_child_weight": 5,
+                "subsample": 0.1,
+                "colsample_bytree": 1
+            },
+            "selected_variables": 46,
+            "test_accuracy": 0.5172413793103449
+        },
+        {
+            "model": "lasso_logistic",
+            "metric": "accuracy",
+            "validation_accuracy": 0.5,
+            "best_C": 1,
+            "selected_variables": 46,
+            "test_accuracy": 0.46551724137931033
+        },
+        {
+            "model": "random_forest",
+            "metric": "accuracy",
+            "validation_accuracy": 0.534965034965035,
+            "best_params": {
+                "n_estimators": 300,
+                "max_depth": 5,
+                "min_samples_leaf": 10,
+                "max_features": "sqrt"
+            },
+            "selected_variables": 46,
+            "test_accuracy": 0.46551724137931033
+        },
+        {
+            "model": "logistic_regression",
+            "metric": "accuracy",
+            "selected_variables": 46,
+            "test_accuracy": 0.4482758620689655
+        },
+        {
+            "model": "neural_network",
+            "metric": "accuracy",
+            "validation_accuracy": 0.5594405594405595,
+            "best_params": {
+                "hidden_dim_1": 48,
+                "hidden_dim_2": 64,
+                "dropout": 0.4,
+                "learning_rate": 0.0006251373574521745,
+                "weight_decay": 2.9380279387035354e-06,
+                "batch_size": 64
+            },
+            "best_epoch": 1,
+            "selected_variables": 46,
+            "test_accuracy": 0.4482758620689655
+        },
+        {
+            "model": "always_zero",
+            "metric": "accuracy",
+            "predicted_class": 0,
+            "test_accuracy": 0.3448275862068966
+        }
+    ],
+    "best_model": "null_model",
+    "best_accuracy": 0.6551724137931034,
+    "tied_best_models": [
+        "null_model",
+        "always_one"
+    ]
+}
