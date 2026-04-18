@@ -7,12 +7,11 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent / "classic_ML_model"
-RESULTS_DIR = BASE_DIR / "orchestrator_results"
 
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-import split_data as split_data_module
+import split_data as split_data_module # type: ignore
 
 # Set to False to exclude a model from the run.
 INCLUDE_NULL_MODEL = True
@@ -75,6 +74,13 @@ MODEL_RUNS = [
     },
 ]
 
+MODEL_DEPENDENCIES = {
+    "logistic_regression": {"lasso_logistic"},
+    "random_forest": {"lasso_logistic"},
+    "xgboost": {"lasso_logistic"},
+    "neural_network": {"lasso_logistic"},
+}
+
 
 def run_python_script(script_path: Path):
     relative_path = script_path.relative_to(BASE_DIR.parent)
@@ -87,7 +93,7 @@ def run_python_script(script_path: Path):
 
 
 def read_performance_file(model_directory: Path) -> dict:
-    performance_path = model_directory / "performance.json"
+    performance_path = split_data_module.get_model_output_dir(model_directory.name) / "performance.json"
     with open(performance_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -100,7 +106,25 @@ def get_dataset_sizes() -> dict:
     }
 
 
+def validate_enabled_model_dependencies(enabled_model_runs: list[dict]):
+    enabled_names = {model_run["name"] for model_run in enabled_model_runs}
+
+    missing_dependencies = {
+        model_name: sorted(required_dependencies - enabled_names)
+        for model_name, required_dependencies in MODEL_DEPENDENCIES.items()
+        if model_name in enabled_names and not required_dependencies.issubset(enabled_names)
+    }
+
+    if missing_dependencies:
+        details = "; ".join(
+            f"{model_name} requires {', '.join(dependencies)}"
+            for model_name, dependencies in missing_dependencies.items()
+        )
+        raise ValueError(f"Invalid model configuration: {details}.")
+
+
 def save_summary(results: list[dict]):
+    RESULTS_DIR = split_data_module.ORCHESTRATOR_RESULTS_DIR
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     ranking = sorted(results, key=lambda item: item["test_accuracy"], reverse=True)
@@ -141,6 +165,7 @@ def save_summary(results: list[dict]):
 
 
 def print_summary(summary: dict):
+    RESULTS_DIR = split_data_module.ORCHESTRATOR_RESULTS_DIR
     dataset_sizes = summary["dataset_sizes"]
     print(
         "\nDataset sizes | "
@@ -180,6 +205,8 @@ def main():
 
     if not enabled_model_runs:
         raise ValueError("No models enabled. Set at least one INCLUDE_* flag to True.")
+
+    validate_enabled_model_dependencies(enabled_model_runs)
 
     for model_run in enabled_model_runs:
         for step_name in model_run["steps"]:

@@ -14,10 +14,58 @@ from splitters import split_temporal_dataframes
 TARGET_COL = "AdjClosePrice_t+1_Up"
 DATE_COL = "WeekEndingFriday"
 SECTOR_FILTER_COLUMN = "SectorCode"
-SECTOR_FILTER = 7
+SECTOR_CODE_TO_NAME = {
+    1: "Basic Materials",
+    2: "Communication Services",
+    3: "Consumer Cyclical",
+    4: "Consumer Defensive",
+    5: "Energy",
+    6: "Financial Services",
+    7: "Healthcare",
+    8: "Industrials",
+    9: "Real Estate",
+    10: "Technology",
+    11: "Utilities",
+}
+SECTOR_FILTER = 1
 # Esempi:
 # SECTOR_FILTER = 10          -> usa solo il settore con codice 10
 # SECTOR_FILTER = [3, 10, 11] -> usa solo questi settori
+
+CLASSIC_ML_BASE_DIR = Path(__file__).resolve().parent
+
+
+def _resolve_sector_output_dir() -> Path:
+    if SECTOR_FILTER is None:
+        output_dir = CLASSIC_ML_BASE_DIR / "all_sectors"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir
+
+    if isinstance(SECTOR_FILTER, (list, tuple, set, np.ndarray, pd.Series)):
+        sector_codes = sorted({int(sector_code) for sector_code in SECTOR_FILTER})
+        suffix = "_".join(str(sector_code) for sector_code in sector_codes)
+        output_dir = CLASSIC_ML_BASE_DIR / f"multi_sector_{suffix}"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir
+
+    sector_code = int(SECTOR_FILTER)
+    sector_name = SECTOR_CODE_TO_NAME.get(sector_code)
+    if sector_name is None:
+        raise KeyError(f"Sector code {sector_code} is not defined in SECTOR_CODE_TO_NAME.")
+
+    output_dir = CLASSIC_ML_BASE_DIR / f"{sector_code}.{sector_name}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir
+
+
+SECTOR_OUTPUT_DIR = _resolve_sector_output_dir()
+ORCHESTRATOR_RESULTS_DIR = SECTOR_OUTPUT_DIR / "orchestrator_results"
+
+
+def get_model_output_dir(model_directory_name: str) -> Path:
+    output_dir = SECTOR_OUTPUT_DIR / model_directory_name
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir
 
 
 def _largest_remainder_allocation(weights: pd.Series, total: int) -> pd.Series:
@@ -167,6 +215,19 @@ def build_datasets():
     modeling_df = load_modeling_dataframe()
     train_df, validation_df, test_df = split_temporal_dataframes(modeling_df, date_col=DATE_COL)
 
+    split_sizes = {
+        "train": len(train_df),
+        "validation": len(validation_df),
+        "test": len(test_df),
+    }
+    empty_splits = [split_name for split_name, split_size in split_sizes.items() if split_size == 0]
+    if empty_splits:
+        raise ValueError(
+            "Temporal split produced empty datasets for "
+            f"{', '.join(empty_splits)}. Sizes: {split_sizes}. "
+            "Check the available date range and the current sector filter."
+        )
+
     train_df_balanced = balance_binary_training_dataframe(train_df, TARGET_COL, DATE_COL)
     train_full_df = pd.concat([train_df, validation_df], axis=0, ignore_index=True)
     train_full_df_balanced = balance_binary_training_dataframe(train_full_df, TARGET_COL, DATE_COL)
@@ -223,3 +284,10 @@ X_train_full = DATASETS["X_train_full"]
 y_train_full = DATASETS["y_train_full"]
 X_train_full_unbalanced = DATASETS["X_train_full_unbalanced"]
 y_train_full_unbalanced = DATASETS["y_train_full_unbalanced"]
+
+
+"""
+print(y_train.shape)
+print(y_train_full.shape)
+print(y_test.shape)
+"""

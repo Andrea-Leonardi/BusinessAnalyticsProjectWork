@@ -1,0 +1,6 @@
+{
+    "model": "logistic_regression",
+    "metric": "accuracy",
+    "selected_variables": 7,
+    "test_accuracy": 0.3188405797101449
+}

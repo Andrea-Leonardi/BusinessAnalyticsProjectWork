@@ -6,11 +6,11 @@ from sklearn.dummy import DummyClassifier
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train_full_unbalanced, y_train_full_unbalanced
+from split_data import X_train_full_unbalanced, y_train_full_unbalanced, get_model_output_dir
 
 
-current_dir = Path(__file__).resolve().parent
-model_path = current_dir / "null_model.joblib"
+output_dir = get_model_output_dir(Path(__file__).resolve().parent.name)
+model_path = output_dir / "null_model.joblib"
 
 
 def build_null_model():

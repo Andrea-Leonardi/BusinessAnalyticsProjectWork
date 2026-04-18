@@ -1,0 +1,52 @@
+{
+    "best_params": {
+        "n_estimators": 300,
+        "max_depth": 5,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt"
+    },
+    "best_score": 0.5570175438596491,
+    "metric": "accuracy",
+    "scores": {
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5153508771929824,
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5153508771929824,
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5372807017543859,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5153508771929824,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5307017543859649,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5394736842105263,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5285087719298246,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5263157894736842,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5131578947368421,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5175438596491229,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5263157894736842,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5350877192982456,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5241228070175439,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5241228070175439,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5416666666666666,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.5570175438596491,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.5350877192982456,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.5285087719298246
+    },
+    "selected_variables": [
+        "AssetGrowth",
+        "WeeklyReturn_4W",
+        "AssetGrowth_L2Q",
+        "Momentum_12W",
+        "NEWS_FINBERT_Granger_Score",
+        "EarningsYield_L1W",
+        "NEWS_FINBERT_Positive_Mean",
+        "FreeCashFlowYield_TTM",
+        "Accruals_TTM_L2Q",
+        "ROA_L1Q",
+        "ROA",
+        "OperatingMargin_L1Q",
+        "EarningsYield_TTM",
+        "Volatility_4W",
+        "NEWS_Sentiment_Mean",
+        "EarningsYield",
+        "Accruals_L1Q",
+        "GrossProfitability",
+        "WorkingCapitalScaled",
+        "FreeCashFlowYield_L1W"
+    ]
+}

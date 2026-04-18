@@ -1,0 +1,6 @@
+{
+    "model": "always_one",
+    "metric": "accuracy",
+    "predicted_class": 1,
+    "test_accuracy": 0.5764705882352941
+}

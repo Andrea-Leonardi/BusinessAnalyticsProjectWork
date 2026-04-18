@@ -1,0 +1,8 @@
+{
+    "model": "lasso_logistic",
+    "metric": "accuracy",
+    "validation_accuracy": 0.5131578947368421,
+    "best_C": 0.1,
+    "selected_variables": 20,
+    "test_accuracy": 0.49056603773584906
+}

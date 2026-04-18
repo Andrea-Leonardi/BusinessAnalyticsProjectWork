@@ -10,10 +10,10 @@ from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train, y_train, X_validation, y_validation
+from split_data import X_train, y_train, X_validation, y_validation, get_model_output_dir
 
 
-current_dir = Path(__file__).resolve().parent
+output_dir = get_model_output_dir(Path(__file__).resolve().parent.name)
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
@@ -105,7 +105,7 @@ print(best_C, best_score, best_nonzero_count)
 
 
 # salvataggio risultati
-with open(current_dir / "best_C.json", "w") as f:
+with open(output_dir / "best_C.json", "w") as f:
     json.dump(
         {
             "best_C": best_C,

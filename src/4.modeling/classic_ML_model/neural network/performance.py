@@ -10,11 +10,11 @@ from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_test, y_test
+from split_data import X_test, y_test, get_model_output_dir
 
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-INPUT_DIR = Path(__file__).resolve().parent
+INPUT_DIR = get_model_output_dir(Path(__file__).resolve().parent.name)
 MODEL_PATH = INPUT_DIR / "neural_network_model.pt"
 BEST_PARAMS_PATH = INPUT_DIR / "best_params.json"
 PERFORMANCE_PATH = INPUT_DIR / "performance.json"
@@ -38,7 +38,7 @@ class NeuralNet(nn.Module):
 
 
 def evaluate_and_save_performance():
-    checkpoint = torch.load(MODEL_PATH, map_location=DEVICE)
+    checkpoint = torch.load(MODEL_PATH, map_location=DEVICE, weights_only=True)
     best_params = checkpoint["best_params"]
     selected_variables = checkpoint["selected_variables"]
 
@@ -50,6 +50,7 @@ def evaluate_and_save_performance():
     scaler.scale_ = np.asarray(checkpoint["scaler_scale"], dtype=np.float64)
     scaler.var_ = scaler.scale_ ** 2
     scaler.n_features_in_ = len(selected_variables)
+    scaler.feature_names_in_ = np.asarray(selected_variables, dtype=object)
 
     X_test_selected = X_test[selected_variables]
     X_test_scaled = scaler.transform(X_test_selected)

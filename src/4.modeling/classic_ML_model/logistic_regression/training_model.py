@@ -10,12 +10,12 @@ from sklearn.linear_model import LogisticRegression
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train_full, y_train_full
+from split_data import X_train_full, y_train_full, get_model_output_dir
 
 
-current_dir = Path(__file__).resolve().parent
-selected_variables_path = current_dir.parent / "lasso_model" / "selected_variables.csv"
-model_path = current_dir / "logistic_model.joblib"
+output_dir = get_model_output_dir(Path(__file__).resolve().parent.name)
+selected_variables_path = get_model_output_dir("lasso_model") / "selected_variables.csv"
+model_path = output_dir / "logistic_model.joblib"
 
 
 def load_selected_variables() -> list[str]:

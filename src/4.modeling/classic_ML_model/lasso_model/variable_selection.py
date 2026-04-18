@@ -8,12 +8,12 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train_full
+from split_data import X_train_full, get_model_output_dir
 from training_model import train_and_save_model
 
 
-current_dir = Path(__file__).resolve().parent
-model_path = current_dir / "lasso_logistic_model.pkl"
+output_dir = get_model_output_dir(Path(__file__).resolve().parent.name)
+model_path = output_dir / "lasso_logistic_model.pkl"
 TOP_K_VARIABLES = None
 # Esempi:
 # TOP_K_VARIABLES = None -> tiene tutte le variabili con coefficiente non nullo
@@ -64,11 +64,17 @@ else:
         raise ValueError("TOP_K_VARIABLES must be a positive integer or None.")
     selected_variables = results.head(TOP_K_VARIABLES).copy()
 
+if selected_variables.empty:
+    raise ValueError(
+        "No variables were selected by lasso_model. "
+        "Downstream models require at least one selected variable."
+    )
+
 
 print(selected_variables)
 print("Numero variabili selezionate:", len(selected_variables))
 
 selected_variables[["variable"]].to_csv(
-    current_dir / "selected_variables.csv",
+    output_dir / "selected_variables.csv",
     index=False
 )

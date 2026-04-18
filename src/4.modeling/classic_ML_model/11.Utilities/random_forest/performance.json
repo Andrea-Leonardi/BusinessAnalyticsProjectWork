@@ -1,0 +1,13 @@
+{
+    "model": "random_forest",
+    "metric": "accuracy",
+    "validation_accuracy": 0.5045871559633027,
+    "best_params": {
+        "n_estimators": 200,
+        "max_depth": 4,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt"
+    },
+    "selected_variables": 35,
+    "test_accuracy": 0.34782608695652173
+}

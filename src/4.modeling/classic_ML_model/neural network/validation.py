@@ -1,5 +1,6 @@
 import json
 import copy
+import os
 import random
 
 from pathlib import Path
@@ -12,11 +13,14 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
+import optuna
+from optuna.pruners import MedianPruner
+from optuna.samplers import TPESampler
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train, y_train, X_validation, y_validation
+from split_data import X_train, y_train, X_validation, y_validation, get_model_output_dir
 
 
 # --------------------------------------------------
@@ -24,14 +28,49 @@ from split_data import X_train, y_train, X_validation, y_validation
 # --------------------------------------------------
 
 SEED = 42
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+REQUESTED_DEVICE = os.getenv("TORCH_DEVICE", "auto").strip().lower()
+
+
+def resolve_device():
+    if REQUESTED_DEVICE not in {"auto", "cpu", "cuda"}:
+        raise ValueError(
+            "TORCH_DEVICE deve essere uno tra 'auto', 'cpu' o 'cuda'. "
+            f"Valore ricevuto: {REQUESTED_DEVICE!r}"
+        )
+
+    if REQUESTED_DEVICE == "cpu":
+        return torch.device("cpu")
+
+    if REQUESTED_DEVICE == "cuda":
+        if not torch.cuda.is_available():
+            raise RuntimeError(
+                "TORCH_DEVICE='cuda' ma CUDA non e disponibile in PyTorch. "
+                f"torch={torch.__version__}, torch.version.cuda={torch.version.cuda}. "
+                "Installa una build CUDA di PyTorch."
+            )
+        return torch.device("cuda")
+
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+
+    return torch.device("cpu")
+
+
+DEVICE = resolve_device()
 
 print("Device usato:", DEVICE)
+if DEVICE.type == "cuda":
+    print("GPU:", torch.cuda.get_device_name(0))
+else:
+    print(
+        "CUDA non disponibile in PyTorch. "
+        f"torch={torch.__version__}, torch.version.cuda={torch.version.cuda}"
+    )
 
-OUTPUT_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = get_model_output_dir(Path(__file__).resolve().parent.name)
 
 USE_SELECTED_VARIABLES = True
-SELECTED_VARIABLES_PATH = OUTPUT_DIR.parent / "lasso_model" / "selected_variables.csv"
+SELECTED_VARIABLES_PATH = get_model_output_dir("lasso_model") / "selected_variables.csv"
 
 N_EPOCHS = 100
 PATIENCE = 10
@@ -74,6 +113,9 @@ y_train_tensor = torch.tensor(np.asarray(y_train), dtype=torch.long)
 
 X_validation_tensor = torch.tensor(X_validation_scaled, dtype=torch.float32)
 y_validation_tensor = torch.tensor(np.asarray(y_validation), dtype=torch.long)
+
+X_validation_tensor = X_validation_tensor.to(DEVICE)
+y_validation_tensor = y_validation_tensor.to(DEVICE)
 
 input_dim = X_train_tensor.shape[1]
 
@@ -132,6 +174,7 @@ def train_and_validate(params):
         train_dataset,
         batch_size=params["batch_size"],
         shuffle=True,
+        pin_memory=DEVICE.type == "cuda",
     )
 
     best_model_state = None
@@ -155,8 +198,8 @@ def train_and_validate(params):
         # validation
         model.eval()
         with torch.no_grad():
-            val_outputs = model(X_validation_tensor.to(DEVICE))
-            val_loss = criterion(val_outputs, y_validation_tensor.to(DEVICE)).item()
+            val_outputs = model(X_validation_tensor)
+            val_loss = criterion(val_outputs, y_validation_tensor).item()
 
         # early stopping su validation loss
         if val_loss < best_val_loss:
@@ -175,7 +218,7 @@ def train_and_validate(params):
     model.eval()
 
     with torch.no_grad():
-        logits = model(X_validation_tensor.to(DEVICE))
+        logits = model(X_validation_tensor)
         y_pred = torch.argmax(logits, dim=1).cpu().numpy()
 
     val_accuracy = accuracy_score(y_validation, y_pred)
@@ -184,64 +227,77 @@ def train_and_validate(params):
 
 
 # --------------------------------------------------
-# griglia iperparametri
+# ottimizzazione con Optuna
 # --------------------------------------------------
 
-param_grid = {
-    "hidden_dim_1": [16, 32, 64],
-    "hidden_dim_2": [8, 16, 32],
-    "dropout": [0.0, 0.2],
-    "learning_rate": [1e-4, 5e-4, 1e-3],
-    "weight_decay": [0.0, 1e-5, 1e-4],
-    "batch_size": [32, 64],
-}
+def objective(trial):
+    """Funzione obiettivo per Optuna"""
+    # Definisci lo spazio di ricerca (hyperparametri da ottimizzare)
+    hidden_dim_1 = trial.suggest_int("hidden_dim_1", 16, 128, step=16)
+    hidden_dim_2 = trial.suggest_int("hidden_dim_2", 8, 64, step=8)
+    dropout = trial.suggest_float("dropout", 0.0, 0.5, step=0.05)
+    learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
+    weight_decay = trial.suggest_float("weight_decay", 1e-6, 1e-3, log=True)
+    batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 128])
+
+    params = {
+        "hidden_dim_1": hidden_dim_1,
+        "hidden_dim_2": hidden_dim_2,
+        "dropout": dropout,
+        "learning_rate": learning_rate,
+        "weight_decay": weight_decay,
+        "batch_size": batch_size,
+    }
+
+    try:
+        model, val_loss, val_accuracy, best_epoch = train_and_validate(params)
+        
+        print(
+            f"Trial {trial.number}: "
+            f"hidden1={hidden_dim_1}, hidden2={hidden_dim_2}, "
+            f"dropout={dropout:.3f}, lr={learning_rate:.2e}, "
+            f"wd={weight_decay:.2e}, bs={batch_size} | "
+            f"Accuracy: {val_accuracy:.6f}, Loss: {val_loss:.6f}"
+        )
+        
+        return val_accuracy
+    except Exception as e:
+        print(f"Errore nel trial {trial.number}: {e}")
+        return 0.0
 
 
-# --------------------------------------------------
-# loop validation
-# --------------------------------------------------
+# Crea uno studio Optuna con TPE sampler e pruner
+sampler = TPESampler(seed=SEED)
+pruner = MedianPruner()
 
-best_score = -1
-best_params = None
-best_model = None
-best_epoch_overall = 1
+study = optuna.create_study(
+    direction="maximize",
+    sampler=sampler,
+    pruner=pruner,
+)
+
+# Ottimizzazione
+n_trials = 100  # Numero di trials da eseguire
+print(f"Inizio ottimizzazione con Optuna ({n_trials} trials)...")
+study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+
+# Estrai il miglior trial
+best_trial = study.best_trial
+best_params = best_trial.params
+best_score = best_trial.value
+
+# Ricrea il miglior modello
+model, _, _, best_epoch_overall = train_and_validate(best_params)
+best_model = copy.deepcopy(model.state_dict())
+
+# Raccogli statistiche
 scores = {}
-
-for hidden_dim_1 in param_grid["hidden_dim_1"]:
-    for hidden_dim_2 in param_grid["hidden_dim_2"]:
-        for dropout in param_grid["dropout"]:
-            for learning_rate in param_grid["learning_rate"]:
-                for weight_decay in param_grid["weight_decay"]:
-                    for batch_size in param_grid["batch_size"]:
-
-                        params = {
-                            "hidden_dim_1": hidden_dim_1,
-                            "hidden_dim_2": hidden_dim_2,
-                            "dropout": dropout,
-                            "learning_rate": learning_rate,
-                            "weight_decay": weight_decay,
-                            "batch_size": batch_size,
-                        }
-
-                        model, val_loss, val_accuracy, best_epoch = train_and_validate(params)
-
-                        scores[str(params)] = {
-                            "validation_accuracy": val_accuracy,
-                            "validation_loss": val_loss,
-                            "best_epoch": best_epoch,
-                        }
-
-                        print(
-                            f"Params: {params} | "
-                            f"Validation accuracy: {val_accuracy:.6f} | "
-                            f"Validation loss: {val_loss:.6f}"
-                        )
-
-                        if val_accuracy > best_score:
-                            best_score = val_accuracy
-                            best_params = params
-                            best_model = copy.deepcopy(model.state_dict())
-                            best_epoch_overall = best_epoch
+for trial in study.trials:
+    scores[str(trial.params)] = {
+        "validation_accuracy": trial.value,
+        "validation_loss": None,  # Non salvato durante Optuna
+        "best_epoch": None,
+    }
 
 
 # --------------------------------------------------
@@ -254,6 +310,7 @@ with open(OUTPUT_DIR / "best_params.json", "w") as f:
             "best_params": best_params,
             "best_score": best_score,
             "metric": "accuracy",
+            "n_trials": n_trials,
             "scores": scores,
             "selected_variables": selected_variables,
             "input_dim": input_dim,
