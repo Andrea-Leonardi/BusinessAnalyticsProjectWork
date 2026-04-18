@@ -2,5 +2,5 @@
     "model": "always_zero",
     "metric": "accuracy",
     "predicted_class": 0,
-    "test_accuracy": 0.4434782608695652
+    "test_accuracy": 0.5632183908045977
 }

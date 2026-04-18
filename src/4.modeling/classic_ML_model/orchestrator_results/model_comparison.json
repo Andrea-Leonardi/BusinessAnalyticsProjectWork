@@ -1,10 +1,10 @@
 {
     "metric": "accuracy",
-    "generated_at_utc": "2026-04-17T15:59:55.151935+00:00",
+    "generated_at_utc": "2026-04-17T16:18:19.643959+00:00",
     "dataset_sizes": {
-        "training": 1676,
-        "validation": 438,
-        "test": 115
+        "training": 1344,
+        "validation": 333,
+        "test": 87
     },
     "execution_order": [
         "null_model",
@@ -18,85 +18,86 @@
     ],
     "ranking": [
         {
-            "model": "neural_network",
+            "model": "random_forest",
             "metric": "accuracy",
-            "validation_accuracy": 0.58675799086758,
+            "validation_accuracy": 0.5165165165165165,
             "best_params": {
-                "hidden_dim_1": 64,
-                "hidden_dim_2": 48,
-                "dropout": 0.30000000000000004,
-                "learning_rate": 0.0002825420169212646,
-                "weight_decay": 6.277845559231943e-06,
-                "batch_size": 64
+                "n_estimators": 200,
+                "max_depth": 3,
+                "min_samples_leaf": 10,
+                "max_features": "sqrt"
             },
-            "best_epoch": 1,
             "selected_variables": 10,
-            "test_accuracy": 0.591304347826087
+            "test_accuracy": 0.5862068965517241
         },
         {
             "model": "xgboost",
             "metric": "accuracy",
-            "validation_accuracy": 0.5319634703196348,
+            "validation_accuracy": 0.5915915915915916,
             "best_params": {
                 "n_estimators": 75,
-                "learning_rate": 0.007,
+                "learning_rate": 0.004,
                 "max_depth": 5,
                 "min_child_weight": 7,
-                "subsample": 0.5,
+                "subsample": 0.1,
                 "colsample_bytree": 0.7
             },
             "selected_variables": 10,
-            "test_accuracy": 0.5826086956521739
-        },
-        {
-            "model": "null_model",
-            "metric": "accuracy",
-            "predicted_class": 1,
-            "test_accuracy": 0.5565217391304348
-        },
-        {
-            "model": "always_one",
-            "metric": "accuracy",
-            "predicted_class": 1,
-            "test_accuracy": 0.5565217391304348
-        },
-        {
-            "model": "random_forest",
-            "metric": "accuracy",
-            "validation_accuracy": 0.5091324200913242,
-            "best_params": {
-                "n_estimators": 200,
-                "max_depth": 3,
-                "min_samples_leaf": 30,
-                "max_features": "sqrt"
-            },
-            "selected_variables": 10,
-            "test_accuracy": 0.5565217391304348
+            "test_accuracy": 0.5862068965517241
         },
         {
             "model": "lasso_logistic",
             "metric": "accuracy",
-            "validation_accuracy": 0.5182648401826484,
+            "validation_accuracy": 0.5165165165165165,
             "best_C": 0.05,
             "selected_variables": 10,
-            "test_accuracy": 0.5304347826086957
-        },
-        {
-            "model": "logistic_regression",
-            "metric": "accuracy",
-            "selected_variables": 10,
-            "test_accuracy": 0.5043478260869565
+            "test_accuracy": 0.5747126436781609
         },
         {
             "model": "always_zero",
             "metric": "accuracy",
             "predicted_class": 0,
-            "test_accuracy": 0.4434782608695652
+            "test_accuracy": 0.5632183908045977
+        },
+        {
+            "model": "logistic_regression",
+            "metric": "accuracy",
+            "selected_variables": 10,
+            "test_accuracy": 0.5517241379310345
+        },
+        {
+            "model": "neural_network",
+            "metric": "accuracy",
+            "validation_accuracy": 0.6066066066066066,
+            "best_params": {
+                "hidden_dim_1": 112,
+                "hidden_dim_2": 8,
+                "dropout": 0.15000000000000002,
+                "learning_rate": 0.0004068761349650079,
+                "weight_decay": 1.3043198592663312e-06,
+                "batch_size": 128
+            },
+            "best_epoch": 1,
+            "selected_variables": 10,
+            "test_accuracy": 0.5517241379310345
+        },
+        {
+            "model": "null_model",
+            "metric": "accuracy",
+            "predicted_class": 1,
+            "test_accuracy": 0.4367816091954023
+        },
+        {
+            "model": "always_one",
+            "metric": "accuracy",
+            "predicted_class": 1,
+            "test_accuracy": 0.4367816091954023
         }
     ],
-    "best_model": "neural_network",
-    "best_accuracy": 0.591304347826087,
+    "best_model": "random_forest",
+    "best_accuracy": 0.5862068965517241,
     "tied_best_models": [
-        "neural_network"
+        "random_forest",
+        "xgboost"
     ]
 }
