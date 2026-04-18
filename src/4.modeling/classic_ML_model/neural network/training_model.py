@@ -11,12 +11,12 @@ from torch.utils.data import DataLoader, TensorDataset
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train_full, y_train_full
+from split_data import X_train_full, y_train_full, get_model_output_dir
 
 
 SEED = 42
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-OUTPUT_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = get_model_output_dir(Path(__file__).resolve().parent.name)
 BEST_PARAMS_PATH = OUTPUT_DIR / "best_params.json"
 MODEL_PATH = OUTPUT_DIR / "neural_network_model.pt"
 

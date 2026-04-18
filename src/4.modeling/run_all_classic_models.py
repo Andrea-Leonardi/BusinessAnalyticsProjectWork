@@ -7,7 +7,6 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent / "classic_ML_model"
-RESULTS_DIR = BASE_DIR / "orchestrator_results"
 
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
@@ -87,7 +86,7 @@ def run_python_script(script_path: Path):
 
 
 def read_performance_file(model_directory: Path) -> dict:
-    performance_path = model_directory / "performance.json"
+    performance_path = split_data_module.get_model_output_dir(model_directory.name) / "performance.json"
     with open(performance_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -101,6 +100,7 @@ def get_dataset_sizes() -> dict:
 
 
 def save_summary(results: list[dict]):
+    RESULTS_DIR = split_data_module.ORCHESTRATOR_RESULTS_DIR
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     ranking = sorted(results, key=lambda item: item["test_accuracy"], reverse=True)
@@ -141,6 +141,7 @@ def save_summary(results: list[dict]):
 
 
 def print_summary(summary: dict):
+    RESULTS_DIR = split_data_module.ORCHESTRATOR_RESULTS_DIR
     dataset_sizes = summary["dataset_sizes"]
     print(
         "\nDataset sizes | "

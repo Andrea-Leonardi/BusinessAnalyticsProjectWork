@@ -1,0 +1,15 @@
+{
+    "model": "xgboost",
+    "metric": "accuracy",
+    "validation_accuracy": 0.5357873210633947,
+    "best_params": {
+        "n_estimators": 100,
+        "learning_rate": 0.004,
+        "max_depth": 8,
+        "min_child_weight": 5,
+        "subsample": 0.3,
+        "colsample_bytree": 0.7
+    },
+    "selected_variables": 51,
+    "test_accuracy": 0.5227272727272727
+}

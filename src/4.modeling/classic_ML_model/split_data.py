@@ -27,10 +27,36 @@ SECTOR_CODE_TO_NAME = {
     10: "Technology",
     11: "Utilities",
 }
-SECTOR_FILTER = 6
+SECTOR_FILTER = 10
 # Esempi:
 # SECTOR_FILTER = 10          -> usa solo il settore con codice 10
 # SECTOR_FILTER = [3, 10, 11] -> usa solo questi settori
+
+CLASSIC_ML_BASE_DIR = Path(__file__).resolve().parent
+
+
+def _resolve_sector_output_dir() -> Path:
+    if isinstance(SECTOR_FILTER, (list, tuple, set, np.ndarray, pd.Series)) or SECTOR_FILTER is None:
+        return CLASSIC_ML_BASE_DIR
+
+    sector_code = int(SECTOR_FILTER)
+    sector_name = SECTOR_CODE_TO_NAME.get(sector_code)
+    if sector_name is None:
+        raise KeyError(f"Sector code {sector_code} is not defined in SECTOR_CODE_TO_NAME.")
+
+    output_dir = CLASSIC_ML_BASE_DIR / f"{sector_code}.{sector_name}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir
+
+
+SECTOR_OUTPUT_DIR = _resolve_sector_output_dir()
+ORCHESTRATOR_RESULTS_DIR = SECTOR_OUTPUT_DIR / "orchestrator_results"
+
+
+def get_model_output_dir(model_directory_name: str) -> Path:
+    output_dir = SECTOR_OUTPUT_DIR / model_directory_name
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir
 
 
 def _largest_remainder_allocation(weights: pd.Series, total: int) -> pd.Series:

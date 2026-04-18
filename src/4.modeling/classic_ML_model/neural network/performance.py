@@ -10,11 +10,11 @@ from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_test, y_test
+from split_data import X_test, y_test, get_model_output_dir
 
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-INPUT_DIR = Path(__file__).resolve().parent
+INPUT_DIR = get_model_output_dir(Path(__file__).resolve().parent.name)
 MODEL_PATH = INPUT_DIR / "neural_network_model.pt"
 BEST_PARAMS_PATH = INPUT_DIR / "best_params.json"
 PERFORMANCE_PATH = INPUT_DIR / "performance.json"

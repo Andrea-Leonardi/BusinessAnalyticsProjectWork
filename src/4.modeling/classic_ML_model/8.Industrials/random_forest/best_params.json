@@ -1,0 +1,39 @@
+{
+    "best_params": {
+        "n_estimators": 200,
+        "max_depth": 5,
+        "min_samples_leaf": 30,
+        "max_features": "sqrt"
+    },
+    "best_score": 0.4935400516795866,
+    "metric": "accuracy",
+    "scores": {
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.4883720930232558,
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.48320413436692505,
+        "{'n_estimators': 200, 'max_depth': 3, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.4625322997416021,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.4702842377260982,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4780361757105943,
+        "{'n_estimators': 200, 'max_depth': 4, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.4780361757105943,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.48320413436692505,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4754521963824289,
+        "{'n_estimators': 200, 'max_depth': 5, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.4935400516795866,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.48578811369509045,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4883720930232558,
+        "{'n_estimators': 300, 'max_depth': 3, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.48320413436692505,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.48320413436692505,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4883720930232558,
+        "{'n_estimators': 300, 'max_depth': 4, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.4883720930232558,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}": 0.4883720930232558,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 20, 'max_features': 'sqrt'}": 0.4754521963824289,
+        "{'n_estimators': 300, 'max_depth': 5, 'min_samples_leaf': 30, 'max_features': 'sqrt'}": 0.4935400516795866
+    },
+    "selected_variables": [
+        "AssetGrowth_L1Q",
+        "GrossProfitability_L2Q",
+        "AssetGrowth_L2Q",
+        "MarketCap_L2W",
+        "ROA_L2Q",
+        "BookToMarket",
+        "QuarterlyReleased"
+    ]
+}

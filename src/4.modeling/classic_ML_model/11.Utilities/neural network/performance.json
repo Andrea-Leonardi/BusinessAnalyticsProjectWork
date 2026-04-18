@@ -1,0 +1,16 @@
+{
+    "model": "neural_network",
+    "metric": "accuracy",
+    "validation_accuracy": 0.6788990825688074,
+    "best_params": {
+        "hidden_dim_1": 64,
+        "hidden_dim_2": 16,
+        "dropout": 0.45,
+        "learning_rate": 0.0035997034680435446,
+        "weight_decay": 0.00019428246394665157,
+        "batch_size": 32
+    },
+    "best_epoch": 31,
+    "selected_variables": 35,
+    "test_accuracy": 0.391304347826087
+}

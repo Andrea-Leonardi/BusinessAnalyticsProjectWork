@@ -1,6 +1,6 @@
 {
     "metric": "accuracy",
-    "generated_at_utc": "2026-04-17T16:18:19.643959+00:00",
+    "generated_at_utc": "2026-04-18T10:17:14.162643+00:00",
     "dataset_sizes": {
         "training": 1344,
         "validation": 333,

@@ -20,7 +20,7 @@ from optuna.samplers import TPESampler
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_train, y_train, X_validation, y_validation
+from split_data import X_train, y_train, X_validation, y_validation, get_model_output_dir
 
 
 # --------------------------------------------------
@@ -67,10 +67,10 @@ else:
         f"torch={torch.__version__}, torch.version.cuda={torch.version.cuda}"
     )
 
-OUTPUT_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = get_model_output_dir(Path(__file__).resolve().parent.name)
 
 USE_SELECTED_VARIABLES = True
-SELECTED_VARIABLES_PATH = OUTPUT_DIR.parent / "lasso_model" / "selected_variables.csv"
+SELECTED_VARIABLES_PATH = get_model_output_dir("lasso_model") / "selected_variables.csv"
 
 N_EPOCHS = 100
 PATIENCE = 10

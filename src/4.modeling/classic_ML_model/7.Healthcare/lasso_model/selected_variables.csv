@@ -1,0 +1,11 @@
+variable
+Accruals_TTM_L1Q
+OperatingMargin_L1Q
+FreeCashFlowYield
+AssetGrowth
+Momentum_12W
+AdjClosePrice_t-1
+FreeCashFlowYield_L2W
+FreeCashFlowYield_TTM
+NEWS_FINBERT_Granger_Score
+QuarterlyReleased

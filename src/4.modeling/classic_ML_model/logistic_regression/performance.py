@@ -8,18 +8,18 @@ from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_test, y_test
+from split_data import X_test, y_test, get_model_output_dir
 
 
-current_dir = Path(__file__).resolve().parent
-performance_path = current_dir / "performance.json"
+output_dir = get_model_output_dir(Path(__file__).resolve().parent.name)
+performance_path = output_dir / "performance.json"
 
 
 def evaluate_and_save_performance():
     selected_variables = pd.read_csv(
-        current_dir.parent / "lasso_model" / "selected_variables.csv"
+        get_model_output_dir("lasso_model") / "selected_variables.csv"
     ).iloc[:, 0].tolist()
-    logistic_model = joblib.load(current_dir / "logistic_model.joblib")
+    logistic_model = joblib.load(output_dir / "logistic_model.joblib")
 
     X_test_selected = X_test[selected_variables]
     y_pred_test = logistic_model.predict(X_test_selected)

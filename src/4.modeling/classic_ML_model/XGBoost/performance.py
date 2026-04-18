@@ -8,11 +8,11 @@ from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import X_test, y_test
+from split_data import X_test, y_test, get_model_output_dir
 
 
-input_dir = Path(__file__).resolve().parent
-selected_variables_path = input_dir.parent / "lasso_model" / "selected_variables.csv"
+input_dir = get_model_output_dir(Path(__file__).resolve().parent.name)
+selected_variables_path = get_model_output_dir("lasso_model") / "selected_variables.csv"
 performance_path = input_dir / "performance.json"
 
 

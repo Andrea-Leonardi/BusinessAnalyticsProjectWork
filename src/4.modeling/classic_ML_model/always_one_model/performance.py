@@ -7,11 +7,11 @@ from sklearn.metrics import accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from split_data import y_test
+from split_data import y_test, get_model_output_dir
 
 
-current_dir = Path(__file__).resolve().parent
-performance_path = current_dir / "performance.json"
+output_dir = get_model_output_dir(Path(__file__).resolve().parent.name)
+performance_path = output_dir / "performance.json"
 PREDICTED_CLASS = 1
 
 

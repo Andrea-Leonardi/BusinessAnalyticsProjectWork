@@ -1,0 +1,49 @@
+{
+    "metric": "accuracy",
+    "generated_at_utc": "2026-04-18T09:53:56.804156+00:00",
+    "dataset_sizes": {
+        "training": 1676,
+        "validation": 438,
+        "test": 115
+    },
+    "execution_order": [
+        "null_model",
+        "always_zero",
+        "always_one",
+        "lasso_logistic"
+    ],
+    "ranking": [
+        {
+            "model": "null_model",
+            "metric": "accuracy",
+            "predicted_class": 1,
+            "test_accuracy": 0.5565217391304348
+        },
+        {
+            "model": "always_one",
+            "metric": "accuracy",
+            "predicted_class": 1,
+            "test_accuracy": 0.5565217391304348
+        },
+        {
+            "model": "lasso_logistic",
+            "metric": "accuracy",
+            "validation_accuracy": 0.5182648401826484,
+            "best_C": 0.05,
+            "selected_variables": 10,
+            "test_accuracy": 0.5304347826086957
+        },
+        {
+            "model": "always_zero",
+            "metric": "accuracy",
+            "predicted_class": 0,
+            "test_accuracy": 0.4434782608695652
+        }
+    ],
+    "best_model": "null_model",
+    "best_accuracy": 0.5565217391304348,
+    "tied_best_models": [
+        "null_model",
+        "always_one"
+    ]
+}
