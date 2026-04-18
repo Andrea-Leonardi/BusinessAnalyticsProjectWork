@@ -36,8 +36,17 @@ CLASSIC_ML_BASE_DIR = Path(__file__).resolve().parent
 
 
 def _resolve_sector_output_dir() -> Path:
-    if isinstance(SECTOR_FILTER, (list, tuple, set, np.ndarray, pd.Series)) or SECTOR_FILTER is None:
-        return CLASSIC_ML_BASE_DIR
+    if SECTOR_FILTER is None:
+        output_dir = CLASSIC_ML_BASE_DIR / "all_sectors"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir
+
+    if isinstance(SECTOR_FILTER, (list, tuple, set, np.ndarray, pd.Series)):
+        sector_codes = sorted({int(sector_code) for sector_code in SECTOR_FILTER})
+        suffix = "_".join(str(sector_code) for sector_code in sector_codes)
+        output_dir = CLASSIC_ML_BASE_DIR / f"multi_sector_{suffix}"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir
 
     sector_code = int(SECTOR_FILTER)
     sector_name = SECTOR_CODE_TO_NAME.get(sector_code)
@@ -205,6 +214,19 @@ def load_modeling_dataframe() -> pd.DataFrame:
 def build_datasets():
     modeling_df = load_modeling_dataframe()
     train_df, validation_df, test_df = split_temporal_dataframes(modeling_df, date_col=DATE_COL)
+
+    split_sizes = {
+        "train": len(train_df),
+        "validation": len(validation_df),
+        "test": len(test_df),
+    }
+    empty_splits = [split_name for split_name, split_size in split_sizes.items() if split_size == 0]
+    if empty_splits:
+        raise ValueError(
+            "Temporal split produced empty datasets for "
+            f"{', '.join(empty_splits)}. Sizes: {split_sizes}. "
+            "Check the available date range and the current sector filter."
+        )
 
     train_df_balanced = balance_binary_training_dataframe(train_df, TARGET_COL, DATE_COL)
     train_full_df = pd.concat([train_df, validation_df], axis=0, ignore_index=True)

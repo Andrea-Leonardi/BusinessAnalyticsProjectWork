@@ -74,6 +74,13 @@ MODEL_RUNS = [
     },
 ]
 
+MODEL_DEPENDENCIES = {
+    "logistic_regression": {"lasso_logistic"},
+    "random_forest": {"lasso_logistic"},
+    "xgboost": {"lasso_logistic"},
+    "neural_network": {"lasso_logistic"},
+}
+
 
 def run_python_script(script_path: Path):
     relative_path = script_path.relative_to(BASE_DIR.parent)
@@ -97,6 +104,23 @@ def get_dataset_sizes() -> dict:
         "validation": len(split_data_module.X_validation),
         "test": len(split_data_module.X_test),
     }
+
+
+def validate_enabled_model_dependencies(enabled_model_runs: list[dict]):
+    enabled_names = {model_run["name"] for model_run in enabled_model_runs}
+
+    missing_dependencies = {
+        model_name: sorted(required_dependencies - enabled_names)
+        for model_name, required_dependencies in MODEL_DEPENDENCIES.items()
+        if model_name in enabled_names and not required_dependencies.issubset(enabled_names)
+    }
+
+    if missing_dependencies:
+        details = "; ".join(
+            f"{model_name} requires {', '.join(dependencies)}"
+            for model_name, dependencies in missing_dependencies.items()
+        )
+        raise ValueError(f"Invalid model configuration: {details}.")
 
 
 def save_summary(results: list[dict]):
@@ -181,6 +205,8 @@ def main():
 
     if not enabled_model_runs:
         raise ValueError("No models enabled. Set at least one INCLUDE_* flag to True.")
+
+    validate_enabled_model_dependencies(enabled_model_runs)
 
     for model_run in enabled_model_runs:
         for step_name in model_run["steps"]:

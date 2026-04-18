@@ -64,6 +64,12 @@ else:
         raise ValueError("TOP_K_VARIABLES must be a positive integer or None.")
     selected_variables = results.head(TOP_K_VARIABLES).copy()
 
+if selected_variables.empty:
+    raise ValueError(
+        "No variables were selected by lasso_model. "
+        "Downstream models require at least one selected variable."
+    )
+
 
 print(selected_variables)
 print("Numero variabili selezionate:", len(selected_variables))
