@@ -12,7 +12,7 @@ sys.path.insert(0, str(SRC_DIR))
 sys.path.insert(0, str(MODELING_DIR))
 
 import config as cfg
-from splitters import split_temporal_dataframes
+from splitters import split_temporal_dataframes # type: ignore
 
 
 TARGET_COL = "AdjClosePrice_t+1_Up"

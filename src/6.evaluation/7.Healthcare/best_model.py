@@ -9,7 +9,8 @@ import torch.nn as nn
 CURRENT_DIR = Path(__file__).resolve().parent
 MODELING_DIR = CURRENT_DIR.parents[1] / "4.modeling" / "classic_ML_model" / "7.Healthcare"
 MODEL_COMPARISON_PATH = MODELING_DIR / "orchestrator_results" / "model_comparison.json"
-EXCLUDED_MODELS = {"always_zero", "always_one"}
+EXCLUDED_MODELS = {"null_model", "always_zero", "always_one"}
+BENCHMARK_MODELS = ("null_model", "always_one", "always_zero")
 
 
 class NeuralNet(nn.Module):
@@ -43,11 +44,11 @@ def get_best_entry(model_comparison: dict) -> dict:
     return max(eligible_models, key=lambda item: item["test_accuracy"])
 
 
-def get_null_model_entry(model_comparison: dict) -> dict:
+def get_model_entry(model_comparison: dict, model_name: str) -> dict:
     for item in model_comparison["ranking"]:
-        if item["model"] == "null_model":
+        if item["model"] == model_name:
             return item
-    raise ValueError("null_model not found in model comparison results.")
+    raise ValueError(f"{model_name} not found in model comparison results.")
 
 
 def load_trained_model(model_name: str):
@@ -83,22 +84,32 @@ def load_trained_model(model_name: str):
 def get_best_model_bundle() -> dict:
     model_comparison = load_model_comparison()
     best_model_entry = get_best_entry(model_comparison)
-    null_model_entry = get_null_model_entry(model_comparison)
+    benchmark_entries = {
+        model_name: get_model_entry(model_comparison, model_name)
+        for model_name in BENCHMARK_MODELS
+    }
 
     return {
         "model_comparison": model_comparison,
         "best_model_entry": best_model_entry,
-        "null_model_entry": null_model_entry,
+        "benchmark_entries": benchmark_entries,
         "best_model": load_trained_model(best_model_entry["model"]),
     }
 
 
 def print_best_model_summary(bundle: dict):
     best_model_entry = bundle["best_model_entry"]
-    null_model_entry = bundle["null_model_entry"]
+    benchmark_entries = bundle["benchmark_entries"]
     print(f"Best Healthcare model: {best_model_entry['model']}")
     print(f"Best model test accuracy: {best_model_entry['test_accuracy']:.6f}")
-    print(f"Null model test accuracy: {null_model_entry['test_accuracy']:.6f}")
+    print("Benchmark comparison:")
+    for benchmark_name in BENCHMARK_MODELS:
+        benchmark_entry = benchmark_entries[benchmark_name]
+        accuracy_gap = best_model_entry["test_accuracy"] - benchmark_entry["test_accuracy"]
+        print(
+            f"- {benchmark_name}: {benchmark_entry['test_accuracy']:.6f} "
+            f"(delta vs best: {accuracy_gap:+.6f})"
+        )
 
 
 best_model_HC = None
