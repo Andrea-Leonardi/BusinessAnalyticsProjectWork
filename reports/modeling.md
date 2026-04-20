@@ -1,152 +1,329 @@
-# Modelli da testare e motivazione
+# Modeling
 
-Obiettivo: valutare diversi modelli variando il trade-off interpretabilità-performance.
-Individuati 6 modelli appartenenti a famiglie metodologiche diverse.
----
+La cartella `src/4.modeling` contiene la pipeline di addestramento, validazione e confronto dei modelli supervisionati usati nel progetto.
 
+Nello stato attuale del codice, la modeling pipeline implementata e` concentrata in:
 
-## 0. Modello nullo (predizione costante “up”)
-**Motivazione:** rappresenta una baseline minima (“zero-skill model”) che consente di verificare che i modelli proposti aggiungano effettivamente valore predittivo rispetto a una strategia banale.
+- `src/4.modeling/splitters.py`
+- `src/4.modeling/run_all_classic_models.py`
+- `src/4.modeling/classic_ML_model/`
 
-Questo modello permette di:
-- controllare se esiste reale contenuto informativo nelle feature
-- confrontare correttamente le performance dei modelli più complessi
-- evidenziare eventuali problemi di dataset sbilanciato
+Questa sezione documenta quindi il comportamento reale del codice presente oggi in `src/4.modeling`, senza includere modelli non implementati nella pipeline corrente.
 
+## Obiettivo della fase di modeling
 
-## 1. Regressione Fama-MacBeth characteristics-based
-**Motivazione:** rappresenta il benchmark econometrico classico nell’asset pricing. Consente di stimare relazioni cross-sectional tra caratteristiche fondamentali e rendimenti attesi mantenendo elevata interpretabilità dei coefficienti. È utile come baseline “scientifica” per verificare la presenza di segnale informativo nelle variabili fondamentali.
+L'obiettivo e` confrontare, per ciascun settore, diversi modelli di classificazione binaria sul target `AdjClosePrice_t+1_Up`, salvando:
 
----
+- il modello addestrato;
+- gli eventuali iperparametri ottimali;
+- le metriche di validation e test;
+- un riepilogo comparativo finale per settore.
 
-## 2. Regression logistic penalizzata (LASSO / Elastic Net)
-**Motivazione:** permette selezione automatica delle variabili e gestione della multicollinearità tra indicatori finanziari. Produce modelli parsimoniosi e interpretabili, mantenendo una struttura lineare ma più robusta rispetto alla regressione tradizionale.
+La pipeline e` organizzata per settore e produce artefatti distinti nelle sottocartelle di `src/4.modeling/classic_ML_model`, ad esempio:
 
----
+- `1.Basic Materials`
+- `2.Communication Services`
+- `3.Consumer Cyclical`
+- `4.Consumer Defensive`
+- `5.Energy`
+- `6.Financial Services`
+- `7.Healthcare`
+- `8.Industrials`
+- `9.Real Estate`
+- `10.Technology`
+- `11.Utilities`
 
-## 3. GAM (Generalized Additive Model) <- Regression logistic
-**Motivazione:** introduce non-linearità mantenendo interpretabilità elevata. Ogni variabile contribuisce tramite una funzione univariata stimabile graficamente, consentendo di individuare soglie, saturazioni o effetti non monotoni tipici delle relazioni finanziarie.
+## Split temporale
 
+Lo split temporale e` definito in `src/4.modeling/splitters.py`.
 
----
+La suddivisione e` la seguente:
 
-## 4. Random Forest
-**Motivazione:** benchmark non lineare robusto basato su ensemble di alberi decisionali. È in grado di catturare interazioni e relazioni complesse senza richiedere forti assunzioni sulla distribuzione dei dati. Fornisce una misura di riferimento per valutare il beneficio della non-linearità.
+- `2021-2024`: training
+- `2025`: validation
+- `2026`: test
 
----
+Lo split avviene sulla colonna `WeekEndingFriday`, convertita in datetime. Questa scelta mantiene la coerenza out-of-sample della valutazione ed evita leakage temporale.
 
-## 5. XGBoost (Gradient Boosted Trees)
-**Motivazione:** rappresenta uno standard moderno per dati tabellari, spesso caratterizzato da elevate performance predittive. Viene utilizzato come benchmark ad alta capacità per stimare il limite superiore di accuratezza raggiungibile rispetto ai modelli più interpretabili.
+## Preparazione dei dataset
 
----
+La logica di costruzione dei dataset e` centralizzata in `src/4.modeling/classic_ML_model/split_data.py`.
 
-## 6. Rete neurale (MLP – Multilayer Perceptron)
+Questo modulo:
 
-**Motivazione:** rappresenta un benchmark aggiuntivo ad alta flessibilità capace di modellare relazioni non lineari complesse tra variabili fondamentali, tecniche e di sentiment. Tuttavia, per dataset tabellari, le reti neurali non garantiscono necessariamente performance superiori rispetto a metodi come Gradient Boosted Trees e comportano maggiore complessità di tuning e minore interpretabilità.
+- carica il dataset di modeling tramite `cfg.MODELING_DATASET`;
+- converte `WeekEndingFriday` in datetime;
+- applica il filtro per settore tramite `SECTOR_FILTER`;
+- rimuove le osservazioni con valori mancanti;
+- costruisce train, validation e test con lo split temporale;
+- genera anche un dataset `train_full = train + validation` per il retraining finale.
 
-Il modello viene incluso principalmente come riferimento di performance per verificare se architetture più flessibili riescano a estrarre ulteriore segnale predittivo rispetto agli altri metodi testati.
+Le feature escluse in modo sistematico sono:
 
+- `AdjClosePrice_t+1_Up`, che e` il target;
+- `WeekEndingFriday`;
+- `Ticker`;
+- `AdjClosePrice_t+1`;
+- tutte le colonne che contengono `EMO` o `TEXTBLOB`.
 
+## Bilanciamento del training set
 
+Il bilanciamento del target viene applicato solo ai dataset usati per addestrare i modelli, non ai dataset usati per valutarli.
 
+In particolare:
 
-# PREPARAZIONE TRAINING SET
- guardare **Strategia di split del dataset in evaluation.md** 
+- `train` viene bilanciato;
+- `train_full` viene bilanciato;
+- `validation` e `test` restano nella distribuzione originale.
 
----
+Il bilanciamento e` implementato con sottocampionamento deterministico della classe maggioritaria, mantenendo una copertura distribuita per `Ticker` e anno quando possibile. La selezione delle righe della classe maggioritaria avviene in modo temporalmente distribuito, non con random undersampling puro.
 
-### Split principale
-| periodo | uso |
-|--------|-----|
-| 2021–2024 | training (stima modelli per diversi iperparametri) |
-| 2025 | scelta iperparametro migliore (validation) |
-| 2026 | test finale |
+Questo approccio consente di:
 
----
+- ridurre il bias verso la classe dominante in addestramento;
+- mantenere validation e test realistici;
+- preservare la struttura panel-temporale del dataset.
 
+## Orchestrazione della pipeline
 
-### Ottimizzazione degli iperparametri
-Balanced Accuracy = (Sensitivity + Specificity) / 2
+L'esecuzione complessiva e` gestita da `src/4.modeling/run_all_classic_models.py`.
 
-assegna lo stesso peso alle due classi e consente di:
-- valutare la capacità del modello di distinguere entrambe le direzioni del rendimento
-- evitare soluzioni che funzionano bene solo sulla classe dominante
+Lo script:
 
----
+- definisce quali modelli attivare tramite flag `INCLUDE_*`;
+- esegue in sequenza gli script di ciascun modello;
+- legge i rispettivi `performance.json`;
+- costruisce una classifica finale per `test_accuracy`;
+- salva il riepilogo in `orchestrator_results/model_comparison.json` e `model_comparison.csv`.
 
+L'ordine di esecuzione previsto e`:
 
+- `null_model`
+- `always_zero`
+- `always_one`
+- `lasso_logistic`
+- `logistic_regression`
+- `random_forest`
+- `xgboost`
+- `neural_network`
 
+Inoltre sono definite dipendenze esplicite:
 
+- `logistic_regression` richiede `lasso_logistic`
+- `random_forest` richiede `lasso_logistic`
+- `xgboost` richiede `lasso_logistic`
+- `neural_network` richiede `lasso_logistic`
 
-# ADDESTRAMENTO MODELLI   PARAMETRI DI CONTROLLO E LIBERIE PRINCIPALI
+Questo perche' i modelli downstream riusano le variabili selezionate dal LASSO.
 
-## 1. Regressione two-pass (Fama-MacBeth):
-    Usare funzione FamaMacBeth(y,x) from linearmodels.asset_pricing.
-    
-    ATTENZIONE!!!
-    convertire rendimenti in "UP" o "DOWN", 
-    
-    comparazione: threshold 0 (approcio econometrico standard) vs  threshold ottimizzato. ??
+## Modelli effettivamente implementati
 
----
+La pipeline corrente implementa i seguenti modelli.
 
-## 2. Regression logistic penalizzata (LASSO / Elastic Net)
-    Usare libreria sklearn.linear_model
+### 1. Null model
 
-    variabili standardizzate ----> usare funzione apposita
-    2 parametri da ottimizzare: parametro di penalità e tipo di penalità
+Il `null_model` e` un `DummyClassifier(strategy="most_frequent")` addestrato su `X_train_full_unbalanced, y_train_full_unbalanced`.
 
----
+Dato l'attuale sbilanciamento del dataset, questo modello rappresenta la baseline empirica che predice sempre la classe piu' frequente nel training full non bilanciato.
 
-# BILANCIAMENTO DELLA VARIABILE TARGET
+Artefatti principali:
 
-La variabile target del progetto è `AdjClosePrice_t+1_Up`, cioè una variabile binaria che vale:
-- `1` se il prezzo adjusted della settimana successiva sale
-- `0` se il prezzo adjusted della settimana successiva non sale
+- `null_model.joblib`
+- `performance.json`
 
-Nel file `data/modeling/modeling.csv` il dataset rimane nella sua forma originale ed è sbilanciato a favore della classe `1`.
-Per evitare che i modelli imparino una preferenza eccessiva per la classe dominante, il bilanciamento viene applicato solo in memoria dentro `src/modeling/classic_ML_model/split_data.py`, senza riscrivere il file su disco.
+### 2. Always-zero benchmark
 
-## Criterio usato
+`always_zero_model` non richiede training: genera direttamente predizioni costanti pari a `0` sul test set e salva la performance.
 
-Il riequilibrio non è stato fatto eliminando osservazioni casualmente.
-È stato invece adottato un sottocampionamento deterministico della classe maggioritaria con tre vincoli:
-- il bilanciamento viene fatto solo sui dataset usati per addestrare i modelli: `training 2021-2024` e `training full 2021-2025`
-- `validation 2025` e `test 2026` restano nella distribuzione originale, così la valutazione finale resta realistica
-- si mantiene la copertura per `Ticker` e anno, così da non concentrare la riduzione solo su alcune imprese o su pochi periodi
-- all'interno di ogni gruppo `Ticker`-anno, le osservazioni della classe maggioritaria vengono scelte in modo distribuito nel tempo, prendendo righe equispaziate dopo ordinamento per data
+Artefatto principale:
 
-## Logica implementata in split_data.py
+- `performance.json`
 
-La procedura è la seguente:
-1. si carica `modeling.csv` e si converte `WeekEndingFriday` in formato data
-2. si divide il dataset nei tre periodi già usati per lo split del progetto
-3. il `training set` viene riequilibrato con sottocampionamento deterministico della classe maggioritaria
-4. il `validation set` e il `test set` non vengono modificati
-5. per il retraining finale, anche `train + validation` viene riequilibrato in memoria prima dell'addestramento del modello definitivo
+### 3. Always-one benchmark
 
-Questa scelta rende il dataset più coerente con la struttura panel-temporale del progetto rispetto a un semplice random undersampling e mantiene valida la valutazione out-of-sample.
+`always_one_model` non richiede training: genera direttamente predizioni costanti pari a `1` sul test set e salva la performance.
 
-## Risultato finale
+Artefatto principale:
 
-Distribuzioni attuali:
-- `modeling.csv` originale: `0 = 11530`, `1 = 12843`
-- training bilanciato `2021-2024`: `0 = 8884`, `1 = 8884`
-- validation originale `2025`: `0 = 2126`, `1 = 2594`
-- test originale `2026`: `0 = 520`, `1 = 661`
-- training full bilanciato `2021-2025`: `0 = 11010`, `1 = 11010`
+- `performance.json`
 
-## Metriche di valutazione
+### 4. LASSO logistic
 
-Per la scelta degli iperparametri e per la lettura delle performance viene usata la `Balanced Accuracy`, non la sola accuracy.
-In questo modo ogni classe pesa allo stesso modo anche quando `validation` e `test` restano sbilanciati.
+Il modello `lasso_model` usa una `LogisticRegression` con:
 
-## Correzioni implementative nella cartella classic_ML_model
+- penalizzazione `l1`
+- solver `saga`
+- standardizzazione tramite `StandardScaler`
 
-Le principali correzioni applicate sono:
-- il modello `lasso_model` usa davvero una logistic con penalizzazione L1 (`l1_ratio = 1.0`) e usa in training lo stesso `C` selezionato in validation
-- la scelta del `best_C` evita la soluzione degenere con tutti i coefficienti nulli quando esistono modelli con score simile ma almeno una variabile selezionata
-- la selezione variabili LASSO usa i coefficienti non nulli del modello, senza una soglia manuale arbitraria aggiuntiva
-- `logistic_regression`, `null_model`, `random_forest` e `XGBoost` leggono o salvano gli artefatti in modo coerente con file `.joblib`
-- il `null_model` è ora una baseline esplicita `sempre up` (`constant = 1`)
-- gli script di validation e performance riportano anche la `Balanced Accuracy`
+La validation cerca il miglior `C` su una griglia prefissata, ottimizzando `accuracy` sul validation set.
+
+La scelta del miglior candidato non usa solo lo score, ma anche:
+
+- preferisce modelli con almeno una variabile selezionata rispetto a soluzioni completamente nulle;
+- a parita' di score privilegia configurazioni piu' parsimoniose;
+- in ulteriore parita' sceglie il `C` piu' piccolo.
+
+Dopo la validation:
+
+- il modello viene riaddestrato su `train_full` bilanciato;
+- vengono estratte le variabili con coefficiente non nullo;
+- le variabili selezionate vengono salvate in `selected_variables.csv`.
+
+Artefatti principali:
+
+- `best_C.json`
+- `lasso_logistic_model.pkl`
+- `selected_variables.csv`
+- `performance.json`
+
+### 5. Logistic regression
+
+`logistic_regression` usa una regressione logistica standard con `StandardScaler`, ma non sull'intero set di feature: usa solo le variabili selezionate dal LASSO.
+
+Il modello viene:
+
+- addestrato su `train_full` bilanciato;
+- salvato in `logistic_model.joblib`;
+- valutato su test usando esclusivamente le feature selezionate dal LASSO.
+
+E' presente anche `interpretation.py`, che stampa i coefficienti ordinati per valore assoluto per supportare una lettura economica del modello.
+
+Artefatti principali:
+
+- `logistic_model.joblib`
+- `performance.json`
+
+### 6. Random Forest
+
+`random_forest` usa solo le variabili selezionate dal LASSO.
+
+La validation esplora una griglia manuale su:
+
+- `n_estimators`
+- `max_depth`
+- `min_samples_leaf`
+- `max_features`
+
+La scelta avviene in base a `accuracy` su validation. Il modello finale viene poi riaddestrato su `train_full` bilanciato e valutato su test.
+
+Artefatti principali:
+
+- `best_params.json`
+- `random_forest_model.joblib`
+- `performance.json`
+
+### 7. XGBoost
+
+`XGBoost` usa anch'esso solo le variabili selezionate dal LASSO.
+
+La validation esplora una griglia manuale su:
+
+- `n_estimators`
+- `learning_rate`
+- `max_depth`
+- `min_child_weight`
+- `subsample`
+- `colsample_bytree`
+
+Il classificatore usato e` `XGBClassifier` con:
+
+- `objective="binary:logistic"`
+- `eval_metric="logloss"`
+
+Anche qui la selezione finale degli iperparametri usa `accuracy` su validation, seguita da retraining su `train_full` bilanciato e valutazione su test.
+
+Artefatti principali:
+
+- `best_params.json`
+- `xgboost_model.joblib`
+- `performance.json`
+
+### 8. Neural network
+
+La rete neurale e` una MLP PyTorch a due hidden layer con:
+
+- due layer fully connected;
+- attivazione `ReLU`;
+- `Dropout`;
+- output binario a 2 classi.
+
+La validation usa Optuna con:
+
+- `TPESampler(seed=42)`
+- `MedianPruner`
+- `100` trial
+
+Gli iperparametri ottimizzati sono:
+
+- `hidden_dim_1`
+- `hidden_dim_2`
+- `dropout`
+- `learning_rate`
+- `weight_decay`
+- `batch_size`
+
+Il training in validation include:
+
+- standardizzazione delle feature;
+- uso opzionale delle variabili selezionate dal LASSO, che nel codice attuale e` attivo;
+- early stopping sulla validation loss con `patience = 10`.
+
+Dopo la validation, il modello finale viene riaddestrato su `train_full` bilanciato per il numero di epoche ottimale osservato in validation e salvato insieme ai parametri dello scaler.
+
+Artefatti principali:
+
+- `best_params.json`
+- `best_model_state.pt`
+- `neural_network_model.pt`
+- `performance.json`
+
+## Metrica usata nella pipeline corrente
+
+Nel codice attuale, la metrica decisionale effettivamente usata per validation, test e ranking finale e` `accuracy`.
+
+Questo vale per:
+
+- scelta del miglior `C` nel LASSO;
+- selezione degli iperparametri di Random Forest;
+- selezione degli iperparametri di XGBoost;
+- ottimizzazione Optuna della rete neurale;
+- classifica finale prodotta dall'orchestrator.
+
+I file `performance.json` e `model_comparison.json` riportano infatti `metric: "accuracy"`.
+
+## Output salvati per settore
+
+Per ciascun settore, la pipeline salva una struttura di output come questa:
+
+- `null_model/`
+- `always_zero_model/`
+- `always_one_model/`
+- `lasso_model/`
+- `logistic_regression/`
+- `random_forest/`
+- `XGBoost/`
+- `neural network/`
+- `orchestrator_results/`
+
+In particolare:
+
+- ogni modello salva il proprio `performance.json`;
+- i modelli con tuning salvano anche `best_C.json` o `best_params.json`;
+- i modelli addestrati salvano anche il file del modello;
+- `orchestrator_results/model_comparison.json` contiene ranking finale, modello migliore, best accuracy, dataset sizes ed execution order;
+- `orchestrator_results/model_comparison.csv` contiene un riepilogo tabellare delle performance.
+
+## Sintesi operativa
+
+Il flusso completo di `src/4.modeling` e` il seguente:
+
+1. si carica il dataset di modeling;
+2. si applica il filtro settoriale;
+3. si costruisce lo split temporale train-validation-test;
+4. si bilancia il training set in memoria;
+5. si valida il LASSO e si salvano le variabili selezionate;
+6. i modelli successivi riusano quelle variabili selezionate;
+7. ogni modello viene addestrato su `train_full` bilanciato e valutato su test;
+8. l'orchestrator produce il ranking finale per settore.
+
+In altre parole, `src/4.modeling` implementa oggi una pipeline settoriale di classificazione tabellare che combina benchmark semplici, modelli lineari, ensemble tree-based e una rete neurale, con feature selection LASSO come passaggio comune per gran parte dei modelli non banali.
