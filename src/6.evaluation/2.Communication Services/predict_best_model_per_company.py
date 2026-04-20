@@ -19,6 +19,7 @@ from evaluation_data_prep import build_sector_test_data
 COMMUNICATION_SERVICES_SECTOR_CODE = 2
 TARGET_COL = "AdjClosePrice_t+1_Up"
 DATE_COL = "WeekEndingFriday"
+OUTPUT_CSV = CURRENT_DIR / "best_model_predictions_per_company.csv"
 
 
 def load_selected_variables() -> list[str] | None:
@@ -78,11 +79,13 @@ def build_prediction_comparison_dataframe() -> pd.DataFrame:
 
 def main():
     comparison_df = build_prediction_comparison_dataframe()
+    comparison_df.to_csv(OUTPUT_CSV, index=False)
     print(
         comparison_df[
             ["Ticker", DATE_COL, TARGET_COL, "predicted_" + TARGET_COL]
         ].to_string(index=False)
     )
+    print(f"CSV salvato in: {OUTPUT_CSV}")
     print(f"Numero di ticker distinti: {comparison_df['Ticker'].nunique()}")
 
 
