@@ -9,11 +9,13 @@ nltk==3.9.4
 numpy==1.26.4
 optuna==4.6.0
 pandas==2.3.3
+psycopg2-binary==2.9.10
 requests==2.33.1
 scikit-learn==1.7.1
 seaborn==0.13.2
 statsmodels==0.14.6
 textblob==0.20.0
+lxml_html_clean==0.4.4
 # For GPU support on Windows, install torch from the official CUDA wheel index:
 # .\.venv\Scripts\python.exe -m pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cu124
 torch==2.4.1
