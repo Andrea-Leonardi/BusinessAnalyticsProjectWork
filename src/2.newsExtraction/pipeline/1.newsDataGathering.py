@@ -208,6 +208,28 @@ def build_article_rows(ticker, articles):
     return rows
 
 
+def enforce_date_bounds(df, start_dt, end_dt_exclusive, label):
+    # Applico un filtro finale locale cosi eventuali record fuori range
+    # restituiti dall'API non entrano nei dataset salvati.
+    if df.empty or "Date" not in df.columns:
+        return df
+
+    bounded_df = df.copy()
+    parsed_dates = pd.to_datetime(bounded_df["Date"], utc=True, errors="coerce")
+    start_ts = pd.Timestamp(start_dt, tz="UTC")
+    end_ts = pd.Timestamp(end_dt_exclusive, tz="UTC")
+    in_range_mask = parsed_dates.notna() & (parsed_dates >= start_ts) & (parsed_dates < end_ts)
+    dropped_rows = int((~in_range_mask).sum())
+
+    if dropped_rows:
+        print(
+            f"{label}: scarto {dropped_rows} record fuori range o con data non valida "
+            f"({START_DATE} -> {END_DATE})."
+        )
+
+    return bounded_df.loc[in_range_mask].copy()
+
+
 # ---------------------------------------------------------------------------
 # RICHIESTE API E PAGINAZIONE
 # ---------------------------------------------------------------------------
@@ -372,6 +394,7 @@ def download_ticker_news(ticker, ticker_index, total_tickers, start_dt, end_dt_e
     ticker_news = pd.DataFrame(ticker_rows, columns=OUTPUT_COLUMNS)
 
     if not ticker_news.empty:
+        ticker_news = enforce_date_bounds(ticker_news, start_dt, end_dt_exclusive, ticker)
         ticker_news = deduplicate_news_df(ticker_news)
         ticker_news.sort_values(by=["Date", "ID"], ascending=[True, True], inplace=True)
 
@@ -403,6 +426,9 @@ def merge_company_files(tickers):
     merged_news = merged_news[OUTPUT_COLUMNS].copy()
 
     if not merged_news.empty:
+        start_dt = datetime.strptime(START_DATE, "%Y-%m-%d")
+        end_dt_exclusive = datetime.strptime(END_DATE, "%Y-%m-%d") + timedelta(days=1)
+        merged_news = enforce_date_bounds(merged_news, start_dt, end_dt_exclusive, "merge finale")
         merged_news = deduplicate_news_df(merged_news)
         merged_news.sort_values(by=["Ticker", "Date"], ascending=[True, True], inplace=True)
 

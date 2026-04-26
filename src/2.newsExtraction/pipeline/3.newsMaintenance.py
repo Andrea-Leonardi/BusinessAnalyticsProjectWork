@@ -126,6 +126,28 @@ def deduplicate_news_df(df):
     return pd.concat([with_id_df, without_id_df], ignore_index=True, sort=False)
 
 
+def enforce_date_bounds(df, start_dt, end_dt_exclusive, label):
+    # Applico un filtro finale locale cosi eventuali record fuori range
+    # restituiti dall'API o gia presenti nel dataset non rientrano in output.
+    if df.empty or "Date" not in df.columns:
+        return df
+
+    bounded_df = df.copy()
+    parsed_dates = pd.to_datetime(bounded_df["Date"], utc=True, errors="coerce")
+    start_ts = pd.Timestamp(start_dt, tz="UTC")
+    end_ts = pd.Timestamp(end_dt_exclusive, tz="UTC")
+    in_range_mask = parsed_dates.notna() & (parsed_dates >= start_ts) & (parsed_dates < end_ts)
+    dropped_rows = int((~in_range_mask).sum())
+
+    if dropped_rows:
+        print(
+            f"{label}: scarto {dropped_rows} record fuori range o con data non valida "
+            f"({START_DATE} -> {END_DATE})."
+        )
+
+    return bounded_df.loc[in_range_mask].copy()
+
+
 # ---------------------------------------------------------------------------
 # DOWNLOAD MIRATO DI UN SINGOLO TICKER
 # ---------------------------------------------------------------------------
@@ -264,6 +286,7 @@ def download_single_ticker_news(ticker):
 
     ticker_df = pd.DataFrame(ticker_rows, columns=OUTPUT_COLUMNS)
     if not ticker_df.empty:
+        ticker_df = enforce_date_bounds(ticker_df, start_dt, end_dt_exclusive, ticker)
         ticker_df = deduplicate_news_df(ticker_df)
         ticker_df.sort_values(by=["Date", "ID"], ascending=[True, True], inplace=True)
 
@@ -306,6 +329,9 @@ def main():
         news_df = pd.read_csv(cfg.NEWS_ARTICLES)
     else:
         news_df = pd.DataFrame(columns=OUTPUT_COLUMNS)
+
+    start_dt = datetime.strptime(START_DATE, "%Y-%m-%d")
+    end_dt_exclusive = datetime.strptime(END_DATE, "%Y-%m-%d") + timedelta(days=1)
 
     for column in OUTPUT_COLUMNS:
         if column not in news_df.columns:
@@ -405,6 +431,7 @@ def main():
     # 7. CHIUSURA DEL DATASET FINALE
     # -----------------------------------------------------------------------
 
+    news_df = enforce_date_bounds(news_df, start_dt, end_dt_exclusive, "dataset finale")
     filled_summary_from_headline = fill_missing_summaries(news_df)
     news_df = deduplicate_news_df(news_df)
     news_df.sort_values(by=["Ticker", "Date"], ascending=[True, True], inplace=True)
