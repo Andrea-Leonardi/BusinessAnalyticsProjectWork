@@ -7,23 +7,23 @@ import config as cfg
 from statsmodels.tsa.vector_ar.var_model import VAR
 
 enterprise = pd.read_csv(cfg.ENT).sort_values(by='Ticker')[['Ticker', 'sector']]
-score_FINBERT_df = pd.read_csv(cfg.MODELING_DATASET).sort_values(by=['Ticker', 'WeekEndingFriday'])[['Ticker', 'WeekEndingFriday', 'AdjClosePrice_t+1', 'NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Neutral_Mean', 'NEWS_FINBERT_Positive_Mean']]
+score_FINBERT_df = pd.read_csv(cfg.MODELING_DATASET).sort_values(by=['Ticker', 'WeekEndingFriday'])[['Ticker', 'WeekEndingFriday', 'AdjClosePrice', 'NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Neutral_Mean', 'NEWS_FINBERT_Positive_Mean']]
 # 1. Definisci la lista dei nomi correttamente (senza duplicati e con le doppie quadre)
 nomi_colonne = [
     'Ticker',
     'Sector',
-    'const_lag1', 'L1.AdjClosePrice_t+1_lag1', 'L1.NEWS_FINBERT_Negative_Mean_lag1', 
+    'const_lag1', 'L1.AdjClosePrice_lag1', 'L1.NEWS_FINBERT_Negative_Mean_lag1', 
     'L1.NEWS_FINBERT_Positive_Mean_lag1', 'pvalue_lag1',
     'const_lag2',
-    'L1.AdjClosePrice_t+1_lag2', 'L1.NEWS_FINBERT_Negative_Mean_lag2', 'L1.NEWS_FINBERT_Positive_Mean_lag2',
-    'L2.AdjClosePrice_t+1_lag2', 'L2.NEWS_FINBERT_Negative_Mean_lag2', 'L2.NEWS_FINBERT_Positive_Mean_lag2',
+    'L1.AdjClosePrice_lag2', 'L1.NEWS_FINBERT_Negative_Mean_lag2', 'L1.NEWS_FINBERT_Positive_Mean_lag2',
+    'L2.AdjClosePrice_lag2', 'L2.NEWS_FINBERT_Negative_Mean_lag2', 'L2.NEWS_FINBERT_Positive_Mean_lag2',
     'pvalue_lag2'
 ]
 df = pd.DataFrame(columns=nomi_colonne)
 df['Ticker'] = score_FINBERT_df['Ticker'].unique()
 df['Sector'] = enterprise['sector']
 # %%
-def score_articoli(df):
+def score_articoli(df_diff):
     # applichiamo la casualità di Granger per ogni ticker separatamente 
     # usiamo lag di 1 settimana (t+1) per prevedere il prezzo futuro, che equivale a un usare lag 2, dato che i prezzi sono già a t+1
     # 1. FIT DEL MODELLO
@@ -32,14 +32,14 @@ def score_articoli(df):
 
     # 2. TEST DI CAUSALITÀ DI GRANGER (Multivariato)
     # Questo test verifica se le variabili di sentiment (X) "causano" il prezzo (Y)
-    granger_test = results.test_causality('AdjClosePrice_t+1', 
+    granger_test = results.test_causality('AdjClosePrice', 
                                         ['NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean'], 
                                         kind='f')
 
     pvalue_lag1 = float(granger_test.pvalue)                               # Prende solo il numero del P-value
 
     # 3. Estraiamo tutti i coefficienti
-    all_coeffs_lag1 = results.params['AdjClosePrice_t+1'].values.flatten().tolist()
+    all_coeffs_lag1 = results.params['AdjClosePrice'].values.flatten().tolist()
     # usiamo lag di 2 settimana (t+2) per prevedere il prezzo futuro, che equivale a un usare lag 3, dato che i prezzi sono già a t+1
     # 1. FIT DEL MODELLO
     model = VAR(df_diff)
@@ -47,21 +47,21 @@ def score_articoli(df):
 
     # 2. TEST DI CAUSALITÀ DI GRANGER (Multivariato)
     # Questo test verifica se le variabili di sentiment (X) "causano" il prezzo (Y)
-    granger_test = results.test_causality('AdjClosePrice_t+1', 
+    granger_test = results.test_causality('AdjClosePrice', 
                                         ['NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean'], 
                                         kind='f')
 
     pvalue_lag2 = float(granger_test.pvalue)                               # Prende solo il numero del P-value
 
     # 3. Estraiamo tutti i coefficienti
-    all_coeffs_lag2 = results.params['AdjClosePrice_t+1'].values.flatten().tolist() # Prende solo i numeri dei Beta
+    all_coeffs_lag2 = results.params['AdjClosePrice'].values.flatten().tolist() # Prende solo i numeri dei Beta
 
     return all_coeffs_lag1 + [pvalue_lag1] + all_coeffs_lag2 + [pvalue_lag2]
 
 # %%
 for ticker in df['Ticker'].unique():
     # 1. TRASFORMAZIONE: Rendiamo i dati stazionari (fondamentale per Granger)
-    df_diff = score_FINBERT_df[score_FINBERT_df['Ticker'] == ticker][['AdjClosePrice_t+1', 'NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean']].diff().dropna()
+    df_diff = score_FINBERT_df[score_FINBERT_df['Ticker'] == ticker][['AdjClosePrice', 'NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean']].diff().dropna()
     valori = score_articoli(df_diff)
     df.loc[df['Ticker'] == ticker, nomi_colonne[2:]] = valori
 
@@ -108,3 +108,5 @@ plt.xlabel('Settore Industriale', fontsize=14, labelpad=15)
 plt.tight_layout()
 plt.show()
 
+
+# %%
