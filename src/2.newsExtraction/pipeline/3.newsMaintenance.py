@@ -34,8 +34,8 @@ import config as cfg
 # API, PARAMETRI E SCHEMA DATI
 # ---------------------------------------------------------------------------
 
-API_KEY = os.getenv("ALPACA_API_KEY", "PKVESCM6H235I3XWBT25AYP7JC")
-SECRET_KEY = os.getenv("ALPACA_SECRET_KEY", "6MPjbdQyG6PmWP1niRAAGPFM3HQw2SvAWMGWL3r5Q3FM")
+API_KEY = os.getenv("ALPACA_API_KEY", "")
+SECRET_KEY = os.getenv("ALPACA_SECRET_KEY", "")
 NEWS_URL = "https://data.alpaca.markets/v1beta1/news"
 HEADERS = {
     "Apca-Api-Key-Id": API_KEY,

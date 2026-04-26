@@ -13,6 +13,7 @@ Questa struttura serve a evitare download inutili quando vuoi solo:
 - rigenerare enterprises.csv dopo piccole modifiche di selezione.
 """
 
+import os
 import sys
 import threading
 import time
@@ -37,7 +38,7 @@ DELISTED_COMPANIES_URL = f"{FMP_API_BASE_URL}/delisted-companies"
 PROFILE_URL = f"{FMP_API_BASE_URL}/profile"
 HISTORICAL_MARKET_CAP_URL = f"{FMP_API_BASE_URL}/historical-market-capitalization"
 
-FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+FMP_API_KEY = os.getenv("FMP_API_KEY", "")
 US_EXCHANGES = ["NASDAQ", "NYSE"]
 
 # Se False e il CSV cache esiste gia, il codice non riscarica l'universo
@@ -82,6 +83,11 @@ MAX_REQUESTS_PER_MINUTE = 300
 # from exceeding the API limit even when several threads are active.
 PROFILE_MAX_WORKERS = 6
 HISTORICAL_MARKET_CAP_MAX_WORKERS = 8
+
+if not FMP_API_KEY:
+    raise EnvironmentError(
+        "Missing FMP_API_KEY. Set it as an environment variable or in the local .env file."
+    )
 
 # Remove names that are known to create downstream data issues in the current
 # pipeline and sample design.

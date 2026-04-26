@@ -1,4 +1,5 @@
 #%%
+import os
 import sys
 import time
 from pathlib import Path
@@ -35,7 +36,7 @@ COMPANY_FINANCIAL_OUTPUT_DIR = cfg.SINGLE_COMPANY_FINANCIALS
 # API Settings
 # ---------------------------------------------------------------------------
 
-FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+FMP_API_KEY = os.getenv("FMP_API_KEY", "")
 # Leave this empty to load all valid tickers from enterprises.csv.
 SELECTED_TICKERS: list[str] = []
 
@@ -473,9 +474,9 @@ def main() -> None:
     # Validate Settings
     # -----------------------------------------------------------------------
 
-    if not FMP_API_KEY or FMP_API_KEY == "INSERISCI_LA_TUA_API_KEY":
+    if not FMP_API_KEY:
         raise EnvironmentError(
-            "Set your FMP_API_KEY directly in this file before running the script."
+            "Missing FMP_API_KEY. Set it as an environment variable or in the local .env file."
         )
 
     if SELECTED_PERIOD not in {"annual", "quarter"}:

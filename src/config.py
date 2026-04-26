@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+from urllib.parse import quote_plus
 
 
 # ---------------------------------------------------------------------------
@@ -9,6 +11,44 @@ from pathlib import Path
 SRC = Path(__file__).resolve().parent
 PROJECT_ROOT = SRC.parent
 ROOT = PROJECT_ROOT
+
+
+def _load_project_env_file() -> None:
+    """Loads key=value pairs from the repository `.env` if present."""
+    env_path = PROJECT_ROOT / ".env"
+    if not env_path.exists():
+        return
+
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        os.environ.setdefault(key, value)
+
+
+def _build_postgres_url(
+    *,
+    user: str,
+    password: str,
+    host: str,
+    port: str,
+    database: str,
+    sslmode: str | None = None,
+) -> str:
+    user_part = quote_plus(user)
+    password_part = quote_plus(password)
+    auth_part = f"{user_part}:{password_part}"
+    url = f"postgresql://{auth_part}@{host}:{port}/{database}"
+    if sslmode:
+        url = f"{url}?sslmode={sslmode}"
+    return url
+
+
+_load_project_env_file()
 
 # Sorgenti principali del progetto dopo il riordino in cartelle numerate.
 DATA_EXTRACTION_ROOT = SRC / "1.dataExtraction"
@@ -101,6 +141,29 @@ VECTORIZATION_BAG_OF_WORDS_ARTICLES = (
 VECTORIZATION_TFIDF_ARTICLES = NEWS_EXTRACTION / "vectorizationTfidfArticles.csv"
 
 MODELING_DATASET = MODELING / "modeling.csv"
+
+
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
+
+DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "db_progetto")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+
+_default_sslmode = "prefer" if DB_HOST in {"localhost", "127.0.0.1"} else "require"
+DB_SSLMODE = os.getenv("DB_SSLMODE", _default_sslmode)
+
+DATABASE_URL = os.getenv("DATABASE_URL") or _build_postgres_url(
+    user=DB_USER,
+    password=DB_PASSWORD,
+    host=DB_HOST,
+    port=DB_PORT,
+    database=DB_NAME,
+    sslmode=DB_SSLMODE,
+)
 
 
 # ---------------------------------------------------------------------------

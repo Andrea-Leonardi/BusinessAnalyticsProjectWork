@@ -156,6 +156,18 @@ risultati.insert(0, 'id_risultati', colonna_id)
 #%%
 # ora creiamo delle funzioni grazie alle quali possiamo creare delle chiavi esterne per le tabelle mercato, articoli e indicatori, in modo da poter poi andare a popolare le tabelle del database relazionale.
 
+def mappa_con_controllo(serie, mapping, nome_colonna):
+    # Applichiamo la mappatura su tutta la colonna in un colpo solo, cosi evitiamo l'apply riga per riga.
+    serie_mappata = serie.map(mapping)
+
+    if serie_mappata.isna().any():
+        valori_mancanti = serie[serie_mappata.isna()].drop_duplicates().tolist()
+        raise KeyError(
+            f"Valori non trovati durante la mappatura della colonna {nome_colonna}: {valori_mancanti[:10]}"
+        )
+
+    return serie_mappata
+
 def chiave_esterna_mercato(x):
     # Uso .values[0] per estrarre il numero pulito
     return aziende['id_azienda'][aziende['Ticker'] == x['Ticker']].item()
@@ -170,10 +182,13 @@ def chiave_esterna_indicatori(x):
 def chiave_esterna_risultati(x):
     return aziende['id_azienda'][aziende['Ticker'] == x['Ticker']].item()
 
-mercato['id_azienda'] = mercato.apply(chiave_esterna_mercato, axis=1)
-articoli['id_azienda'] = articoli.apply(chiave_esterna_articoli, axis=1)
-indicatori['id_azienda'] = indicatori.apply(chiave_esterna_indicatori, axis=1)
-risultati['id_azienda'] = risultati.apply(chiave_esterna_risultati, axis=1)
+# costruiamo la mappa una sola volta, cosi evitiamo di rileggere tutto il dataframe aziende per ogni riga.
+mappa_id_azienda = aziende.set_index('Ticker')['id_azienda']
+
+mercato['id_azienda'] = mappa_con_controllo(mercato['Ticker'], mappa_id_azienda, 'Ticker')
+articoli['id_azienda'] = mappa_con_controllo(articoli['Ticker'], mappa_id_azienda, 'Ticker')
+indicatori['id_azienda'] = mappa_con_controllo(indicatori['symbol'], mappa_id_azienda, 'symbol')
+risultati['id_azienda'] = mappa_con_controllo(risultati['Ticker'], mappa_id_azienda, 'Ticker')
 possibbili_risultati = nomi_risultati 
 
 
@@ -226,12 +241,21 @@ def tabella_risultati(x):
     x['prediction'] = nomi_risultati['id_nomi_risultati'][nomi_risultati['result'] == x['prediction']].item()
     return x
 
-# Applicazione (questo richiederà un po' di tempo se i dataset sono grandi)
-aziende = aziende.apply(tabella_aziende, axis=1)
-mercato = mercato.apply(tabella_mercato, axis=1)
-articoli = articoli.apply(tabella_articoli, axis=1)
-indicatori = indicatori.apply(tabella_indicatori, axis=1)
-risultati = risultati.apply(tabella_risultati, axis=1)
+# costruiamo le mappe una sola volta, cosi evitiamo di rileggere tutto il dataframe di lookup per ogni riga.
+mappa_id_settore = nomi_settori.set_index('sector')['id_nomi_settori']
+mappa_id_industria = nomi_industie.set_index('industry')['id_nomi_industie']
+mappa_id_calendario = calendario.set_index('date')['id_calendario']
+mappa_id_risultato = nomi_risultati.set_index('result')['id_nomi_risultati']
+
+# Applicazione (questo richiederà molto meno tempo anche se i dataset sono grandi)
+aziende['sector'] = mappa_con_controllo(aziende['sector'], mappa_id_settore, 'sector')
+aziende['industry'] = mappa_con_controllo(aziende['industry'], mappa_id_industria, 'industry')
+mercato['WeekEndingFriday'] = mappa_con_controllo(mercato['WeekEndingFriday'], mappa_id_calendario, 'WeekEndingFriday')
+articoli['Date'] = mappa_con_controllo(articoli['Date'], mappa_id_calendario, 'Date')
+indicatori['WeekEndingFriday'] = mappa_con_controllo(indicatori['WeekEndingFriday'], mappa_id_calendario, 'WeekEndingFriday')
+risultati['WeekEndingFriday'] = mappa_con_controllo(risultati['WeekEndingFriday'], mappa_id_calendario, 'WeekEndingFriday')
+risultati['result'] = mappa_con_controllo(risultati['result'], mappa_id_risultato, 'result')
+risultati['prediction'] = mappa_con_controllo(risultati['prediction'], mappa_id_risultato, 'prediction')
 
 #%% 
 # dopo aver creato le chiavi esterne, possiamo rinominare le colonne per riflettere i nuovi nomi degli ID
@@ -279,19 +303,11 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 # ==========================================
 # 1. CONFIGURAZIONE CONNESSIONE
 # ==========================================
-# Sostituisci 'latuapassword' con quella scelta durante l'installazione
-# Sostituisci 'db_progetto' con il nome che hai dato al database in pgAdmin
-USER = 'postgres'
-PASSWORD = 'Gorilla2026!' 
-HOST = 'localhost'
-PORT = '5432'
-DB_NAME = 'db_progetto'
-
-# Creazione della stringa di connessione
-DATABASE_URI = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}'
-
-# Creazione dell'engine
-engine = create_engine(DATABASE_URI)
+# Legge la configurazione da variabili d'ambiente / file .env tramite src/config.py
+print(
+    f"Connessione PostgreSQL attiva su {cfg.DB_HOST}:{cfg.DB_PORT}/{cfg.DB_NAME}"
+)
+engine = create_engine(cfg.DATABASE_URL, pool_pre_ping=True)
 metadata = MetaData()
 
 # ==========================================
