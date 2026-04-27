@@ -13,6 +13,8 @@ aziende_temp = pd.read_csv(cfg.ENT).sort_values(by='Ticker')
 articoli_temp = pd.read_csv(cfg.NEWS_ARTICLES).sort_values(by=['Ticker', 'Date'])
 mercato_temp = pd.read_csv(cfg.ALL_PRICE_DATA).sort_values(by=['Ticker', 'WeekEndingFriday'])
 indicatori_temp = pd.read_csv(cfg.FMP_FINANCIALS).sort_values(by=['symbol', 'WeekEndingFriday'])
+granger = pd.read_csv(cfg.GRANGER_LAG1_LAG2).sort_values(by=['symbol', 'WeekEndingFriday'])
+
 """ 
 # questo dataset manca, appena viene creato lo aggiungo
 # risultati = pd.read_csv(cfg.NEWS_ARTICLES)
