@@ -20,9 +20,10 @@ OUTPUT_DIR = Path(__file__).resolve().parent / "outputs"
 MIN_SUMMARY_WORDS = 5
 MIN_SUMMARY_CHARS = 25
 HIGH_TITLE_SIMILARITY = 0.92
-SIDE_MARGIN = 0.07
-CARD_WIDTH = 0.16
-CARD_GAP = 0.015
+SIDE_MARGIN = 0.15
+CARD_WIDTH = 0.162
+CARD_GAP = 0.012
+CARD_HEIGHT = 0.115
 
 BENZINGA_BAD_TEXT_PATTERNS = [
     r"headline only article",
@@ -237,6 +238,7 @@ def apply_dark_theme() -> dict[str, str]:
             "text.color": palette["text"],
             "font.size": 11,
             "axes.titleweight": "bold",
+            "axes.titlesize": 19,
         }
     )
     return palette
@@ -253,13 +255,20 @@ def add_card(fig, x: float, y: float, w: float, h: float, title: str, value: str
         linewidth=1.2,
     )
     fig.add_artist(rect)
-    fig.text(x + 0.015, y + h - 0.028, title, color=palette["muted"], fontsize=9)
     fig.text(
         x + 0.015,
-        y + 0.038,
+        y + h - 0.032,
+        title,
+        color=palette["text"],
+        fontsize=17,
+        fontweight="bold",
+    )
+    fig.text(
+        x + 0.015,
+        y + 0.025,
         value,
         color=palette["text"],
-        fontsize=18,
+        fontsize=22,
         fontweight="bold",
     )
 
@@ -299,6 +308,8 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
         .head(5)
         .rename(index=ISSUE_LABELS)
     )
+    cards_total_width = CARD_WIDTH * 5 + CARD_GAP * 4
+    cards_left = (1 - cards_total_width) / 2
 
     fig = plt.figure(figsize=(16, 9), dpi=160)
     fig.patch.set_facecolor(palette["figure_bg"])
@@ -309,7 +320,7 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
         left=SIDE_MARGIN,
         right=1 - SIDE_MARGIN,
         bottom=0.09,
-        top=0.76,
+        top=0.73,
         hspace=0.28,
         height_ratios=[1.2, 1.0],
     )
@@ -324,7 +335,7 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
 
     fig.suptitle(
         "News Summary Quality Was a Real Data Problem",
-        x=0.05,
+        x=cards_left,
         y=0.96,
         ha="left",
         fontsize=24,
@@ -332,10 +343,10 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
     )
     add_card(
         fig,
-        SIDE_MARGIN,
+        cards_left,
         0.79,
         CARD_WIDTH,
-        0.095,
+        CARD_HEIGHT,
         "Raw articles",
         f"{total_rows:,}",
         "Rows scanned across the full news dataset",
@@ -343,10 +354,10 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
     )
     add_card(
         fig,
-        SIDE_MARGIN + (CARD_WIDTH + CARD_GAP) * 1,
+        cards_left + (CARD_WIDTH + CARD_GAP) * 1,
         0.79,
         CARD_WIDTH,
-        0.095,
+        CARD_HEIGHT,
         "Empty summaries",
         f"{missing_count:,}",
         f"{format_pct(missing_count, total_rows)} were empty before cleaning",
@@ -354,10 +365,10 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
     )
     add_card(
         fig,
-        SIDE_MARGIN + (CARD_WIDTH + CARD_GAP) * 2,
+        cards_left + (CARD_WIDTH + CARD_GAP) * 2,
         0.79,
         CARD_WIDTH,
-        0.095,
+        CARD_HEIGHT,
         "Low-quality",
         f"{low_quality_count:,}",
         "Present, but judged unreliable by heuristics",
@@ -365,10 +376,10 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
     )
     add_card(
         fig,
-        SIDE_MARGIN + (CARD_WIDTH + CARD_GAP) * 3,
+        cards_left + (CARD_WIDTH + CARD_GAP) * 3,
         0.79,
         CARD_WIDTH,
-        0.095,
+        CARD_HEIGHT,
         "Headline fallback",
         f"{fallback_count:,}",
         f"{format_pct(fallback_count, total_rows)} replaced by headline",
@@ -376,14 +387,21 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
     )
     add_card(
         fig,
-        SIDE_MARGIN + (CARD_WIDTH + CARD_GAP) * 4,
+        cards_left + (CARD_WIDTH + CARD_GAP) * 4,
         0.79,
         CARD_WIDTH,
-        0.095,
+        CARD_HEIGHT,
         "After cleaning",
         f"{clean_non_empty_count:,}",
         "Articles with non-empty summary text in newsArticles.csv",
         palette,
+    )
+
+    break_pos = ax_breakdown.get_position()
+    shorter_height = break_pos.height * 0.62
+    centered_bottom = break_pos.y0 + (break_pos.height - shorter_height) / 2
+    ax_breakdown.set_position(
+        [break_pos.x0, centered_bottom, break_pos.width, shorter_height]
     )
 
     segments = issue_counts.drop(labels=["usable"])
@@ -407,7 +425,7 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
                 f"{ISSUE_LABELS[issue]}\n{format_pct(int(count), total_rows)}",
                 ha="center",
                 va="center",
-                fontsize=9,
+                fontsize=18,
                 color=palette["text"],
                 fontweight="bold",
             )
@@ -427,11 +445,15 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
         f"Usable\n{format_pct(usable_before_count, total_rows)}",
         ha="center",
         va="center",
-        fontsize=9,
+        fontsize=18,
         color=palette["text"],
         fontweight="bold",
     )
-    ax_breakdown.set_title("Before Cleaning: How Raw Summaries Were Split")
+    ax_breakdown.set_title(
+        "Before Cleaning: How Raw Summaries Were Split",
+        fontsize=20,
+        pad=16,
+    )
     ax_breakdown.set_xlabel("Number of articles")
     ax_breakdown.set_ylabel("")
     ax_breakdown.grid(False)
@@ -442,7 +464,11 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
         color=[issue_colors[key] for key in issue_counts.drop(labels=["usable"]).sort_values(ascending=False).head(5).index[::-1]],
         alpha=0.92,
     )
-    ax_causes.set_title("Main Sources of Bad Summaries")
+    ax_causes.set_title(
+        "Main Sources of Bad Summaries",
+        fontsize=20,
+        pad=16,
+    )
     ax_causes.set_xlabel("Articles")
     ax_causes.set_ylabel("")
     for idx, value in enumerate(top_issues.values[::-1]):
@@ -456,7 +482,7 @@ def build_figure(raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_path: Path
         )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, bbox_inches="tight")
+    fig.savefig(output_path)
     plt.close(fig)
 
 

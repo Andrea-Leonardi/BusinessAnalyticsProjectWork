@@ -15,7 +15,8 @@ import config as cfg
 
 OUTPUT_DIR = Path(__file__).resolve().parent / "outputs"
 DEFAULT_TICKER = "AAPL"
-DEFAULT_LOOKBACK_WEEKS = 52
+DEFAULT_LOOKBACK_WEEKS = 0
+DEFAULT_START_DATE = pd.Timestamp("2021-01-01")
 
 
 def parse_args() -> argparse.Namespace:
@@ -37,7 +38,7 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_LOOKBACK_WEEKS,
         help=(
             "Number of most recent weeks to show in the price and news panels "
-            f"(default: {DEFAULT_LOOKBACK_WEEKS})."
+            f"(default: {DEFAULT_LOOKBACK_WEEKS}, meaning full history from 2021)."
         ),
     )
     parser.add_argument(
@@ -167,10 +168,20 @@ def limit_to_recent_weeks(
     weeks: int,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     if weeks <= 0:
-        return price_df.copy(), news_df.copy()
+        min_week = DEFAULT_START_DATE
+        trimmed_price_df = price_df.loc[
+            price_df["WeekEndingFriday"] >= min_week
+        ].copy()
+        trimmed_news_df = news_df.loc[
+            news_df["WeekEndingFriday"] >= min_week
+        ].copy()
+        return trimmed_price_df, trimmed_news_df
 
     trimmed_price_df = price_df.tail(weeks).copy()
-    min_week = trimmed_price_df["WeekEndingFriday"].min()
+    min_week = max(trimmed_price_df["WeekEndingFriday"].min(), DEFAULT_START_DATE)
+    trimmed_price_df = trimmed_price_df.loc[
+        trimmed_price_df["WeekEndingFriday"] >= min_week
+    ].copy()
     trimmed_news_df = news_df.loc[
         news_df["WeekEndingFriday"] >= min_week
     ].copy()
@@ -281,8 +292,8 @@ def build_dashboard(
     max_price = chart_price_df["DisplayPrice"].max()
     price_padding = max((max_price - min_price) * 0.12, max_price * 0.03)
     ax_price.set_ylim(min_price - price_padding, max_price + price_padding)
-    ax_price.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    ax_price.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+    ax_price.xaxis.set_major_locator(mdates.YearLocator())
+    ax_price.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
     ax_price.tick_params(axis="x", rotation=0)
     ax_price.legend(
         loc="upper left",
@@ -328,8 +339,8 @@ def build_dashboard(
     ax_news.set_title("Weekly News Volume")
     ax_news.set_xlabel("Week ending")
     ax_news.set_ylabel("Articles")
-    ax_news.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    ax_news.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+    ax_news.xaxis.set_major_locator(mdates.YearLocator())
+    ax_news.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
 
 
     fig.suptitle(
