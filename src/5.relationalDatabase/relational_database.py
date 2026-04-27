@@ -13,7 +13,7 @@ aziende_temp = pd.read_csv(cfg.ENT).sort_values(by='Ticker')
 articoli_temp = pd.read_csv(cfg.NEWS_ARTICLES).sort_values(by=['Ticker', 'Date'])
 mercato_temp = pd.read_csv(cfg.ALL_PRICE_DATA).sort_values(by=['Ticker', 'WeekEndingFriday'])
 indicatori_temp = pd.read_csv(cfg.FMP_FINANCIALS).sort_values(by=['symbol', 'WeekEndingFriday'])
-granger = pd.read_csv(cfg.GRANGER_LAG1_LAG2).sort_values(by=['symbol', 'WeekEndingFriday'])
+granger_temp = pd.read_csv(cfg.GRANGER_LAG1_LAG2).sort_values(by=['Ticker', 'Sector'])
 
 """ 
 # questo dataset manca, appena viene creato lo aggiungo
@@ -81,6 +81,7 @@ nomi_risultati['id_nomi_risultati'] = range(1, len(nomi_risultati) + 1)
 
 # Riordina le colonne per avere l'ID all'inizio
 nomi_risultati = nomi_risultati[['id_nomi_risultati', 'result', 'label']]
+
 
 
 # definiamo un calendario con tutte le date comprese tra il 1 gennaio 2010 e oggi, in modo da poter poi andare a popolare la tabella delle date del database relazionale.
@@ -155,8 +156,18 @@ risultati.insert(0, 'id_risultati', colonna_id)
 
 # Ora 'id_risultati' è la prima colonna
 
+# 1. Creiamo la colonna con il numero progressivo (partendo da 1)
+granger = granger_temp  # Creiamo una copia del DataFrame per lavorarci sopra
+granger['id_granger'] = range(1, len(granger) + 1)
+
+# 2. La "stacchiamo" dal fondo e la mettiamo in prima posizione (indice 0)
+colonna_id = granger.pop('id_granger') 
+granger.insert(0, 'id_granger', colonna_id)
+
+# Ora 'id_granger' è la prima colonna
+
 #%%
-# ora creiamo delle funzioni grazie alle quali possiamo creare delle chiavi esterne per le tabelle mercato, articoli e indicatori, in modo da poter poi andare a popolare le tabelle del database relazionale.
+# ora creiamo delle funzioni grazie alle quali possiamo creare delle chiavi esterne per le tabelle mercato, articoli, indicatori e granger, in modo da poter poi andare a popolare le tabelle del database relazionale.
 
 def chiave_esterna_mercato(x):
     # Uso .values[0] per estrarre il numero pulito
@@ -172,10 +183,14 @@ def chiave_esterna_indicatori(x):
 def chiave_esterna_risultati(x):
     return aziende['id_azienda'][aziende['Ticker'] == x['Ticker']].item()
 
+def chiave_esterna_granger(x):
+    return aziende['id_azienda'][aziende['Ticker'] == x['Ticker']].item()
+
 mercato['id_azienda'] = mercato.apply(chiave_esterna_mercato, axis=1)
 articoli['id_azienda'] = articoli.apply(chiave_esterna_articoli, axis=1)
 indicatori['id_azienda'] = indicatori.apply(chiave_esterna_indicatori, axis=1)
 risultati['id_azienda'] = risultati.apply(chiave_esterna_risultati, axis=1)
+granger['id_azienda'] = granger.apply(chiave_esterna_granger, axis=1)
 possibbili_risultati = nomi_risultati 
 
 
@@ -184,6 +199,7 @@ mercato.drop(columns=['Ticker'], inplace=True)
 articoli.drop(columns=['Ticker'], inplace=True)
 indicatori.drop(columns=['symbol'], inplace=True)
 risultati.drop(columns=['Ticker'], inplace=True)
+granger.drop(columns=['Ticker'], inplace=True)
 # %%
 # qui creiamo una serie di funzioni che ci permettono di andare a popolare le tabelle del database relazionale, andando a sostituire i nomi delle aziende, dei ticker, dei settori e delle date con i rispettivi id che abbiamo creato nelle tabelle che abbiamo appena creato.
 
@@ -228,13 +244,20 @@ def tabella_risultati(x):
     x['prediction'] = nomi_risultati['id_nomi_risultati'][nomi_risultati['result'] == x['prediction']].item()
     return x
 
+def tabella_granger(x):
+    """
+    x['Ticker'] = ticker_aziende['Id_ticker_aziende'][ticker_aziende['Ticker'] == x['Ticker']].item()
+    """
+    x['Sector'] = nomi_settori['id_nomi_settori'][nomi_settori['sector'] == x['Sector']].item()
+    return x
+
 # Applicazione (questo richiederà un po' di tempo se i dataset sono grandi)
 aziende = aziende.apply(tabella_aziende, axis=1)
 mercato = mercato.apply(tabella_mercato, axis=1)
 articoli = articoli.apply(tabella_articoli, axis=1)
 indicatori = indicatori.apply(tabella_indicatori, axis=1)
 risultati = risultati.apply(tabella_risultati, axis=1)
-
+granger = granger.apply(tabella_granger, axis=1)
 #%% 
 # dopo aver creato le chiavi esterne, possiamo rinominare le colonne per riflettere i nuovi nomi degli ID
 aziende.rename(columns={'sector': 'id_settore', 'selectionReferenceDate': 'id_calendario', 'industry': 'id_industry'}, inplace=True)
@@ -243,6 +266,7 @@ articoli.rename(columns={'Date': 'id_calendario', 'ID': 'id_articoli_originali'}
 indicatori.rename(columns={'WeekEndingFriday': 'id_calendario'}, inplace=True)
 risultati.rename(columns={'WeekEndingFriday': 'id_calendario'}, inplace=True)
 possibbili_risultati.rename(columns={'id_nomi_risultati': 'id_result'}, inplace=True)
+granger.rename(columns={'Sector': 'id_nomi_settori'}, inplace=True)
 
 # riordiniamo le colonne per avere come prima cosa la chiave interna, poi la chiave esterna, e poi le altre colonne
 # Riordino Tabella Aziende
@@ -261,6 +285,9 @@ indicatori = indicatori[['id_indicatori', 'id_azienda', 'id_calendario', 'compan
 # Riordino Tabella Risultati
 risultati = risultati[['id_risultati', 'id_azienda', 'id_calendario', 'result', 'prediction', 'probability_up', 'probability_down']]
 
+# Riordino Tabella Granger
+granger = granger[['id_granger', 'id_azienda', 'id_nomi_settori', 'L1.AdjClosePrice_lag1', 'L1.NEWS_FINBERT_Negative_Mean_lag1', 'L1.NEWS_FINBERT_Positive_Mean_lag1', 'L1.NEWS_FINBERT_Neutral_Mean_lag1', 'pvalue_lag1', 'L1.AdjClosePrice_lag2', 'L1.NEWS_FINBERT_Negative_Mean_lag2', 'L1.NEWS_FINBERT_Positive_Mean_lag2', 'L1.NEWS_FINBERT_Neutral_Mean_lag2', 'L2.AdjClosePrice_lag2', 'L2.NEWS_FINBERT_Negative_Mean_lag2', 'L2.NEWS_FINBERT_Positive_Mean_lag2', 'L2.NEWS_FINBERT_Neutral_Mean_lag2', 'pvalue_lag2']]
+
 # eliminiamo le colonne che contengono i nomi delle aziende, dei ticker, dei settori e delle date, in quanto non ci serviranno più per popolare le tabelle del database relazionale.
 aziende.drop(columns=['SectorCode', 'marketCap', 'historicalMarketCapDate', 'universeSource'], inplace=True)
 indicatori.drop(columns=['company_name'], inplace=True)
@@ -273,6 +300,7 @@ print("Colonne Indicatori:", indicatori.columns.tolist())
 print("Colonne Risultati:", risultati.columns.tolist())
 print("Colonne Calendario:", calendario.columns.tolist())
 print("Colonne Possibili Risultati:", possibbili_risultati.columns.tolist())
+print("Colonne Granger:", granger.columns.tolist())
 
 # %%
 import pandas as pd
@@ -287,7 +315,7 @@ USER = 'postgres'
 PASSWORD = 'Gorilla2026!' 
 HOST = 'localhost'
 PORT = '5432'
-DB_NAME = 'db_progetto'
+DB_NAME = 'project_business_analytics'
 
 # Creazione della stringa di connessione
 DATABASE_URI = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}'
@@ -377,10 +405,34 @@ risultati_db = Table('risultati', metadata,
     Column('probability_down', Float)
 )
 
+# --- NUOVA TABELLA: coefficiente_granger ---
+colonne_granger = [
+    Column('id_granger', Integer, primary_key=True),
+    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
+    Column('id_settore', Integer, ForeignKey('settori.id_settore'))
+]
+
+nomi_metriche_granger = [
+    'L1.AdjClosePrice_lag1', 'L1.NEWS_FINBERT_Negative_Mean_lag1', 'L1.NEWS_FINBERT_Positive_Mean_lag1',
+    'L1.NEWS_FINBERT_Neutral_Mean_lag1', 'pvalue_lag1', 'L1.AdjClosePrice_lag2',
+    'L1.NEWS_FINBERT_Negative_Mean_lag2', 'L1.NEWS_FINBERT_Positive_Mean_lag2',
+    'L1.NEWS_FINBERT_Neutral_Mean_lag2', 'L2.AdjClosePrice_lag2', 'L2.NEWS_FINBERT_Negative_Mean_lag2',
+    'L2.NEWS_FINBERT_Positive_Mean_lag2', 'L2.NEWS_FINBERT_Neutral_Mean_lag2', 'pvalue_lag2'
+]
+
+# Aggiungo dinamicamente tutte le colonne dei lag e p-value come Float (Decimali)
+for col in nomi_metriche_granger:
+    colonne_granger.append(Column(col, Float))
+
+coefficiente_granger_db = Table('coefficiente_granger', metadata, *colonne_granger)
+
 # ==========================================
 # 3. CREAZIONE TABELLE NEL DATABASE
 # ==========================================
-# Questo comando invia fisicamente le query CREATE TABLE a Postgres
+# 1. ELIMINA tutte le tabelle (se esistono) per evitare l'errore dei duplicati
+metadata.drop_all(engine)
+
+# 2. RICREA tutte le tabelle da zero e pulite
 metadata.create_all(engine)
 print("Tabelle create con successo nel database PostgreSQL.")
 
@@ -405,6 +457,12 @@ mercato.to_sql('mercato', engine, if_exists='append', index=False)
 indicatori.to_sql('indicatori', engine, if_exists='append', index=False)
 articoli.to_sql('articoli', engine, if_exists='append', index=False)
 risultati.to_sql('risultati', engine, if_exists='append', index=False)
+
+# Rinomino la colonna per allinearla alla Foreign Key definita nello schema ('id_settore')
+granger.rename(columns={'id_nomi_settori': 'id_settore'}, inplace=True)
+
+# Scrittura nel database
+granger.to_sql('coefficiente_granger', engine, if_exists='append', index=False)
 
 print("Caricamento dei dati nel database relazionale completato!")
 # %%

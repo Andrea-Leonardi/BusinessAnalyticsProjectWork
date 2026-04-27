@@ -13,10 +13,10 @@ nomi_colonne = [
     'Ticker',
     'Sector',
     'const_lag1', 'L1.AdjClosePrice_lag1', 'L1.NEWS_FINBERT_Negative_Mean_lag1', 
-    'L1.NEWS_FINBERT_Positive_Mean_lag1', 'pvalue_lag1',
+    'L1.NEWS_FINBERT_Positive_Mean_lag1', 'L1.NEWS_FINBERT_Neutral_Mean_lag1', 'pvalue_lag1',
     'const_lag2',
-    'L1.AdjClosePrice_lag2', 'L1.NEWS_FINBERT_Negative_Mean_lag2', 'L1.NEWS_FINBERT_Positive_Mean_lag2',
-    'L2.AdjClosePrice_lag2', 'L2.NEWS_FINBERT_Negative_Mean_lag2', 'L2.NEWS_FINBERT_Positive_Mean_lag2',
+    'L1.AdjClosePrice_lag2', 'L1.NEWS_FINBERT_Negative_Mean_lag2', 'L1.NEWS_FINBERT_Positive_Mean_lag2', 'L1.NEWS_FINBERT_Neutral_Mean_lag2',
+    'L2.AdjClosePrice_lag2', 'L2.NEWS_FINBERT_Negative_Mean_lag2', 'L2.NEWS_FINBERT_Positive_Mean_lag2', 'L2.NEWS_FINBERT_Neutral_Mean_lag2',
     'pvalue_lag2'
 ]
 df = pd.DataFrame(columns=nomi_colonne)
@@ -33,7 +33,7 @@ def score_articoli(df_diff):
     # 2. TEST DI CAUSALITÀ DI GRANGER (Multivariato)
     # Questo test verifica se le variabili di sentiment (X) "causano" il prezzo (Y)
     granger_test = results.test_causality('AdjClosePrice', 
-                                        ['NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean'], 
+                                        ['NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean', 'NEWS_FINBERT_Neutral_Mean'], 
                                         kind='f')
 
     pvalue_lag1 = float(granger_test.pvalue)                               # Prende solo il numero del P-value
@@ -48,7 +48,7 @@ def score_articoli(df_diff):
     # 2. TEST DI CAUSALITÀ DI GRANGER (Multivariato)
     # Questo test verifica se le variabili di sentiment (X) "causano" il prezzo (Y)
     granger_test = results.test_causality('AdjClosePrice', 
-                                        ['NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean'], 
+                                        ['NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean', 'NEWS_FINBERT_Neutral_Mean'], 
                                         kind='f')
 
     pvalue_lag2 = float(granger_test.pvalue)                               # Prende solo il numero del P-value
@@ -61,7 +61,7 @@ def score_articoli(df_diff):
 # %%
 for ticker in df['Ticker'].unique():
     # 1. TRASFORMAZIONE: Rendiamo i dati stazionari (fondamentale per Granger)
-    df_diff = score_FINBERT_df[score_FINBERT_df['Ticker'] == ticker][['AdjClosePrice', 'NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean']].diff().dropna()
+    df_diff = score_FINBERT_df[score_FINBERT_df['Ticker'] == ticker][['AdjClosePrice', 'NEWS_FINBERT_Negative_Mean', 'NEWS_FINBERT_Positive_Mean', 'NEWS_FINBERT_Neutral_Mean']].diff().dropna()
     valori = score_articoli(df_diff)
     df.loc[df['Ticker'] == ticker, nomi_colonne[2:]] = valori
 
