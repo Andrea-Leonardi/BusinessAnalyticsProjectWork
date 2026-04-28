@@ -7,6 +7,7 @@ L'obiettivo operativo di questa sezione non e` riaddestrare i modelli, ma:
 - ricostruire in modo coerente il test set di ciascun settore;
 - identificare il miglior modello settoriale sulla base dei risultati gia` prodotti in modeling;
 - generare le predizioni out-of-sample a livello di ticker e data;
+- associare a ogni predizione la probabilita` stimata per la classe predetta;
 - esportare tali risultati in un CSV per l'analisi e la reportistica.
 
 ## Logica generale
@@ -92,14 +93,20 @@ Gli script `predict_best_model_per_company.py`:
 - richiamano `get_best_model_bundle()` dal corrispondente `best_model.py`;
 - ricostruiscono il test set del settore tramite `build_sector_test_data(sector_code)`;
 - applicano il modello migliore a `X_test`;
-- assemblano un dataframe finale con `Ticker`, `WeekEndingFriday`, `AdjClosePrice_t+1_Up` e `predicted_AdjClosePrice_t+1_Up`.
+- assemblano un dataframe finale con `Ticker`, `WeekEndingFriday`, `AdjClosePrice_t+1_Up`, `predicted_AdjClosePrice_t+1_Up` e `predicted_probability`.
+
+La colonna `predicted_probability` rappresenta la probabilita` associata alla classe effettivamente predetta dal best model:
+
+- se `predicted_AdjClosePrice_t+1_Up` e` pari a `1`, contiene la probabilita` stimata della classe `1`;
+- se `predicted_AdjClosePrice_t+1_Up` e` pari a `0`, contiene la probabilita` stimata della classe `0`.
 
 La logica di prediction gestisce i diversi casi implementativi:
 
-- per `null_model` usa direttamente `predict(X_test)`;
+- per `null_model` usa direttamente `predict(X_test)` e, se disponibile, `predict_proba(X_test)`;
+- per i modelli sklearn e XGBoost usa `predict(...)` e `predict_proba(...)`;
 - per i modelli sklearn con `feature_names_in_` usa l'ordine delle feature salvato nel modello;
 - se necessario legge le variabili selezionate dal file `lasso_model/selected_variables.csv`;
-- per `neural_network` ricostruisce anche lo scaling a partire dai parametri salvati nel checkpoint.
+- per `neural_network` ricostruisce anche lo scaling a partire dai parametri salvati nel checkpoint e calcola le probabilita` tramite `softmax` sui logits.
 
 ## Output prodotti
 
@@ -114,7 +121,15 @@ Esempi:
 - `src/6.evaluation/10.Technology/best_model_predictions_per_company.csv`
 - `src/6.evaluation/11.Utilities/best_model_predictions_per_company.csv`
 
-Questo rende la fase di evaluation immediatamente utilizzabile sia per controllo manuale sia per analisi successive nel report.
+I CSV esportati includono quindi le colonne:
+
+- `Ticker`
+- `WeekEndingFriday`
+- `AdjClosePrice_t+1_Up`
+- `predicted_AdjClosePrice_t+1_Up`
+- `predicted_probability`
+
+Questo rende la fase di evaluation immediatamente utilizzabile sia per controllo manuale sia per analisi successive nel report, includendo non solo la classe prevista ma anche il livello di confidenza del modello sulla previsione effettuata.
 
 ## Sintesi metodologica
 
@@ -124,6 +139,7 @@ In termini pratici, `src/6.evaluation` implementa il seguente flusso:
 2. si recuperano i risultati comparativi prodotti in modeling;
 3. si sceglie il miglior modello non benchmark per `test_accuracy`;
 4. si applica il modello al test set out-of-sample;
-5. si esportano le predizioni finali per ticker e settimana.
+5. si calcola la probabilita` della classe predetta;
+6. si esportano le predizioni finali per ticker e settimana.
 
 Questa organizzazione mantiene separati modeling ed evaluation, ma li collega in modo coerente: la fase di evaluation non introduce nuove scelte arbitrarie, bensì riusa risultati, feature selection e artefatti salvati nella fase precedente per produrre una verifica finale out-of-sample a livello settoriale.

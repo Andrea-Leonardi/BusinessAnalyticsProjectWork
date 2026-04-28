@@ -29,12 +29,33 @@ def load_selected_variables() -> list[str] | None:
     return pd.read_csv(selected_variables_path).iloc[:, 0].tolist()
 
 
-def predict_with_model(model_bundle: dict, X_test: pd.DataFrame) -> np.ndarray:
+def _get_predicted_class_probabilities(
+    probability_matrix: np.ndarray, y_pred: np.ndarray, classes: np.ndarray
+) -> np.ndarray:
+    class_to_index = {class_label: index for index, class_label in enumerate(classes)}
+    return np.asarray(
+        [
+            probability_matrix[row_index, class_to_index[predicted_class]]
+            for row_index, predicted_class in enumerate(y_pred)
+        ]
+    )
+
+
+def predict_with_model(
+    model_bundle: dict, X_test: pd.DataFrame
+) -> tuple[np.ndarray, np.ndarray]:
     model_name = model_bundle["best_model_entry"]["model"]
     best_model = model_bundle["best_model"]
 
     if model_name == "null_model":
-        return best_model.predict(X_test)
+        y_pred = best_model.predict(X_test)
+        if hasattr(best_model, "predict_proba"):
+            y_pred_probability = _get_predicted_class_probabilities(
+                best_model.predict_proba(X_test), y_pred, best_model.classes_
+            )
+        else:
+            y_pred_probability = np.ones(len(y_pred), dtype=float)
+        return y_pred, y_pred_probability
 
     selected_variables = load_selected_variables()
     if not selected_variables:
@@ -60,9 +81,20 @@ def predict_with_model(model_bundle: dict, X_test: pd.DataFrame) -> np.ndarray:
 
         with torch.no_grad():
             logits = best_model(X_test_tensor)
-            return torch.argmax(logits, dim=1).cpu().numpy()
+            probabilities = torch.softmax(logits, dim=1)
+            y_pred = torch.argmax(probabilities, dim=1).cpu().numpy()
+            y_pred_probability = probabilities[
+                torch.arange(probabilities.shape[0]), torch.tensor(y_pred)
+            ].cpu().numpy()
+            return y_pred, y_pred_probability
 
-    return best_model.predict(X_test_selected)
+    y_pred = best_model.predict(X_test_selected)
+    if not hasattr(best_model, "predict_proba"):
+        raise ValueError(f"{model_name} does not expose predict_proba.")
+    y_pred_probability = _get_predicted_class_probabilities(
+        best_model.predict_proba(X_test_selected), y_pred, best_model.classes_
+    )
+    return y_pred, y_pred_probability
 
 
 def build_prediction_comparison_dataframe() -> pd.DataFrame:
@@ -70,10 +102,13 @@ def build_prediction_comparison_dataframe() -> pd.DataFrame:
     consumer_defensive_test_df, X_test_consumer_defensive = build_sector_test_data(
         CONSUMER_DEFENSIVE_SECTOR_CODE
     )
-    y_pred_best_model = predict_with_model(model_bundle, X_test_consumer_defensive)
+    y_pred_best_model, y_pred_best_model_probability = predict_with_model(
+        model_bundle, X_test_consumer_defensive
+    )
 
     comparison_df = consumer_defensive_test_df[["Ticker", DATE_COL, TARGET_COL]].copy()
     comparison_df["predicted_" + TARGET_COL] = y_pred_best_model
+    comparison_df["predicted_probability"] = y_pred_best_model_probability
     return comparison_df
 
 
@@ -82,7 +117,13 @@ def main():
     comparison_df.to_csv(OUTPUT_CSV, index=False)
     print(
         comparison_df[
-            ["Ticker", DATE_COL, TARGET_COL, "predicted_" + TARGET_COL]
+            [
+                "Ticker",
+                DATE_COL,
+                TARGET_COL,
+                "predicted_" + TARGET_COL,
+                "predicted_probability",
+            ]
         ].to_string(index=False)
     )
     print(f"CSV salvato in: {OUTPUT_CSV}")
