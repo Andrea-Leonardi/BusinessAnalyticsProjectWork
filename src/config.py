@@ -16,6 +16,7 @@ NEWS_EXTRACTION_ROOT = SRC / "2.newsExtraction"
 MODELING_NEWS_ROOT = SRC / "3.modeling_news"
 MODELING_ROOT = SRC / "4.modeling"
 RELATIONAL_DATABASE_ROOT = SRC / "5.relationalDatabase"
+EVALUATION_ROOT = SRC / "6.evaluation"
 
 # Alias compatibili con il codice esistente.
 # Nota: i path *_SRC storicamente vengono usati per lanciare gli script di pipeline,
@@ -101,6 +102,73 @@ VECTORIZATION_BAG_OF_WORDS_ARTICLES = (
 VECTORIZATION_TFIDF_ARTICLES = NEWS_EXTRACTION / "vectorizationTfidfArticles.csv"
 
 MODELING_DATASET = MODELING / "modeling.csv"
+
+
+# ---------------------------------------------------------------------------
+# Evaluation Outputs
+# ---------------------------------------------------------------------------
+
+EVALUATION_BASIC_MATERIALS = (
+    EVALUATION_ROOT / "1.Basic Materials" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_COMMUNICATION_SERVICES = (
+    EVALUATION_ROOT / "2.Communication Services" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_CONSUMER_CYCLICAL = (
+    EVALUATION_ROOT / "3.Consumer Cyclical" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_CONSUMER_DEFENSIVE = (
+    EVALUATION_ROOT / "4.Consumer Defensive" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_ENERGY = (
+    EVALUATION_ROOT / "5.Energy" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_FINANCIAL_SERVICES = (
+    EVALUATION_ROOT / "6.Financial Services" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_HEALTHCARE = (
+    EVALUATION_ROOT / "7.Healthcare" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_INDUSTRIALS = (
+    EVALUATION_ROOT / "8.Industrials" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_REAL_ESTATE = (
+    EVALUATION_ROOT / "9.Real Estate" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_TECHNOLOGY = (
+    EVALUATION_ROOT / "10.Technology" / "best_model_predictions_per_company.csv"
+)
+EVALUATION_UTILITIES = (
+    EVALUATION_ROOT / "11.Utilities" / "best_model_predictions_per_company.csv"
+)
+
+EVALUATION_PREDICTIONS_BY_FOLDER = {
+    "1.Basic Materials": EVALUATION_BASIC_MATERIALS,
+    "2.Communication Services": EVALUATION_COMMUNICATION_SERVICES,
+    "3.Consumer Cyclical": EVALUATION_CONSUMER_CYCLICAL,
+    "4.Consumer Defensive": EVALUATION_CONSUMER_DEFENSIVE,
+    "5.Energy": EVALUATION_ENERGY,
+    "6.Financial Services": EVALUATION_FINANCIAL_SERVICES,
+    "7.Healthcare": EVALUATION_HEALTHCARE,
+    "8.Industrials": EVALUATION_INDUSTRIALS,
+    "9.Real Estate": EVALUATION_REAL_ESTATE,
+    "10.Technology": EVALUATION_TECHNOLOGY,
+    "11.Utilities": EVALUATION_UTILITIES,
+}
+
+EVALUATION_PREDICTIONS_BY_SECTOR = {
+    "Basic Materials": EVALUATION_BASIC_MATERIALS,
+    "Communication Services": EVALUATION_COMMUNICATION_SERVICES,
+    "Consumer Cyclical": EVALUATION_CONSUMER_CYCLICAL,
+    "Consumer Defensive": EVALUATION_CONSUMER_DEFENSIVE,
+    "Energy": EVALUATION_ENERGY,
+    "Financial Services": EVALUATION_FINANCIAL_SERVICES,
+    "Healthcare": EVALUATION_HEALTHCARE,
+    "Industrials": EVALUATION_INDUSTRIALS,
+    "Real Estate": EVALUATION_REAL_ESTATE,
+    "Technology": EVALUATION_TECHNOLOGY,
+    "Utilities": EVALUATION_UTILITIES,
+}
 
 
 # ---------------------------------------------------------------------------
