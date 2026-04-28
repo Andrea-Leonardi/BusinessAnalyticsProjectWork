@@ -1,0 +1,79 @@
+nome_variabile,tabella_provenienza,tipo_valore,descrizione
+id_indicatori,indicatori,intero,Chiave primaria progressiva della tabella indicatori generata nel database relazionale.
+id_azienda,indicatori,intero,Chiave esterna verso aziende ottenuta mappando il ticker della societa.
+id_calendario,indicatori,intero,Chiave esterna verso calendario ottenuta dalla WeekEndingFriday settimanale degli indicatori.
+QuarterlyReleased,indicatori,decimale,Flag pari a 1 se in quella settimana entra nel calendario un nuovo rilascio trimestrale e 0 altrimenti.
+BookToMarket,indicatori,decimale,Rapporto tra totalStockholdersEquity riportato e MarketCap settimanale riallineato al prezzo di mercato.
+MarketCap,indicatori,decimale,Capitalizzazione settimanale ottenuta aggiornando il market cap riportato con il rapporto tra ClosePrice settimanale corrente e ClosePrice dell ultima settimana di rilascio.
+FreeCashFlowYield,indicatori,decimale,Rapporto tra freeCashFlow del bilancio e MarketCap settimanale.
+FreeCashFlowYield_TTM,indicatori,decimale,Rapporto tra freeCashFlow_TTM e MarketCap settimanale.
+EarningsYield,indicatori,decimale,Rapporto tra netIncome del bilancio e MarketCap settimanale.
+EarningsYield_TTM,indicatori,decimale,Rapporto tra netIncome_TTM e MarketCap settimanale.
+BookToMarket_L1W,indicatori,decimale,BookToMarket spostato indietro di 1 settimana sul calendario settimanale.
+MarketCap_L1W,indicatori,decimale,MarketCap spostato indietro di 1 settimana sul calendario settimanale.
+FreeCashFlowYield_L1W,indicatori,decimale,FreeCashFlowYield spostato indietro di 1 settimana sul calendario settimanale.
+FreeCashFlowYield_TTM_L1W,indicatori,decimale,FreeCashFlowYield_TTM spostato indietro di 1 settimana sul calendario settimanale.
+EarningsYield_L1W,indicatori,decimale,EarningsYield spostato indietro di 1 settimana sul calendario settimanale.
+EarningsYield_TTM_L1W,indicatori,decimale,EarningsYield_TTM spostato indietro di 1 settimana sul calendario settimanale.
+BookToMarket_L2W,indicatori,decimale,BookToMarket spostato indietro di 2 settimane sul calendario settimanale.
+MarketCap_L2W,indicatori,decimale,MarketCap spostato indietro di 2 settimane sul calendario settimanale.
+FreeCashFlowYield_L2W,indicatori,decimale,FreeCashFlowYield spostato indietro di 2 settimane sul calendario settimanale.
+FreeCashFlowYield_TTM_L2W,indicatori,decimale,FreeCashFlowYield_TTM spostato indietro di 2 settimane sul calendario settimanale.
+EarningsYield_L2W,indicatori,decimale,EarningsYield spostato indietro di 2 settimane sul calendario settimanale.
+EarningsYield_TTM_L2W,indicatori,decimale,EarningsYield_TTM spostato indietro di 2 settimane sul calendario settimanale.
+GrossProfitability,indicatori,decimale,Rapporto tra grossProfit e totalAssets al momento del rilascio del bilancio.
+GrossProfitability_TTM,indicatori,decimale,Rapporto tra grossProfit_TTM e attivo medio usato nella pipeline dei fondamentali.
+OperatingMargin,indicatori,decimale,Rapporto tra operatingIncome e revenue del periodo di bilancio.
+OperatingMargin_TTM,indicatori,decimale,Rapporto tra operatingIncome_TTM e revenue_TTM.
+ROA,indicatori,decimale,Rapporto tra netIncome e totalAssets.
+ROA_TTM,indicatori,decimale,Rapporto tra netIncome_TTM e attivo medio usato nella pipeline dei fondamentali.
+AssetGrowth,indicatori,decimale,Crescita dell attivo calcolata come variazione di totalAssets rispetto a quattro trimestri prima.
+InvestmentIntensity,indicatori,decimale,Rapporto di intensita di investimento calcolato come meno capitalExpenditure diviso totalAssets.
+Accruals,indicatori,decimale,Rapporto tra netIncome meno operatingCashFlow e totalAssets.
+Accruals_TTM,indicatori,decimale,Rapporto tra netIncome_TTM meno operatingCashFlow_TTM e totalAssets.
+DebtToAssets,indicatori,decimale,Rapporto tra totalDebt e totalAssets.
+WorkingCapitalScaled,indicatori,decimale,Rapporto tra capitale circolante totaleCurrentAssets meno totalCurrentLiabilities e totalAssets.
+GrossProfitability_L1Q,indicatori,decimale,GrossProfitability riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+GrossProfitability_TTM_L1Q,indicatori,decimale,GrossProfitability_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+OperatingMargin_L1Q,indicatori,decimale,OperatingMargin riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+OperatingMargin_TTM_L1Q,indicatori,decimale,OperatingMargin_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+ROA_L1Q,indicatori,decimale,ROA riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+ROA_TTM_L1Q,indicatori,decimale,ROA_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+AssetGrowth_L1Q,indicatori,decimale,AssetGrowth riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+InvestmentIntensity_L1Q,indicatori,decimale,InvestmentIntensity riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+Accruals_L1Q,indicatori,decimale,Accruals riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+Accruals_TTM_L1Q,indicatori,decimale,Accruals_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+DebtToAssets_L1Q,indicatori,decimale,DebtToAssets riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+WorkingCapitalScaled_L1Q,indicatori,decimale,WorkingCapitalScaled riferito al bilancio precedente di 1 trimestre e poi propagato sul calendario settimanale.
+GrossProfitability_L2Q,indicatori,decimale,GrossProfitability riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+GrossProfitability_TTM_L2Q,indicatori,decimale,GrossProfitability_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+OperatingMargin_L2Q,indicatori,decimale,OperatingMargin riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+OperatingMargin_TTM_L2Q,indicatori,decimale,OperatingMargin_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+ROA_L2Q,indicatori,decimale,ROA riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+ROA_TTM_L2Q,indicatori,decimale,ROA_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+AssetGrowth_L2Q,indicatori,decimale,AssetGrowth riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+InvestmentIntensity_L2Q,indicatori,decimale,InvestmentIntensity riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+Accruals_L2Q,indicatori,decimale,Accruals riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+Accruals_TTM_L2Q,indicatori,decimale,Accruals_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+DebtToAssets_L2Q,indicatori,decimale,DebtToAssets riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+WorkingCapitalScaled_L2Q,indicatori,decimale,WorkingCapitalScaled riferito al bilancio precedente di 2 trimestri e poi propagato sul calendario settimanale.
+id_industry,industrie,intero,Chiave primaria progressiva della tabella industrie nel database relazionale.
+industry,industrie,testo,Nome dell industria aziendale recuperato dal profilo societario nella fase di company selection.
+id_mercato,mercato,intero,Chiave primaria progressiva della tabella mercato nel database relazionale.
+id_azienda,mercato,intero,Chiave esterna verso aziende ottenuta mappando il ticker della societa.
+id_calendario,mercato,intero,Chiave esterna verso calendario ottenuta dalla WeekEndingFriday del dato di mercato.
+ClosePrice,mercato,decimale,Prezzo di chiusura della societa nell ultimo giorno di trading disponibile della settimana che termina di venerdi.
+ClosePrice_t-1,mercato,decimale,ClosePrice spostato indietro di 1 settimana.
+ClosePrice_t-2,mercato,decimale,ClosePrice spostato indietro di 2 settimane.
+ClosePrice_t+1,mercato,decimale,ClosePrice della settimana successiva ottenuto con shift negativo di 1.
+AdjClosePrice,mercato,decimale,Prezzo di chiusura adjusted dell ultimo giorno di trading disponibile della settimana che termina di venerdi.
+AdjClosePrice_t-1,mercato,decimale,AdjClosePrice spostato indietro di 1 settimana.
+AdjClosePrice_t-2,mercato,decimale,AdjClosePrice spostato indietro di 2 settimane.
+AdjClosePrice_t+1,mercato,decimale,AdjClosePrice della settimana successiva ottenuto con shift negativo di 1.
+AdjClosePrice_t+1_Up,mercato,decimale,Flag binario pari a 1 se AdjClosePrice_t+1 e maggiore di AdjClosePrice corrente e 0 altrimenti.
+WeeklyReturn_1W,mercato,decimale,Rendimento percentuale settimanale calcolato con pct_change a 1 settimana su AdjClosePrice.
+WeeklyReturn_4W,mercato,decimale,Rendimento percentuale a 4 settimane calcolato con pct_change a 4 settimane su AdjClosePrice.
+Momentum_12W,mercato,decimale,Momentum a 12 settimane calcolato con pct_change a 12 settimane su AdjClosePrice.
+Volatility_4W,mercato,decimale,Volatilita a 4 settimane calcolata come deviazione standard mobile a 4 periodi di WeeklyReturn_1W.
+Volatility_12W,mercato,decimale,Volatilita a 12 settimane calcolata come deviazione standard mobile a 12 periodi di WeeklyReturn_1W.
+Drawdown_12W,mercato,decimale,Drawdown a 12 settimane calcolato come AdjClosePrice diviso massimo mobile a 12 settimane meno 1.
