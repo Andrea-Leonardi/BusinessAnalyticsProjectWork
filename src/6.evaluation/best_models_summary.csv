@@ -1,0 +1,12 @@
+sector,best_model,test_accuracy,delta_null_model,delta_always_one,delta_always_zero
+Basic Materials,xgboost,0.491525,-0.135593,-0.135593,0.118644
+Communication Services,neural_network,0.509434,0.047170,0.047170,-0.028302
+Consumer Cyclical,random_forest,0.513274,0.061947,0.061947,-0.035398
+Consumer Defensive,xgboost,0.517241,-0.137931,-0.137931,0.172414
+Energy,logistic_regression,0.318841,-0.478261,-0.478261,0.115942
+Financial Services,random_forest,0.586207,0.149425,0.149425,0.022989
+Healthcare,neural_network,0.591304,0.034783,0.034783,0.147826
+Industrials,neural_network,0.588235,0.011765,0.011765,0.164706
+Real Estate,lasso_logistic,0.521739,0.130435,-0.086957,0.130435
+Technology,random_forest,0.575758,0.113636,0.113636,0.037879
+Utilities,lasso_logistic,0.478261,-0.130435,-0.130435,0.086957

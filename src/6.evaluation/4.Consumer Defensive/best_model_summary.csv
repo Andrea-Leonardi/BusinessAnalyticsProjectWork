@@ -1,0 +1,2 @@
+sector,best_model,test_accuracy,delta_null_model,delta_always_one,delta_always_zero
+Consumer Defensive,xgboost,0.517241,-0.137931,-0.137931,0.172414

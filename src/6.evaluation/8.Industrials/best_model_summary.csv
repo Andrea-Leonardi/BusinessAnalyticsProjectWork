@@ -1,0 +1,2 @@
+sector,best_model,test_accuracy,delta_null_model,delta_always_one,delta_always_zero
+Industrials,neural_network,0.588235,0.011765,0.011765,0.164706

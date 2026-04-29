@@ -102,6 +102,9 @@ VECTORIZATION_BAG_OF_WORDS_ARTICLES = (
 VECTORIZATION_TFIDF_ARTICLES = NEWS_EXTRACTION / "vectorizationTfidfArticles.csv"
 
 MODELING_DATASET = MODELING / "modeling.csv"
+RELATIONAL_DATABASE_VARIABLES_CATALOG = (
+    RELATIONAL_DATABASE_ROOT / "metadata.csv"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -169,6 +172,8 @@ EVALUATION_PREDICTIONS_BY_SECTOR = {
     "Technology": EVALUATION_TECHNOLOGY,
     "Utilities": EVALUATION_UTILITIES,
 }
+
+EVALUATION_BEST_MODELS_SUMMARY = EVALUATION_ROOT / "best_models_summary.csv"
 
 
 # ---------------------------------------------------------------------------
