@@ -1,3 +1,4 @@
+import csv
 import json
 from pathlib import Path
 
@@ -7,6 +8,8 @@ import torch.nn as nn
 
 
 CURRENT_DIR = Path(__file__).resolve().parent
+SECTOR_NAME = CURRENT_DIR.name.split(".", 1)[1] if "." in CURRENT_DIR.name else CURRENT_DIR.name
+SUMMARY_CSV_PATH = CURRENT_DIR / "best_model_summary.csv"
 MODELING_DIR = CURRENT_DIR.parents[1] / "4.modeling" / "classic_ML_model" / "8.Industrials"
 MODEL_COMPARISON_PATH = MODELING_DIR / "orchestrator_results" / "model_comparison.json"
 EXCLUDED_MODELS = {"null_model", "always_zero", "always_one"}
@@ -97,10 +100,57 @@ def get_best_model_bundle() -> dict:
     }
 
 
+def get_best_model_summary_row(model_comparison: dict | None = None) -> dict:
+    if model_comparison is None:
+        model_comparison = load_model_comparison()
+    best_model_entry = get_best_entry(model_comparison)
+    benchmark_entries = {
+        model_name: get_model_entry(model_comparison, model_name)
+        for model_name in BENCHMARK_MODELS
+    }
+
+    row = {
+        "sector": SECTOR_NAME,
+        "best_model": best_model_entry["model"],
+        "test_accuracy": best_model_entry["test_accuracy"],
+    }
+    for benchmark_name in BENCHMARK_MODELS:
+        benchmark_entry = benchmark_entries[benchmark_name]
+        row[f"delta_{benchmark_name}"] = (
+            best_model_entry["test_accuracy"] - benchmark_entry["test_accuracy"]
+        )
+    return row
+
+
+def write_best_model_summary_csv(output_path: Path = SUMMARY_CSV_PATH) -> Path:
+    row = get_best_model_summary_row()
+    fieldnames = [
+        "sector",
+        "best_model",
+        "test_accuracy",
+        "delta_null_model",
+        "delta_always_one",
+        "delta_always_zero",
+    ]
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow(
+            {
+                field: (
+                    f"{row[field]:.6f}"
+                    if field not in {"sector", "best_model"}
+                    else row[field]
+                )
+                for field in fieldnames
+            }
+        )
+    return output_path
+
 def print_best_model_summary(bundle: dict):
     best_model_entry = bundle["best_model_entry"]
     benchmark_entries = bundle["benchmark_entries"]
-    print(f"Best Industrials model: {best_model_entry['model']}")
+    print(f"Best {SECTOR_NAME} model: {best_model_entry['model']}")
     print(f"Best model test accuracy: {best_model_entry['test_accuracy']:.6f}")
     print("Benchmark comparison:")
     for benchmark_name in BENCHMARK_MODELS:
@@ -121,6 +171,11 @@ def main():
     best_model_IND = bundle["best_model"]
     print_best_model_summary(bundle)
 
+    summary_path = write_best_model_summary_csv()
+
+    print(f"Best model summary CSV saved to: {summary_path}")
+
 
 if __name__ == "__main__":
     main()
+
