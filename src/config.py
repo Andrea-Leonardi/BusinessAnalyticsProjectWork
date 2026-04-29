@@ -173,6 +173,8 @@ EVALUATION_PREDICTIONS_BY_SECTOR = {
     "Utilities": EVALUATION_UTILITIES,
 }
 
+EVALUATION_BEST_MODELS_SUMMARY = EVALUATION_ROOT / "best_models_summary.csv"
+
 
 # ---------------------------------------------------------------------------
 # Company-Level Output Folders
