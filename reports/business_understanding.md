@@ -1,73 +1,73 @@
 **Business Understanding**
 
-**1.Determine Business Objectives**
 
-1.1 Background & Problem Statement
+**1. Project Objectives**
 
-In today's financial environment, stock market prediction remains a crucial yet challenging task due to the inherent volatility and uncertainty of markets [2]. Historically, this area has been a focal point of debate between the Efficient Market Hypothesis (EMH) and technical proponents. The EMH posits that stock prices follow a "random walk" and reflect all known information, while the technical proponents argue that non-random signals can be identified to obtain information about future prices [4]. 
-Traditional approaches, namely Fundamental Analysis (evaluating intrinsic value) and Technical Analysis (charting price history), typically operate independently and rely heavily on manual processing [4]. This manual approach results in significant latency, making it nearly impossible to digest the massive volume of multi-modal data generated in today's digital economy.
+1.1 Context & Problem Statement
 
-1.2 Business Goals 
+Predicting stock movements is a constant tug-of-war between the Efficient Market Hypothesis (EMH), which views price changes as a "random walk," and technical analysis, which seeks exploitable patterns in historical data [4]. Traditionally, fundamental and technical analyses are treated as separate silos and processed manually. This creates a significant "latency gap"—human analysts simply cannot process the massive volume of multi-modal data (news, financials, and price action) fast enough to keep up with 2026's high-frequency market environment.
 
-The primary objective of StockPulse is to develop an automated, end-to-end multi-modal predictive pipeline leveraging a comprehensive dataset covering the 2021–2026 period for 110 top-tier stocks. This pipeline integrates historical price action, financial fundamentals, and related news sentiment to identify the "internal laws" governing market movements. By utilizing 2021–2025 data for model optimization and reserving 2026 as a strict out-of-sample test set, we ensure rigorous temporal integrity to minimize investment risks and optimize returns [3]. We specifically transition from traditional statistical methods (e.g., ARIMA) to a Deep Learning paradigm (MLP, optimized via Optuna) to capture the complex, non-linear dynamics of financial time-series data [3].
+1.2 Project Goals
 
-**2. Situation Assessment & Technological Evolution**
-   
-2.1 Historical Evolution (1960s – 2026)
+The primary objective of StockPulse is to develop an automated, end-to-end multi-modal predictive pipeline for 110 leading stocks, ensuring that our model learns universal market dynamics rather than being skewed toward a specific industry like Technology or Finance. Our dataset focuses on the 2021–2026 period, deliberately starting after 2020 to exclude "Black Swan" anomalies. By filtering out the extreme, non-recurring volatility caused by the 2020 COVID-19 crash, we ensure the model learns from modern market regimes rather than anomalous patterns. This pipeline integrates historical price action, financial fundamentals, and news sentiment to identify the "internal laws" governing market movements. By utilizing 2021–2025 data for model optimization and reserving 2026 as a test set, we ensure rigorous temporal integrity to minimize investment risks [3].
 
-The methodology for stock prediction has evolved through four distinct phases:
-1.  Technical Era (1960s-1980s): Focused on subjective manual charting and pattern recognition[4].
-2.  Statistical Era (1980s-2000s): Utilized linear models like ARIMA to model historical price dependencies[3].
-3.  ML Era (2000s-2015): Introduced supervised statistical classification (Random Forest, SVM) and feature engineering[4].
-4.  Multi-modal Deep Learning Era (2016-2026): The current SOTA (State-of-the-Art) paradigm integrates unstructured data with numerical sequences. Financial Sentiment Analysis (FSA) has become a core requirement, allowing pipelines to automate the extraction of market psychology from global news and social sources[1].
+**2. Market Context & Evolution**
 
-2.2 Current SOTA Trends
+2.1 Methodology Shift (1960s – 2026)
 
-Latest research in 2025-2026 indicates that processing single temporal features is no longer sufficient for high-accuracy stability[2]. Modern pipelines now prioritize:
-- Time-Frequency Fusion: Integrating time-domain features with frequency-domain features (via Fourier Transform) to reveal latent periodicities and seasonality patterns in price fluctuations[2].
-- Dynamic Relation Modeling: Moving away from static, pre-defined graph structures (like industry sectors) toward learnable, attention-based mapping mechanisms (e.g., NoGraphMixer) to capture evolving cross-stock dependencies[2].
+We have moved past the eras of manual charting (1960s) and basic linear statistics like ARIMA (1980s). While machine learning (Random Forest, SVM) improved results after 2000, the 2026 standard is Multi-Modal Deep Learning. Today, a competitive model must automate Financial Sentiment Analysis (FSA) to capture market psychology directly from news feeds [1].
 
-2.3 Theoretical Benchmarking & SOTA Alignment
+2.2 Current Industry Standards
 
-Latest research in 2025-2026 indicates that processing single temporal features is no longer sufficient for maintaining high-accuracy stability [2]. Our project aligns with these modern SOTA priorities through several key methodological links:
-- Multi-modal Integration: In line with current standards, our pipeline fuses unstructured sentiment (NLP) with structural fundamentals to overcome the "information bottlenecks" found in single-source models [1, 2].
-- MLP-based Structural Flexibility: Following the StockMixer philosophy, we prioritize a Deep MLP architecture. This provides the efficiency needed to capture cross-channel interactions without the inflexibility of static, pre-defined industry graphs [2, 3].
-- Methodological Roadmap: While focusing on robust feature fusion, our PyTorch-based framework is future-proofed to incorporate Time-Frequency Fusion (e.g., Fourier Transforms), providing a clear path toward isolating cyclical market noise in future iterations [2, 4].
+Leading research in 2025-2026 shows that simple price tracking is no longer enough. Our project focuses on two modern priorities:
 
-2.4 Inventory of Resources & Risks
+Time-Frequency Fusion: Using Fourier Transforms to find hidden cycles and seasonal patterns in price data [2].
 
-- Resources: The project utilizes the Alpaca API for market access, Financial Modeling Prep (FMP) for fundamental data, and FinBERT/RoBERTa for NLP-driven sentiment extraction.
-- Constraints: System must handle API rate limits via a synchronized “SharedRateLimiter”.
-- Risks:
-    - Temporal Integrity: Strict avoidance of "look-ahead bias" is required; training data must never overlap with the 2026 out-of-sample test set.
-    - Data Irregularities: Handling missing entries and outliers is critical for model robustness[2].
+Dynamic Relation Modeling: Moving beyond fixed industry labels to understand how different stocks actually influence each other in real-time [2].
 
-**3. Determine Data Mining Goals**
+2.3 Resources & Risk Management
 
-3.1 Technical Formulation
+Tools: We integrated the Alpaca API for market data, FMP for fundamentals, and FinBERT for sentiment scoring.
 
-We define the predictive task as a Binary Classification problem (Rise: 1, Non-rise: 0). Scholarly consensus suggests that a classification approach provides better predictive reliability than quantitative price regression [4]. Our technical approach implements a Deep MLP (Multi-Layer Perceptron) architecture inspired by the StockMixer philosophy, designed to capture complex inter-channel interactions between heterogeneous data streams (price action, fundamentals, and news sentiment). Instead of traditional linear models, we leverage Bayesian Hyperparameter Optimization (Optuna) to model non-linear dynamics and market momentum, ensuring robust out-of-sample performance for the 2026 test period [2, 3].
+Constraints: To handle API limits, we built a SharedRateLimiter to keep data flow consistent.
 
-??**3.2 Success Criteria**
+Risk Mitigation: Our primary focus is on maintaining temporal integrity. The 2026 test data were strictly isolated to ensure the model doesn't "peek" into the future during training.
 
-The primary success of the model is measured by its Predictive Accuracy on a strictly unseen 2026 Out-of-Sample (OOS) dataset. To ensure a robust evaluation, we define success through the following technical benchmarks:
-- Directional Accuracy (Hit Rate):
+**3. Data Mining Goals**
 
-- Sector-wise Generalization: 
-  
-- Model Stability (F1-Score):
-  
-**4. Project Plan (CRISP-DM Framework)**
+3.1 Technical Strategy
 
-Following the CRISP-DM methodology [5], the project is organized into six phases:
-- Business Understanding: Defining the binary classification scope (Rise vs. Non-rise) and establishing technical success benchmarks (Accuracy > 55%, F1-Score).
-- Data Understanding: Aggregating heterogeneous data streams including price action (Yahoo Finance), fundamental metrics (FMP), and non-structured news sentiment (Alpaca/FinBERT).
-- Data Preparation: Implementing robust preprocessing, including missing value imputation and multi-modal feature fusion (combining technical momentum, financial ratios, and sentiment scores) [2].
-- Modeling: Implementing a Deep MLP architecture optimized via Bayesian Hyperparameter Search (Optuna) to capture non-linear interactions across industry sectors.
-- Evaluation: Conducting rigorous Out-of-Sample (OOS) validation on strictly unseen 2026 data, focusing on directional accuracy and model stability across diverse industry sectors [2].
-- Deployment: Generating actionable weekly predictive signals (via best_model_predictions_per_company.csv) to support systematic decision-making.
+We are treating price prediction as a binary classification task (Rise: 1, Non-rise: 0). We chose this over price regression because classification offers more reliable signals for actual trading decisions [4]. Our architecture, inspired by StockMixer, uses a Deep MLP to fuse different data streams. We use Optuna (Bayesian Optimization) to fine-tune the model, ensuring it adapts to market momentum rather than just memorizing historical noise [2, 3].
 
-**References**
+3.2 Success Criteria
+
+The model’s value is judged by its performance on the unseen 2026 dataset:
+
+
+Hit Rate (Accuracy): We target a consistent directional accuracy above 57% across key sectors [6].
+
+Sector Specialization: Rather than a "one-size-fits-all" approach, we measure success by how well the model adapts to 11 independent industry groups. Our results show it is highly effective in growth sectors (Tech, Healthcare, Industrials) while identifying the limits of sentiment-based prediction in commodity-heavy sectors like Energy.
+
+Stability (F1-Score): We use the F1-Score to ensure the model isn't just "guessing" the majority trend but is accurately identifying both upward and downward signals.
+
+**4. Project Plan (CRISP-DM)**
+
+We follow the CRISP-DM framework across six clear stages:
+
+Business Understanding: Setting the classification goals and the 57% accuracy benchmark.
+
+Data Understanding: Gathering price, fundamental, and FinBERT-processed sentiment data.
+
+Data Preparation: Cleaning missing data and merging heterogeneous features into a single pipeline [2].
+
+Modeling: Building and optimizing the Deep MLP via Optuna.
+
+Evaluation: Running a strict 2026 out-of-sample test to check for real-world stability [2].
+
+Deployment: Exporting weekly predictions (best_model_predictions_per_company.csv) to support systematic trading.
+
+
+References
 
 [1] Du, K., et al. (2024). Financial Sentiment Analysis: Techniques and Applications.* ACM Computing Surveys, 56(9), Article 220. 
 
@@ -79,3 +79,4 @@ Following the CRISP-DM methodology [5], the project is organized into six phases
 
 [5] DataScience-PM (2026). What are the 6 CRISP-DM Phases?
 
+[6] Weinberg.A.I (2025). Hybrid Quantum-Classical Ensemble Learning for S&P 500 Directional Prediction
