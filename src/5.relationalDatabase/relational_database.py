@@ -4,6 +4,7 @@ qui prepariamo i dataset e le relative tabelle che poi usiamo per andare a rimep
 """
 import pandas as pd
 import sys 
+import numpy as np
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import config as cfg 
@@ -14,34 +15,36 @@ articoli_temp = pd.read_csv(cfg.NEWS_ARTICLES).sort_values(by=['Ticker', 'Date']
 mercato_temp = pd.read_csv(cfg.ALL_PRICE_DATA).sort_values(by=['Ticker', 'WeekEndingFriday'])
 indicatori_temp = pd.read_csv(cfg.FMP_FINANCIALS).sort_values(by=['symbol', 'WeekEndingFriday'])
 granger_temp = pd.read_csv(cfg.GRANGER_LAG1_LAG2).sort_values(by=['Ticker', 'Sector'])
+best_model = pd.read_csv(cfg.EVALUATION_BEST_MODELS_SUMMARY)
+FinBert = pd.read_csv(cfg.MODELING_DATASET).sort_values(by=['Ticker', 'WeekEndingFriday'])[['Ticker', 'WeekEndingFriday', 'NEWS_Sentiment_Mean', 'NEWS_FINBERT_Granger_Score']]
 
 # qui aggiungimo i dataset in cui sono presenti i risultati delle previsioni del modello, in modo da poter poi andare a popolare la tabella dei risultati del database relazionale.
 # però essendo 11 i dataset, prima gli uniamo e poi a ciascuno aggiungiamo una colonna che indica il modello migliore attraverso cui è stata fatta la previsione.
 
 BM = pd.read_csv(cfg.EVALUATION_BASIC_MATERIALS).sort_values(by='Ticker')
-BM['model'] = 'Logistic Regression'
+BM[['sector', 'best_model']] = best_model.iloc[0,0:2].tolist()
 CS = pd.read_csv(cfg.EVALUATION_COMMUNICATION_SERVICES).sort_values(by='Ticker')
-CS['model'] = 'Logistic Regression'
+CS[['sector', 'best_model']] = best_model.iloc[1,0:2].tolist()
 CC = pd.read_csv(cfg.EVALUATION_CONSUMER_CYCLICAL).sort_values(by='Ticker')
-CC['model'] = 'Logistic Regression'
+CC[['sector', 'best_model']] = best_model.iloc[2,0:2].tolist()
 CD = pd.read_csv(cfg.EVALUATION_CONSUMER_DEFENSIVE).sort_values(by='Ticker')
-CD['model'] = 'Logistic Regression'
+CD[['sector', 'best_model']] = best_model.iloc[3,0:2].tolist()
 E = pd.read_csv(cfg.EVALUATION_ENERGY).sort_values(by='Ticker')
-E['model'] = 'Logistic Regression'
+E[['sector', 'best_model']] = best_model.iloc[4,0:2].tolist()
 FS = pd.read_csv(cfg.EVALUATION_FINANCIAL_SERVICES).sort_values(by='Ticker')
-FS['model'] = 'Logistic Regression'
+FS[['sector', 'best_model']] = best_model.iloc[5,0:2].tolist()
 H = pd.read_csv(cfg.EVALUATION_HEALTHCARE).sort_values(by='Ticker')
-H['model'] = 'Logistic Regression'
+H[['sector', 'best_model']] = best_model.iloc[6,0:2].tolist()
 I = pd.read_csv(cfg.EVALUATION_INDUSTRIALS).sort_values(by='Ticker')
-I['model'] = 'Logistic Regression'
+I[['sector', 'best_model']] = best_model.iloc[7,0 :2].tolist()
 RE = pd.read_csv(cfg.EVALUATION_REAL_ESTATE).sort_values(by='Ticker')
-RE['model'] = 'Logistic Regression'
+RE[['sector', 'best_model']] = best_model.iloc[8,0:2].tolist()
 T = pd.read_csv(cfg.EVALUATION_TECHNOLOGY).sort_values(by='Ticker')
-T['model'] = 'Logistic Regression'
+T[['sector', 'best_model']] = best_model.iloc[9,0:2].tolist()
 U = pd.read_csv(cfg.EVALUATION_UTILITIES).sort_values(by='Ticker')
-U['model'] = 'Logistic Regression'
+U[['sector', 'best_model']] = best_model.iloc[10,0:2].tolist()
 risultati_temp = pd.concat([BM, CS, CC, CD, E, FS, H, I, RE, T, U], ignore_index=True)
-
+risultati_temp.rename(columns={'predicted_AdjClosePrice_t+1_Up': 'predicted_AdjClosePrice_t+1', 'AdjClosePrice_t+1_Up': 'AdjClosePrice_t+1'}, inplace=True)
 
 """ 
 # questo dataset manca, appena viene creato lo aggiungo
@@ -64,6 +67,32 @@ mercato_temp['WeekEndingFriday'] = pd.to_datetime(mercato_temp['WeekEndingFriday
 articoli_temp['Date'] = pd.to_datetime(articoli_temp['Date']).dt.date
 indicatori_temp['WeekEndingFriday'] = pd.to_datetime(indicatori_temp['WeekEndingFriday']).dt.date
 risultati_temp['WeekEndingFriday'] = pd.to_datetime(risultati_temp['WeekEndingFriday']).dt.date
+FinBert['WeekEndingFriday'] = pd.to_datetime(FinBert['WeekEndingFriday']).dt.date
+
+
+# prendiamo il dataset Modeling, da cui vogliamo ottenere i coefficienti ottenuti attraverso la combinazione lineare 
+# tra i valori di FinBert e i valori ottenuti dalla causalità di Granger, in modo poi da inserirli nella tabella indicatori,
+# ma avendo i due dataframe una dimensione diversa, come prima cosa creiamo una funzione al fine di ottenere qui coefficienti solo
+# per quelle righe che sono presneti anche nel dataset Indicatori
+
+def estrai_coefficiente(x):
+    # Creiamo la maschera per confrontare la riga x con TUTTO il DataFrame FinBert
+    # Nota: usa x['symbol'] o x['Ticker'] a seconda del nome in indicatori_temp
+    condizione = (FinBert['Ticker'] == x['symbol']) & \
+                 (FinBert['WeekEndingFriday'] == x['WeekEndingFriday'])
+    
+    # Filtriamo FinBert per ottenere le colonne desiderate
+    valori = FinBert.loc[condizione, ['NEWS_FINBERT_Granger_Score', 'NEWS_Sentiment_Mean']]
+    
+    if not valori.empty:
+        # Se trova la riga, restituisce la prima occorrenza
+        return valori.iloc[0]
+    else:
+        # Se non trova nulla, restituisce NaN per entrambe le colonne
+        return pd.Series([np.nan, np.nan], index=['NEWS_FINBERT_Granger_Score', 'NEWS_Sentiment_Mean'])
+
+# Applichiamo la funzione riga per riga
+indicatori_temp[['NEWS_FINBERT_Granger_Score', 'NEWS_Sentiment_Mean']] = indicatori_temp.apply(estrai_coefficiente, axis=1)
 
 #%%
 """
@@ -73,7 +102,7 @@ ticker_aziende = aziende_temp[['Ticker']].drop_duplicates().reset_index(drop=Tru
 nomi_settori = aziende_temp[['sector', 'SectorCode']].drop_duplicates().reset_index(drop=True)
 nomi_risultati = pd.DataFrame({'result': ['Up', 'Down'], 'label': [1, 0]})
 nomi_industie = aziende_temp[['industry']].drop_duplicates().reset_index(drop=True)
-nomi_modelli = pd.DataFrame({'model': ['Logistic Regression', 'Random Forest', 'XGBoost', 'LightGBM', 'CatBoost']})
+nomi_modelli = best_model
 calendario = pd.DataFrame()
 """
 # creiamo la tabella in cui mettiamo i nomi delle aziende, con un id progressivo che ci servirà poi per popolare le tabelle del dataset relazionale 
@@ -116,7 +145,7 @@ nomi_risultati = nomi_risultati[['id_nomi_risultati', 'result', 'label']]
 nomi_modelli['id_nomi_modelli'] = range(1, len(nomi_modelli) + 1)
 
 # Riordina le colonne per avere l'ID all'inizio
-nomi_modelli = nomi_modelli[['id_nomi_modelli', 'model']]
+nomi_modelli = nomi_modelli[['id_nomi_modelli', 'best_model', 'test_accuracy', 'delta_null_model', 'delta_always_one', 'delta_always_zero', 'sector']]
 
 # definiamo un calendario con tutte le date comprese tra il 1 gennaio 2010 e oggi, in modo da poter poi andare a popolare la tabella delle date del database relazionale.
 # Definiamo l'intervallo temporale
@@ -274,9 +303,13 @@ def tabella_risultati(x):
     x['Ticker'] = ticker_aziende['Id_ticker_aziende'][ticker_aziende['Ticker'] == x['Ticker']].item()
     """
     x['WeekEndingFriday'] = calendario['id_calendario'][calendario['date'] == x['WeekEndingFriday']].item()
-    x['AdjClosePrice_t+1_Up'] = nomi_risultati['id_nomi_risultati'][nomi_risultati['label'] == x['AdjClosePrice_t+1_Up']].item()
-    x['predicted_AdjClosePrice_t+1_Up'] = nomi_risultati['id_nomi_risultati'][nomi_risultati['label'] == x['predicted_AdjClosePrice_t+1_Up']].item()
-    x['model'] = nomi_modelli['id_nomi_modelli'][nomi_modelli['model'] == x['model']].item()
+    x['AdjClosePrice_t+1'] = nomi_risultati['id_nomi_risultati'][nomi_risultati['label'] == x['AdjClosePrice_t+1']].item()
+    x['predicted_AdjClosePrice_t+1'] = nomi_risultati['id_nomi_risultati'][nomi_risultati['label'] == x['predicted_AdjClosePrice_t+1']].item()
+    # 1. Creiamo una maschera booleana: True dove ENTRAMBE le colonne coincidono
+    mask = (nomi_modelli['sector'] == x['sector']) & (nomi_modelli['best_model'] == x['best_model'])
+    
+    # 2. Estraiamo l'ID corrispondente usando .item() come nelle altre righe
+    x['best_model'] = nomi_modelli.loc[mask, 'id_nomi_modelli'].item()
     return x
 
 def tabella_granger(x):
@@ -299,10 +332,12 @@ aziende.rename(columns={'sector': 'id_settore', 'selectionReferenceDate': 'id_ca
 mercato.rename(columns={'WeekEndingFriday': 'id_calendario'}, inplace=True)
 articoli.rename(columns={'Date': 'id_calendario', 'ID': 'id_articoli_originali'}, inplace=True)
 indicatori.rename(columns={'WeekEndingFriday': 'id_calendario'}, inplace=True)
-risultati.rename(columns={'WeekEndingFriday': 'id_calendario', 'model': 'id_modelli'}, inplace=True)
+risultati.rename(columns={'WeekEndingFriday': 'id_calendario', 'best_model': 'id_best_model'}, inplace=True)
 possibbili_risultati.rename(columns={'id_nomi_risultati': 'id_result'}, inplace=True)
 granger.rename(columns={'Sector': 'id_nomi_settori'}, inplace=True)
-nomi_modelli.rename(columns={'id_nomi_modelli': 'id_modelli'}, inplace=True)
+nomi_modelli.rename(columns={'id_nomi_modelli': 'id_best_model'}, inplace=True)
+risultati.drop(columns=['sector'], inplace=True)
+nomi_modelli.drop(columns=['sector'], inplace=True)
 
 # riordiniamo le colonne per avere come prima cosa la chiave interna, poi la chiave esterna, e poi le altre colonne
 # Riordino Tabella Aziende
@@ -316,10 +351,10 @@ mercato = mercato[['id_mercato', 'id_azienda', 'id_calendario', 'ClosePrice', 'C
 articoli = articoli[['id_articoli', 'id_articoli_originali', 'id_azienda', 'id_calendario', 'Headline', 'Summary']]
 
 # Riordino Tabella Indicatori
-indicatori = indicatori[['id_indicatori', 'id_azienda', 'id_calendario', 'company_name', 'QuarterlyReleased', 'BookToMarket', 'MarketCap', 'FreeCashFlowYield', 'FreeCashFlowYield_TTM', 'EarningsYield', 'EarningsYield_TTM', 'BookToMarket_L1W', 'MarketCap_L1W', 'FreeCashFlowYield_L1W', 'FreeCashFlowYield_TTM_L1W', 'EarningsYield_L1W', 'EarningsYield_TTM_L1W', 'BookToMarket_L2W', 'MarketCap_L2W', 'FreeCashFlowYield_L2W', 'FreeCashFlowYield_TTM_L2W', 'EarningsYield_L2W', 'EarningsYield_TTM_L2W', 'GrossProfitability', 'GrossProfitability_TTM', 'OperatingMargin', 'OperatingMargin_TTM', 'ROA', 'ROA_TTM', 'AssetGrowth', 'InvestmentIntensity', 'Accruals', 'Accruals_TTM', 'DebtToAssets', 'WorkingCapitalScaled', 'GrossProfitability_L1Q', 'GrossProfitability_TTM_L1Q', 'OperatingMargin_L1Q', 'OperatingMargin_TTM_L1Q', 'ROA_L1Q', 'ROA_TTM_L1Q', 'AssetGrowth_L1Q', 'InvestmentIntensity_L1Q', 'Accruals_L1Q', 'Accruals_TTM_L1Q', 'DebtToAssets_L1Q', 'WorkingCapitalScaled_L1Q', 'GrossProfitability_L2Q', 'GrossProfitability_TTM_L2Q', 'OperatingMargin_L2Q', 'OperatingMargin_TTM_L2Q', 'ROA_L2Q', 'ROA_TTM_L2Q', 'AssetGrowth_L2Q', 'InvestmentIntensity_L2Q', 'Accruals_L2Q', 'Accruals_TTM_L2Q', 'DebtToAssets_L2Q', 'WorkingCapitalScaled_L2Q']]
+indicatori = indicatori[['id_indicatori', 'id_azienda', 'id_calendario', 'company_name', 'QuarterlyReleased', 'BookToMarket', 'MarketCap', 'FreeCashFlowYield', 'FreeCashFlowYield_TTM', 'EarningsYield', 'EarningsYield_TTM', 'BookToMarket_L1W', 'MarketCap_L1W', 'FreeCashFlowYield_L1W', 'FreeCashFlowYield_TTM_L1W', 'EarningsYield_L1W', 'EarningsYield_TTM_L1W', 'BookToMarket_L2W', 'MarketCap_L2W', 'FreeCashFlowYield_L2W', 'FreeCashFlowYield_TTM_L2W', 'EarningsYield_L2W', 'EarningsYield_TTM_L2W', 'GrossProfitability', 'GrossProfitability_TTM', 'OperatingMargin', 'OperatingMargin_TTM', 'ROA', 'ROA_TTM', 'AssetGrowth', 'InvestmentIntensity', 'Accruals', 'Accruals_TTM', 'DebtToAssets', 'WorkingCapitalScaled', 'GrossProfitability_L1Q', 'GrossProfitability_TTM_L1Q', 'OperatingMargin_L1Q', 'OperatingMargin_TTM_L1Q', 'ROA_L1Q', 'ROA_TTM_L1Q', 'AssetGrowth_L1Q', 'InvestmentIntensity_L1Q', 'Accruals_L1Q', 'Accruals_TTM_L1Q', 'DebtToAssets_L1Q', 'WorkingCapitalScaled_L1Q', 'GrossProfitability_L2Q', 'GrossProfitability_TTM_L2Q', 'OperatingMargin_L2Q', 'OperatingMargin_TTM_L2Q', 'ROA_L2Q', 'ROA_TTM_L2Q', 'AssetGrowth_L2Q', 'InvestmentIntensity_L2Q', 'Accruals_L2Q', 'Accruals_TTM_L2Q', 'DebtToAssets_L2Q', 'WorkingCapitalScaled_L2Q', 'NEWS_FINBERT_Granger_Score', 'NEWS_Sentiment_Mean']]
 
 # Riordino Tabella Risultati
-risultati = risultati[['id_risultati', 'id_azienda', 'id_calendario', 'id_modelli', 'AdjClosePrice_t+1_Up', 'predicted_AdjClosePrice_t+1_Up', 'predicted_probability']]
+risultati = risultati[['id_risultati', 'id_azienda', 'id_calendario', 'id_best_model', 'AdjClosePrice_t+1', 'predicted_AdjClosePrice_t+1', 'predicted_probability']]
 
 # Riordino Tabella Granger
 granger = granger[['id_granger', 'id_azienda', 'id_nomi_settori', 'L1.AdjClosePrice_lag1', 'L1.NEWS_FINBERT_Negative_Mean_lag1', 'L1.NEWS_FINBERT_Positive_Mean_lag1', 'L1.NEWS_FINBERT_Neutral_Mean_lag1', 'pvalue_lag1', 'L1.AdjClosePrice_lag2', 'L1.NEWS_FINBERT_Negative_Mean_lag2', 'L1.NEWS_FINBERT_Positive_Mean_lag2', 'L1.NEWS_FINBERT_Neutral_Mean_lag2', 'L2.AdjClosePrice_lag2', 'L2.NEWS_FINBERT_Negative_Mean_lag2', 'L2.NEWS_FINBERT_Positive_Mean_lag2', 'L2.NEWS_FINBERT_Neutral_Mean_lag2', 'pvalue_lag2']]
@@ -388,8 +423,12 @@ possibili_risultati_db = Table('possibili_risultati', metadata,
 )
 
 modelli_db = Table('modelli', metadata,
-    Column('id_modelli', Integer, primary_key=True),
-    Column('model', String(100))
+    Column('id_best_model', Integer, primary_key=True),
+    Column('best_model', String(100)),
+    Column('test_accuracy', Float),
+    Column('delta_null_model', Float),
+    Column('delta_always_one', Float),
+    Column('delta_always_zero', Float)
 )
 
 # Tabella Aziende (Contiene chiavi esterne verso settori e industrie)
@@ -430,7 +469,7 @@ colonne_indicatori = [
     Column('id_calendario', Integer, ForeignKey('calendario.id_calendario'))
 ]
 # Prendo i nomi delle metriche dalla tua lista ignorando i primi 3 campi che ho già definito
-nomi_metriche_ind = ['QuarterlyReleased', 'BookToMarket', 'MarketCap', 'FreeCashFlowYield', 'FreeCashFlowYield_TTM', 'EarningsYield', 'EarningsYield_TTM', 'BookToMarket_L1W', 'MarketCap_L1W', 'FreeCashFlowYield_L1W', 'FreeCashFlowYield_TTM_L1W', 'EarningsYield_L1W', 'EarningsYield_TTM_L1W', 'BookToMarket_L2W', 'MarketCap_L2W', 'FreeCashFlowYield_L2W', 'FreeCashFlowYield_TTM_L2W', 'EarningsYield_L2W', 'EarningsYield_TTM_L2W', 'GrossProfitability', 'GrossProfitability_TTM', 'OperatingMargin', 'OperatingMargin_TTM', 'ROA', 'ROA_TTM', 'AssetGrowth', 'InvestmentIntensity', 'Accruals', 'Accruals_TTM', 'DebtToAssets', 'WorkingCapitalScaled', 'GrossProfitability_L1Q', 'GrossProfitability_TTM_L1Q', 'OperatingMargin_L1Q', 'OperatingMargin_TTM_L1Q', 'ROA_L1Q', 'ROA_TTM_L1Q', 'AssetGrowth_L1Q', 'InvestmentIntensity_L1Q', 'Accruals_L1Q', 'Accruals_TTM_L1Q', 'DebtToAssets_L1Q', 'WorkingCapitalScaled_L1Q', 'GrossProfitability_L2Q', 'GrossProfitability_TTM_L2Q', 'OperatingMargin_L2Q', 'OperatingMargin_TTM_L2Q', 'ROA_L2Q', 'ROA_TTM_L2Q', 'AssetGrowth_L2Q', 'InvestmentIntensity_L2Q', 'Accruals_L2Q', 'Accruals_TTM_L2Q', 'DebtToAssets_L2Q', 'WorkingCapitalScaled_L2Q']
+nomi_metriche_ind = ['QuarterlyReleased', 'BookToMarket', 'MarketCap', 'FreeCashFlowYield', 'FreeCashFlowYield_TTM', 'EarningsYield', 'EarningsYield_TTM', 'BookToMarket_L1W', 'MarketCap_L1W', 'FreeCashFlowYield_L1W', 'FreeCashFlowYield_TTM_L1W', 'EarningsYield_L1W', 'EarningsYield_TTM_L1W', 'BookToMarket_L2W', 'MarketCap_L2W', 'FreeCashFlowYield_L2W', 'FreeCashFlowYield_TTM_L2W', 'EarningsYield_L2W', 'EarningsYield_TTM_L2W', 'GrossProfitability', 'GrossProfitability_TTM', 'OperatingMargin', 'OperatingMargin_TTM', 'ROA', 'ROA_TTM', 'AssetGrowth', 'InvestmentIntensity', 'Accruals', 'Accruals_TTM', 'DebtToAssets', 'WorkingCapitalScaled', 'GrossProfitability_L1Q', 'GrossProfitability_TTM_L1Q', 'OperatingMargin_L1Q', 'OperatingMargin_TTM_L1Q', 'ROA_L1Q', 'ROA_TTM_L1Q', 'AssetGrowth_L1Q', 'InvestmentIntensity_L1Q', 'Accruals_L1Q', 'Accruals_TTM_L1Q', 'DebtToAssets_L1Q', 'WorkingCapitalScaled_L1Q', 'GrossProfitability_L2Q', 'GrossProfitability_TTM_L2Q', 'OperatingMargin_L2Q', 'OperatingMargin_TTM_L2Q', 'ROA_L2Q', 'ROA_TTM_L2Q', 'AssetGrowth_L2Q', 'InvestmentIntensity_L2Q', 'Accruals_L2Q', 'Accruals_TTM_L2Q', 'DebtToAssets_L2Q', 'WorkingCapitalScaled_L2Q', 'NEWS_FINBERT_Granger_Score', 'NEWS_Sentiment_Mean']
 for col in nomi_metriche_ind:
     colonne_indicatori.append(Column(col, Float))
 indicatori_db = Table('indicatori', metadata, *colonne_indicatori)
@@ -440,9 +479,9 @@ risultati_db = Table('risultati', metadata,
     Column('id_risultati', Integer, primary_key=True),
     Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
     Column('id_calendario', Integer, ForeignKey('calendario.id_calendario')),
-    Column('id_modelli', Integer, ForeignKey('modelli.id_modelli')), # FK su modelli
-    Column('AdjClosePrice_t+1_Up', Integer, ForeignKey('possibili_risultati.id_result')), # FK su possibili_risultati
-    Column('predicted_AdjClosePrice_t+1_Up', Integer, ForeignKey('possibili_risultati.id_result')), # FK su possibili_risultati
+    Column('id_best_model', Integer, ForeignKey('modelli.id_best_model')), # <--- MODIFICATO QUI: punta a 'modelli'
+    Column('AdjClosePrice_t+1', Integer, ForeignKey('possibili_risultati.id_result')), 
+    Column('predicted_AdjClosePrice_t+1', Integer, ForeignKey('possibili_risultati.id_result')), 
     Column('predicted_probability', Float)
 )
 
@@ -452,6 +491,7 @@ colonne_granger = [
     Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
     Column('id_settore', Integer, ForeignKey('settori.id_settore'))
 ]
+
 
 
 nomi_metriche_granger = [
@@ -508,4 +548,106 @@ granger.rename(columns={'id_nomi_settori': 'id_settore'}, inplace=True)
 granger.to_sql('coefficiente_granger', engine, if_exists='append', index=False)
 
 print("Caricamento dei dati nel database relazionale completato!")
+# %%
+# Query 1: Le 10 aziende con Prediction Probability più alta (Predizione = 0)
+query_pred_0 = """
+SELECT 
+    a."companyName", 
+    a."Ticker", 
+    s.sector,
+    c.date,
+    pr_actual.label AS actual_value,
+    pr_pred.label AS predicted_value,
+    r.predicted_probability,
+    m.best_model,
+    m.test_accuracy,
+    m.delta_null_model,
+    m.delta_always_one,
+    m.delta_always_zero
+FROM risultati r
+JOIN aziende a ON r.id_azienda = a.id_azienda
+JOIN settori s ON a.id_settore = s.id_settore
+JOIN calendario c ON r.id_calendario = c.id_calendario
+JOIN modelli m ON r.id_best_model = m.id_best_model
+JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+WHERE pr_pred.label = 0
+ORDER BY r.predicted_probability DESC
+LIMIT 10;
+"""
+
+df_top10_pred_0 = pd.read_sql(query_pred_0, engine)
+print("--- TOP 10 AZIENDE (PREDIZIONE = 0) ---")
+print(df_top10_pred_0.to_string())
+
+
+# Query 2: Le 10 aziende con Prediction Probability più alta (Predizione = 1)
+query_pred_1 = """
+SELECT 
+    a."companyName", 
+    a."Ticker", 
+    s.sector,
+    c.date,
+    pr_actual.label AS actual_value,
+    pr_pred.label AS predicted_value,
+    r.predicted_probability,
+    m.best_model,
+    m.test_accuracy,
+    m.delta_null_model,
+    m.delta_always_one,
+    m.delta_always_zero
+FROM risultati r
+JOIN aziende a ON r.id_azienda = a.id_azienda
+JOIN settori s ON a.id_settore = s.id_settore
+JOIN calendario c ON r.id_calendario = c.id_calendario
+JOIN modelli m ON r.id_best_model = m.id_best_model
+JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+WHERE pr_pred.label = 1
+ORDER BY r.predicted_probability DESC
+LIMIT 10;
+"""
+
+df_top10_pred_1 = pd.read_sql(query_pred_1, engine)
+print("\n--- TOP 10 AZIENDE (PREDIZIONE = 1) ---")
+print(df_top10_pred_1.to_string())
+
+
+# Query 3: Le 10 aziende con Prediction Probability più vicina a 0.5 (Incertezza massima)
+# Per trovare i valori più vicini a 0.5, utilizziamo la funzione matematica valore assoluto ABS() 
+# sulla differenza tra la probabilità e 0.5, e ordiniamo in modo crescente (i valori con differenza 
+# minore sono i più vicini a 0.5).
+query_incerti = """
+SELECT 
+    a."companyName", 
+    a."Ticker", 
+    s.sector,
+    c.date,
+    pr_actual.label AS actual_value,
+    pr_pred.label AS predicted_value,
+    r.predicted_probability,
+    m.best_model,
+    m.test_accuracy,
+    m.delta_null_model,
+    m.delta_always_one,
+    m.delta_always_zero
+FROM risultati r
+JOIN aziende a ON r.id_azienda = a.id_azienda
+JOIN settori s ON a.id_settore = s.id_settore
+JOIN calendario c ON r.id_calendario = c.id_calendario
+JOIN modelli m ON r.id_best_model = m.id_best_model
+JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+ORDER BY ABS(r.predicted_probability - 0.5) ASC
+LIMIT 10;
+"""
+
+df_top10_incerti = pd.read_sql(query_incerti, engine)
+print("\n--- TOP 10 AZIENDE CON MAGGIORE INCERTEZZA (~0.5) ---")
+print(df_top10_incerti.to_string())
+
+
+
+
+
 # %%

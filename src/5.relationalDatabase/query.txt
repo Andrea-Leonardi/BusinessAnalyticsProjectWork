@@ -1,0 +1,98 @@
+codice query 1: 
+-- CREATE OR REPLACE VIEW query_1 AS
+-- tramite queste due prime righe di codice si crea una VIEW, per poterla trovare bisogna seguire questo
+-- percorso: project_business_analytics -> Schemas -> public -> Views 
+-- a questo punto per poter utilizzare la query che è stata salvata basta scrivere: SELECT * FROM query_1
+
+SELECT 
+    a."companyName", 
+    a."Ticker", 
+    s.sector,
+    c.date,
+    pr_actual.label AS actual_value,
+    pr_pred.label AS predicted_value,
+    r.predicted_probability,
+    m.best_model,
+    m.test_accuracy,
+    m.delta_null_model,
+    m.delta_always_one,
+    m.delta_always_zero,
+	ind."NEWS_FINBERT_Granger_Score",
+    ind."NEWS_Sentiment_Mean"
+FROM risultati r
+JOIN aziende a ON r.id_azienda = a.id_azienda
+JOIN settori s ON a.id_settore = s.id_settore
+JOIN calendario c ON r.id_calendario = c.id_calendario
+JOIN modelli m ON r.id_best_model = m.id_best_model
+JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+JOIN indicatori ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
+WHERE pr_pred.label = 0
+ORDER BY r.predicted_probability DESC
+LIMIT 10;
+
+codice query 2: 
+-- CREATE OR REPLACE VIEW query_2 AS
+-- tramite queste due prime righe di codice si crea una VIEW, per poterla trovare bisogna seguire questo
+-- percorso: project_business_analytics -> Schemas -> public -> Views 
+-- a questo punto per poter utilizzare la query che è stata salvata basta scrivere: SELECT * FROM query_2
+
+CREATE OR REPLACE VIEW query_2 AS
+SELECT 
+    a."companyName", 
+    a."Ticker", 
+    s.sector,
+    c.date,
+    pr_actual.label AS actual_value,
+    pr_pred.label AS predicted_value,
+    r.predicted_probability,
+    m.best_model,
+    m.test_accuracy,
+    m.delta_null_model,
+    m.delta_always_one,
+    m.delta_always_zero,
+	ind."NEWS_FINBERT_Granger_Score",
+    ind."NEWS_Sentiment_Mean"
+FROM risultati r
+JOIN aziende a ON r.id_azienda = a.id_azienda
+JOIN settori s ON a.id_settore = s.id_settore
+JOIN calendario c ON r.id_calendario = c.id_calendario
+JOIN modelli m ON r.id_best_model = m.id_best_model
+JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+JOIN indicatori ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
+WHERE pr_pred.label = 1
+ORDER BY r.predicted_probability DESC
+LIMIT 10;
+
+codice query 3: 
+-- CREATE OR REPLACE VIEW query_3 AS
+-- tramite queste due prime righe di codice si crea una VIEW, per poterla trovare bisogna seguire questo
+-- percorso: project_business_analytics -> Schemas -> public -> Views 
+-- a questo punto per poter utilizzare la query che è stata salvata basta scrivere: SELECT * FROM query_3
+
+SELECT 
+    a."companyName", 
+    a."Ticker", 
+    s.sector,
+    c.date,
+    pr_actual.label AS actual_value,
+    pr_pred.label AS predicted_value,
+    r.predicted_probability,
+    m.best_model,
+    m.test_accuracy,
+    m.delta_null_model,
+    m.delta_always_one,
+    m.delta_always_zero,
+    ind."NEWS_FINBERT_Granger_Score",
+    ind."NEWS_Sentiment_Mean"
+FROM risultati r
+JOIN aziende a ON r.id_azienda = a.id_azienda
+JOIN settori s ON a.id_settore = s.id_settore
+JOIN calendario c ON r.id_calendario = c.id_calendario
+JOIN modelli m ON r.id_best_model = m.id_best_model
+JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+JOIN indicatori ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
+ORDER BY ABS(r.predicted_probability - 0.5) ASC
+LIMIT 10;

@@ -1,0 +1,121 @@
+qui riporto le possibbili frasi che possiamo usare per descrivere il nostro dataset relazionale, 
+ne dobbiamo segliere uno per ciasuna tabella 
+
+Primo:
+"Un'azienda appartiene a un settore e opera in un'industria."
+"In una certa data, il mercato registra dei dati di borsa (prezzi, ritorni) per una specifica azienda."
+"In una certa data, i giornali pubblicano degli articoli che parlano di un'azienda."
+"Per una data azienda e in una certa data, vengono calcolati degli indicatori finanziari (bilancio, ratio)."
+"Un modello di machine learning genera una previsione (risultato) per un'azienda in una specifica data, ipotizzando un esito futuro."
+"Un test di Granger analizza la causalità tra un'azienda e il suo settore."
+"Ogni previsione (risultato) è associata a due possibili esiti: quello che si è effettivamente verificato sul mercato e quello che il modello ha predetto."
+
+Secondo: 
+(Aziende, Settori, Industrie): "Ogni società è classificata all'interno di un comparto settoriale specifico e fa capo a una determinata branca industriale."
+(Mercato, Aziende, Calendario): "Le performance finanziarie quotidiane di un'impresa vengono tracciate associando le metriche di borsa a un giorno specifico sul calendario."
+(Articoli, Aziende, Calendario): "La copertura mediatica di una società viene archiviata raccogliendo le notizie pubblicate dalla stampa in determinati giorni."
+(Indicatori, Aziende, Calendario): "Lo stato di salute finanziaria di un'azienda viene misurato in precise finestre temporali attraverso un set di metriche di bilancio."
+(Risultati, Modelli, Aziende, Calendario): "Per stimare l'andamento futuro di un'azione in una certa data, un algoritmo predittivo produce un output di valutazione legato alla singola azienda."
+(Granger, Aziende, Settore): "Le dinamiche di influenza tra le performance di una singola impresa e quelle dell'intero comparto di appartenenza sono misurate dai coefficienti del test di Granger."
+(Risultati, Possibili Risultati): "La valutazione del modello avviene confrontando la categoria di classificazione suggerita dall'algoritmo con l'etichetta di classificazione reale osservata sul mercato."
+
+Altre 3 alternative per ciasuna tabella: 
+Frase 1 (Aziende, Settori, Industrie)
+Alternativa 1: "Ogni società quotata è classificata all'interno di una macro-categoria settoriale e di una specifica nicchia industriale."
+Alternativa 2: "La classificazione di un'impresa avviene assegnandola a un preciso settore di mercato e a un corrispondente ramo d'industria."
+Alternativa 3: "L'anagrafica aziendale prevede che ogni organizzazione sia inquadrata in un gruppo settoriale e in un dominio industriale."
+Frase 2 (Mercato, Azienda, Data)
+Alternativa 1: "Per ogni giorno di contrattazione, si memorizzano le metriche di mercato, come prezzo e volatilità, associate a una singola impresa."
+Alternativa 2: "L'andamento borsistico di un'azione viene monitorato quotidianamente archiviando i valori di chiusura e i rendimenti per quella società."
+Alternativa 3: "In corrispondenza di specifiche scadenze temporali, il sistema rileva le quotazioni storiche e le performance finanziarie relative a una specifica azienda."
+Frase 3 (Articoli, Azienda, Data)
+Alternativa 1: "Il flusso delle notizie stampa viene catalogato in base al giorno di pubblicazione e alla società menzionata nel testo dell'articolo."
+Alternativa 2: "Per ogni ente aziendale si raccolgono le rassegne stampa quotidiane, estraendo i titoli e i riassunti degli articoli in una specifica data."
+Alternativa 3: "La copertura mediatica di una corporazione è storicizzata associando i contenuti giornalistici al momento temporale esatto in cui sono stati diffusi."
+Frase 4 (Indicatori, Azienda, Data)
+Alternativa 1: "A cadenze temporali regolari, lo stato di salute patrimoniale di una società è quantificato tramite una serie di metriche e ratio di bilancio."
+Alternativa 2: "Il profilo fondamentale di un'impresa viene tracciato storicamente calcolando i suoi indicatori economici per specifici riferimenti di calendario."
+Alternativa 3: "Per ogni punto nel tempo, vengono estratti e salvati i multipli finanziari e le grandezze contabili che descrivono una determinata azienda."
+Frase 5 (Modelli, Previsione, Azienda, Data)
+Alternativa 1: "Un algoritmo predittivo produce una stima probabilistica sulle performance future di una società valutata in un dato giorno."
+Alternativa 2: "Per ogni intervallo temporale, un modello analitico valuta una specifica impresa per generarne una proiezione di mercato."
+Alternativa 3: "L'output del sistema di machine learning associa una probabilità statistica a un evento futuro riguardante una singola azienda in una giornata precisa."
+Frase 6 (Granger, Azienda, Settore)
+Alternativa 1: "Il grado in cui l'andamento di un intero comparto economico anticipa o influenza quello di una singola azienda al suo interno è valutato statisticamente tramite il test di Granger."
+Alternativa 2: "Si misura la relazione di causalità temporale confrontando i dati storici di una società con i dati aggregati del suo settore di appartenenza."
+Alternativa 3: "L'impatto direzionale tra le performance settoriali e le performance di una singola entità aziendale viene verificato mediante test econometrici basati sui lag storici."
+Frase 7 (Risultati e Possibili Esiti multipli)
+Alternativa 1: "Per valutare l'accuratezza del sistema, la predizione dell'algoritmo viene sempre messa in relazione con la classificazione reale che si è successivamente osservata sul mercato."
+Alternativa 2: "Ogni valutazione è caratterizzata da una doppia mappatura sulle etichette: la direzione del prezzo stimata dal modello da una parte, e la direzione effettivamente materializzatasi dall'altra."
+Alternativa 3: "La singola previsione si collega alla tabella delle etichette (labels) in due modi distinti: per registrare l'ipotesi teorica del modello e per validare il dato di fatto."
+
+
+
+
+
+
+allora, qui invece riporto i le frasi che possiamo usare per poter rappresnetare i grafici che vuole 
+il prof con rettangoli e rombi, segliamo per ogni relazione tra ciasuna delle nostre entità una 
+di queste forme così che poi si possano rappresnetare i grafici 
+1. Collegamento: AZIENDE e SETTORI
+[ AZIENDE ] -> < appartengono ai > -> [ SETTORI ]
+[ AZIENDE ] -> < sono classificate nei > -> [ SETTORI ]
+[ AZIENDE ] -> < rientrano nei > -> [ SETTORI ]
+[ AZIENDE ] -> < fanno parte dei > -> [ SETTORI ]
+[ AZIENDE ] -> < si raggruppano nei > -> [ SETTORI ]
+2. Collegamento: AZIENDE e INDUSTRIE
+[ AZIENDE ] -> < operano nelle > -> [ INDUSTRIE ]
+[ AZIENDE ] -> < lavorano nelle > -> [ INDUSTRIE ]
+[ AZIENDE ] -> < producono per le > -> [ INDUSTRIE ]
+[ AZIENDE ] -> < afferiscono alle > -> [ INDUSTRIE ]
+[ AZIENDE ] -> < sono attive nelle > -> [ INDUSTRIE ]
+3. Collegamento: MERCATO e AZIENDE
+[ MERCATO ] -> < quota le > -> [ AZIENDE ]
+[ MERCATO ] -> < riassume i prezzi delle > -> [ AZIENDE ]
+[ MERCATO ] -> < traccia l'andamento delle > -> [ AZIENDE ]
+[ MERCATO ] -> < riguarda le > -> [ AZIENDE ]
+[ MERCATO ] -> < valuta le > -> [ AZIENDE ]
+4. Collegamento: ARTICOLI e AZIENDE
+[ ARTICOLI ] -> < citano le > -> [ AZIENDE ]
+[ ARTICOLI ] -> < menzionano le > -> [ AZIENDE ]
+[ ARTICOLI ] -> < parlano delle > -> [ AZIENDE ]
+[ ARTICOLI ] -> < analizzano le > -> [ AZIENDE ]
+[ ARTICOLI ] -> < si riferiscono alle > -> [ AZIENDE ]
+5. Collegamento: INDICATORI e AZIENDE
+[ INDICATORI ] -> < misurano le > -> [ AZIENDE ]
+[ INDICATORI ] -> < descrivono i bilanci delle > -> [ AZIENDE ]
+[ INDICATORI ] -> < fotografano le > -> [ AZIENDE ]
+[ INDICATORI ] -> < quantificano le > -> [ AZIENDE ]
+[ INDICATORI ] -> < valutano i fondamentali delle > -> [ AZIENDE ]
+6. Collegamento "Universale" con CALENDARIO
+(Tutte le tue tabelle dei fatti — MERCATO, ARTICOLI, INDICATORI, RISULTATI — si collegano a CALENDARIO. Scegli il verbo che preferisci per il disegno)
+[ TABELLA_X ] -> < avviene nel > -> [ CALENDARIO ]
+[ TABELLA_X ] -> < è registrato nel > -> [ CALENDARIO ]
+[ TABELLA_X ] -> < fa riferimento al > -> [ CALENDARIO ]
+[ TABELLA_X ] -> < è storicizzato nel > -> [ CALENDARIO ]
+[ TABELLA_X ] -> < si osserva nel > -> [ CALENDARIO ]
+7. Collegamento: RISULTATI e MODELLI
+[ RISULTATI ] -> < sono generati dai > -> [ MODELLI ]
+[ RISULTATI ] -> < derivano dai > -> [ MODELLI ]
+[ RISULTATI ] -> < sono calcolati dai > -> [ MODELLI ]
+[ RISULTATI ] -> < vengono prodotti dai > -> [ MODELLI ]
+[ RISULTATI ] -> < sono estratti dai > -> [ MODELLI ]
+8. Collegamento: RISULTATI e AZIENDE
+[ RISULTATI ] -> < stimano le > -> [ AZIENDE ]
+[ RISULTATI ] -> < riguardano le > -> [ AZIENDE ]
+[ RISULTATI ] -> < fanno previsioni sulle > -> [ AZIENDE ]
+[ RISULTATI ] -> < si applicano alle > -> [ AZIENDE ]
+[ RISULTATI ] -> < predicono il futuro delle > -> [ AZIENDE ]
+(Attenzione a questo qui sotto: ricordati che la tabella risultati ha due frecce verso possibili_risultati!)
+9A. Collegamento: RISULTATI e POSSIBILI_RISULTATI (Quello Predetto dal Modello)
+[ RISULTATI ] -> < predicono i > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < ipotizzano i > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < suggeriscono i > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < scommettono sui > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < stimano come attesi i > -> [ POSSIBILI_RISULTATI ]
+9B. Collegamento: RISULTATI e POSSIBILI_RISULTATI (Quello Reale di Mercato)
+[ RISULTATI ] -> < hanno come esito reale i > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < si verificano nei > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < corrispondono storicamente ai > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < si concretizzano nei > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < si confrontano con i > -> [ POSSIBILI_RISULTATI ]
