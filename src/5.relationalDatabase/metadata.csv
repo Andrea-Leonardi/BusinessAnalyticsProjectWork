@@ -93,9 +93,9 @@ label,possibili_risultati,intero,Valore numerico binario associato alla classe d
 id_best_model,modelli,intero,Chiave primaria progressiva della tabella modelli generata nel database relazionale.
 best_model,modelli,stringa,Nome dell algoritmo di machine learning risultato migliore per lo specifico settore di appartenenza.
 test_accuracy,modelli,decimale,Metrica di accuratezza calcolata sul set di test per il modello selezionato. Unità di misura: Tasso espresso in formato decimale.
-delta_null_model,modelli,decimale,Differenza di performance tra il modello selezionato e il modello nullo. Unità di misura: Tasso espresso in formato decimale.
-delta_always_one,modelli,decimale,Differenza di performance tra il modello selezionato e un modello dummy che predice sempre la classe positiva. Unità di misura: Tasso espresso in formato decimale.
-delta_always_zero,modelli,decimale,Differenza di performance tra il modello selezionato e un modello dummy che predice sempre la classe negativa. Unità di misura: Tasso espresso in formato decimale.
+delta_null_model,modelli,decimale,Differenza di performance tra il modello selezionato per quel settore e il modello nullo che predice la classe più frequente nel dataset di training. Unità di misura: Tasso espresso in formato decimale.
+delta_always_one,modelli,decimale,Differenza di performance tra il modello selezionato per quel settore e un modello dummy che predice sempre la classe positiva nel dataset di test. Unità di misura: Tasso espresso in formato decimale.
+delta_always_zero,modelli,decimale,Differenza di performance tra il modello selezionato per quel settore e un modello dummy che predice sempre la classe negativa nel dataset di test. Unità di misura: Tasso espresso in formato decimale.
 id_articoli,articoli,intero,Chiave primaria progressiva della tabella articoli generata nel database relazionale.
 id_articoli_originali,articoli,stringa,Codice identificativo univoco dell articolo fornito direttamente dall API di origine.
 id_azienda,articoli,intero,Chiave esterna verso la tabella aziende.
