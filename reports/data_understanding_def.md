@@ -7,6 +7,12 @@
 
 Predicting stock movements is a constant tug-of-war between the Efficient Market Hypothesis (EMH), which views price changes as a "random walk," and technical analysis, which seeks exploitable patterns in historical data [4]. Traditionally, fundamental and technical analyses are treated as separate silos and processed manually. This creates a significant "latency gap"—human analysts simply cannot process the massive volume of multi-modal data (news, financials, and price action) fast enough to keep up with 2026's high-frequency market environment.
 
+However, the need to process multi-modal data such as news stems not only from a need for speed but from a fundamental shift in our understanding of market dynamics. The classical view of the EMH, which assumes markets are populated exclusively by perfectly rational agents, has been heavily challenged by behavioral finance. Barberis and Thaler [10] highlight how "limits to arbitrage" prevent rational investors from immediately correcting price distortions. They note that the absence of profitable investment strategies does not imply the absence of mispricing: prices can be wrong for a long time, especially where trading costs discourage arbitrageurs. Financial decisions, as argued by Akerlof and Shiller [8], are deeply driven by animal spirits. Echoing Keynes, they emphasize that in the face of uncertainty about future returns, human decisions are not the result of a weighted average of quantitative probabilities, but rather a "spontaneous urge to action" driven by emotions, confidence, and collective narratives.
+
+This emotional component has a structural impact on asset pricing. De Long et al. [7] demonstrated that noise traders (irrational investors driven by sentiment) introduce a specific risk into the market that drives prices away from their fundamental values. Surprisingly, because rational arbitrageurs cannot fully counter this risk, noise traders can even earn higher expected returns than sophisticated investors, being compensated for the risk they themselves create. Consequently, early-period investor sentiment becomes a crucial and predictive variable for understanding the cross-section of future returns.
+
+In the digital age, these animal spirits and the actions of noise traders leave a measurable footprint. Bollen et al. [9] empirically proved that collective public mood, extracted from massive streams of online textual data (such as millions of tweets), possesses real predictive power over stock market indices like the DJIA. Their study reveals a fundamental detail: a simple one-dimensional approach (positive versus negative) is often not enough. It is by measuring mood along specific psychological dimensions (such as "Calm" or "Happiness," using multi-dimensional tools) that the accuracy of predictive models improves significantly. Therefore, to overcome the "latency gap" and accurately predict market movements, a modern model cannot rely solely on historical price data; it must systematically and deeply quantify collective sentiment.
+
 1.2 Project Goals
 
 The main goal of this project (StockPulse) is to help investors make better decisions faster and more accurately. Rather than using a regression approach to predict the exact price at time t+1 (using weekly frequency data)—which often introduces excessive noise—we framed the task as a binary classification problem. We used a binary response variable that takes the value of 0 if the price decreases in the following week, and 1 if it increases. Therefore, our goal is simply to predict 0 or 1 to provide a reliable edge for weekly capital allocation. By selecting the top 10 companies for each of the 11 GICS sectors based on their market capitalization at the beginning of the period (2021), we ensure our analysis avoids survivorship bias and that our insights are driven by universal market laws rather than industry-specific bubbles. To safeguard against unrepeatable volatility, we deliberately focused our modeling on the 2021–2026 period, filtering out the 2020 COVID-19 "Black Swan" to align with modern market regimes.
@@ -92,3 +98,11 @@ References
 [5] DataScience-PM (2026). What are the 6 CRISP-DM Phases?
 
 [6] Weinberg.A.I (2025). Hybrid Quantum-Classical Ensemble Learning for S&P 500 Directional Prediction
+
+[7] De Long, J. B., Shleifer, A., Summers, L. H., & Waldmann, R. J. (1990). Noise Trader Risk in Financial Markets.* Journal of Political Economy, 98(4), 703-738.
+
+[8] Akerlof, G. A., & Shiller, R. J. (2009). Animal Spirits: How Human Psychology Drives the Economy, and Why It Matters for Global Capitalism.* Princeton University Press.
+
+[9] Bollen, J., Mao, H., & Zeng, X. (2011). Twitter mood predicts the stock market.* Journal of Computational Science, 2(1), 1-8.
+
+[10] Barberis, N., & Thaler, R. (2003). A Survey of Behavioral Finance.* Handbook of the Economics of Finance, Vol. 1, Part B, 1053-1123.
