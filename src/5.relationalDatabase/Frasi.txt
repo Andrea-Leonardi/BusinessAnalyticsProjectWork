@@ -1,0 +1,73 @@
+Primo:
+    "Un modello di machine learning genera una previsione (risultato) per un'azienda in una specifica data, ipotizzando un esito futuro."
+    "Un test di Granger analizza la causalità tra un'azienda e il suo settore."
+    "Ogni previsione (risultato) è associata a due possibili esiti: quello che si è effettivamente verificato sul mercato e quello che il modello ha predetto."
+
+Secondo: 
+(Aziende, Settori, Industrie): "Ogni società è classificata all'interno di un comparto settoriale specifico e fa capo a una determinata branca industriale."
+(Mercato, Aziende, Calendario): "Per ogni giorno di contrattazione, si memorizzano le metriche di mercato, come prezzo e volatilità, associate a una singola impresa."
+    (Articoli, Aziende, Calendario): "La copertura mediatica di una società viene archiviata raccogliendo le notizie pubblicate dalla stampa in determinati giorni."
+(Indicatori, Aziende, Calendario): "A cadenze temporali quadrimestrali, lo stato di salute finanziaria e patrimoniale di una società è quantificato tramite una serie di metriche e ratio di bilancio."
+
+    (Risultati, Modelli, Aziende, Calendario): "Per stimare l'andamento futuro di un'azione in una certa data, un algoritmo predittivo produce un output di valutazione legato alla singola azienda."
+    (Granger, Aziende, Settore): "Le dinamiche di influenza tra le performance di una singola impresa e quelle dell'intero comparto di appartenenza sono misurate dai coefficienti del test di Granger."
+    (Risultati, Possibili Risultati): "La valutazione del modello avviene confrontando la categoria di classificazione suggerita dall'algoritmo con l'etichetta di classificazione reale osservata sul mercato."
+
+
+    Alternativa 1: "Il flusso delle notizie stampa viene catalogato in base al giorno di pubblicazione e alla società menzionata nel testo dell'articolo."
+
+
+    Frase 5 (Modelli, Previsione, Azienda, Data)
+    Alternativa 1: "Un algoritmo predittivo produce una stima probabilistica sulle performance future di una società valutata in un dato giorno."
+    Alternativa 2: "Per ogni intervallo temporale, un modello analitico valuta una specifica impresa per generarne una proiezione di mercato."
+    Alternativa 3: "L'output del sistema di machine learning associa una probabilità statistica a un evento futuro riguardante una singola azienda in una giornata precisa."
+    Frase 6 (Granger, Azienda, Settore)
+    Alternativa 1: "Il grado in cui l'andamento di un intero comparto economico anticipa o influenza quello di una singola azienda al suo interno è valutato statisticamente tramite il test di Granger."
+    Alternativa 2: "Si misura la relazione di causalità temporale confrontando i dati storici di una società con i dati aggregati del suo settore di appartenenza."
+    Alternativa 3: "L'impatto direzionale tra le performance settoriali e le performance di una singola entità aziendale viene verificato mediante test econometrici basati sui lag storici."
+    Frase 7 (Risultati e Possibili Esiti multipli)
+    Alternativa 1: "Per valutare l'accuratezza del sistema, la predizione dell'algoritmo viene sempre messa in relazione con la classificazione reale che si è successivamente osservata sul mercato."
+    Alternativa 2: "Ogni valutazione è caratterizzata da una doppia mappatura sulle etichette: la direzione del prezzo stimata dal modello da una parte, e la direzione effettivamente materializzatasi dall'altra."
+    Alternativa 3: "La singola previsione si collega alla tabella delle etichette (labels) in due modi distinti: per registrare l'ipotesi teorica del modello e per validare il dato di fatto."
+
+
+
+
+
+
+allora, qui invece riporto i le frasi che possiamo usare per poter rappresnetare i grafici che vuole 
+il prof con rettangoli e rombi, segliamo per ogni relazione tra ciasuna delle nostre entità una 
+di queste forme così che poi si possano rappresnetare i grafici 
+1. Collegamento: AZIENDE e SETTORI
+[ AZIENDE ] -> < appartengono ai > -> [ SETTORI ]
+2. Collegamento: AZIENDE e INDUSTRIE
+[ AZIENDE ] -> < operano nelle > -> [ INDUSTRIE ]
+3. Collegamento: MERCATO e AZIENDE
+[ MERCATO ] -> < traccia l'andamento dei prezzi delle> -> [ AZIENDE ]
+4. Collegamento: ARTICOLI e AZIENDE
+[ ARTICOLI ] -> < si riferiscono alle > -> [ AZIENDE ]
+5. Collegamento: INDICATORI e AZIENDE
+[ INDICATORI ] -> < valutano i fondamentali delle > -> [ AZIENDE ]
+6. Collegamento "Universale" con CALENDARIO
+(Tutte le tue tabelle dei fatti — MERCATO, ARTICOLI, INDICATORI, RISULTATI — si collegano a CALENDARIO. Scegli il verbo che preferisci per il disegno)
+[ TABELLA_X ] -> < si osserva nel > -> [ CALENDARIO ]
+7. Collegamento: RISULTATI e MODELLI
+[ RISULTATI ] -> < sono generati dai > -> [ MODELLI ]
+8. Collegamento: RISULTATI e AZIENDE
+[ RISULTATI ] -> < fanno previsioni sulle > -> [ AZIENDE ]
+(Attenzione a questo qui sotto: ricordati che la tabella risultati ha due frecce verso possibili_risultati!)
+
+
+
+9A. Collegamento: RISULTATI e POSSIBILI_RISULTATI (Quello Predetto dal Modello)
+[ RISULTATI ] -> < predicono i > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < ipotizzano i > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < suggeriscono i > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < scommettono sui > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < stimano come attesi i > -> [ POSSIBILI_RISULTATI ]
+9B. Collegamento: RISULTATI e POSSIBILI_RISULTATI (Quello Reale di Mercato)
+[ RISULTATI ] -> < hanno come esito reale i > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < si verificano nei > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < corrispondono storicamente ai > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < si concretizzano nei > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < si confrontano con i > -> [ POSSIBILI_RISULTATI ]
