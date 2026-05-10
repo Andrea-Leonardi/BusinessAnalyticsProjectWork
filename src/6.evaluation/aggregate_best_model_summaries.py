@@ -1,15 +1,20 @@
 import argparse
 import csv
+import json
+import math
 from pathlib import Path
 
 
 CURRENT_DIR = Path(__file__).resolve().parent
 SUMMARY_FILENAME = "best_model_summary.csv"
 DEFAULT_OUTPUT_PATH = CURRENT_DIR / "best_models_summary.csv"
+MODELING_DIR = CURRENT_DIR.parent / "4.modeling" / "classic_ML_model"
+CONFIDENCE_Z_95 = 1.96
 FIELDNAMES = [
     "sector",
     "best_model",
     "test_accuracy",
+    "test_accuracy_ci_95",
     "delta_null_model",
     "delta_always_one",
     "delta_always_zero",
@@ -43,6 +48,41 @@ def read_sector_summary(summary_path: Path) -> dict:
     return rows[0]
 
 
+def read_sector_test_size(sector_dir: Path) -> int:
+    model_comparison_path = (
+        MODELING_DIR
+        / sector_dir.name
+        / "orchestrator_results"
+        / "model_comparison.json"
+    )
+    with open(model_comparison_path, "r", encoding="utf-8") as f:
+        model_comparison = json.load(f)
+    test_size = model_comparison["dataset_sizes"]["test"]
+    if test_size <= 0:
+        raise ValueError(f"{model_comparison_path} has an invalid test size: {test_size}")
+    return test_size
+
+
+def format_test_accuracy_ci_95(test_accuracy: float, test_size: int) -> str:
+    margin = CONFIDENCE_Z_95 * math.sqrt(
+        test_accuracy * (1 - test_accuracy) / test_size
+    )
+    lower_bound = max(0, test_accuracy - margin)
+    upper_bound = min(1, test_accuracy + margin)
+    return f"[{lower_bound:.6f}, {upper_bound:.6f}]"
+
+
+def add_test_accuracy_ci(row: dict, sector_dir: Path) -> dict:
+    enriched_row = row.copy()
+    test_accuracy = float(enriched_row["test_accuracy"])
+    test_size = read_sector_test_size(sector_dir)
+    enriched_row["test_accuracy_ci_95"] = format_test_accuracy_ci_95(
+        test_accuracy,
+        test_size,
+    )
+    return enriched_row
+
+
 def collect_summaries(strict: bool = False) -> tuple[list[dict], list[Path]]:
     rows = []
     missing_paths = []
@@ -52,7 +92,7 @@ def collect_summaries(strict: bool = False) -> tuple[list[dict], list[Path]]:
         if not summary_path.exists():
             missing_paths.append(summary_path)
             continue
-        rows.append(read_sector_summary(summary_path))
+        rows.append(add_test_accuracy_ci(read_sector_summary(summary_path), sector_dir))
 
     if strict and missing_paths:
         missing = "\n".join(str(path) for path in missing_paths)
