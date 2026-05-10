@@ -50,9 +50,41 @@ Alternativa 2: "Ogni valutazione è caratterizzata da una doppia mappatura sulle
 Alternativa 3: "La singola previsione si collega alla tabella delle etichette (labels) in due modi distinti: per registrare l'ipotesi teorica del modello e per validare il dato di fatto."
 
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Contesto: Collega Azienda, Calendario, Modello e usa le chiavi esterne per confrontare il risultato predetto (con la sua probabilità) e quello realmente osservato.
+    Alternativa 1: "Per ogni azienda e data, la tabella dei risultati confronta la direzione futura del prezzo predetta dal miglior modello per quel settore con quella realmente osservata sul mercato, includendo la probabilità stimata dall'algoritmo."
+Alternativa 2: "Il dataset registra giornalmente per ciascuna impresa l'esito del miglior algoritmo predittivo, affiancando la probabilità calcolata, l'etichetta prevista e il reale movimento di mercato verificatosi."
+Alternativa 3: "La tabella risultati mappa le previsioni giornaliere, indicando quale modello è stato utilizzato, con quale probabilità ha previsto un rialzo o ribasso (0 o 1), e quale è stato l'esito effettivo."
+Alternativa 4: "Ogni record dei risultati associa una specifica azienda in una data al suo modello ottimale, registrando la probabilità di output e incrociando la classificazione attesa con il dato reale tramite chiavi esterne."
+Alternativa 5: "Per valutare le performance giornaliere, si incrociano l'azienda, la data e il miglior modello per salvare la probabilità predetta e il confronto diretto tra l'etichetta stimata e quella materializzatasi."
+Alternativa 6: "In una specifica data, le previsioni probabilistiche sull'andamento di una singola azienda sono generate e archiviate facendo riferimento al miglior modello di machine learning individuato per quel titolo."
+Alternativa 7: "Il database traccia quotidianamente per ogni azienda quale specifico modello ottimizzato ha generato la previsione probabilistica di mercato."
+Alternativa 8: "L'output predittivo viene storicizzato incrociando la singola azienda, il giorno di contrattazione e le metriche di performance del miglior algoritmo selezionato."
+Alternativa 9: "Per ogni giorno e per ogni società, si registra la probabilità di un evento futuro calcolata dal modello analitico che ha performato meglio in fase di training."
+Alternativa 10: "L'esito giornaliero di una specifica impresa viene valutato associando la data e il titolo azionario ai parametri del miglior modello predittivo di riferimento."
 
 
+Contesto: Modello VAR dove Y = AdjClosePrice e X = Sentiment FinBERT (Positivo, Negativo, Neutrale) a lag 1 e lag 2, con i relativi p-value.
+Alternativa 1: "La tabella Granger raccoglie i coefficienti e i p-value di un modello VAR che analizza come il sentiment delle notizie (positivo, negativo, neutrale) influenzi il prezzo aggiustato dell'azienda a lag 1 e 2"
+    Alternativa 2: "Per ogni azienda, si misurano le relazioni di causalità tramite un modello VAR, dove la variabile dipendente è AdjClosePrice e le indipendenti sono i punteggi di sentiment FinBERT (positivo, negativo, neutrale) e AdjClosePrice ritardati di uno e due periodi, i risultati quantificano l'impatto predittivo del sentiment sui prezzi azionari, registrando i coefficienti per i primi due lag storici e la loro significatività statistica (p-value)"
+Alternativa 3: "I risultati del test quantificano l'impatto predittivo del sentiment giornalistico sui prezzi azionari, registrando i coefficienti per i primi due lag storici e la loro significatività statistica (p-value)."
+Alternativa 4: "Questa tabella memorizza l'output econometrico che verifica se i valori passati del sentiment FinBERT (lag 1 e 2) aiutano a prevedere l'andamento del prezzo aggiustato di una specifica azienda nel suo settore."
+Alternativa 5: "Attraverso un modello VAR, vengono salvati i p-value e i coefficienti che legano storicamente le variazioni di prezzo alle tre polarità del sentiment delle notizie (positivo, negativo e neutro)."
+Alternativa 6: "La relazione causale tra il sentiment delle notizie e il prezzo di una specifica azienda all'interno del suo settore è misurata tramite i coefficienti e i p-value di un modello VAR a due lag."
+Alternativa 7: "Per ogni azienda e relativo settore, si quantifica l'impatto storico del sentiment giornalistico sui prezzi azionari utilizzando i risultati econometrici di un test di Granger."
+Alternativa 8: "I coefficienti del modello autoregressivo valutano se le polarità del sentiment testuale ritardato influenzino l'andamento del prezzo di una singola impresa contestualizzata nel proprio comparto."
+Alternativa 9: "L'effetto predittivo delle notizie (positive, negative o neutre) sul valore di un'azienda appartenente a un dato settore viene validato statisticamente tramite i p-value sui lag storici."
+Alternativa 10: "Si analizza la causalità temporale tra le metriche testuali di FinBERT e i prezzi aggiustati di una società, raggruppata per settore, salvando i parametri di significatività del test."
 
+Contesto: La tabella risultati ha due chiavi esterne (predetto e reale) che puntano alla tabella di lookup normalizzata (0/1 -> Down/Up).
+Alternativa 1: "Ogni previsione si collega a una tabella di decodifica normalizzata per confrontare l'etichetta binaria stimata dal modello con la direzione del prezzo realmente osservata sul mercato."
+    Alternativa 2: "Per garantire la normalizzazione, i valori predetti e quelli realmente osservati sul mercato nei risultati puntano a un'unica tabella dizionario che mappa gli esiti in rialzi o ribassi."
+Alternativa 3: "La valutazione dell'algoritmo avviene incrociando la singola previsione con un catalogo centralizzato di etichette, registrando tramite chiavi esterne sia l'ipotesi del modello sia il dato di fatto."
+Alternativa 4: "I risultati della classificazione utilizzano una doppia mappatura verso una tabella di lookup per tradurre i codici numerici della previsione e della realtà nelle rispettive direzioni di mercato."
+Alternativa 5: "La struttura relazionale permette di confrontare l'esito atteso e quello reale richiamando le etichette standardizzate (0 e 1) da un'apposita tabella dimensionale di supporto."
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 allora, qui invece riporto i le frasi che possiamo usare per poter rappresnetare i grafici che vuole 
 il prof con rettangoli e rombi, segliamo per ogni relazione tra ciasuna delle nostre entità una 
@@ -119,3 +151,19 @@ di queste forme così che poi si possano rappresnetare i grafici
 [ RISULTATI ] -> < corrispondono storicamente ai > -> [ POSSIBILI_RISULTATI ]
 [ RISULTATI ] -> < si concretizzano nei > -> [ POSSIBILI_RISULTATI ]
 [ RISULTATI ] -> < si confrontano con i > -> [ POSSIBILI_RISULTATI ]
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [ GRANGER ] -> < misurano la causalità delle > -> [ AZIENDE ]
+[ GRANGER ] -> < testano la prevedibilità delle > -> [ AZIENDE ]
+[ GRANGER ] -> < analizzano il sentiment delle > -> [ AZIENDE ]
+[ GRANGER ] -> < modellano le dinamiche delle > -> [ AZIENDE ]
+[ GRANGER ] -> < stimano l'impatto sulle > -> [ AZIENDE ]
+
+    [ RISULTATI ] -> < sono decodificati dai > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < assumono i valori dei > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < si traducono nei > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < mappano le etichette sui > -> [ POSSIBILI_RISULTATI ]
+[ RISULTATI ] -> < traggono le classi dai > -> [ POSSIBILI_RISULTATI ]
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
