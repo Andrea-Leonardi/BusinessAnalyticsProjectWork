@@ -1,0 +1,40 @@
+flowchart LR
+    %% Stili per simulare l'immagine originale
+    classDef entity fill:#cce5ff,stroke:#000,stroke-width:1px;
+    classDef relation fill:#d4edda,stroke:#000,stroke-width:1px,shape:rhombus;
+
+    %% DEFINIZIONE NODI PRINCIPALI
+    CAL[calendar]:::entity
+    COMP[companies]:::entity
+    GC[granger_coefficients]:::entity
+
+    %% --- CATENE DI COLLEGAMENTO (da sinistra a destra per evitare sovrapposizioni) ---
+
+    %% 1. order_book
+    CAL ---|"(N, 1)"| R_CAL_OB{si osserva nel}:::relation ---|"(N, 1)"| OB[order_book]:::entity
+    OB ---|"(N, 1)"| R_COMP_OB{traccia l'andamento<br>dei prezzi delle}:::relation ---|"(N, 1)"| COMP
+    
+    %% 2. articles
+    CAL ---|"(N, 1)"| R_CAL_ART{si osserva nel}:::relation ---|"(N, 1)"| ART[articles]:::entity
+    ART ---|"(N, N)"| R_COMP_ART{si riferiscono alle}:::relation ---|"(N, N)"| COMP
+
+    %% 3. financial_statements_and_ratios
+    CAL ---|"(N, 1)"| R_CAL_FSR{si osserva nel}:::relation ---|"(N, 1)"| FSR[financial_statements_and_ratios]:::entity
+    FSR ---|"(N, 1)"| R_COMP_FSR{valutano i<br>fondamentali delle}:::relation ---|"(N, 1)"| COMP
+
+    %% 4. results
+    CAL ---|"(N, 1)"| R_CAL_RES{si osserva nel}:::relation ---|"(N, 1)"| RES[results]:::entity
+    RES ---|"(N, 1)"| R_COMP_RES{fanno previsioni sulle}:::relation ---|"(N, 1)"| COMP
+    
+    %% Diramazioni esclusive di results
+    RES ---|"(N, 1)"| R_RES_MOD{sono generati dai}:::relation ---|"(N, 1)"| MOD[models]:::entity
+    RES ---|"(N, 1)"| R_RES_PR{sono decodificati dai}:::relation ---|"(N, 1)"| PR[possible_results]:::entity
+
+    %% --- ALTRE CONNESSIONI A COMPANIES ---
+
+    %% Granger coefficients (L'unico con 1, 1 richiesto)
+    GC ---|"(1, 1)"| R_COMP_GC{misurano la<br>causalità delle}:::relation ---|"(1, 1)"| COMP
+
+    %% Da companies verso destra (Settori e Industrie)
+    COMP ---|"(N, 1)"| R_COMP_SEC{appartengono ai}:::relation ---|"(N, 1)"| SEC[sectors]:::entity
+    COMP ---|"(N, 1)"| R_COMP_IND{operano nelle}:::relation ---|"(N, 1)"| IND[industries]:::entity

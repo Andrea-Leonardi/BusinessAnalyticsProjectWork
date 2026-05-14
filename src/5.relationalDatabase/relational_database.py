@@ -373,6 +373,24 @@ print("Colonne Calendario:", calendario.columns.tolist())
 print("Colonne Possibili Risultati:", possibbili_risultati.columns.tolist())
 print("Colonne Granger:", granger.columns.tolist())
 
+# ==========================================
+# GESTIONE E POPOLAMENTO TABELLA INTERMEDIA (N, N) ARTICOLI-AZIENDE
+# ==========================================
+
+# Aggiungo l'IF per evitare il KeyError se esegui la cella due volte!
+if 'id_azienda' in articoli.columns:
+    # 1. Estraiamo le due chiavi per creare il DataFrame della tabella ponte
+    df_company_articles = articoli[['id_azienda', 'id_articoli']].copy()
+    df_company_articles = df_company_articles.drop_duplicates()
+
+    # 2. Rimuoviamo 'id_azienda' dal DataFrame 'articoli' 
+    articoli = articoli.drop(columns=['id_azienda'])
+    articoli = articoli.drop_duplicates(subset=['id_articoli'])
+    print("Tabella ponte 'company_articles' preparata con successo!")
+else:
+    print("La colonna 'id_azienda' è già stata rimossa. Tabella ponte già pronta.")
+
+
 # %%
 import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Float, Date, ForeignKey, Text
@@ -400,29 +418,29 @@ metadata = MetaData()
 # ==========================================
 
 # Tabelle Dimensionali (Tabelle di Lookup, senza chiavi esterne)
-calendario_db = Table('calendario', metadata,
+calendario_db = Table('calendar', metadata,
     Column('id_calendario', Integer, primary_key=True),
     Column('date', Date)
 )
 
-settori_db = Table('settori', metadata,
+settori_db = Table('sectors', metadata,
     Column('id_settore', Integer, primary_key=True),
     Column('sector', String(100)),
     Column('SectorCode', String(50))
 )
 
-industrie_db = Table('industrie', metadata,
+industrie_db = Table('industries', metadata,
     Column('id_industry', Integer, primary_key=True),
     Column('industry', String(100))
 )
 
-possibili_risultati_db = Table('possibili_risultati', metadata,
+possibili_risultati_db = Table('possible_results', metadata,
     Column('id_result', Integer, primary_key=True),
     Column('result', String(50)),
     Column('label', Integer)
 )
 
-modelli_db = Table('modelli', metadata,
+modelli_db = Table('models', metadata,
     Column('id_best_model', Integer, primary_key=True),
     Column('best_model', String(100)),
     Column('test_accuracy', Float),
@@ -432,19 +450,19 @@ modelli_db = Table('modelli', metadata,
 )
 
 # Tabella Aziende (Contiene chiavi esterne verso settori e industrie)
-aziende_db = Table('aziende', metadata,
+aziende_db = Table('companies', metadata,
     Column('id_azienda', Integer, primary_key=True),
-    Column('id_settore', Integer, ForeignKey('settori.id_settore')),
-    Column('id_industry', Integer, ForeignKey('industrie.id_industry')),
+    Column('id_settore', Integer, ForeignKey('sectors.id_settore')),
+    Column('id_industry', Integer, ForeignKey('industries.id_industry')),
     Column('Ticker', String(10)),
     Column('companyName', String(200))
 )
 
 # Tabelle dei Dati (Fatti) che puntano ad Azienda e Calendario
-mercato_db = Table('mercato', metadata,
+mercato_db = Table('order_book', metadata,
     Column('id_mercato', Integer, primary_key=True),
-    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
-    Column('id_calendario', Integer, ForeignKey('calendario.id_calendario')),
+    Column('id_azienda', Integer, ForeignKey('companies.id_azienda')),
+    Column('id_calendario', Integer, ForeignKey('calendar.id_calendario')),
     # Tutte le altre colonne numeriche come Float (Decimali)
     Column('ClosePrice', Float), Column('ClosePrice_t-1', Float), Column('ClosePrice_t-2', Float), 
     Column('ClosePrice_t+1', Float), Column('AdjClosePrice', Float), Column('AdjClosePrice_t-1', Float), 
@@ -453,43 +471,49 @@ mercato_db = Table('mercato', metadata,
     Column('Volatility_4W', Float), Column('Volatility_12W', Float), Column('Drawdown_12W', Float)
 )
 
-articoli_db = Table('articoli', metadata,
+# 1. Rimuovi 'id_azienda' dalla tabella articoli
+articoli_db = Table('articles', metadata,
     Column('id_articoli', Integer, primary_key=True),
-    Column('id_articoli_originali', String(100)), # Testo o numero in base al dataset originale
-    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
-    Column('id_calendario', Integer, ForeignKey('calendario.id_calendario')),
-    Column('Headline', Text), # Text per stringhe molto lunghe
+    Column('id_articoli_originali', String(100)), 
+    Column('id_calendario', Integer, ForeignKey('calendar.id_calendario')),
+    Column('Headline', Text), 
     Column('Summary', Text)
+)
+
+# 2. Crea la Tabella Ponte per la relazione (N, N)
+aziende_articoli_db = Table('company_articles', metadata,
+    Column('id_azienda', Integer, ForeignKey('companies.id_azienda'), primary_key=True),
+    Column('id_articoli', Integer, ForeignKey('articles.id_articoli'), primary_key=True)
 )
 
 # Aggiungo la definizione dinamica delle colonne per Indicatori (sono tantissime, tutte float tranne le chiavi)
 colonne_indicatori = [
     Column('id_indicatori', Integer, primary_key=True),
-    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
-    Column('id_calendario', Integer, ForeignKey('calendario.id_calendario'))
+    Column('id_azienda', Integer, ForeignKey('companies.id_azienda')),
+    Column('id_calendario', Integer, ForeignKey('calendar.id_calendario'))
 ]
 # Prendo i nomi delle metriche dalla tua lista ignorando i primi 3 campi che ho già definito
 nomi_metriche_ind = ['QuarterlyReleased', 'BookToMarket', 'MarketCap', 'FreeCashFlowYield', 'FreeCashFlowYield_TTM', 'EarningsYield', 'EarningsYield_TTM', 'BookToMarket_L1W', 'MarketCap_L1W', 'FreeCashFlowYield_L1W', 'FreeCashFlowYield_TTM_L1W', 'EarningsYield_L1W', 'EarningsYield_TTM_L1W', 'BookToMarket_L2W', 'MarketCap_L2W', 'FreeCashFlowYield_L2W', 'FreeCashFlowYield_TTM_L2W', 'EarningsYield_L2W', 'EarningsYield_TTM_L2W', 'GrossProfitability', 'GrossProfitability_TTM', 'OperatingMargin', 'OperatingMargin_TTM', 'ROA', 'ROA_TTM', 'AssetGrowth', 'InvestmentIntensity', 'Accruals', 'Accruals_TTM', 'DebtToAssets', 'WorkingCapitalScaled', 'GrossProfitability_L1Q', 'GrossProfitability_TTM_L1Q', 'OperatingMargin_L1Q', 'OperatingMargin_TTM_L1Q', 'ROA_L1Q', 'ROA_TTM_L1Q', 'AssetGrowth_L1Q', 'InvestmentIntensity_L1Q', 'Accruals_L1Q', 'Accruals_TTM_L1Q', 'DebtToAssets_L1Q', 'WorkingCapitalScaled_L1Q', 'GrossProfitability_L2Q', 'GrossProfitability_TTM_L2Q', 'OperatingMargin_L2Q', 'OperatingMargin_TTM_L2Q', 'ROA_L2Q', 'ROA_TTM_L2Q', 'AssetGrowth_L2Q', 'InvestmentIntensity_L2Q', 'Accruals_L2Q', 'Accruals_TTM_L2Q', 'DebtToAssets_L2Q', 'WorkingCapitalScaled_L2Q', 'NEWS_FINBERT_Granger_Score', 'NEWS_Sentiment_Mean']
 for col in nomi_metriche_ind:
     colonne_indicatori.append(Column(col, Float))
-indicatori_db = Table('indicatori', metadata, *colonne_indicatori)
+indicatori_db = Table('financial_statements_and_ratios', metadata, *colonne_indicatori)
 
 # Tabella Risultati (Ha due chiavi esterne che puntano entrambe a possibili_risultati)
-risultati_db = Table('risultati', metadata,
+risultati_db = Table('results', metadata, 
     Column('id_risultati', Integer, primary_key=True),
-    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
-    Column('id_calendario', Integer, ForeignKey('calendario.id_calendario')),
-    Column('id_best_model', Integer, ForeignKey('modelli.id_best_model')), # <--- MODIFICATO QUI: punta a 'modelli'
-    Column('AdjClosePrice_t+1', Integer, ForeignKey('possibili_risultati.id_result')), 
-    Column('predicted_AdjClosePrice_t+1', Integer, ForeignKey('possibili_risultati.id_result')), 
+    Column('id_azienda', Integer, ForeignKey('companies.id_azienda')),
+    Column('id_calendario', Integer, ForeignKey('calendar.id_calendario')),
+    Column('id_best_model', Integer, ForeignKey('models.id_best_model')), # <--- MODIFICATO QUI: punta a 'modelli'
+    Column('AdjClosePrice_t+1', Integer, ForeignKey('possible_results.id_result')), 
+    Column('predicted_AdjClosePrice_t+1', Integer, ForeignKey('possible_results.id_result')), 
     Column('predicted_probability', Float)
 )
 
 # --- NUOVA TABELLA: coefficiente_granger ---
 colonne_granger = [
     Column('id_granger', Integer, primary_key=True),
-    Column('id_azienda', Integer, ForeignKey('aziende.id_azienda')),
-    Column('id_settore', Integer, ForeignKey('settori.id_settore'))
+    Column('id_azienda', Integer, ForeignKey('companies.id_azienda')),
+    Column('id_settore', Integer, ForeignKey('sectors.id_settore'))
 ]
 
 
@@ -506,7 +530,7 @@ nomi_metriche_granger = [
 for col in nomi_metriche_granger:
     colonne_granger.append(Column(col, Float))
 
-coefficiente_granger_db = Table('coefficiente_granger', metadata, *colonne_granger)
+coefficiente_granger_db = Table('granger_coefficients', metadata, *colonne_granger)
 
 # ==========================================
 # 3. CREAZIONE TABELLE NEL DATABASE
@@ -526,26 +550,30 @@ print("Tabelle create con successo nel database PostgreSQL.")
 nomi_risultati.rename(columns={'id_nomi_risultati': 'id_result'}, inplace=True)
 
 # 4.1 Tabelle indipendenti (Genitori)
-calendario.to_sql('calendario', engine, if_exists='append', index=False)
-nomi_settori.rename(columns={'id_nomi_settori': 'id_settore'}).to_sql('settori', engine, if_exists='append', index=False)
-nomi_industie.rename(columns={'id_nomi_industie': 'id_industry'}).to_sql('industrie', engine, if_exists='append', index=False)
-nomi_risultati.to_sql('possibili_risultati', engine, if_exists='append', index=False)
-nomi_modelli.to_sql('modelli', engine, if_exists='append', index=False)
+calendario.to_sql('calendar', engine, if_exists='append', index=False)
+nomi_settori.rename(columns={'id_nomi_settori': 'id_settore'}).to_sql('sectors', engine, if_exists='append', index=False)
+nomi_industie.rename(columns={'id_nomi_industie': 'id_industry'}).to_sql('industries', engine, if_exists='append', index=False)
+nomi_risultati.to_sql('possible_results', engine, if_exists='append', index=False)
+nomi_modelli.to_sql('models', engine, if_exists='append', index=False)
 
 # 4.2 Tabella Intermedia
-aziende.to_sql('aziende', engine, if_exists='append', index=False)
+aziende.to_sql('companies', engine, if_exists='append', index=False)
 
 # 4.3 Tabelle dipendenti (Figli)
-mercato.to_sql('mercato', engine, if_exists='append', index=False)
-indicatori.to_sql('indicatori', engine, if_exists='append', index=False)
-articoli.to_sql('articoli', engine, if_exists='append', index=False)
-risultati.to_sql('risultati', engine, if_exists='append', index=False)
+mercato.to_sql('order_book', engine, if_exists='append', index=False)
+indicatori.to_sql('financial_statements_and_ratios', engine, if_exists='append', index=False)
+# PRIMA carichi gli articoli puliti (senza id_azienda)
+articoli.to_sql('articles', engine, if_exists='append', index=False)
+
+# POI carichi la tabella ponte che collega aziende e articoli
+df_company_articles.to_sql('company_articles', engine, if_exists='append', index=False)
+risultati.to_sql('results', engine, if_exists='append', index=False)
 
 # Rinomino la colonna per allinearla alla Foreign Key definita nello schema ('id_settore')
 granger.rename(columns={'id_nomi_settori': 'id_settore'}, inplace=True)
 
 # Scrittura nel database
-granger.to_sql('coefficiente_granger', engine, if_exists='append', index=False)
+granger.to_sql('granger_coefficients', engine, if_exists='append', index=False)
 
 print("Caricamento dei dati nel database relazionale completato!")
 # %%
@@ -564,13 +592,13 @@ SELECT
     m.delta_null_model,
     m.delta_always_one,
     m.delta_always_zero
-FROM risultati r
-JOIN aziende a ON r.id_azienda = a.id_azienda
-JOIN settori s ON a.id_settore = s.id_settore
-JOIN calendario c ON r.id_calendario = c.id_calendario
-JOIN modelli m ON r.id_best_model = m.id_best_model
-JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
-JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+FROM results r
+JOIN companies a ON r.id_company = a.id_company
+JOIN sectors s ON a.id_sector = s.id_sector
+JOIN calendar c ON r.id_calendar = c.id_calendar
+JOIN models m ON r.id_best_model = m.id_best_model
+JOIN possible_results pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possible_results pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
 WHERE pr_pred.label = 0
 ORDER BY r.predicted_probability DESC
 LIMIT 10;

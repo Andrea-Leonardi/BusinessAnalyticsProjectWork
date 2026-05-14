@@ -33,3 +33,52 @@
 [ RISULTATI ] -> < sono decodificati dai > -> [ POSSIBILI_RISULTATI ]
 
 
+
+-------------------------------------------------------------------------------------------------------------------
+
+(companies, sectors, industries): "Ogni società è classificata all'interno di un comparto settoriale specifico e fa capo a una determinata branca industriale."
+
+(order_book, companies, calendar): "Per ogni giorno di contrattazione, si memorizzano le metriche di mercato, come prezzo e volatilità, associate a una singola impresa."
+
+(articles, companies, calendar): "La copertura mediatica di una società viene catalogata raccogliendo le notizie pubblicate dalla stampa in determinati giorni e alle società a cui si riferiscono."
+
+(financial_statements_and_ratios, companies, calendar): "A cadenze temporali quadrimestrali, lo stato di salute finanziaria e patrimoniale di una società è quantificato tramite una serie di metriche e ratio di bilancio."
+
+(results, models, companies, calendar): "Per ogni azienda e data, la tabella dei risultati confronta la direzione futura del prezzo predetta dal miglior modello per quel settore con quella realmente osservata sul mercato, includendo la probabilità stimata dall'algoritmo."
+
+(granger_coefficients, companies, sectors): "Per ogni azienda, si misurano le relazioni di causalità tramite un modello VAR, dove la variabile dipendente è AdjClosePrice e le indipendenti sono i punteggi di sentiment FinBERT (positivo, negativo, neutrale) e AdjClosePrice ritardati di uno e due periodi, i risultati quantificano l'impatto predittivo del sentiment sui prezzi azionari, registrando i coefficienti per i primi due lag storici e la loro significatività statistica (p-value)"
+
+(results, possible_results): "Per garantire la normalizzazione, i valori predetti e quelli realmente osservati sul mercato nei risultati puntano a un'unica tabella dizionario che mappa gli esiti in rialzi o ribassi."
+
+
+1. Collegamento: companies e sectors
+[ companies ] -> < appartengono ai > -> [ sectors ]
+
+2. Collegamento: companies e industries
+[ companies ] -> < operano nelle > -> [ industries ]
+
+3. Collegamento: order_book e companies
+[ order_book ] -> < traccia l'andamento dei prezzi delle> -> [ companies ]
+
+4. Collegamento: articles e companies
+[ articles ] -> < si riferiscono alle > -> [ companies ]
+
+5. Collegamento: financial_statements_and_ratios e companies
+[ financial_statements_and_ratios ] -> < valutano i fondamentali delle > -> [ companies ]
+
+6. Collegamento "Universale" con calendar
+(Tutte le tue tabelle dei fatti — order_book, articles, financial_statements_and_ratios, results — si collegano a calendar. Scegli il verbo che preferisci per il disegno)
+[ TABELLA_X ] -> < si osserva nel > -> [ calendar ]
+
+7. Collegamento: results e models
+[ results ] -> < sono generati dai > -> [ models ]
+
+8. Collegamento: results e companies
+[ results ] -> < fanno previsioni sulle > -> [ companies ]
+(Attenzione a questo qui sotto: ricordati che la tabella results ha due frecce verso possible_results!)
+
+9. Collegamento: granger_coefficients e companies
+[ granger_coefficients ] -> < misurano la causalità delle > -> [ companies ]
+
+10. Collegamento: results e possible_results
+[ results ] -> < sono decodificati dai > -> [ possible_results ]

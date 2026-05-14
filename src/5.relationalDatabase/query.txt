@@ -11,22 +11,22 @@ SELECT
     c.date,
     pr_actual.result AS actual_value,
     pr_pred.result AS predicted_value,
-    r.predicted_probability,
+    ROUND(r.predicted_probability::numeric, 6) AS predicted_probability,
     m.best_model,
     m.test_accuracy,
     m.delta_null_model,
     m.delta_always_one,
     m.delta_always_zero,
-	ind."NEWS_FINBERT_Granger_Score",
-    ind."NEWS_Sentiment_Mean"
-FROM risultati r
-JOIN aziende a ON r.id_azienda = a.id_azienda
-JOIN settori s ON a.id_settore = s.id_settore
-JOIN calendario c ON r.id_calendario = c.id_calendario
-JOIN modelli m ON r.id_best_model = m.id_best_model
-JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
-JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
-JOIN indicatori ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
+    ROUND(ind."NEWS_FINBERT_Granger_Score"::numeric, 6) AS "NEWS_FINBERT_Granger_Score",
+    ROUND(ind."NEWS_Sentiment_Mean"::numeric, 6) AS "NEWS_Sentiment_Mean"
+FROM results r
+JOIN companies a ON r.id_azienda = a.id_azienda
+JOIN sectors s ON a.id_settore = s.id_settore
+JOIN calendar c ON r.id_calendario = c.id_calendario
+JOIN models m ON r.id_best_model = m.id_best_model
+JOIN possible_results pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possible_results pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+JOIN financial_statements_and_ratios ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
 WHERE pr_pred.label = 0
 ORDER BY r.predicted_probability DESC
 LIMIT 10;
@@ -45,22 +45,22 @@ SELECT
     c.date,
     pr_actual.result AS actual_value,
     pr_pred.result AS predicted_value,
-    r.predicted_probability,
+    ROUND(r.predicted_probability::numeric, 6) AS predicted_probability,
     m.best_model,
     m.test_accuracy,
     m.delta_null_model,
     m.delta_always_one,
     m.delta_always_zero,
-	ind."NEWS_FINBERT_Granger_Score",
-    ind."NEWS_Sentiment_Mean"
-FROM risultati r
-JOIN aziende a ON r.id_azienda = a.id_azienda
-JOIN settori s ON a.id_settore = s.id_settore
-JOIN calendario c ON r.id_calendario = c.id_calendario
-JOIN modelli m ON r.id_best_model = m.id_best_model
-JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
-JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
-JOIN indicatori ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
+    ROUND(ind."NEWS_FINBERT_Granger_Score"::numeric, 6) AS "NEWS_FINBERT_Granger_Score",
+    ROUND(ind."NEWS_Sentiment_Mean"::numeric, 6) AS "NEWS_Sentiment_Mean"
+FROM results r
+JOIN companies a ON r.id_azienda = a.id_azienda
+JOIN sectors s ON a.id_settore = s.id_settore
+JOIN calendar c ON r.id_calendario = c.id_calendario
+JOIN models m ON r.id_best_model = m.id_best_model
+JOIN possible_results pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possible_results pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+JOIN financial_statements_and_ratios ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
 WHERE pr_pred.label = 1
 ORDER BY r.predicted_probability DESC
 LIMIT 10;
@@ -78,21 +78,21 @@ SELECT
     c.date,
     pr_actual.result AS actual_value,
     pr_pred.result AS predicted_value,
-    r.predicted_probability,
+    ROUND(r.predicted_probability::numeric, 6) AS predicted_probability,
     m.best_model,
     m.test_accuracy,
     m.delta_null_model,
     m.delta_always_one,
     m.delta_always_zero,
-    ind."NEWS_FINBERT_Granger_Score",
-    ind."NEWS_Sentiment_Mean"
-FROM risultati r
-JOIN aziende a ON r.id_azienda = a.id_azienda
-JOIN settori s ON a.id_settore = s.id_settore
-JOIN calendario c ON r.id_calendario = c.id_calendario
-JOIN modelli m ON r.id_best_model = m.id_best_model
-JOIN possibili_risultati pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
-JOIN possibili_risultati pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
-JOIN indicatori ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
+    ROUND(ind."NEWS_FINBERT_Granger_Score"::numeric, 6) AS "NEWS_FINBERT_Granger_Score",
+    ROUND(ind."NEWS_Sentiment_Mean"::numeric, 6) AS "NEWS_Sentiment_Mean"
+FROM results r
+JOIN companies a ON r.id_azienda = a.id_azienda
+JOIN sectors s ON a.id_settore = s.id_settore
+JOIN calendar c ON r.id_calendario = c.id_calendario
+JOIN models m ON r.id_best_model = m.id_best_model
+JOIN possible_results pr_actual ON r."AdjClosePrice_t+1" = pr_actual.id_result
+JOIN possible_results pr_pred ON r."predicted_AdjClosePrice_t+1" = pr_pred.id_result
+JOIN financial_statements_and_ratios ind ON r.id_azienda = ind.id_azienda AND r.id_calendario = ind.id_calendario
 ORDER BY ABS(r.predicted_probability - 0.5) ASC
 LIMIT 10;
