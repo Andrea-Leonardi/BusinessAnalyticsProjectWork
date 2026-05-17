@@ -21,6 +21,7 @@ SIDE_MARGIN_LEFT = 0.14
 SIDE_MARGIN_RIGHT = 0.07
 CARD_GAP = 0.015
 CARD_COUNT = 3
+ROWS_SCALE = 1_000
 
 
 def parse_args() -> argparse.Namespace:
@@ -193,22 +194,123 @@ def collect_git_metrics() -> tuple[int, int, pd.DataFrame, pd.Timestamp, pd.Time
     return total_commits, active_days, daily_df, start_date, end_date
 
 
-def collect_company_universe_metrics() -> pd.DataFrame:
-    selected_companies = len(list(cfg.RAW_NEWS_DATA.glob("*.csv")))
+def count_csv_data_rows(path: Path) -> int:
+    with path.open("r", encoding="utf-8-sig", errors="ignore", newline="") as handle:
+        return max(sum(1 for _ in handle) - 1, 0)
+
+
+def collect_company_universe_metrics() -> dict[str, object]:
     universe_df = pd.read_csv(cfg.COMPANY_SELECTION_UNIVERSE)
-    total_possible_companies = len(universe_df)
+    total_analyzed_news = count_csv_data_rows(cfg.NEWS_ARTICLES)
     total_csv_datasets = sum(1 for path in cfg.DATA.rglob("*.csv") if path.is_file())
-    return pd.DataFrame(
-        [
-            {"Artifact": "Selected companies", "Count": selected_companies},
-            {"Artifact": "Total analyzed companies", "Count": total_possible_companies},
-            {"Artifact": "Total CSV datasets", "Count": total_csv_datasets},
-        ]
-    )
+    return {
+        "total_analyzed_companies": len(universe_df),
+        "total_csv_datasets": total_csv_datasets,
+        "total_analyzed_news": total_analyzed_news,
+        "total_analyzed_news_thousands": total_analyzed_news / ROWS_SCALE,
+    }
 
 
 def format_date_range(start_date: pd.Timestamp, end_date: pd.Timestamp) -> str:
     return f"{start_date.strftime('%b %Y')} - {end_date.strftime('%b %Y')}"
+
+
+def draw_axis_card(
+    ax: plt.Axes,
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    title: str,
+    value: str,
+    subtitle: str,
+    palette: dict[str, str],
+    accent_color: str,
+    value_size: int,
+) -> None:
+    rect = Rectangle(
+        (x, y),
+        width,
+        height,
+        transform=ax.transAxes,
+        facecolor=palette["panel_alt"],
+        edgecolor=accent_color,
+        linewidth=1.6,
+    )
+    ax.add_patch(rect)
+    ax.text(
+        x + width * 0.06,
+        y + height * 0.70,
+        title,
+        transform=ax.transAxes,
+        color=palette["text"],
+        fontsize=13,
+        fontweight="bold",
+        va="center",
+    )
+    ax.text(
+        x + width * 0.06,
+        y + height * 0.34,
+        value,
+        transform=ax.transAxes,
+        color=accent_color,
+        fontsize=value_size,
+        fontweight="bold",
+        va="center",
+    )
+
+
+def draw_company_dataset_cards(
+    ax: plt.Axes,
+    metrics: dict[str, object],
+    palette: dict[str, str],
+) -> None:
+    ax.set_title("Number of companies and datasets analyzed", pad=10)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.grid(False)
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+
+    draw_axis_card(
+        ax,
+        0.04,
+        0.57,
+        0.92,
+        0.34,
+        "Total analyzed companies",
+        f"{metrics['total_analyzed_companies']:,}",
+        "Companies in the selection universe",
+        palette,
+        palette["accent_2"],
+        33,
+    )
+    draw_axis_card(
+        ax,
+        0.04,
+        0.12,
+        0.43,
+        0.32,
+        "Total CSV datasets",
+        f"{metrics['total_csv_datasets']:,}",
+        "CSV files stored under data/",
+        palette,
+        palette["accent_4"],
+        25,
+    )
+    draw_axis_card(
+        ax,
+        0.53,
+        0.12,
+        0.43,
+        0.32,
+        "Total analyzed news",
+        f"{metrics['total_analyzed_news_thousands']:.1f}k",
+        "Rows in newsArticles.csv",
+        palette,
+        palette["accent"],
+        25,
+    )
 
 
 def build_dashboard(output_path: Path) -> None:
@@ -218,7 +320,7 @@ def build_dashboard(output_path: Path) -> None:
 
     loc_by_area, total_loc, total_py_files = collect_python_code_metrics()
     total_commits, active_days, daily_df, start_date, end_date = collect_git_metrics()
-    assets_df = collect_company_universe_metrics()
+    assets_metrics = collect_company_universe_metrics()
 
     fig = plt.figure(figsize=(16, 9), dpi=160)
     fig.patch.set_facecolor(palette["figure_bg"])
@@ -312,32 +414,7 @@ def build_dashboard(output_path: Path) -> None:
             fontweight="bold",
         )
 
-    asset_colors = [palette["accent"], palette["accent_2"], palette["accent_4"]]
-    ax_assets.barh(
-        assets_df["Artifact"],
-        assets_df["Count"],
-        color=asset_colors,
-        alpha=0.92,
-    )
-    ax_assets.set_title("Number of companies and datasets analyzed")
-    ax_assets.set_xlabel("count")
-    ax_assets.set_ylabel("")
-    max_asset_count = assets_df["Count"].max()
-    ax_assets.set_xlim(0, max_asset_count * 1.08)
-    for _, row in assets_df.iterrows():
-        padding = max_asset_count * 0.05
-        label_x = max(row["Count"] - padding, row["Count"] * 0.45)
-        font_size = 12 if row["Count"] >= max_asset_count * 0.20 else 10
-        ax_assets.text(
-            label_x,
-            row["Artifact"],
-            f"{int(row['Count']):,}",
-            va="center",
-            ha="right",
-            color=palette["panel_bg"],
-            fontsize=font_size,
-            fontweight="bold",
-        )
+    draw_company_dataset_cards(ax_assets, assets_metrics, palette)
 
     ax_timeline.plot(
         daily_df["Date"],
