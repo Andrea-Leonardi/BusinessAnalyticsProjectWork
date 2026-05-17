@@ -1,0 +1,43 @@
+"companyName","Ticker","sector","date","actual_value","predicted_value","predicted_probability","best_model","test_accuracy","delta_null_model","delta_always_one","delta_always_zero","NEWS_FINBERT_Granger_Score","NEWS_Sentiment_Mean"
+"Equinix, Inc.","EQIX","Real Estate","2026-03-13","Down","Down",0.810993,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,-0.960056,-0.037500
+"Equinix, Inc.","EQIX","Real Estate","2026-03-06","Up","Down",0.804392,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,0.146224,-0.053475
+"Simon Property Group, Inc.","SPG","Real Estate","2026-01-23","Up","Down",0.740243,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,0.854676,-0.614600
+"Equinix, Inc.","EQIX","Real Estate","2026-03-27","Up","Down",0.733236,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,1.719070,0.015900
+"Equinix, Inc.","EQIX","Real Estate","2026-02-27","Down","Down",0.721662,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,0.613630,0.754167
+"Public Storage","PSA","Real Estate","2026-02-13","Up","Down",0.714871,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,2.203005,-0.063000
+"Equinor ASA","EQNR","Energy","2026-03-20","Down","Down",0.705262,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.827110,0.139925
+"CoStar Group, Inc.","CSGP","Real Estate","2026-02-06","Down","Down",0.695515,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,-0.803026,-0.279300
+"ConocoPhillips","COP","Energy","2026-03-13","Up","Down",0.681452,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,1.525779,0.890200
+"Simon Property Group, Inc.","SPG","Real Estate","2026-01-30","Up","Down",0.676673,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,-1.416514,-0.050300
+"ConocoPhillips","COP","Energy","2026-01-30","Up","Down",0.676017,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.116539,0.912100
+"CoStar Group, Inc.","CSGP","Real Estate","2026-01-30","Down","Down",0.666652,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,-1.325996,0.506500
+"Equinor ASA","EQNR","Energy","2026-03-27","Up","Down",0.662562,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.246786,-0.076250
+"Exxon Mobil Corporation","XOM","Energy","2026-03-27","Down","Down",0.662243,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.635533,0.261464
+"ConocoPhillips","COP","Energy","2026-03-27","Down","Down",0.659485,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.597142,0.643267
+"PayPal Holdings, Inc.","PYPL","Financial Services","2026-02-13","Up","Down",0.649049,"random_forest",0.586207,0.149425,0.149425,0.022989,-0.659554,0.271875
+"PayPal Holdings, Inc.","PYPL","Financial Services","2026-02-27","Up","Down",0.645873,"random_forest",0.586207,0.149425,0.149425,0.022989,0.869165,-0.282565
+"PayPal Holdings, Inc.","PYPL","Financial Services","2026-02-20","Up","Down",0.643341,"random_forest",0.586207,0.149425,0.149425,0.022989,0.895224,-0.044050
+"Shell plc","SHEL","Energy","2026-03-13","Up","Down",0.642312,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,1.267741,0.358150
+"NextEra Energy, Inc.","NEE","Utilities","2026-03-27","Up","Down",0.640834,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,-0.868916,0.298400
+"PayPal Holdings, Inc.","PYPL","Financial Services","2026-02-06","Down","Down",0.638771,"random_forest",0.586207,0.149425,0.149425,0.022989,-0.825637,-0.235133
+"Simon Property Group, Inc.","SPG","Real Estate","2026-02-06","Down","Down",0.634011,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,0.656152,0.205435
+"NextEra Energy, Inc.","NEE","Utilities","2026-01-30","Up","Down",0.633921,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,0.535332,0.388820
+"Shell plc","SHEL","Energy","2026-03-27","Up","Down",0.630041,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.161477,0.010100
+"Exxon Mobil Corporation","XOM","Energy","2026-03-20","Up","Down",0.625938,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.571816,0.276513
+"Shell plc","SHEL","Energy","2026-03-20","Up","Down",0.622180,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.120266,-0.090700
+"ConocoPhillips","COP","Energy","2026-03-20","Up","Down",0.621148,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.155891,0.096511
+"Shell plc","SHEL","Energy","2026-01-16","Down","Down",0.621102,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.877582,0.683450
+"Exxon Mobil Corporation","XOM","Energy","2026-02-06","Up","Down",0.620639,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.717962,0.250213
+"Petróleo Brasileiro S.A. - Petrobras","PBR","Energy","2026-03-20","Up","Down",0.618477,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.408963,0.691467
+"Chevron Corporation","CVX","Energy","2026-03-27","Down","Down",0.615167,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.381178,0.263353
+"Enterprise Products Partners L.P.","EPD","Energy","2026-03-20","Up","Down",0.614988,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.020091,0.843650
+"American Tower Corporation","AMT","Real Estate","2026-02-13","Down","Down",0.614988,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,1.738245,-0.004300
+"Equinix, Inc.","EQIX","Real Estate","2026-03-20","Up","Down",0.611543,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,-0.498773,0.841900
+"TotalEnergies SE","TTE","Energy","2026-02-13","Up","Down",0.608530,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-1.523401,0.544800
+"NextEra Energy, Inc.","NEE","Utilities","2026-01-23","Up","Down",0.608120,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,0.408669,0.472375
+"TotalEnergies SE","TTE","Energy","2026-02-06","Up","Down",0.608106,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.329756,0.710860
+"Exxon Mobil Corporation","XOM","Energy","2026-01-30","Up","Down",0.607433,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.301784,0.237577
+"BP p.l.c.","BP","Energy","2026-03-27","Up","Down",0.606137,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.542366,-0.955400
+"Chevron Corporation","CVX","Energy","2026-02-13","Up","Down",0.604510,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.218125,0.559029
+"BP p.l.c.","BP","Energy","2026-01-02","Down","Down",0.600645,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,0.562930,0.098550
+"ConocoPhillips","COP","Energy","2026-02-13","Down","Down",0.600334,"logistic_regression",0.318841,-0.478261,-0.478261,0.115942,-0.831613,0.355750

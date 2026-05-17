@@ -1,0 +1,23 @@
+"companyName","Ticker","sector","date","actual_value","predicted_value","predicted_probability","best_model","test_accuracy","delta_null_model","delta_always_one","delta_always_zero","NEWS_FINBERT_Granger_Score","NEWS_Sentiment_Mean"
+"Duke Energy Corporation","DUK","Utilities","2026-02-20","Up","Up",0.842498,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,0.636748,0.033200
+"Duke Energy Corporation","DUK","Utilities","2026-02-13","Down","Up",0.821924,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,2.846699,0.081820
+"Duke Energy Corporation","DUK","Utilities","2026-02-06","Up","Up",0.819787,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,0.178720,-0.277700
+"Crown Castle Inc.","CCI","Real Estate","2026-02-20","Up","Up",0.755799,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,1.006029,0.339200
+"Crown Castle Inc.","CCI","Real Estate","2026-02-06","Up","Up",0.750089,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,-1.398557,0.029962
+"CoStar Group, Inc.","CSGP","Real Estate","2026-03-20","Down","Up",0.747212,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,0.166275,0.017200
+"Eversource Energy","ES","Utilities","2026-03-06","Down","Up",0.698538,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,0.906536,0.014700
+"Meta Platforms, Inc.","META","Communication Services","2026-03-27","Up","Up",0.646298,"neural_network",0.509434,0.04717,0.04717,-0.028302,-0.097778,0.021481
+"Welltower Inc.","WELL","Real Estate","2026-03-06","Up","Up",0.642204,"lasso_logistic",0.521739,0.130435,-0.086957,0.130435,-1.069995,0.673750
+"Meta Platforms, Inc.","META","Communication Services","2026-03-20","Down","Up",0.637861,"neural_network",0.509434,0.04717,0.04717,-0.028302,-0.655598,0.048984
+"Meta Platforms, Inc.","META","Communication Services","2026-02-27","Down","Up",0.633921,"neural_network",0.509434,0.04717,0.04717,-0.028302,0.866369,0.115886
+"Meta Platforms, Inc.","META","Communication Services","2026-03-13","Down","Up",0.633890,"neural_network",0.509434,0.04717,0.04717,-0.028302,0.862583,0.043436
+"Meta Platforms, Inc.","META","Communication Services","2026-02-06","Down","Up",0.631384,"neural_network",0.509434,0.04717,0.04717,-0.028302,-0.480369,-0.053000
+"Meta Platforms, Inc.","META","Communication Services","2026-03-06","Down","Up",0.630052,"neural_network",0.509434,0.04717,0.04717,-0.028302,0.901507,0.099669
+"Meta Platforms, Inc.","META","Communication Services","2026-02-13","Up","Up",0.626296,"neural_network",0.509434,0.04717,0.04717,-0.028302,-0.347653,0.020900
+"Meta Platforms, Inc.","META","Communication Services","2026-02-20","Down","Up",0.624332,"neural_network",0.509434,0.04717,0.04717,-0.028302,-1.459899,-0.044813
+"Eversource Energy","ES","Utilities","2026-03-13","Down","Up",0.615688,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,-0.337693,0.334233
+"Meta Platforms, Inc.","META","Communication Services","2026-01-30","Down","Up",0.614743,"neural_network",0.509434,0.04717,0.04717,-0.028302,0.483923,0.207903
+"Duke Energy Corporation","DUK","Utilities","2026-02-27","Up","Up",0.611712,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,1.896159,-0.277700
+"Exelon Corporation","EXC","Utilities","2026-03-06","Up","Up",0.609278,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,1.548154,0.903700
+"Exelon Corporation","EXC","Utilities","2026-03-13","Down","Up",0.602984,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,0.628306,0.386250
+"NextEra Energy, Inc.","NEE","Utilities","2026-02-20","Up","Up",0.602189,"lasso_logistic",0.478261,-0.130435,-0.130435,0.086957,0.517344,0.031400
