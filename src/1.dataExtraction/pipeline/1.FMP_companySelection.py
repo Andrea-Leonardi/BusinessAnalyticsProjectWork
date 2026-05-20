@@ -13,6 +13,7 @@ Questa struttura serve a evitare download inutili quando vuoi solo:
 - rigenerare enterprises.csv dopo piccole modifiche di selezione.
 """
 
+import os
 import sys
 import threading
 import time
@@ -37,7 +38,7 @@ DELISTED_COMPANIES_URL = f"{FMP_API_BASE_URL}/delisted-companies"
 PROFILE_URL = f"{FMP_API_BASE_URL}/profile"
 HISTORICAL_MARKET_CAP_URL = f"{FMP_API_BASE_URL}/historical-market-capitalization"
 
-FMP_API_KEY = "af6MfImMPNcg8od1SarpRna0ZY61vZT7"
+FMP_API_KEY = os.getenv("FMP_API_KEY", "").strip()
 US_EXCHANGES = ["NASDAQ", "NYSE"]
 
 # Se False e il CSV cache esiste gia, il codice non riscarica l'universo
@@ -521,6 +522,11 @@ def download_delisted_candidates() -> pd.DataFrame:
 
 
 def build_and_save_company_selection_universe() -> pd.DataFrame:
+    if not FMP_API_KEY:
+        raise EnvironmentError(
+            "Set the FMP_API_KEY environment variable before refreshing the company universe."
+        )
+
     # Questa e la fase costosa: scarico tutto l'universo completo, calcolo la
     # market cap storica e salvo il risultato su CSV locale.
     active_candidates = download_active_candidates()

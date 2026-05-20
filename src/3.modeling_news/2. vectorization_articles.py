@@ -96,10 +96,10 @@ if __name__ == "__main__":
     main()
     
 
-# Chiamiamo la funzione che hai scritto nel tuo script
+# Caricamento del Financial PhraseBank.
 training_df = load_phrasebank_dataframe()
 
-# Ora puoi vederlo!
+# Controllo rapido delle prime righe.
 print(training_df[['sentence', 'label', 'label_id']].head(10))
 
 training_df.to_csv(cfg.TRAINING_ARTICLES, index=False, encoding='utf-8-sig')
@@ -264,17 +264,16 @@ print(df[['ID', 'Ticker', 'Date', 'Summary']].head())
 # -------------------------------------------------------------------------
 # VETTORIZZAZIONE DELLE NEWS (INFERENCE)
 # -------------------------------------------------------------------------
-# IMPORTANTE: NON re-inizializzare TfidfVectorizer o CountVectorizer qui!
-# Usiamo le variabili 'tfidf_vectorizer' e 'bow_vectorizer' che hai 
-# addestrato sulle 4846 righe del Financial PhraseBank nei passaggi prima.
+# Non re-inizializzare TfidfVectorizer o CountVectorizer in questa fase:
+# si riusano gli oggetti addestrati sul Financial PhraseBank.
 
-# Trasforma le news usando IL VOCABOLARIO IMPARATO DAL PHRASEBANK (le tue 2464 parole)
+# Trasforma le news usando il vocabolario appreso dal Financial PhraseBank.
 tfidf_matrix = tfidf_vectorizer.transform(df['Summary'])
 
 # Converti la matrice in un DataFrame
 tf_idf_df = pd.DataFrame(
     tfidf_matrix.toarray(), 
-    columns=tfidf_vectorizer.get_feature_names_out(), # Saranno magicamente le 2464 parole!
+    columns=tfidf_vectorizer.get_feature_names_out(),
     index=df.index
 )
 

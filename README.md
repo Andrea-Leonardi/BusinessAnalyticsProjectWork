@@ -164,10 +164,11 @@ For GPU support on Windows, `requirements.txt` also documents the alternative in
 
 Used by the scripts under `src/1.dataExtraction/pipeline/`.
 
-Current code status:
+The scripts read the key from the environment:
 
-- the FMP key is currently defined directly inside the Python files;
-- for proper project usage, you should replace it with your own key before running the pipeline.
+```powershell
+$env:FMP_API_KEY="..."
+```
 
 ### Alpaca News API
 
@@ -244,7 +245,6 @@ For methodology details and code notes:
 
 ## Known limitations
 
-- some external credentials are still handled in a suboptimal way and should be moved out of the code;
 - part of the repository still contains exported notebooks, legacy scripts, and experimental artifacts;
 - the news pipeline depends on local availability of the Hugging Face models;
 - the classical modeling pipeline requires an explicit change to `SECTOR_FILTER` to switch sectors.

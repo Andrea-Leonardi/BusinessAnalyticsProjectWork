@@ -909,7 +909,7 @@ print(final_model)
 summary(final_model, (63,))
 # %%
 #%%
-# ... (tutta la tua parte di import e preparazione dei tensori rimane uguale) ...
+# Preparazione dei tensori gia definita nelle celle precedenti.
 
 # Controlliamo il bilanciamento delle classi nel test set
 class_1_ratio = (y_test == 1).sum() / len(y_test)
@@ -932,10 +932,10 @@ def objective(trial):
     h1 = trial.suggest_int('units_l1', 16, 64) 
     h2 = trial.suggest_int('units_l2', 8, 32)  
     
-    # ATTENZIONE 1: Learning rate abbassato. Adam lavora bene tra 1e-4 e 1e-2.
+    # Learning rate ridotto: Adam lavora bene tra 1e-4 e 1e-2.
     lr = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
     
-    # ATTENZIONE 2: Usiamo input_dim (che nel tuo caso è 7) invece di hardcodare il numero
+    # Uso di input_dim per evitare di fissare manualmente il numero di feature.
     model = nn.Sequential(
         nn.Linear(input_dim, h1),
         nn.ReLU(),        
@@ -961,7 +961,7 @@ def objective(trial):
             loss.backward()
             optimizer.step()
     
-    # ATTENZIONE 3: Calcoliamo l'accuratezza SOLO alla fine di tutte le epoche per questo trial
+    # Accuratezza calcolata alla fine di tutte le epoche del trial.
     acc = accuratezza_test(model, x_test_tensor, y_test_tensor, silenzioso=True) 
     
     return acc
@@ -973,12 +973,12 @@ print("Migliori parametri trovati:", study.best_params)
 print("Migliore accuratezza:", study.best_value)
 
 #%%
-# --- ATTENZIONE 4: CORREZIONE DEL MODELLO FINALE ---
+# --- CORREZIONE DEL MODELLO FINALE ---
 best_p = study.best_params
 
 # Deve rispecchiare esattamente la struttura che avevi dentro 'objective'
 final_model = nn.Sequential(
-    nn.Linear(input_dim, best_p['units_l1']), # input_dim = 7 (le tue variabili)
+    nn.Linear(input_dim, best_p['units_l1']),
     nn.BatchNorm1d(best_p['units_l1']),
     nn.LeakyReLU(0.1),
     nn.Dropout(0.2),
