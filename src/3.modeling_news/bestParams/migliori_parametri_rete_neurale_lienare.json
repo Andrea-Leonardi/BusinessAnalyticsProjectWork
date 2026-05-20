@@ -1,6 +1,6 @@
 {
     "best_trial_number": 346,
-    "best_accuracy": 0.7391752577319588,
+    "best_accuracy": 0.7491752577319588,
     "best_params": {
         "learning_rate": 2.21670045464329e-05,
         "units_l1": 564
