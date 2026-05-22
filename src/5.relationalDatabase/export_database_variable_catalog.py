@@ -17,7 +17,7 @@ DEFAULT_DB_SETTINGS = {
     "port": "5432",
     "name": "project_business_analytics",
     "user": "postgres",
-    "password": "Gorilla2026!",
+    "password": "",
     "sslmode": None,
 }
 

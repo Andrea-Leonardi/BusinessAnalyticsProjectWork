@@ -98,10 +98,10 @@ if __name__ == "__main__":
     main()
     
 
-# Chiamiamo la funzione che hai scritto nel tuo script
+# Caricamento del Financial PhraseBank.
 phrasebank_df = load_phrasebank_dataframe()
 
-# Ora puoi vederlo!
+# Controllo rapido delle prime righe.
 print(phrasebank_df[['sentence', 'label', 'label_id']].head(10))
 
 # %%

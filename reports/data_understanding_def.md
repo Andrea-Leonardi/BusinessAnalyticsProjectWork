@@ -5,27 +5,27 @@
 
 1.1 Context & Problem Statement
 
-Predicting stock movements is a constant tug-of-war between the Efficient Market Hypothesis (EMH), which views price changes as a "random walk," and technical analysis, which seeks exploitable patterns in historical data [4]. Traditionally, fundamental and technical analyses are treated as separate silos and processed manually. This creates a significant "latency gap"—human analysts simply cannot process the massive volume of multi-modal data (news, financials, and price action) fast enough to keep up with 2026's high-frequency market environment.
+Predicting stock movements requires combining different views of market behavior. The Efficient Market Hypothesis (EMH) treats price changes as difficult to forecast, while technical and fundamental analysis search for recurring patterns in market and company data [4]. This project focuses on the operational problem of processing price data, financial statements, and news sentiment in a single weekly modeling pipeline.
 
 However, the need to process multi-modal data such as news stems not only from a need for speed but from a fundamental shift in our understanding of market dynamics. The classical view of the EMH, which assumes markets are populated exclusively by perfectly rational agents, has been heavily challenged by behavioral finance. Barberis and Thaler [10] highlight how "limits to arbitrage" prevent rational investors from immediately correcting price distortions. They note that the absence of profitable investment strategies does not imply the absence of mispricing: prices can be wrong for a long time, especially where trading costs discourage arbitrageurs. Financial decisions, as argued by Akerlof and Shiller [8], are deeply driven by animal spirits. Echoing Keynes, they emphasize that in the face of uncertainty about future returns, human decisions are not the result of a weighted average of quantitative probabilities, but rather a "spontaneous urge to action" driven by emotions, confidence, and collective narratives.
 
 This emotional component has a structural impact on asset pricing. De Long et al. [7] demonstrated that noise traders (irrational investors driven by sentiment) introduce a specific risk into the market that drives prices away from their fundamental values. Surprisingly, because rational arbitrageurs cannot fully counter this risk, noise traders can even earn higher expected returns than sophisticated investors, being compensated for the risk they themselves create. Consequently, early-period investor sentiment becomes a crucial and predictive variable for understanding the cross-section of future returns.
 
-In the digital age, these animal spirits and the actions of noise traders leave a measurable footprint. Bollen et al. [9] empirically proved that collective public mood, extracted from massive streams of online textual data (such as millions of tweets), possesses real predictive power over stock market indices like the DJIA. Their study reveals a fundamental detail: a simple one-dimensional approach (positive versus negative) is often not enough. It is by measuring mood along specific psychological dimensions (such as "Calm" or "Happiness," using multi-dimensional tools) that the accuracy of predictive models improves significantly. Therefore, to overcome the "latency gap" and accurately predict market movements, a modern model cannot rely solely on historical price data; it must systematically and deeply quantify collective sentiment.
+In the digital age, these animal spirits and the actions of noise traders leave a measurable footprint. Bollen et al. [9] empirically proved that collective public mood, extracted from massive streams of online textual data (such as millions of tweets), possesses real predictive power over stock market indices like the DJIA. Their study reveals a fundamental detail: a simple one-dimensional approach (positive versus negative) is often not enough. It is by measuring mood along specific psychological dimensions (such as "Calm" or "Happiness," using multi-dimensional tools) that the accuracy of predictive models improves significantly. For this reason, the project also quantifies sentiment extracted from financial news and aligns it with the weekly stock panel.
 
 1.2 Project Goals
 
-The main goal of this project (StockPulse) is to help investors make better decisions faster and more accurately. Rather than using a regression approach to predict the exact price at time t+1 (using weekly frequency data)—which often introduces excessive noise—we framed the task as a binary classification problem. We used a binary response variable that takes the value of 0 if the price decreases in the following week, and 1 if it increases. Therefore, our goal is simply to predict 0 or 1 to provide a reliable edge for weekly capital allocation. By selecting the top 10 companies for each of the 11 GICS sectors based on their market capitalization at the beginning of the period (2021), we ensure our analysis avoids survivorship bias and that our insights are driven by universal market laws rather than industry-specific bubbles. To safeguard against unrepeatable volatility, we deliberately focused our modeling on the 2021–2026 period, filtering out the 2020 COVID-19 "Black Swan" to align with modern market regimes.
+The main goal of this project (StockPulse) is to predict whether each stock price will increase in the following week. Rather than using a regression approach to predict the exact price at time t+1, the task is framed as binary classification. The response variable is 0 if the price decreases in the following week and 1 if it increases. By selecting the top 10 companies for each of the 11 GICS sectors based on their market capitalization at the beginning of the period (2021), the project reduces look-ahead bias in the company universe. The modeling window starts in 2021, so the 2020 COVID-19 crash is outside the training sample.
 
 **2. Market Context & Evolution**
 
 2.1 Methodology Shift (1960s – 2026)
 
-We have moved past the eras of manual charting (1960s) and basic linear statistics like ARIMA (1980s). While machine learning (Random Forest, SVM) improved results after 2000, the 2026 standard is Multi-Modal Deep Learning. Today, a competitive model must automate Financial Sentiment Analysis (FSA) to capture market psychology directly from news feeds [1].
+The project compares traditional machine learning models with neural network approaches and uses Financial Sentiment Analysis (FSA) to add information from news text to the tabular price and fundamental data [1].
 
 2.2 Current Industry Standards
 
-Leading research in 2025-2026 shows that simple price tracking is no longer enough. Our project focuses on two modern priorities:
+Recent research shows that price data alone may miss relevant information contained in fundamentals and textual signals. The project therefore focuses on two modeling priorities:
 
 Time-Frequency Fusion: Using Fourier Transforms to find hidden cycles and seasonal patterns in price data [2].
 
@@ -37,7 +37,7 @@ Tools: We extracted all financial statements and financial information from FMP,
 
 Constraints: To handle API limits, we built a SharedRateLimiter to keep data flow consistent.
 
-Risk Mitigation: Our primary focus is on maintaining temporal integrity. The 2026 test data were strictly isolated to ensure the model doesn't "peek" into the future during training.
+Risk Mitigation: The 2026 test data were isolated from training and validation to reduce temporal leakage.
 
 **3. Data Mining Goals**
 
@@ -75,7 +75,7 @@ Deployment: Exporting weekly predictions (best_model_predictions_per_company.csv
 4.1 The Iterative Process of CRISP-DM
 
 One of the main characteristics of CRISP-DM, which distinguishes it from other cycles considered best practices for successful analysis, is its iterative nature and the presence of arrows indicating bidirectional flows. Consequently, it is not mandatory to always move forward; as can be easily understood, in many contexts it is not appropriate to proceed to the next activity when the results obtained from previous phases are poor and unreliable. The framework emphasizes that one can, and indeed must, go back when deemed necessary.
-This is exactly what happened in our case. Initially, our research objective was to develop a single universal model to predict the entire stock market. However, once we reached the penultimate phase, namely Evaluation, we realized that this approach did not satisfy our research question: all the fitted models showed very limited predictive capabilities, in several cases even worse than the null model, and some were almost comparable to a coin flip.
+This is what happened in the project. Initially, the research objective was to develop a single model for the whole market. During evaluation, however, this approach did not answer the research question well: several fitted models showed limited predictive capability, in some cases below the null model.
 
 To address this, we initially decided to conduct a more accurate exploratory analysis, to understand if we had missed something important for predicting the potential increase or decrease in price the following week. Soon, however, we realized that the issue was not due to forgetting variables, selecting the wrong features, or making other mistakes. We tried to put ourselves in the shoes of a machine learning model, to try to understand, based on its optimization criteria, how it could discriminate between observations with a "down" label and those with an "up" label. We realized that, although the human brain can reason and identify patterns at a much higher level than a simple computer model, not even we were able to find a justification for why the price went up in one case and down in another.
 

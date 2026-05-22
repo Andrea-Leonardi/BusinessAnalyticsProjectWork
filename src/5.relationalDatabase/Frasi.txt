@@ -20,13 +20,13 @@
 5. Collegamento: INDICATORI e AZIENDE
 [ INDICATORI ] -> < valutano i fondamentali delle > -> [ AZIENDE ]
 6. Collegamento "Universale" con CALENDARIO
-(Tutte le tue tabelle dei fatti — MERCATO, ARTICOLI, INDICATORI, RISULTATI — si collegano a CALENDARIO. Scegli il verbo che preferisci per il disegno)
+(Le tabelle dei fatti MERCATO, ARTICOLI, INDICATORI e RISULTATI si collegano a CALENDARIO.)
 [ TABELLA_X ] -> < si osserva nel > -> [ CALENDARIO ]
 7. Collegamento: RISULTATI e MODELLI
 [ RISULTATI ] -> < sono generati dai > -> [ MODELLI ]
 8. Collegamento: RISULTATI e AZIENDE
 [ RISULTATI ] -> < fanno previsioni sulle > -> [ AZIENDE ]
-(Attenzione a questo qui sotto: ricordati che la tabella risultati ha due frecce verso possibili_risultati!)
+(La tabella risultati ha due relazioni verso possibili_risultati: valore predetto e valore osservato.)
 9. Collegamento: GRANGER e AZIENDE
 [ GRANGER ] -> < misurano la causalità delle > -> [ AZIENDE ]
 10. Collegamento: RISULTATI e POSSIBILI_RISULTATI
@@ -67,7 +67,7 @@
 [ financial_statements_and_ratios ] -> < valutano i fondamentali delle > -> [ companies ]
 
 6. Collegamento "Universale" con calendar
-(Tutte le tue tabelle dei fatti — order_book, articles, financial_statements_and_ratios, results — si collegano a calendar. Scegli il verbo che preferisci per il disegno)
+(Le tabelle dei fatti order_book, articles, financial_statements_and_ratios e results si collegano a calendar.)
 [ TABELLA_X ] -> < si osserva nel > -> [ calendar ]
 
 7. Collegamento: results e models
@@ -75,7 +75,7 @@
 
 8. Collegamento: results e companies
 [ results ] -> < fanno previsioni sulle > -> [ companies ]
-(Attenzione a questo qui sotto: ricordati che la tabella results ha due frecce verso possible_results!)
+(La tabella results ha due relazioni verso possible_results: valore predetto e valore osservato.)
 
 9. Collegamento: granger_coefficients e companies
 [ granger_coefficients ] -> < misurano la causalità delle > -> [ companies ]

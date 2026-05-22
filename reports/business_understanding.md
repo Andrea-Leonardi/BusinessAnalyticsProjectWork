@@ -5,17 +5,17 @@
 
 1.1 Context & Problem Statement
 
-Predicting stock movements is a constant tug-of-war between the Efficient Market Hypothesis (EMH), which views price changes as a "random walk," and technical analysis, which seeks exploitable patterns in historical data [4]. Traditionally, fundamental and technical analyses are treated as separate silos and processed manually. This creates a significant "latency gap"—human analysts simply cannot process the massive volume of multi-modal data (news, financials, and price action) fast enough to keep up with 2026's high-frequency market environment.
+Predicting stock movements requires combining different views of market behavior. The Efficient Market Hypothesis (EMH) treats price changes as difficult to forecast, while technical and fundamental analysis search for recurring patterns in market and company data [4]. This project focuses on the operational problem of processing price data, financial statements, and news sentiment in a single weekly modeling pipeline.
 
 1.2 Project Goals
 
-The main goal of this project (StockPulse) is to help investors make better decisions faster and more accurately. Rather than attempting to predict volatile price points—which often introduces excessive noise—we focus on high-probability binary classification (Rise vs. Non-rise) to provide a more reliable edge for weekly capital allocation. By selecting a balanced universe of 110 leading companies across 11 GICS sectors, we ensure our insights are driven by universal market laws rather than industry-specific bubbles. To safeguard against unrepeatable volatility, we deliberately focused our modeling on the 2021–2026 period, filtering out the 2020 COVID-19 "Black Swan" to align with modern market regimes. Ultimately, business success is defined by achieving a consistent predictive hit rate exceeding 57% on the strictly unseen 2026 test set, offering a statistically significant advantage while maintaining rigorous temporal integrity to minimize real-world investment risks [3].
+The main goal of this project (StockPulse) is to predict whether each stock price will increase in the following week. Rather than predicting the exact future price, the project frames the problem as binary classification (Rise vs. Non-rise), which is easier to evaluate and closer to a weekly allocation decision. The analysis uses 110 companies, selected as the top 10 companies in each of 11 GICS sectors at the start of the sample period, and focuses on 2021-2026 to keep the modeling window consistent.
 
 **2. Market Context & Evolution**
 
 2.1 Methodology Shift (1960s – 2026)
 
-We have moved past the eras of manual charting (1960s) and basic linear statistics like ARIMA (1980s). While machine learning (Random Forest, SVM) improved results after 2000, the 2026 standard is Multi-Modal Deep Learning. Today, a competitive model must automate Financial Sentiment Analysis (FSA) to capture market psychology directly from news feeds [1].
+The project compares traditional machine learning models with neural network approaches and uses Financial Sentiment Analysis (FSA) to add information from news text to the tabular price and fundamental data [1].
 
 2.2 Current Industry Standards
 
@@ -31,7 +31,7 @@ Tools: We integrated the Alpaca API for market data, FMP for fundamentals, and F
 
 Constraints: To handle API limits, we built a SharedRateLimiter to keep data flow consistent.
 
-Risk Mitigation: Our primary focus is on maintaining temporal integrity. The 2026 test data were strictly isolated to ensure the model doesn't "peek" into the future during training.
+Risk Mitigation: The 2026 test data were isolated from training and validation to reduce temporal leakage.
 
 **3. Data Mining Goals**
 

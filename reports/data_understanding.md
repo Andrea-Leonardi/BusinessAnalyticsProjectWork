@@ -9,7 +9,7 @@ We pulled raw data from three main sources to capture a complete view of market 
 
 **Universe Selection** (11x10 Framework): To ensure a balanced sample, we selected the top 10 companies by market capitalization from each of the 11 GICS sectors. This 110-stock universe was ranked using historical market cap as of January 4, 2021, ensuring we selected firms that were industry leaders at the start of the study to avoid "look-ahead bias."
 
-**Price Data:** We used the Alpaca API and Yahoo Finance to collect weekly OHLCV sequences. By starting in 2021, we intentionally excluded the 2020 "Black Swan" COVID-19 crash to focus on modern market regimes.
+**Price Data:** We used Yahoo Finance to collect daily OHLCV data and aggregate it to weekly frequency. The sample starts in 2021, so the 2020 COVID-19 crash is outside the modeling window.
 
 **Financial Fundamentals:** Quarterly and annual ratios were extracted from Financial Modeling Prep (FMP). We included delisted companies in our initial screen to mitigate survivorship bias, ensuring the model reflects a realistic historical environment rather than just "today's winners."
 
@@ -53,4 +53,4 @@ To ensure the 2026 predictions were grounded in reality, we addressed several te
 
 **API Limiter:** To stay within Alpaca and FMP request limits, we implemented a SharedRateLimiter to prevent data fragmentation.
 
-**Temporal Integrity:** We enforced a strict "firewall" between the 2021–2025 development phase and the 2026 test set. This total isolation is critical to ensuring our 57%+ accuracy is a true reflection of real-world performance.
+**Temporal Integrity:** We separated the 2021-2025 development phase from the 2026 test set to keep the final evaluation out-of-sample.

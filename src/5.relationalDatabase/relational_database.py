@@ -3,6 +3,7 @@
 qui prepariamo i dataset e le relative tabelle che poi usiamo per andare a rimepire il database relazionale.
 """
 import pandas as pd
+import os
 import sys 
 import numpy as np
 from pathlib import Path
@@ -240,7 +241,7 @@ def chiave_esterna_articoli(x):
     return aziende['id_azienda'][aziende['Ticker'] == x['Ticker']].item()
 
 def chiave_esterna_indicatori(x):
-    # ATTENZIONE: qui uso x['symbol'] perché il dataset indicatori usa 'symbol'
+    # Il dataset indicatori usa la colonna 'symbol'.
     return aziende['id_azienda'][aziende['Ticker'] == x['symbol']].item()
 
 def chiave_esterna_risultati(x):
@@ -347,7 +348,7 @@ aziende = aziende[['id_azienda', 'id_settore', 'id_industry', 'Ticker', 'company
 mercato = mercato[['id_mercato', 'id_azienda', 'id_calendario', 'ClosePrice', 'ClosePrice_t-1', 'ClosePrice_t-2', 'ClosePrice_t+1', 'AdjClosePrice', 'AdjClosePrice_t-1', 'AdjClosePrice_t-2', 'AdjClosePrice_t+1', 'AdjClosePrice_t+1_Up', 'WeeklyReturn_1W', 'WeeklyReturn_4W', 'Momentum_12W', 'Volatility_4W', 'Volatility_12W', 'Drawdown_12W']]
 
 # Riordino Tabella Articoli
-# Nota: id_calendario non era presente nei tuoi dati originali, assicurati di averlo creato prima di questa riga
+# Nota: id_calendario deve essere creato prima di questa selezione.
 articoli = articoli[['id_articoli', 'id_articoli_originali', 'id_azienda', 'id_calendario', 'Headline', 'Summary']]
 
 # Riordino Tabella Indicatori
@@ -398,13 +399,11 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 # ==========================================
 # 1. CONFIGURAZIONE CONNESSIONE
 # ==========================================
-# Sostituisci 'latuapassword' con quella scelta durante l'installazione
-# Sostituisci 'db_progetto' con il nome che hai dato al database in pgAdmin
-USER = 'postgres'
-PASSWORD = 'Gorilla2026!' 
-HOST = 'localhost'
-PORT = '5432'
-DB_NAME = 'project_business_analytics'
+USER = os.getenv('POSTGRES_USER') or os.getenv('DB_USER') or 'postgres'
+PASSWORD = os.getenv('POSTGRES_PASSWORD') or os.getenv('DB_PASSWORD') or ''
+HOST = os.getenv('POSTGRES_HOST') or os.getenv('DB_HOST') or 'localhost'
+PORT = os.getenv('POSTGRES_PORT') or os.getenv('DB_PORT') or '5432'
+DB_NAME = os.getenv('POSTGRES_DB') or os.getenv('DB_NAME') or 'project_business_analytics'
 
 # Creazione della stringa di connessione
 DATABASE_URI = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}'
@@ -492,7 +491,7 @@ colonne_indicatori = [
     Column('id_azienda', Integer, ForeignKey('companies.id_azienda')),
     Column('id_calendario', Integer, ForeignKey('calendar.id_calendario'))
 ]
-# Prendo i nomi delle metriche dalla tua lista ignorando i primi 3 campi che ho già definito
+# Prendo i nomi delle metriche dalla lista, ignorando i primi 3 campi gia definiti.
 nomi_metriche_ind = ['QuarterlyReleased', 'BookToMarket', 'MarketCap', 'FreeCashFlowYield', 'FreeCashFlowYield_TTM', 'EarningsYield', 'EarningsYield_TTM', 'BookToMarket_L1W', 'MarketCap_L1W', 'FreeCashFlowYield_L1W', 'FreeCashFlowYield_TTM_L1W', 'EarningsYield_L1W', 'EarningsYield_TTM_L1W', 'BookToMarket_L2W', 'MarketCap_L2W', 'FreeCashFlowYield_L2W', 'FreeCashFlowYield_TTM_L2W', 'EarningsYield_L2W', 'EarningsYield_TTM_L2W', 'GrossProfitability', 'GrossProfitability_TTM', 'OperatingMargin', 'OperatingMargin_TTM', 'ROA', 'ROA_TTM', 'AssetGrowth', 'InvestmentIntensity', 'Accruals', 'Accruals_TTM', 'DebtToAssets', 'WorkingCapitalScaled', 'GrossProfitability_L1Q', 'GrossProfitability_TTM_L1Q', 'OperatingMargin_L1Q', 'OperatingMargin_TTM_L1Q', 'ROA_L1Q', 'ROA_TTM_L1Q', 'AssetGrowth_L1Q', 'InvestmentIntensity_L1Q', 'Accruals_L1Q', 'Accruals_TTM_L1Q', 'DebtToAssets_L1Q', 'WorkingCapitalScaled_L1Q', 'GrossProfitability_L2Q', 'GrossProfitability_TTM_L2Q', 'OperatingMargin_L2Q', 'OperatingMargin_TTM_L2Q', 'ROA_L2Q', 'ROA_TTM_L2Q', 'AssetGrowth_L2Q', 'InvestmentIntensity_L2Q', 'Accruals_L2Q', 'Accruals_TTM_L2Q', 'DebtToAssets_L2Q', 'WorkingCapitalScaled_L2Q', 'NEWS_FINBERT_Granger_Score', 'NEWS_Sentiment_Mean']
 for col in nomi_metriche_ind:
     colonne_indicatori.append(Column(col, Float))
@@ -503,7 +502,7 @@ risultati_db = Table('results', metadata,
     Column('id_risultati', Integer, primary_key=True),
     Column('id_azienda', Integer, ForeignKey('companies.id_azienda')),
     Column('id_calendario', Integer, ForeignKey('calendar.id_calendario')),
-    Column('id_best_model', Integer, ForeignKey('models.id_best_model')), # <--- MODIFICATO QUI: punta a 'modelli'
+    Column('id_best_model', Integer, ForeignKey('models.id_best_model')),
     Column('AdjClosePrice_t+1', Integer, ForeignKey('possible_results.id_result')), 
     Column('predicted_AdjClosePrice_t+1', Integer, ForeignKey('possible_results.id_result')), 
     Column('predicted_probability', Float)
@@ -545,8 +544,8 @@ print("Tabelle create con successo nel database PostgreSQL.")
 # ==========================================
 # 4. POPOLAMENTO DELLE TABELLE (L'ordine è fondamentale per le Foreign Keys!)
 # ==========================================
-# ATTENZIONE: Assicurati che i nomi dei tuoi DataFrame e delle colonne siano ESATTAMENTE quelli dichiarati.
-# (nomi_risultati nel tuo codice aveva 'id_nomi_risultati', lo rinominiamo per far match con il DB)
+# I nomi dei DataFrame e delle colonne devono corrispondere allo schema dichiarato.
+# La colonna identificativa dei risultati viene rinominata per allinearla al database.
 nomi_risultati.rename(columns={'id_nomi_risultati': 'id_result'}, inplace=True)
 
 # 4.1 Tabelle indipendenti (Genitori)

@@ -10,7 +10,7 @@ import config as cfg
 sentiment_analysis = pipeline("sentiment-analysis", model="ProsusAI/finbert")
 from sklearn.metrics import accuracy_score
 
-# Il tuo DataFrame
+# Dataset di valutazione.
 df = pd.read_csv(cfg.TRAINING_ARTICLES)
 # Trasformiamo la colonna in una lista e passiamola al modello
  
@@ -19,7 +19,7 @@ results = sentiment_analysis(df['sentence'].tolist())
 # 1. Trasforma la lista di dizionari in un DataFrame
 results_df = pd.DataFrame(results)
 
-# 2. # Definiamo il dizionario di mappatura come hai richiesto
+# 2. Definiamo il dizionario di mappatura.
 mapping = {
     "negative": 0,
     "neutral": 1,
@@ -29,7 +29,7 @@ mapping = {
 # Creiamo la nuova colonna numerica nei risultati predetti
 results_df["label_id_pred"] = results_df["label"].map(mapping)
 
-# Assicurati che i due dataframe siano allineati (stesso ordine delle righe)
+# I due dataframe devono essere allineati nello stesso ordine delle righe.
 y_true = df["label_id"]       # Valori reali (già numerici)
 y_pred = results_df["label_id_pred"]  # Valori predetti (appena convertiti)
 
