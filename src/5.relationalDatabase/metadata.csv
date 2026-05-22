@@ -2,81 +2,81 @@ nome_variabile,tabella_provenienza,tipo_valore,descrizione
 id_indicatori,financial_statements_and_ratios,intero,Chiave primaria progressiva della tabella financial_statements_and_ratios generata nel database relazionale.
 id_azienda,financial_statements_and_ratios,intero,Chiave esterna verso companies ottenuta mappando il ticker della societa.
 id_calendario,financial_statements_and_ratios,intero,Chiave esterna verso calendar ottenuta dalla WeekEndingFriday settimanale di financial_statements_and_ratios.
-QuarterlyReleased,financial_statements_and_ratios,decimale,Flag pari a 1 se in quella settimana entra nel calendar un nuovo rilascio trimestrale e 0 altrimenti.
-BookToMarket,financial_statements_and_ratios,decimale,Rapporto tra totalStockholdersEquity riportato e MarketCap settimanale riallineato al prezzo di mercato.
-MarketCap,financial_statements_and_ratios,decimale,Capitalizzazione settimanale ottenuta aggiornando il market cap riportato con il rapporto tra ClosePrice settimanale corrente e ClosePrice dell ultima settimana di rilascio.
-FreeCashFlowYield,financial_statements_and_ratios,decimale,Rapporto tra freeCashFlow del bilancio e MarketCap settimanale.
-FreeCashFlowYield_TTM,financial_statements_and_ratios,decimale,Rapporto tra freeCashFlow_TTM e MarketCap settimanale.
-EarningsYield,financial_statements_and_ratios,decimale,Rapporto tra netIncome del bilancio e MarketCap settimanale.
-EarningsYield_TTM,financial_statements_and_ratios,decimale,Rapporto tra netIncome_TTM e MarketCap settimanale.
-BookToMarket_L1W,financial_statements_and_ratios,decimale,BookToMarket spostato indietro di 1 settimana sul calendar settimanale.
-MarketCap_L1W,financial_statements_and_ratios,decimale,MarketCap spostato indietro di 1 settimana sul calendar settimanale.
-FreeCashFlowYield_L1W,financial_statements_and_ratios,decimale,FreeCashFlowYield spostato indietro di 1 settimana sul calendar settimanale.
-FreeCashFlowYield_TTM_L1W,financial_statements_and_ratios,decimale,FreeCashFlowYield_TTM spostato indietro di 1 settimana sul calendar settimanale.
-EarningsYield_L1W,financial_statements_and_ratios,decimale,EarningsYield spostato indietro di 1 settimana sul calendar settimanale.
-EarningsYield_TTM_L1W,financial_statements_and_ratios,decimale,EarningsYield_TTM spostato indietro di 1 settimana sul calendar settimanale.
-BookToMarket_L2W,financial_statements_and_ratios,decimale,BookToMarket spostato indietro di 2 settimane sul calendar settimanale.
-MarketCap_L2W,financial_statements_and_ratios,decimale,MarketCap spostato indietro di 2 settimane sul calendar settimanale.
-FreeCashFlowYield_L2W,financial_statements_and_ratios,decimale,FreeCashFlowYield spostato indietro di 2 settimane sul calendar settimanale.
-FreeCashFlowYield_TTM_L2W,financial_statements_and_ratios,decimale,FreeCashFlowYield_TTM spostato indietro di 2 settimane sul calendar settimanale.
-EarningsYield_L2W,financial_statements_and_ratios,decimale,EarningsYield spostato indietro di 2 settimane sul calendar settimanale.
-EarningsYield_TTM_L2W,financial_statements_and_ratios,decimale,EarningsYield_TTM spostato indietro di 2 settimane sul calendar settimanale.
-GrossProfitability,financial_statements_and_ratios,decimale,Rapporto tra grossProfit e totalAssets al momento del rilascio del bilancio.
-GrossProfitability_TTM,financial_statements_and_ratios,decimale,Rapporto tra grossProfit_TTM e attivo medio usato nella pipeline dei fondamentali.
-OperatingMargin,financial_statements_and_ratios,decimale,Rapporto tra operatingIncome e revenue del periodo di bilancio.
-OperatingMargin_TTM,financial_statements_and_ratios,decimale,Rapporto tra operatingIncome_TTM e revenue_TTM.
-ROA,financial_statements_and_ratios,decimale,Rapporto tra netIncome e totalAssets.
-ROA_TTM,financial_statements_and_ratios,decimale,Rapporto tra netIncome_TTM e attivo medio usato nella pipeline dei fondamentali.
-AssetGrowth,financial_statements_and_ratios,decimale,Crescita dell attivo calcolata come variazione di totalAssets rispetto a quattro trimestri prima.
-InvestmentIntensity,financial_statements_and_ratios,decimale,Rapporto di intensita di investimento calcolato come meno capitalExpenditure diviso totalAssets.
-Accruals,financial_statements_and_ratios,decimale,Rapporto tra netIncome meno operatingCashFlow e totalAssets.
-Accruals_TTM,financial_statements_and_ratios,decimale,Rapporto tra netIncome_TTM meno operatingCashFlow_TTM e totalAssets.
-DebtToAssets,financial_statements_and_ratios,decimale,Rapporto tra totalDebt e totalAssets.
-WorkingCapitalScaled,financial_statements_and_ratios,decimale,Rapporto tra capitale circolante totaleCurrentAssets meno totalCurrentLiabilities e totalAssets.
-GrossProfitability_L1Q,financial_statements_and_ratios,decimale,GrossProfitability riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-GrossProfitability_TTM_L1Q,financial_statements_and_ratios,decimale,GrossProfitability_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-OperatingMargin_L1Q,financial_statements_and_ratios,decimale,OperatingMargin riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-OperatingMargin_TTM_L1Q,financial_statements_and_ratios,decimale,OperatingMargin_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-ROA_L1Q,financial_statements_and_ratios,decimale,ROA riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-ROA_TTM_L1Q,financial_statements_and_ratios,decimale,ROA_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-AssetGrowth_L1Q,financial_statements_and_ratios,decimale,AssetGrowth riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-InvestmentIntensity_L1Q,financial_statements_and_ratios,decimale,InvestmentIntensity riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-Accruals_L1Q,financial_statements_and_ratios,decimale,Accruals riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-Accruals_TTM_L1Q,financial_statements_and_ratios,decimale,Accruals_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-DebtToAssets_L1Q,financial_statements_and_ratios,decimale,DebtToAssets riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-WorkingCapitalScaled_L1Q,financial_statements_and_ratios,decimale,WorkingCapitalScaled riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale.
-GrossProfitability_L2Q,financial_statements_and_ratios,decimale,GrossProfitability riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-GrossProfitability_TTM_L2Q,financial_statements_and_ratios,decimale,GrossProfitability_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-OperatingMargin_L2Q,financial_statements_and_ratios,decimale,OperatingMargin riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-OperatingMargin_TTM_L2Q,financial_statements_and_ratios,decimale,OperatingMargin_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-ROA_L2Q,financial_statements_and_ratios,decimale,ROA riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-ROA_TTM_L2Q,financial_statements_and_ratios,decimale,ROA_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-AssetGrowth_L2Q,financial_statements_and_ratios,decimale,AssetGrowth riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-InvestmentIntensity_L2Q,financial_statements_and_ratios,decimale,InvestmentIntensity riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-Accruals_L2Q,financial_statements_and_ratios,decimale,Accruals riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-Accruals_TTM_L2Q,financial_statements_and_ratios,decimale,Accruals_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-DebtToAssets_L2Q,financial_statements_and_ratios,decimale,DebtToAssets riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-WorkingCapitalScaled_L2Q,financial_statements_and_ratios,decimale,WorkingCapitalScaled riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale.
-NEWS_FINBERT_Granger_Score,financial_statements_and_ratios,decimale,Score ottenuto dalla combinazione lineare dei coefficienti stimati tramite VAR con 1 lag e i punteggi FinBERT. Formula: beta1 + beta2*positiv + beta3*negativ + beta4*neutral.
-NEWS_Sentiment_Mean,financial_statements_and_ratios,decimale,Score informale ottenuto tramite combinazione lineare dei punteggi FinBERT. Formula: (+1 * positiv) + (-1 * negativ) + (0 * neutral).
+QuarterlyReleased,financial_statements_and_ratios,decimale,Flag pari a 1 se in quella settimana entra nel calendar un nuovo rilascio trimestrale e 0 altrimenti. Unità di misura: Valore booleano/binario (0 o 1).
+BookToMarket,financial_statements_and_ratios,decimale,Rapporto tra totalStockholdersEquity riportato e MarketCap settimanale riallineato al prezzo di mercato. Unità di misura: Tasso espresso in formato decimale.
+MarketCap,financial_statements_and_ratios,decimale,Capitalizzazione settimanale ottenuta aggiornando il market cap riportato con il rapporto tra ClosePrice settimanale corrente e ClosePrice dell ultima settimana di rilascio. Unità di misura: Valore monetario.
+FreeCashFlowYield,financial_statements_and_ratios,decimale,Rapporto tra freeCashFlow del bilancio e MarketCap settimanale. Unità di misura: Tasso espresso in formato decimale.
+FreeCashFlowYield_TTM,financial_statements_and_ratios,decimale,Rapporto tra freeCashFlow_TTM (Trailing Twelve Months) e MarketCap settimanale. Unità di misura: Tasso espresso in formato decimale.
+EarningsYield,financial_statements_and_ratios,decimale,Rapporto tra netIncome del bilancio e MarketCap settimanale. Unità di misura: Tasso espresso in formato decimale.
+EarningsYield_TTM,financial_statements_and_ratios,decimale,Rapporto tra netIncome_TTM (Trailing Twelve Months) e MarketCap settimanale. Unità di misura: Tasso espresso in formato decimale.
+BookToMarket_L1W,financial_statements_and_ratios,decimale,BookToMarket spostato indietro di 1 settimana sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+MarketCap_L1W,financial_statements_and_ratios,decimale,MarketCap spostato indietro di 1 settimana sul calendar settimanale. Unità di misura: Valore monetario.
+FreeCashFlowYield_L1W,financial_statements_and_ratios,decimale,FreeCashFlowYield spostato indietro di 1 settimana sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+FreeCashFlowYield_TTM_L1W,financial_statements_and_ratios,decimale,FreeCashFlowYield_TTM spostato indietro di 1 settimana sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+EarningsYield_L1W,financial_statements_and_ratios,decimale,EarningsYield spostato indietro di 1 settimana sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+EarningsYield_TTM_L1W,financial_statements_and_ratios,decimale,EarningsYield_TTM spostato indietro di 1 settimana sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+BookToMarket_L2W,financial_statements_and_ratios,decimale,BookToMarket spostato indietro di 2 settimane sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+MarketCap_L2W,financial_statements_and_ratios,decimale,MarketCap spostato indietro di 2 settimane sul calendar settimanale. Unità di misura: Valore monetario.
+FreeCashFlowYield_L2W,financial_statements_and_ratios,decimale,FreeCashFlowYield spostato indietro di 2 settimane sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+FreeCashFlowYield_TTM_L2W,financial_statements_and_ratios,decimale,FreeCashFlowYield_TTM spostato indietro di 2 settimane sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+EarningsYield_L2W,financial_statements_and_ratios,decimale,EarningsYield spostato indietro di 2 settimane sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+EarningsYield_TTM_L2W,financial_statements_and_ratios,decimale,EarningsYield_TTM spostato indietro di 2 settimane sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+GrossProfitability,financial_statements_and_ratios,decimale,Rapporto tra grossProfit e totalAssets al momento del rilascio del bilancio. Unità di misura: Tasso espresso in formato decimale.
+GrossProfitability_TTM,financial_statements_and_ratios,decimale,Rapporto tra grossProfit_TTM (Trailing Twelve Months) e attivo medio usato nella pipeline dei fondamentali. Unità di misura: Tasso espresso in formato decimale.
+OperatingMargin,financial_statements_and_ratios,decimale,Rapporto tra operatingIncome e revenue del periodo di bilancio. Unità di misura: Tasso espresso in formato decimale.
+OperatingMargin_TTM,financial_statements_and_ratios,decimale,Rapporto tra operatingIncome_TTM (Trailing Twelve Months) e revenue_TTM. Unità di misura: Tasso espresso in formato decimale.
+ROA,financial_statements_and_ratios,decimale,Rapporto tra netIncome e totalAssets. Unità di misura: Tasso espresso in formato decimale.
+ROA_TTM,financial_statements_and_ratios,decimale,Rapporto tra netIncome_TTM (Trailing Twelve Months) e attivo medio usato nella pipeline dei fondamentali. Unità di misura: Tasso espresso in formato decimale.
+AssetGrowth,financial_statements_and_ratios,decimale,Crescita dell attivo calcolata come variazione di totalAssets rispetto a quattro trimestri prima. Unità di misura: Tasso di crescita espresso in formato decimale.
+InvestmentIntensity,financial_statements_and_ratios,decimale,Rapporto di intensita di investimento calcolato come meno capitalExpenditure diviso totalAssets. Unità di misura: Tasso espresso in formato decimale.
+Accruals,financial_statements_and_ratios,decimale,Rapporto tra netIncome meno operatingCashFlow e totalAssets. Unità di misura: Tasso espresso in formato decimale.
+Accruals_TTM,financial_statements_and_ratios,decimale,Rapporto tra netIncome_TTM (Trailing Twelve Months) meno operatingCashFlow_TTM e totalAssets. Unità di misura: Tasso espresso in formato decimale.
+DebtToAssets,financial_statements_and_ratios,decimale,Rapporto tra totalDebt e totalAssets. Unità di misura: Tasso espresso in formato decimale.
+WorkingCapitalScaled,financial_statements_and_ratios,decimale,Rapporto tra capitale circolante totaleCurrentAssets meno totalCurrentLiabilities e totalAssets. Unità di misura: Tasso espresso in formato decimale.
+GrossProfitability_L1Q,financial_statements_and_ratios,decimale,GrossProfitability riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+GrossProfitability_TTM_L1Q,financial_statements_and_ratios,decimale,GrossProfitability_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+OperatingMargin_L1Q,financial_statements_and_ratios,decimale,OperatingMargin riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+OperatingMargin_TTM_L1Q,financial_statements_and_ratios,decimale,OperatingMargin_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+ROA_L1Q,financial_statements_and_ratios,decimale,ROA riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+ROA_TTM_L1Q,financial_statements_and_ratios,decimale,ROA_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+AssetGrowth_L1Q,financial_statements_and_ratios,decimale,AssetGrowth riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso di crescita espresso in formato decimale.
+InvestmentIntensity_L1Q,financial_statements_and_ratios,decimale,InvestmentIntensity riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+Accruals_L1Q,financial_statements_and_ratios,decimale,Accruals riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+Accruals_TTM_L1Q,financial_statements_and_ratios,decimale,Accruals_TTM riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+DebtToAssets_L1Q,financial_statements_and_ratios,decimale,DebtToAssets riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+WorkingCapitalScaled_L1Q,financial_statements_and_ratios,decimale,WorkingCapitalScaled riferito al bilancio precedente di 1 trimestre e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+GrossProfitability_L2Q,financial_statements_and_ratios,decimale,GrossProfitability riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+GrossProfitability_TTM_L2Q,financial_statements_and_ratios,decimale,GrossProfitability_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+OperatingMargin_L2Q,financial_statements_and_ratios,decimale,OperatingMargin riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+OperatingMargin_TTM_L2Q,financial_statements_and_ratios,decimale,OperatingMargin_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+ROA_L2Q,financial_statements_and_ratios,decimale,ROA riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+ROA_TTM_L2Q,financial_statements_and_ratios,decimale,ROA_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+AssetGrowth_L2Q,financial_statements_and_ratios,decimale,AssetGrowth riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso di crescita espresso in formato decimale.
+InvestmentIntensity_L2Q,financial_statements_and_ratios,decimale,InvestmentIntensity riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+Accruals_L2Q,financial_statements_and_ratios,decimale,Accruals riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+Accruals_TTM_L2Q,financial_statements_and_ratios,decimale,Accruals_TTM riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+DebtToAssets_L2Q,financial_statements_and_ratios,decimale,DebtToAssets riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+WorkingCapitalScaled_L2Q,financial_statements_and_ratios,decimale,WorkingCapitalScaled riferito al bilancio precedente di 2 trimestri e poi propagato sul calendar settimanale. Unità di misura: Tasso espresso in formato decimale.
+NEWS_FINBERT_Granger_Score,financial_statements_and_ratios,decimale,Score ottenuto dalla combinazione lineare dei coefficienti stimati tramite VAR con 1 lag e i punteggi FinBERT. Formula: beta1 + beta2*positiv + beta3*negativ + beta4*neutral. Unità di misura: Valore numerico continuo.
+NEWS_Sentiment_Mean,financial_statements_and_ratios,decimale,Score informale ottenuto tramite combinazione lineare dei punteggi FinBERT. Formula: (+1 * positiv) + (-1 * negativ) + (0 * neutral). Unità di misura: Valore numerico continuo compreso tra -1 e 1.
 id_mercato,order_book,intero,Chiave primaria progressiva della tabella order_book nel database relazionale.
 id_azienda,order_book,intero,Chiave esterna verso companies ottenuta mappando il ticker della societa.
 id_calendario,order_book,intero,Chiave esterna verso calendar ottenuta dalla WeekEndingFriday del dato di mercato.
-ClosePrice,order_book,decimale,Prezzo di chiusura della societa nell ultimo giorno di trading disponibile della settimana che termina di venerdi.
-ClosePrice_t-1,order_book,decimale,ClosePrice spostato indietro di 1 settimana.
-ClosePrice_t-2,order_book,decimale,ClosePrice spostato indietro di 2 settimane.
-ClosePrice_t+1,order_book,decimale,ClosePrice della settimana successiva ottenuto con shift negativo di 1.
-AdjClosePrice,order_book,decimale,Prezzo di chiusura adjusted dell ultimo giorno di trading disponibile della settimana che termina di venerdi.
-AdjClosePrice_t-1,order_book,decimale,AdjClosePrice spostato indietro di 1 settimana.
-AdjClosePrice_t-2,order_book,decimale,AdjClosePrice spostato indietro di 2 settimane.
-AdjClosePrice_t+1,order_book,decimale,AdjClosePrice della settimana successiva ottenuto con shift negativo di 1.
-AdjClosePrice_t+1_Up,order_book,decimale,Flag binario pari a 1 se AdjClosePrice_t+1 e maggiore di AdjClosePrice corrente e 0 altrimenti.
-WeeklyReturn_1W,order_book,decimale,Rendimento percentuale settimanale calcolato con pct_change a 1 settimana su AdjClosePrice.
-WeeklyReturn_4W,order_book,decimale,Rendimento percentuale a 4 settimane calcolato con pct_change a 4 settimane su AdjClosePrice.
-Momentum_12W,order_book,decimale,Momentum a 12 settimane calcolato con pct_change a 12 settimane su AdjClosePrice.
-Volatility_4W,order_book,decimale,Volatilita a 4 settimane calcolata come deviazione standard mobile a 4 periodi di WeeklyReturn_1W.
-Volatility_12W,order_book,decimale,Volatilita a 12 settimane calcolata come deviazione standard mobile a 12 periodi di WeeklyReturn_1W.
-Drawdown_12W,order_book,decimale,Drawdown a 12 settimane calcolato come AdjClosePrice diviso massimo mobile a 12 settimane meno 1.
+ClosePrice,order_book,decimale,Prezzo di chiusura della societa nell ultimo giorno di trading disponibile della settimana che termina di venerdi. Unità di misura: Valore monetario.
+ClosePrice_t-1,order_book,decimale,ClosePrice spostato indietro di 1 settimana. Unità di misura: Valore monetario.
+ClosePrice_t-2,order_book,decimale,ClosePrice spostato indietro di 2 settimane. Unità di misura: Valore monetario.
+ClosePrice_t+1,order_book,decimale,ClosePrice della settimana successiva ottenuto con shift negativo di 1. Unità di misura: Valore monetario.
+AdjClosePrice,order_book,decimale,Prezzo di chiusura adjusted dell ultimo giorno di trading disponibile della settimana che termina di venerdi. Unità di misura: Valore monetario.
+AdjClosePrice_t-1,order_book,decimale,AdjClosePrice spostato indietro di 1 settimana. Unità di misura: Valore monetario.
+AdjClosePrice_t-2,order_book,decimale,AdjClosePrice spostato indietro di 2 settimane. Unità di misura: Valore monetario.
+AdjClosePrice_t+1,order_book,decimale,AdjClosePrice della settimana successiva ottenuto con shift negativo di 1. Unità di misura: Valore monetario.
+AdjClosePrice_t+1_Up,order_book,decimale,Flag binario pari a 1 se AdjClosePrice_t+1 e maggiore di AdjClosePrice corrente e 0 altrimenti. Unità di misura: Valore booleano/binario (0 o 1).
+WeeklyReturn_1W,order_book,decimale,Rendimento percentuale settimanale calcolato con pct_change a 1 settimana su AdjClosePrice. Unità di misura: Tasso di rendimento espresso in formato decimale.
+WeeklyReturn_4W,order_book,decimale,Rendimento percentuale a 4 settimane calcolato con pct_change a 4 settimane su AdjClosePrice. Unità di misura: Tasso di rendimento espresso in formato decimale.
+Momentum_12W,order_book,decimale,Momentum a 12 settimane calcolato con pct_change a 12 settimane su AdjClosePrice. Unità di misura: Tasso espresso in formato decimale.
+Volatility_4W,order_book,decimale,Volatilita a 4 settimane calcolata come deviazione standard mobile a 4 periodi di WeeklyReturn_1W. Unità di misura: Tasso espresso in formato decimale.
+Volatility_12W,order_book,decimale,Volatilita a 12 settimane calcolata come deviazione standard mobile a 12 periodi di WeeklyReturn_1W. Unità di misura: Tasso espresso in formato decimale.
+Drawdown_12W,order_book,decimale,Drawdown a 12 settimane calcolato come AdjClosePrice diviso massimo mobile a 12 settimane meno 1. Unità di misura: Tasso espresso in formato decimale (valore tipicamente negativo o nullo).
 id_calendario,calendar,intero,Chiave primaria progressiva della tabella calendar generata nel database relazionale.
 date,calendar,data,Data giornaliera generata sequenzialmente per coprire l intero orizzonte temporale di analisi. Formato: YYYY-MM-DD.
 id_settore,sectors,intero,Chiave primaria progressiva della tabella sectors generata nel database relazionale.
@@ -98,7 +98,8 @@ delta_always_one,models,decimale,Differenza di performance tra il modello selezi
 delta_always_zero,models,decimale,Differenza di performance tra il modello selezionato per quel settore e un modello dummy che predice sempre la classe negativa nel dataset di test. Unità di misura: Tasso espresso in formato decimale.
 id_articoli,articles,intero,Chiave primaria progressiva della tabella articles generata nel database relazionale.
 id_articoli_originali,articles,stringa,Codice identificativo univoco dell articolo fornito direttamente dall API di origine.
-id_azienda,company_articles,intero,Chiave esterna verso la tabella companies.
+id_company_articles,company_articles,intero,Chiave primaria progressiva della tabella ponte company_articles generata nel database relazionale.
+id_articoli,company_articles,intero,Chiave esterna verso la tabella articles. Insieme a id_azienda, permette di gestire la relazione molti-a-molti associando un articolo a una o più aziende.
 id_calendario,articles,intero,Chiave esterna verso la tabella calendar.
 Headline,articles,stringa,Titolo testuale dell articolo finanziario ottenuto dall API.
 Summary,articles,stringa,Testo contenente il riassunto dell articolo finanziario ottenuto dall API.
